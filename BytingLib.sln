@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BytingLib", "BytingLib\BytingLib.csproj", "{BA4037CB-EBB7-47F4-BAA1-E4BB18982D9A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BytingLib.Test", "BytingLib.Test\BytingLib.Test.csproj", "{B38BC5B3-A8BB-47FE-B908-54DAAB4178C5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BA4037CB-EBB7-47F4-BAA1-E4BB18982D9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA4037CB-EBB7-47F4-BAA1-E4BB18982D9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA4037CB-EBB7-47F4-BAA1-E4BB18982D9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA4037CB-EBB7-47F4-BAA1-E4BB18982D9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B38BC5B3-A8BB-47FE-B908-54DAAB4178C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B38BC5B3-A8BB-47FE-B908-54DAAB4178C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B38BC5B3-A8BB-47FE-B908-54DAAB4178C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B38BC5B3-A8BB-47FE-B908-54DAAB4178C5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12397635-3BFB-4947-94E6-26ADD28A8EF7}
+	EndGlobalSection
+EndGlobal
