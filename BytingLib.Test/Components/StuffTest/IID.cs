@@ -1,11 +1,11 @@
 ﻿namespace BytingLib.Test.Components.StuffTest
 {
-    interface IGetID
+    interface IID
     {
         int GetID();
     }
 
-    class ID : IGetID
+    class ID : IID
     {
         private readonly int id;
 

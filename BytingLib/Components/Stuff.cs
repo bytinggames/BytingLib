@@ -43,9 +43,9 @@ namespace BytingLib
         protected virtual bool AddActual(object thing, Action<object>? onRemove)
         {
             bool any = false;
-            foreach (var list in GetMatchingLists(thing))
+            foreach (var match in GetMatchingLists(thing))
             {
-                list.Add(thing);
+                match.List.Add(thing);
                 any = true;
             }
 
@@ -58,7 +58,7 @@ namespace BytingLib
             return any;
         }
 
-        public void AddRange(params object[] things)
+        public virtual void AddRange(params object[] things)
         {
             foreach (var thing in things)
                 Add(thing);
@@ -77,16 +77,22 @@ namespace BytingLib
             }
         }
 
+        public virtual void RemoveRange(params object[] things)
+        {
+            foreach (var thing in things)
+                Remove(thing);
+        }
+
         protected bool RemoveActual(object thing)
         {
             bool any = false;
-            foreach (var list in GetMatchingLists(thing))
+            foreach (var match in GetMatchingLists(thing))
             {
-                var index = list.IndexOf(thing);
+                var index = match.List.IndexOf(thing);
                 if (index != -1)
                 {
-                    list.RemoveAt(index);
-                    foreach (var iteration in iterations.Where(f => f.List == list))
+                    match.List.RemoveAt(index);
+                    foreach (var iteration in iterations.Where(f => f.InterfaceType == match.Type))
                     {
                         if (iteration.Index >= index)
                             iteration.Index--;
@@ -97,7 +103,7 @@ namespace BytingLib
             return any;
         }
 
-        public virtual IEnumerable<IList> GetMatchingLists(object thing)
+        public virtual IEnumerable<(Type Type, IList List)> GetMatchingLists(object thing)
         {
             // for each interface that is inherited, add to the corresponding list
             var interfaces = thing.GetType().GetInterfaces();
@@ -107,17 +113,12 @@ namespace BytingLib
             {
                 if (listsOfThings.TryGetValue(t, out IList? list))
                 {
-                    yield return list;
+                    yield return (t, list);
                 }
             }
         }
 
-        public virtual IEnumerable<T> Get<T>()
-        {
-            return GetList<T>();
-        }
-
-        public virtual IList<T> GetList<T>()
+        public virtual IReadOnlyCollection<T> Get<T>()
         {
             if (!typeof(T).IsInterface)
                 throw new ArgumentException("Type is no interface.");
@@ -125,32 +126,20 @@ namespace BytingLib
             if (!listsOfThings.TryGetValue(typeof(T), out IList? list))
                 throw new ArgumentException("There is no list of generic type " + typeof(T) + " inside this collection.");
 
-            return (list as IList<T>)!;
-        }
-
-
-        class Iteration
-        {
-            public IEnumerable List { get; }
-            public int Index { get; set; } = 0;
-
-            public Iteration(IEnumerable list)
-            {
-                List = list;
-            }
+            return (list as List<T>)!.AsReadOnly();
         }
 
         public void ForEach<T>(Action<T> doAction)
         {
-            IList<T> list = GetList<T>();
+            IReadOnlyCollection<T> list = Get<T>();
             
-            Iteration iteration = new Iteration(list);
+            Iteration iteration = new Iteration(typeof(T));
             iterations.Add(iteration);
             try
             {
                 for (; iteration.Index < list.Count; iteration.Index++)
                 {
-                    doAction(list[iteration.Index]);
+                    doAction(list.ElementAt(iteration.Index));
                 }
             }
             finally
@@ -158,5 +147,17 @@ namespace BytingLib
                 iterations.Remove(iteration);
             }
         }
+
+        class Iteration
+        {
+            public Type InterfaceType { get; }
+            public int Index { get; set; } = 0;
+
+            public Iteration(Type interfaceType)
+            {
+                InterfaceType = interfaceType;
+            }
+        }
+
     }
 }

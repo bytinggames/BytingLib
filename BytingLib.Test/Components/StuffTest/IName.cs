@@ -1,11 +1,11 @@
 ﻿namespace BytingLib.Test.Components.StuffTest
 {
-    interface IGetName
+    interface IName
     {
         string GetName();
     }
 
-    class Name : IGetName
+    class Name : IName
     {
         private readonly string name;
 

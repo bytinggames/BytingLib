@@ -1,6 +1,6 @@
 ﻿namespace BytingLib.Test.Components.StuffTest
 {
-    class NameID : IGetName, IGetID
+    class NameID : IName, IID
     {
         private readonly int id;
         private readonly string name;
