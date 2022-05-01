@@ -38,8 +38,11 @@
 
         public void Dispose()
         {
-            isDisposed = true;
-            WriteFrame();
+            if (!isDisposed)
+            {
+                isDisposed = true;
+                WriteFrame();
+            }
         }
 
         protected virtual void WriteFrame()
