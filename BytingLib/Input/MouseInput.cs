@@ -92,5 +92,8 @@ namespace BytingLib
             bool downPreviously = getButtonState(previousState) == ButtonState.Pressed;
             return new Key(downNow, downNow != downPreviously);
         }
+
+        public MouseState GetState() => currentState;
+        public MouseState GetStatePrevious() => previousState;
     }
 }

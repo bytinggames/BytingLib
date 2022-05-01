@@ -40,7 +40,8 @@ namespace BytingLib.Test.Input
             Assert.IsFalse(keys.Space.Pressed);
             Assert.IsFalse(keys.Space.Released);
 
-            SimulateSpacePress(ref currentState);
+            Assert.IsFalse(currentState.IsKeyDown(Keys.Space));
+            InputSimulation.SimulateSpacePress(ref currentState);
 
             keys.Update();
             Assert.IsTrue(keys.Space.Down);
@@ -72,27 +73,13 @@ namespace BytingLib.Test.Input
 
             KeyInput keys = new KeyInput(() => currentState);
 
-            SimulateSpacePress(ref currentState);
+            Assert.IsFalse(currentState.IsKeyDown(Keys.Space));
+            InputSimulation.SimulateSpacePress(ref currentState);
 
             keys.Update();
 
             Assert.AreEqual(keys.Space, keys.GetKey(Keys.Space));
             Assert.AreNotEqual(keys.Space, keys.GetKey(Keys.Enter));
-        }
-
-        private static void SimulateSpacePress(ref KeyboardState currentState)
-        {
-            // get the field that corresponds to the space key
-            var field = currentState.GetType().GetField("_keys1",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-
-            Assert.IsFalse(currentState.IsKeyDown(Keys.Space));
-
-            object obj = currentState; // box the struct, so that we can pass the reference to the SetValue() method
-            field!.SetValue(obj, (uint)1); // this sets space to pressed
-            currentState = (KeyboardState)obj;
-
-            Assert.IsTrue(currentState.IsKeyDown(Keys.Space));
         }
     }
 }

@@ -8,8 +8,9 @@ namespace BytingLib
 
         private KeyboardState previousState;
         private KeyboardState currentState;
+        private int frame = -1;
 
-        public delegate void StateChanged(KeyboardState current, KeyboardState previous);
+        public delegate void StateChanged(int frame, KeyboardState current, KeyboardState previous);
         public event StateChanged? OnStateChanged;
 
         public KeyInput(Func<KeyboardState> getState)
@@ -24,12 +25,14 @@ namespace BytingLib
 
         private void UpdateUsingState(KeyboardState keyboardState)
         {
+            frame++;
+            
             previousState = currentState;
             currentState = keyboardState;
 
             if (OnStateChanged != null
                 && currentState != previousState)
-                OnStateChanged?.Invoke(currentState, previousState);
+                OnStateChanged?.Invoke(frame, currentState, previousState);
         }
 
         public bool NumLockActive => currentState.NumLock;
@@ -41,5 +44,8 @@ namespace BytingLib
             bool downPreviously = previousState.IsKeyDown(key);
             return new Key(downNow, downNow != downPreviously);
         }
+
+        public KeyboardState GetState() => currentState;
+        public KeyboardState GetStatePrevious() => previousState;
     }
 }

@@ -64,5 +64,8 @@ namespace BytingLib
             bool downPreviously = previousState.IsButtonDown(button);
             return new Key(downNow, downNow != downPreviously);
         }
+
+        public GamePadState GetState() => currentState;
+        public GamePadState GetStatePrevious() => previousState;
     }
 }
