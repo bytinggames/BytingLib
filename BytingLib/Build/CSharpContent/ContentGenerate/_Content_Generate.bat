@@ -1,0 +1,1 @@
+dotnet t4 _Content.tt

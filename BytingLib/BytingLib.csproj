@@ -11,10 +11,34 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Build\_ContentGenerate.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Build\Content\_Content.tt.txt">
+      <LastGenOutput>_Content.tt.Generated.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Build\Content\_ContentGenerate.tt.txt">
+      <LastGenOutput>_ContentGenerate.tt.txt</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_ContentGenerate.tt.txt</DependentUpon>
+    </None>
+    <None Update="Build\CSharpContent\_ContentGenerate.tt.remove">
+      <LastGenOutput>_ContentGenerate.tt.txt</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Build\CSharpContent\_ContentGenerate.tt.txt">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_ContentGenerate.tt.remove</DependentUpon>
+    </None>
     <None Update="Input\GamePadInput.Generated.tt">
       <LastGenOutput>GamePadInput.Generated.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
