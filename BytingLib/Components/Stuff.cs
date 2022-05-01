@@ -69,12 +69,6 @@ namespace BytingLib
             bool any = RemoveActual(thing);
             if (!any)
                 throw new ArgumentException("The thing didn't inherit any provided interface.");
-
-            if (onRemoveActions.TryGetValue(thing, out Action<object>? action))
-            {
-                onRemoveActions.Remove(thing);
-                action!.Invoke(thing);
-            }
         }
 
         public virtual void RemoveRange(params object[] things)
@@ -100,6 +94,13 @@ namespace BytingLib
                 }
                 any = true;
             }
+
+            if (onRemoveActions.TryGetValue(thing, out Action<object>? action))
+            {
+                onRemoveActions.Remove(thing);
+                action!.Invoke(thing);
+            }
+
             return any;
         }
 
