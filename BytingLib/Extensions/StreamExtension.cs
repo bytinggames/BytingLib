@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.Xna.Framework;
+
 namespace BytingLib
 {
     public static class StreamExtension
