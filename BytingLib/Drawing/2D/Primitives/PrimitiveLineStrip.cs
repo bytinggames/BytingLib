@@ -108,7 +108,7 @@ namespace BytingLib
 
             if (vertexCount == -1)
             {
-                vertexCount = Math.Max(1, (int)(VertexHelper.RadiusToVertexCount(radius) * MathF.Abs(angle) / MathHelper.TwoPi));
+                vertexCount = Math.Max(1, (int)(DrawHelper.RadiusToVertexCount(radius) * MathF.Abs(angle) / MathHelper.TwoPi));
             }
 
             for (int i = 0; i < vertexCount; i++)

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace BytingLib.Test.ContentTest
 {
     [TestClass]
-    public class DynamicContentTest
+    public class HotReloadContentTest
     {
         [TestMethod]
         public void TestDynamicTexturesDisposalResizeAndDelete()
@@ -16,7 +16,7 @@ namespace BytingLib.Test.ContentTest
             string enemyPng = @"Content\Textures\Enemy.png";
             File.Delete(enemyPng);
 
-            CreateGame(out ContentCollector collector, out DynamicContent dynamicContent);
+            CreateGame(out ContentCollector collector, out HotReloadContent hotReloadContent);
 
             List<Texture2D> loadedTextures = new();
 
@@ -35,7 +35,7 @@ namespace BytingLib.Test.ContentTest
                 // save player tex as Enemy.png, so that Enemy looks like player
                 using (var fs = File.Create(enemyPng))
                     playerTex.Value.SaveAsPng(fs, playerTex.Value.Width, playerTex.Value.Height);
-                dynamicContent.UpdateChanges();
+                hotReloadContent.UpdateChanges();
 
                 Color[] enemyColorsTemp = enemyTex.Value.ToColor();
 
@@ -47,7 +47,7 @@ namespace BytingLib.Test.ContentTest
 
                 // delete Enemy.png, so that Enemy looks like enemy again
                 File.Delete(enemyPng);
-                dynamicContent.UpdateChanges();
+                hotReloadContent.UpdateChanges();
                 Assert.IsTrue(enemyTexRaw.IsDisposed);
                 Color[] enemyColorsNew = enemyTex.Value.ToColor();
                 Assert.That.AreEqualItems(enemyColors, enemyColorsNew);
@@ -60,7 +60,7 @@ namespace BytingLib.Test.ContentTest
             }
         }
 
-        private static void CreateGame(out ContentCollector collector, out DynamicContent dynamicContent)
+        private static void CreateGame(out ContentCollector collector, out HotReloadContent hotReloadContent)
         {
             Game game = new Game();
             new GraphicsDeviceManager(game); // must be called to initialize GraphicsDevice
@@ -68,17 +68,17 @@ namespace BytingLib.Test.ContentTest
 
             ContentManagerRaw rawContent = new ContentManagerRaw(game.Services, "Content");
             collector = new ContentCollector(rawContent);
-            dynamicContent = new DynamicContent(game.Services, collector, "Content");
+            hotReloadContent = new HotReloadContent(game.Services, collector, "Content");
         }
 
         [TestMethod]
         public void TestDynamicFontsDisposalResizeAndDelete()
         {
             string font2File = @"Content\Fonts\Font2.spritefont";
-            string font1ResourceFile = @"ContentTest\DynamicContent\Resources\Font1.spritefont";
+            string font1ResourceFile = @"ContentTest\HotReloadContent\Resources\Font1.spritefont";
             File.Delete(font2File);
 
-            CreateGame(out ContentCollector collector, out DynamicContent dynamicContent);
+            CreateGame(out ContentCollector collector, out HotReloadContent hotReloadContent);
 
             List<SpriteFont> loadedFonts = new();
 
@@ -96,7 +96,7 @@ namespace BytingLib.Test.ContentTest
 
                 // save player tex as Enemy.png, so that Enemy looks like player
                 File.Copy(font1ResourceFile, font2File);
-                dynamicContent.UpdateChanges();
+                hotReloadContent.UpdateChanges();
 
                 int font2TexHeightTemp = font2.Value.Texture.Height;
 
@@ -108,7 +108,7 @@ namespace BytingLib.Test.ContentTest
 
                 // delete Enemy.png, so that Enemy looks like enemy again
                 File.Delete(font2File);
-                dynamicContent.UpdateChanges();
+                hotReloadContent.UpdateChanges();
                 Assert.IsTrue(font2Raw.Texture.IsDisposed);
                 int font2TexHeightNew = font2.Value.Texture.Height;
                 Assert.AreEqual(font2TexHeight, font2TexHeightNew);

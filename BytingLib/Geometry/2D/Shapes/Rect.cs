@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
@@ -247,5 +248,4 @@ namespace BytingLib
             return new Polygon(pos, new List<Vector2>() { Vector2.Zero, new Vector2(Size.X, 0), Size, new Vector2(0, Size.Y) });
         }
     }
-
 }

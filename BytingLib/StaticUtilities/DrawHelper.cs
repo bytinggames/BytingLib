@@ -1,7 +1,9 @@
 ﻿
+using Microsoft.Xna.Framework.Graphics;
+
 namespace BytingLib
 {
-    public static class VertexHelper
+    public static class DrawHelper
     {
         public static int RadiusToVertexCount(float radius)
         {

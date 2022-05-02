@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace BytingLib
 {
-    public class DynamicContent
+    public class HotReloadContent
     {
         ContentManagerRaw tempContentRaw;
         ContentBuilder contentBuilder;
@@ -18,11 +18,11 @@ namespace BytingLib
         /// <summary>Either localization.csv or any font changed.</summary>
         public event Action OnTextReload;
 
-        public DynamicContent(IServiceProvider serviceProvider, IContentCollector content, string dynamicContentPath = @"..\..\..\Content")
+        public HotReloadContent(IServiceProvider serviceProvider, IContentCollector content, string hotReloadContentPath = @"..\..\..\Content")
         {
             this.content = content;
 
-            sourceContentDir = Path.GetFullPath(dynamicContentPath);
+            sourceContentDir = Path.GetFullPath(hotReloadContentPath);
 
             if (!Directory.Exists(sourceContentDir))
                 throw new DirectoryNotFoundException("directory not found: " + sourceContentDir);

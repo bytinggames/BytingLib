@@ -156,7 +156,7 @@ namespace BytingLib
             }
             catch (Exception e)
             {
-                ShowPopup("DynamicContent Error: " + e.Message);
+                ShowPopup("HotReloadContent Error: " + e.Message);
             }
 
             return true;
