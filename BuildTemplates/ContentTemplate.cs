@@ -93,18 +93,14 @@ public class _{name}
 
                 string ext = Path.GetExtension(name);
                 this.name = name.Remove(name.Length - ext.Length);
-                ext = ext[1..];
 
-                assetType = ext switch
-                {
-                    "png" or "jpeg" or "jpg" => "Texture2D",
-                    _ => throw new NotImplementedException(),
-                };
+
+                assetType = AssetTypes.Convert(ext)!;
             }
 
             public string Print(string contentDirectory)
             {
-                return $"public AssetRef<{assetType}> Use{ToVariableName(name)}() => collector.Use<{assetType}>(\"{contentDirectory + name}\");";
+                return $"public Ref<{assetType}> Use{ToVariableName(name)}() => collector.Use<{assetType}>(\"{contentDirectory + name}\");";
             }
 
             static string ToVariableName(string name)
@@ -123,8 +119,13 @@ public class _{name}
 
             Folder root = new Folder("Content");
 
-            foreach (var file in Directory.EnumerateFiles(path, "*.png" /* TODO */, SearchOption.AllDirectories))
+            foreach (var file in Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories))
             {
+                string ext = Path.GetExtension(file);
+                ext = ext[1..];
+                if (!AssetTypes.Extensions.Values.Any(f => f.Any(g => g == ext)))
+                    continue;
+
                 // D:\Documents\Visual Studio 2017\Projects\LevelSketch\LevelSketch\Content\Textures\Enemy.png
                 string localPath = file[path.Length..]; //Textures\Enemy.png
                 //localPath = localPath.Remove(localPath.Length - Path.GetExtension(localPath).Length); //Textures\Enemy

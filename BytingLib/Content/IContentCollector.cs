@@ -3,8 +3,7 @@
     public interface IContentCollector : IDisposable
     {
         Ref<T> Use<T>(string assetName);
-        T? Seek<T>(string assetName);
-        void ReplaceAsset<T>(string assetName, T newValue);
-        T? ReloadIfLoaded<T>(string assetName);
+        AssetHolder<T>? GetAssetHolder<T>(string assetName);
+        public void ReloadLoadedAsset<T>(AssetHolder<T> assetHolder);
     }
 }

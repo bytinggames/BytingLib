@@ -37,11 +37,7 @@ namespace BytingLib
             object? asset;
             if (LoadedAssets.TryGetValue(assetName, out asset))
             {
-                //Check if it's disposable and remove it from the disposable list if so
-                if (asset is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
+                AssetDisposer.Dispose(asset);
 
                 LoadedAssets.Remove(assetName);
             }

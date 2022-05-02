@@ -1,6 +1,8 @@
-﻿namespace BytingLib
+﻿using Microsoft.Xna.Framework.Graphics;
+
+namespace BytingLib
 {
-    class AssetHolder<T>
+    public class AssetHolder<T>
     {
         private readonly Pointer<T> assetPointer;
         private readonly string assetName;
@@ -13,6 +15,8 @@
             this.assetName = assetName;
             this.onUnusedTo0References = onUnusedTo0References;
         }
+
+        public string AssetName => assetName;
 
         public Ref<T> Use()
         {
@@ -36,8 +40,7 @@
 
         internal void Replace(T newValue)
         {
-            if (assetPointer.Value is IDisposable disposable)
-                disposable.Dispose();
+            AssetDisposer.Dispose(assetPointer.Value);
 
             assetPointer.Value = newValue;
         }

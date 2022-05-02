@@ -5,10 +5,12 @@
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
+	  <MonoGamePlatform>Windows</MonoGamePlatform>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
     <PackageReference Include="coverlet.collector" Version="3.1.0" />
@@ -18,4 +20,12 @@
     <ProjectReference Include="..\BytingLib\BytingLib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="ContentTest\DynamicContent\Resources\Font1.spritefont">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="echo D|xcopy /y &quot;$(ProjectDir)Content\*.mgcb&quot; &quot;$(ProjectDir)$(OutDir)Content\*.mgcbcopy&quot;" />
+	</Target>
 </Project>

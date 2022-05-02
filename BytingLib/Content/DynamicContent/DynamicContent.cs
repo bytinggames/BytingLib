@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System.Reflection;
 
 namespace BytingLib
 {
@@ -29,8 +30,7 @@ namespace BytingLib
             bool expectEmptyDir;
 
             if (Path.GetFileName(sourceContentDir) == "Content"
-                //&& File.Exists(Path.Combine(sourceContentDir, "Content.mgcb"))
-                && File.Exists(Path.Combine(sourceContentDir, "ContentGenerated_do-not-edit.mgcb")))
+                && Directory.EnumerateFiles(sourceContentDir, "*.mgcb", SearchOption.TopDirectoryOnly).Any()) // check if any mgcb file is present
                 expectEmptyDir = false;
             else
                 expectEmptyDir = true;
@@ -120,83 +120,72 @@ namespace BytingLib
 
             void Iterate(DirectorySupervisor.FileStamp file, bool deleted)
             {
-                if (file.LocalPath.StartsWith("Sounds\\"))
-                {
-                    throw new NotImplementedException();
-                    //if (file.LocalPath == "Sounds\\settings.txt")
-                    //{
-                    //    // load default settings
-                    //    string defaultFile = Path.Combine(content.RootDirectory, file.LocalPath);
-                    //    Sounds.LoadSettings(defaultFile);
+                string extension = Path.GetExtension(file.LocalPath);
+                Type? assetType = ExtensionToAssetType.Convert(extension);
+                if (assetType == null)
+                    return;
 
-                    //    // load mod settings
-                    //    if (!deleted && defaultFile != file.Path)
-                    //        Sounds.LoadSettings(file.Path);
-                    //}
-                    //else
-                    //{
-                    //    var val = GetCurrentValue<Sounds>(file);
-                    //    if (val is SoundItem sound)
-                    //        sound.SoundEffect = Reload<SoundEffect>(file.AssetName, deleted);
-                    //}
-                }
-                else if (file.LocalPath.StartsWith("Textures\\"))
-                {
-                    var currentValue = content.Seek<Texture2D>(file.AssetName);
-                    if (currentValue != null)
-                    {
-                        var newValue = Reload<Texture2D>(file.AssetName, deleted);
-                        if (!deleted)
-                        {
-                            if (newValue != null)
-                            {
-                                //if (!currentValue.IsDisposed
-                                //    && currentValue.Width == newValue.Width
-                                //    && currentValue.Height == newValue.Height)
-                                //    currentValue.SetData(newValue.ToColor());
-                                //else
-                                //{
-                                    content.ReplaceAsset(file.AssetName, newValue);
-                                //}
-                            }
-                        }
-                    }
-                }
-                else if (file.LocalPath.StartsWith("Effects\\"))
-                {
-                    throw new NotImplementedException();
-                    //var val = GetCurrentValue<Effects>(file);
-                    //if (val is Pointer<Effect> effect)
-                    //{
-                    //    var parameters = effect.Value.Parameters;
+                ReloadIfLoadedFromType(assetType, file.AssetName, deleted);
+                
+                //if (file.LocalPath.StartsWith("Textures\\"))
+                //{
+                //    ReloadIfLoaded<Texture2D>(file.AssetName, deleted);
+                //}
+                //else if (file.LocalPath.StartsWith("Sounds\\"))
+                //{
+                //    throw new NotImplementedException();
+                //    //if (file.LocalPath == "Sounds\\settings.txt")
+                //    //{
+                //    //    // load default settings
+                //    //    string defaultFile = Path.Combine(content.RootDirectory, file.LocalPath);
+                //    //    Sounds.LoadSettings(defaultFile);
 
-                    //    effect.Value = Reload<Effect>(file.AssetName, deleted);
+                //    //    // load mod settings
+                //    //    if (!deleted && defaultFile != file.Path)
+                //    //        Sounds.LoadSettings(file.Path);
+                //    //}
+                //    //else
+                //    //{
+                //    //    var val = GetCurrentValue<Sounds>(file);
+                //    //    if (val is SoundItem sound)
+                //    //        sound.SoundEffect = Reload<SoundEffect>(file.AssetName, deleted);
+                //    //}
+                //}
+                //else if (file.LocalPath.StartsWith("Effects\\"))
+                //{
+                //    throw new NotImplementedException();
+                //    //var val = GetCurrentValue<Effects>(file);
+                //    //if (val is Pointer<Effect> effect)
+                //    //{
+                //    //    var parameters = effect.Value.Parameters;
 
-                    //    CopyParameters(parameters, effect.Value.Parameters);
-                    //}
-                }
-                else if (file.LocalPath == "localization.csv")
-                {
-                    throw new NotImplementedException();
-                    //string defaultFile = Path.Combine(content.RootDirectory, file.LocalPath);
+                //    //    effect.Value = Reload<Effect>(file.AssetName, deleted);
 
-                    //// load mod settings
-                    //if (!deleted && defaultFile != file.Path)
-                    //    Loca.Reload(file.Path);
-                    //else
-                    //    Loca.Reload(defaultFile);
+                //    //    CopyParameters(parameters, effect.Value.Parameters);
+                //    //}
+                //}
+                //else if (file.LocalPath == "localization.csv")
+                //{
+                //    throw new NotImplementedException();
+                //    //string defaultFile = Path.Combine(content.RootDirectory, file.LocalPath);
 
-                    //textChanged = true;
-                }
-                else if (file.LocalPath.StartsWith("Fonts\\"))
-                {
-                    throw new NotImplementedException();
-                    //var val = GetCurrentValue<Fonts>(file);
-                    //if (val is MyFont font)
-                    //    font.ReloadFont(Reload<SpriteFont>(file.AssetName, deleted));
+                //    //// load mod settings
+                //    //if (!deleted && defaultFile != file.Path)
+                //    //    Loca.Reload(file.Path);
+                //    //else
+                //    //    Loca.Reload(defaultFile);
 
-                    //textChanged = true;
-                }
+                //    //textChanged = true;
+                //}
+                //else if (file.LocalPath.StartsWith("Fonts\\"))
+                //{
+                //    throw new NotImplementedException();
+                //    //var val = GetCurrentValue<Fonts>(file);
+                //    //if (val is MyFont font)
+                //    //    font.ReloadFont(Reload<SpriteFont>(file.AssetName, deleted));
+
+                //    //textChanged = true;
+                //}
 
                 if (onReload.TryGetValue(file.AssetName, out List<Action> actions))
                 {
@@ -320,18 +309,33 @@ namespace BytingLib
             }
         }
 
-        public T? Reload<T>(string assetName, bool deleted) where T : class
+        public void ReloadIfLoadedFromType(Type assetType, string assetName, bool deleted)
         {
-            tempContentRaw.UnloadAsset(assetName); // to dispose and trigger reloading
+            MethodInfo method = GetType().GetMethod("ReloadIfLoaded")!;
+            MethodInfo genericMethod = method.MakeGenericMethod(assetType);
+            genericMethod.Invoke(this, new object[] { assetName, deleted });
+        }
+
+        public void ReloadIfLoaded<T>(string assetName, bool deleted) where T : class
+        {
+            AssetHolder<T>? assetHolder = content.GetAssetHolder<T>(assetName);
+            if (assetHolder == null) // check if the asset has already been loaded
+                return; // if not, then don't bother with replacing
+
+            tempContentRaw.UnloadAsset(assetName); // to dispose
+
             if (deleted)
             {
-                //return contentRaw.UnloadAsset(assetName);
-                return content.ReloadIfLoaded<T>(assetName);
-                //return content.Seek<T>(assetName)!;
+                // when deleted, force reload from the base content
+                content.ReloadLoadedAsset(assetHolder);
             }
             else
-                return tempContentRaw.Load<T>(assetName);
-            //return (deleted ? content : tempContent).Load<T>(assetName);
+            {
+                T? newlyLoadedAsset = tempContentRaw.Load<T>(assetName);
+                if (newlyLoadedAsset == null)
+                    return;
+                assetHolder.Replace(newlyLoadedAsset);
+            }
         }
 
         Dictionary<string, List<Action>> onReload = new Dictionary<string, List<Action>>();
@@ -357,42 +361,4 @@ namespace BytingLib
             }
         }
     }
-
-    //static class Jau
-    //{
-    //    /// <summary>Copied from newest Monogame ContentManager.UnloadAsset source (added reflection).</summary>
-    //    public static bool UnloadAsset(this ContentManager content, string assetName)
-    //    {
-    //        var loadedAssets = (Dictionary<string, object>)content.GetType().GetField("loadedAssets", System.Reflection.BindingFlags.Instance
-    //            | System.Reflection.BindingFlags.NonPublic).GetValue(content);
-    //        var disposableAssets = (List<IDisposable>)content.GetType().GetField("disposableAssets", System.Reflection.BindingFlags.Instance
-    //            | System.Reflection.BindingFlags.NonPublic).GetValue(content);
-
-    //        assetName = assetName.Replace('\\', '/');
-
-    //        if (string.IsNullOrEmpty(assetName))
-    //        {
-    //            throw new ArgumentNullException("assetName");
-    //        }
-
-    //        //Check if the asset exists
-    //        object asset;
-    //        if (loadedAssets.TryGetValue(assetName, out asset))
-    //        {
-    //            //Check if it's disposable and remove it from the disposable list if so
-    //            var disposable = asset as IDisposable;
-    //            if (disposable != null)
-    //            {
-    //                disposable.Dispose();
-    //                disposableAssets.Remove(disposable);
-    //            }
-
-    //            loadedAssets.Remove(assetName);
-
-    //            return true;
-    //        }
-    //        return false;
-    //    }
-
-    //}
 }

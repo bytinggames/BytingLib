@@ -49,43 +49,56 @@
             }
         }
 
-        /// <summary>If the asset is already loaded, it returns it. If not it retuns null.</summary>
-        public T? Seek<T>(string assetName)
+        public AssetHolder<T>? GetAssetHolder<T>(string assetName)
         {
             assetName = relativeAssetPath + assetName;
 
             object? assetHolder;
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
-                return default;
+                return null;
 
-            return (assetHolder as AssetHolder<T>)!.Seek();
+            return assetHolder as AssetHolder<T>;
         }
 
-        public T? ReloadIfLoaded<T>(string assetName)
+        ///// <summary>If the asset is already loaded, it returns it. If not it retuns null.</summary>
+        //public T? Seek<T>(string assetName)
+        //{
+        //    var assetHolder = GetAssetHolder<T>(assetName);
+        //    if (assetHolder == null)
+        //        return default;
+        //    return assetHolder.Seek();
+        //}
+
+        //public T? ReloadIfLoaded<T>(string assetName)
+        //{
+        //    var assetHolder = GetAssetHolder<T>(assetName);
+        //    if (assetHolder == null)
+        //        return default;
+
+        //    contentRaw.UnloadAsset(assetName);
+        //    T asset = contentRaw.Load<T>(assetName);
+
+        //    assetHolder!.Replace(asset);
+
+        //    return asset;
+        //}
+
+        public void ReloadLoadedAsset<T>(AssetHolder<T> assetHolder)
         {
-            assetName = relativeAssetPath + assetName;
+            if (assetHolder is null) throw new ArgumentNullException(nameof(assetHolder));
 
-            object? assetHolder;
-            if (!loadedAssets.TryGetValue(assetName, out assetHolder))
-                return default;
+            contentRaw.UnloadAsset(assetHolder.AssetName);
+            T asset = contentRaw.Load<T>(assetHolder.AssetName);
 
-            contentRaw.UnloadAsset(assetName);
-            T asset = contentRaw.Load<T>(assetName);
-
-            (assetHolder as AssetHolder<T>)!.Replace(asset);
-
-            return asset;
+            assetHolder.Replace(asset);
         }
 
-        public void ReplaceAsset<T>(string assetName, T newValue)
-        {
-            assetName = relativeAssetPath + assetName;
-
-            object? assetHolder;
-            if (!loadedAssets.TryGetValue(assetName, out assetHolder))
-                return;
-
-            (assetHolder as AssetHolder<T>)!.Replace(newValue);
-        }
+        //public void ReplaceAsset<T>(string assetName, T newValue)
+        //{
+        //    var assetHolder = GetAssetHolder<T>(assetName);
+        //    if (assetHolder == null)
+        //        return;
+        //    assetHolder.Replace(newValue);
+        //}
     }
 }
