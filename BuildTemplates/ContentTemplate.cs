@@ -115,30 +115,40 @@ public class _{name}
         public static string Create()
         {
             //string path = Path.Combine(Environment.CurrentDirectory, "Content", "Textures");
-            string path = @"D:\Documents\Visual Studio 2017\Projects\LevelSketch\LevelSketch\Content\";
+            string contentPath = @"D:\Documents\Visual Studio 2017\Projects\LevelSketch\LevelSketch\Content\";
 
             Folder root = new Folder("Content");
 
-            foreach (var file in Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories))
-            {
-                string ext = Path.GetExtension(file);
-                ext = ext[1..];
-                if (!AssetTypes.Extensions.Values.Any(f => f.Any(g => g == ext)))
-                    continue;
-
-                // D:\Documents\Visual Studio 2017\Projects\LevelSketch\LevelSketch\Content\Textures\Enemy.png
-                string localPath = file[path.Length..]; //Textures\Enemy.png
-                //localPath = localPath.Remove(localPath.Length - Path.GetExtension(localPath).Length); //Textures\Enemy
-                localPath = localPath.Replace('\\', '/'); //Textures/Enemy.png
-
-                root.Insert(localPath);
-            }
+            LookIntoDirRecursive(contentPath, contentPath, root);
 
             string output = root.Print("", "");
 
             output = Regex.Replace(output, "\n( |\t)*\r", ""); 
 
             return output;
+        }
+
+        private static void LookIntoDirRecursive(string contentPath, string currentPath, Folder root)
+        {
+            foreach (var file in Directory.EnumerateFiles(currentPath))
+            {
+                string ext = Path.GetExtension(file);
+                ext = ext[1..];
+                if (!AssetTypes.Extensions.Values.Any(f => f.Any(g => g == ext)))
+                    continue;
+
+                string localAssetPath = file[contentPath.Length..];
+                localAssetPath = localAssetPath.Replace('\\', '/');
+
+                root.Insert(localAssetPath);
+            }
+
+            foreach (var dir in Directory.EnumerateDirectories(currentPath))
+            {
+                string dirName = Path.GetFileName(dir);
+                if (dirName != "bin" && dirName != "obj")
+                    LookIntoDirRecursive(contentPath, dir, root);
+            }
         }
     }
 }
