@@ -8,7 +8,9 @@ namespace BuildTemplates.Test
         [TestMethod]
         public void TestBuild()
         {
-            string output = ContentTemplate.Create();
+            // TODO: make independent of global path. include own content here inside the BuildTemplates.Test project
+            string contentPath = @"D:\Documents\Visual Studio 2017\Projects\LevelSketch\LevelSketch\Content\";
+            string output = ContentTemplate.Create(contentPath);
             Assert.IsNotNull(output);
         }
     }

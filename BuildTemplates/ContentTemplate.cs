@@ -112,11 +112,8 @@ public class _{name}
             }
         }
 
-        public static string Create()
+        public static string Create(string contentPath)
         {
-            //string path = Path.Combine(Environment.CurrentDirectory, "Content", "Textures");
-            string contentPath = @"D:\Documents\Visual Studio 2017\Projects\LevelSketch\LevelSketch\Content\";
-
             Folder root = new Folder("Content");
 
             LookIntoDirRecursive(contentPath, contentPath, root);
