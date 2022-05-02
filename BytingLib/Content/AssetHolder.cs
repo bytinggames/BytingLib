@@ -1,32 +1,45 @@
 ﻿namespace BytingLib
 {
-    class AssetHolder
+    class AssetHolder<T>
     {
-        private readonly object asset;
+        private readonly Pointer<T> assetPointer;
         private readonly string assetName;
         private readonly Action<string> onUnusedTo0References;
-        private readonly List<object> assetReferences = new List<object>();
+        private readonly List<Ref<T>> assetReferences = new List<Ref<T>>();
 
-        public AssetHolder(object asset, string assetName, Action<string> onUnusedTo0References)
+        public AssetHolder(T asset, string assetName, Action<string> onUnusedTo0References)
         {
-            this.asset = asset;
+            assetPointer = new Pointer<T>(asset);
             this.assetName = assetName;
             this.onUnusedTo0References = onUnusedTo0References;
         }
 
-        public AssetRef<T> Use<T>()
+        public Ref<T> Use()
         {
-            AssetRef<T> assetRef = new AssetRef<T>((T)asset, Unuse);
+            Ref<T> assetRef = new Ref<T>(assetPointer, Unuse);
             assetReferences.Add(assetRef);
 
             return assetRef;
         }
 
-        private void Unuse(object asset)
+        private void Unuse(Ref<T> asset)
         {
             assetReferences.Remove(asset);
             if (assetReferences.Count == 0)
                 onUnusedTo0References?.Invoke(assetName);
+        }
+
+        public T Seek()
+        {
+            return assetPointer.Value!;
+        }
+
+        internal void Replace(T newValue)
+        {
+            if (assetPointer.Value is IDisposable disposable)
+                disposable.Dispose();
+
+            assetPointer.Value = newValue;
         }
     }
 }
