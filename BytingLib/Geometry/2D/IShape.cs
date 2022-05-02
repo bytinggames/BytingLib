@@ -13,4 +13,12 @@ namespace BytingLib
 
         public bool CollidesWith(IShape shape);
     }
+
+    public static class IShapeExtension
+    {
+        public static Vector2 GetCenter(this IShape shape)
+        {
+            return shape.GetBoundingRectangle().GetCenter();
+        }
+    }
 }

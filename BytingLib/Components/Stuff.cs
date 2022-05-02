@@ -58,23 +58,11 @@ namespace BytingLib
             return any;
         }
 
-        public virtual void AddRange(params object[] things)
-        {
-            foreach (var thing in things)
-                Add(thing);
-        }
-
         public virtual void Remove(object thing)
         {
             bool any = RemoveActual(thing);
             if (!any)
                 throw new ArgumentException("The thing didn't inherit any provided interface.");
-        }
-
-        public virtual void RemoveRange(params object[] things)
-        {
-            foreach (var thing in things)
-                Remove(thing);
         }
 
         protected bool RemoveActual(object thing)
