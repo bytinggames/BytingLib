@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Build\Content\_Content.tt.txt">
       <LastGenOutput>_Content.tt.Generated.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -43,6 +39,10 @@
 
   <ItemGroup>
     <Folder Include="Drawing\3D\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\MonoGame.BytingGames\MonoGame.Framework\MonoGame.Framework.DesktopGL.csproj" />
   </ItemGroup>
 
 </Project>
