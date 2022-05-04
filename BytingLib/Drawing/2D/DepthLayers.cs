@@ -7,18 +7,21 @@ namespace LevelSketch
     {
         private PropertyInfo[] properties;
 
+        DepthLayer defaultLayer;
         Stack<DepthLayer> layersInUse = new Stack<DepthLayer>();
 
         public float GetDepth()
         {
             if (layersInUse.Count == 0)
-                return 0f;
+                return defaultLayer.GetDepth();
             DepthLayer layer = layersInUse.Peek();
             return layer.GetDepth();
         }
 
         public DepthLayers()
         {
+            defaultLayer = new DepthLayer(0f, this);
+
             properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty);
 
             ResetLayers();
