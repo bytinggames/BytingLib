@@ -7,7 +7,7 @@ namespace BytingLib
 {
     public class PrimitiveLineStrip
     {
-        public List<Vector2> Vertices { get; set; }
+        public IList<Vector2> Vertices { get; set; }
         /// <summary>Should be normalized.</summary>
         public Vector2 LastVectorDirection { get; set; } // used for concatenating arcs without losing the correct direction after an arc was added
 
@@ -17,7 +17,7 @@ namespace BytingLib
         }
 
         /// <summary>Warning: the list isn't cloned.</summary>
-        public PrimitiveLineStrip(List<Vector2> vertices)
+        public PrimitiveLineStrip(IList<Vector2> vertices)
         {
             this.Vertices = vertices;
         }

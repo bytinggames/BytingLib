@@ -5,9 +5,9 @@ namespace BytingLib
 {
     public class PrimitiveLineRing
     {
-        public Vector2[] Vertices { get; set; }
+        public IList<Vector2> Vertices { get; set; }
 
-        public PrimitiveLineRing(Vector2[] vertices)
+        public PrimitiveLineRing(IList<Vector2> vertices)
         {
             this.Vertices = vertices;
         }

@@ -47,5 +47,10 @@ namespace BytingLib
 
             gDevice.DrawUserIndexedPrimitives<VertexPosition>(PrimitiveType.TriangleList, v, 0, v.Length, indices, 0, triCount);
         }
+
+        public override void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f)
+        {
+            spriteBatch.DrawPolygon(spriteBatch.GetPixel(), Vertices, color, depth);
+        }
     }
 }

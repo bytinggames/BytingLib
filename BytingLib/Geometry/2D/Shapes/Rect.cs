@@ -270,5 +270,7 @@ namespace BytingLib
         {
             spriteBatch.DrawRectangle(this, color, depth);
         }
+
+        public PrimitiveLineRing Outline() => new PrimitiveLineRing(this);
     }
 }

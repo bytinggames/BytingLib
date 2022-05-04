@@ -35,6 +35,8 @@ namespace BytingLib
         }
 
         public Polygon ToPolygon(int vertexCount) => Polygon.GetCircle(Pos, Radius, vertexCount);
+
+        public PrimitiveLineRing Outline(int vertexCount) => new PrimitiveLineRing(this, vertexCount);
     }
 
 }

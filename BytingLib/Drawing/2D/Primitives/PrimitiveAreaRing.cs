@@ -8,18 +8,18 @@ namespace BytingLib
 {
     public class PrimitiveAreaRing
     {
-        public Vector2[] Vertices { get; set; }
+        public IList<Vector2> Vertices { get; set; }
 
         public PrimitiveAreaRing(PrimitiveLineRing ring, float thickness, float anchor = 0f)
         {
-            Vertices = new Vector2[ring.Vertices.Length * 2];
+            Vertices = new Vector2[ring.Vertices.Count * 2];
 
             float t = thickness / 2f;
 
-            for (int i = 0; i < ring.Vertices.Length; i++)
+            for (int i = 0; i < ring.Vertices.Count; i++)
             {
-                Vector2 a = ring.Vertices[i] - ring.Vertices[(i + ring.Vertices.Length - 1) % ring.Vertices.Length];
-                Vector2 b = ring.Vertices[i] - ring.Vertices[(i + 1) % ring.Vertices.Length];
+                Vector2 a = ring.Vertices[i] - ring.Vertices[(i + ring.Vertices.Count - 1) % ring.Vertices.Count];
+                Vector2 b = ring.Vertices[i] - ring.Vertices[(i + 1) % ring.Vertices.Count];
                 float angleA = MathF.Atan2(a.Y, a.X);
                 float angleB = MathF.Atan2(b.Y, b.X);
                 float angleDistHalved = MathExtension.AngleDistance(angleA, angleB) / 2f;
@@ -34,11 +34,17 @@ namespace BytingLib
         }
         public void Draw(GraphicsDevice gDevice)
         {
-            var arr = GetVertexPositions();
+            var arr = GetDrawableVertexPositions();
             gDevice.DrawUserPrimitives<VertexPosition>(PrimitiveType.TriangleStrip, arr, 0, arr.Length - 2);
         }
 
-        public VertexPosition[] GetVertexPositions()
+        public void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f)
+        {
+            var arr = GetDrawableVertexVectors();
+            spriteBatch.DrawStrip(spriteBatch.GetPixel(), arr.ToList(), color, depth);
+        }
+
+        public VertexPosition[] GetDrawableVertexPositions()
         {
             return Vertices.Select(f => new VertexPosition(new Vector3(f, 0f)))
                 .Concat(new List<VertexPosition>()
@@ -47,6 +53,11 @@ namespace BytingLib
                     new VertexPosition(new Vector3(Vertices[1], 0f))
                 })
                 .ToArray();
+        }
+
+        public IEnumerable<Vector2> GetDrawableVertexVectors()
+        {
+            return Vertices.Concat(Vertices.Take(2));
         }
     }
 }

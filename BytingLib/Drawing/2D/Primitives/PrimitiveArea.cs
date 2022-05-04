@@ -1,10 +1,12 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
     public abstract class PrimitiveArea
     {
         public abstract void Draw(GraphicsDevice gDevice);
+        public abstract void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f);
 
         public abstract PrimitiveLineRing Outline();
 

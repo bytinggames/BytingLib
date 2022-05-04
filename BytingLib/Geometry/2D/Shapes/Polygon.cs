@@ -314,5 +314,7 @@ namespace BytingLib
         {
             spriteBatch.DrawPolygon(this, color, depth);
         }
+
+        public PrimitiveLineRing Outline() => new PrimitiveLineRing(Vertices.Select(f => f + pos).ToList());
     }
 }
