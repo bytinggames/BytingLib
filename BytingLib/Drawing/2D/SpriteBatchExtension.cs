@@ -7,23 +7,31 @@ namespace BytingLib
     {
         private static Dictionary<SpriteBatch, SpriteBatchExtended> extendedData = new Dictionary<SpriteBatch, SpriteBatchExtended>();
 
-        public static void DrawRectangle(this SpriteBatch spriteBatch, Rect rect, Color color, float depth = 0f)
+        public static void DrawRectangle(this SpriteBatch spriteBatch, Rect rect, Color color)
+            => DrawRectangle(spriteBatch, rect, color, spriteBatch.DefaultDepth);
+        public static void DrawRectangle(this SpriteBatch spriteBatch, Rect rect, Color color, float depth)
         {
             spriteBatch.DrawQuad(GetPixel(spriteBatch), rect.TopLeft, rect.TopRight, rect.BottomLeft, rect.BottomRight, color, depth);
         }
 
-        public static void DrawPolygon(this SpriteBatch spriteBatch, Polygon polygon, Color color, float depth = 0f)
+        public static void DrawPolygon(this SpriteBatch spriteBatch, Polygon polygon, Color color)
+            => DrawPolygon(spriteBatch, polygon, color, spriteBatch.DefaultDepth);
+        public static void DrawPolygon(this SpriteBatch spriteBatch, Polygon polygon, Color color, float depth)
         {
-            spriteBatch.DrawPolygon(GetPixel(spriteBatch), polygon.Pos, polygon.Vertices, color, depth);
+            spriteBatch.DrawPolygon(GetPixel(spriteBatch), polygon.Vertices, color, polygon.Pos, depth);
         }
 
-        public static void DrawCircle(this SpriteBatch spriteBatch, Circle circle, Color color, float depth = 0f)
+        public static void DrawCircle(this SpriteBatch spriteBatch, Circle circle, Color color)
+            => DrawCircle(spriteBatch, circle, color, spriteBatch.DefaultDepth);
+        public static void DrawCircle(this SpriteBatch spriteBatch, Circle circle, Color color, float depth)
         {
             var polygon = circle.ToPolygon(GetExtended(spriteBatch).RadiusToVertexCount(circle.Radius));
             spriteBatch.DrawPolygon(polygon, color, depth);
         }
 
-        public static void DrawCross(this SpriteBatch spriteBatch, Vector2 pos, float diameter, float thickness, Color color, float depth = 0f)
+        public static void DrawCross(this SpriteBatch spriteBatch, Vector2 pos, float diameter, float thickness, Color color)
+            => DrawCross(spriteBatch, pos, diameter, thickness, color, spriteBatch.DefaultDepth);
+        public static void DrawCross(this SpriteBatch spriteBatch, Vector2 pos, float diameter, float thickness, Color color, float depth)
         {
             Vector2 dir = Vector2.Normalize(Vector2.One);
             Vector2 diameterV = dir * diameter;

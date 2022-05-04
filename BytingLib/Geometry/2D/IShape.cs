@@ -10,7 +10,7 @@ namespace BytingLib
         float X { get; set; }
         float Y { get; set; }
 
-        void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f);
+        void Draw(SpriteBatch spriteBatch, Color color, float depth);
     }
 
     public static class IShapeExtension
@@ -22,5 +22,7 @@ namespace BytingLib
         public static bool CollidesWith(this IShape myShape, IShape shape) => Collision.GetCollision(myShape, shape);
         public static CollisionResult DistanceTo(this IShape myShape, IShape shape, Vector2 dir) => Collision.GetDistance(myShape, shape, dir);
 
+        public static void Draw(this IShape shape, SpriteBatch spriteBatch, Color color)
+            => shape.Draw(spriteBatch, color, spriteBatch.DefaultDepth);
     }
 }

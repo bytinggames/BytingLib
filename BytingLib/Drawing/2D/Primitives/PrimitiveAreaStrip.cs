@@ -180,9 +180,13 @@ namespace BytingLib
             return this;
         }
 
-        public override void Draw(SpriteBatch spriteBatch, Color color, float depth = 0)
+        public override void Draw(SpriteBatch spriteBatch, Color color)
         {
-            spriteBatch.DrawStrip(spriteBatch.GetPixel(), Vertices, color, depth);
+            spriteBatch.DrawStrip(spriteBatch.GetPixel(), Vertices, color);
+        }
+        public override void Draw(SpriteBatch spriteBatch, Color color, float layerDepth)
+        {
+            spriteBatch.DrawStrip(spriteBatch.GetPixel(), Vertices, color, layerDepth);
         }
     }
 }

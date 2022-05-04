@@ -34,7 +34,7 @@ namespace BytingLib
             return new Rect(pos, Vector2.Zero);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f)
+        public void Draw(SpriteBatch spriteBatch, Color color, float depth)
         {
             spriteBatch.DrawCross(pos, 10f, 2f, color, depth);
         }

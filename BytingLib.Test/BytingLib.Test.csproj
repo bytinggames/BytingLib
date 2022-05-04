@@ -6,6 +6,7 @@
 
     <IsPackable>false</IsPackable>
 	  <MonoGamePlatform>Windows</MonoGamePlatform>
+	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

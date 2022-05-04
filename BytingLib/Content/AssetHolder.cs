@@ -33,7 +33,7 @@ namespace BytingLib
                 onUnusedTo0References?.Invoke(assetName);
         }
 
-        public T Seek()
+        public T Peek()
         {
             return assetPointer.Value!;
         }

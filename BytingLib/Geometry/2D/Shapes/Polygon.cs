@@ -310,7 +310,7 @@ namespace BytingLib
             });
         }
 
-        public void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f)
+        public void Draw(SpriteBatch spriteBatch, Color color, float depth)
         {
             spriteBatch.DrawPolygon(this, color, depth);
         }

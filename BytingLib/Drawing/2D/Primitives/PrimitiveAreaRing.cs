@@ -38,7 +38,10 @@ namespace BytingLib
             gDevice.DrawUserPrimitives<VertexPosition>(PrimitiveType.TriangleStrip, arr, 0, arr.Length - 2);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f)
+        public void Draw(SpriteBatch spriteBatch, Color color)
+            => Draw(spriteBatch, color, spriteBatch.DefaultDepth);
+
+        public void Draw(SpriteBatch spriteBatch, Color color, float depth)
         {
             var arr = GetDrawableVertexVectors();
             spriteBatch.DrawStrip(spriteBatch.GetPixel(), arr.ToList(), color, depth);

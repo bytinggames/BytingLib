@@ -19,6 +19,12 @@ namespace BytingLib
             this.Radius = radius;
         }
 
+        public Circle(float x, float y, float radius)
+        {
+            this.pos = new Vector2(x, y);
+            this.Radius = radius;
+        }
+
         public Rect GetBoundingRectangle()
         {
             return new Rect(pos - new Vector2(Radius), new Vector2(Radius * 2));
@@ -29,7 +35,7 @@ namespace BytingLib
             return new Circle(pos, Radius);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f)
+        public void Draw(SpriteBatch spriteBatch, Color color, float depth)
         {
             spriteBatch.DrawCircle(this, color, depth);
         }

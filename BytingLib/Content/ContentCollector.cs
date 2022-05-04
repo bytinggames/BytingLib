@@ -61,12 +61,12 @@
         }
 
         ///// <summary>If the asset is already loaded, it returns it. If not it retuns null.</summary>
-        //public T? Seek<T>(string assetName)
+        //public T? Peek<T>(string assetName)
         //{
         //    var assetHolder = GetAssetHolder<T>(assetName);
         //    if (assetHolder == null)
         //        return default;
-        //    return assetHolder.Seek();
+        //    return assetHolder.Peek();
         //}
 
         //public T? ReloadIfLoaded<T>(string assetName)

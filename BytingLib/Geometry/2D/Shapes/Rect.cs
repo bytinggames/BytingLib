@@ -266,7 +266,7 @@ namespace BytingLib
             return new Polygon(pos, new List<Vector2>() { Vector2.Zero, new Vector2(Size.X, 0), Size, new Vector2(0, Size.Y) });
         }
 
-        public void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f)
+        public void Draw(SpriteBatch spriteBatch, Color color, float depth)
         {
             spriteBatch.DrawRectangle(this, color, depth);
         }
