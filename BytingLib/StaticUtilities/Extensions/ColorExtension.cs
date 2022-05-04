@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Globalization;
 
-namespace BytingLib.StaticUtilities.Extensions
+namespace BytingLib
 {
     public static class ColorExtension
     {
@@ -170,7 +170,7 @@ namespace BytingLib.StaticUtilities.Extensions
             return new Color(r, g, b);
         }
 
-        public static string ColorToHex(this Color color)
+        public static string ToHex(this Color color)
         {
             string hex = "";
             hex += color.R.ToString("X2");

@@ -47,7 +47,16 @@ namespace BytingLib
             spriteBatch.DrawQuad(GetPixel(spriteBatch), corner, corner + diameterV, corner + thicknessV, corner + diameterV + thicknessV, color, depth);
         }
 
-
+        public static void DrawLine(this SpriteBatch spriteBatch, Vector2 pos1, Vector2 pos2, Color color, float thickness = 1f)
+            => DrawLine(spriteBatch, pos1, pos2, color, spriteBatch.DefaultDepth, thickness);
+        public static void DrawLine(this SpriteBatch spriteBatch, Vector2 pos1, Vector2 pos2, Color color, float depth, float thickness = 1f) => spriteBatch.DrawLineRelative(pos1, pos2 - pos1, color, depth, thickness);
+        public static void DrawLineRelative(this SpriteBatch spriteBatch, Vector2 pos, Vector2 size, Color color, float thickness = 1f)
+            => DrawLineRelative(spriteBatch, pos, size, color, spriteBatch.DefaultDepth, thickness);
+        public static void DrawLineRelative(this SpriteBatch spriteBatch, Vector2 pos, Vector2 size, Color color, float depth, float thickness = 1f)
+        {
+            float angle = (float)Math.Atan2(size.Y, size.X);
+            spriteBatch.Draw(GetPixel(spriteBatch), pos, null, color, angle, new Vector2(0, 0.5f), new Vector2(size.Length(), thickness), SpriteEffects.None, depth);
+        }
 
         public static Texture2D GetPixel(this SpriteBatch spriteBatch)
         {

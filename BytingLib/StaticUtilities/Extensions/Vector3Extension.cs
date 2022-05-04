@@ -122,5 +122,7 @@ namespace BytingLib
             // The final result.
             return ((start * MathF.Cos(theta)) + (RelativeVec * MathF.Sin(theta)));
         }
+
+        public static float Average(this Vector3 v) => (v.X + v.Y + v.Z) / 3f;
     }
 }

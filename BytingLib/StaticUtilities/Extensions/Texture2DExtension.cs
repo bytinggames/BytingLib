@@ -292,5 +292,63 @@ namespace BytingLib
             return output;
         }
 
+        #region Drawing
+
+        public static void Draw(this Texture2D _texture, SpriteBatch spriteBatch, Vector2 _position, Color? _color = null, Rectangle? _sourceRectangle = null, Vector2? _scale = null, float _rotation = 0f, SpriteEffects _effects = SpriteEffects.None, float? depth = null)
+        {
+            spriteBatch.Draw(_texture, _position, _sourceRectangle, _color ?? Color.White, _rotation, Vector2.Zero, _scale ?? Vector2.One, _effects, depth ?? spriteBatch.DefaultDepth);
+        }
+
+        public static void Draw(this Texture2D _texture, SpriteBatch spriteBatch, Anchor _anchor, Color? _color = null, Rectangle? _sourceRectangle = null, Vector2? _scale = null, float _rotation = 0f, SpriteEffects _effects = SpriteEffects.None, float? depth = null, float roundPositionTo = 0)
+        {
+            Vector2 size = _sourceRectangle != null ? _sourceRectangle.Value.Size.ToVector2() : _texture.GetSize();
+
+            Vector2 pos = _anchor.pos;
+
+            if (roundPositionTo != 0) // TODO: improve this correction, by calculating the anchor by yourself
+            {
+                if (_rotation == 0)
+                {
+                    Vector2 shift = _anchor.origin * size * (_scale ?? Vector2.One);
+
+                    Vector2 drawPos = _anchor.pos - shift;
+
+                    if (roundPositionTo == 1f)
+                    {
+                        drawPos = drawPos.RoundVectorCustom();
+                    }
+                    else
+                    {
+                        drawPos = (drawPos / roundPositionTo).RoundVectorCustom() * roundPositionTo;
+                    }
+
+                    pos = drawPos + shift;
+                }
+            }
+
+
+            spriteBatch.Draw(_texture, pos, _sourceRectangle, _color ?? Color.White, _rotation, _anchor.origin * size, _scale ?? Vector2.One, _effects, depth ?? spriteBatch.DefaultDepth);
+        }
+        public static void Draw(this Texture2D _texture, SpriteBatch spriteBatch, Rectangle _rectangle, Color? _color = null, Rectangle? _sourceRectangle = null, float _rotation = 0f, SpriteEffects _effects = SpriteEffects.None, float? depth = null)
+        {
+            spriteBatch.Draw(_texture, _rectangle, _sourceRectangle, _color ?? Color.White, _rotation, Vector2.Zero, _effects, depth ?? spriteBatch.DefaultDepth);
+        }
+
+        public static void Draw(this Texture2D _texture, SpriteBatch spriteBatch, Rect _rectangle, Color? _color = null, Rectangle? _sourceRectangle = null, float _rotation = 0f, SpriteEffects _effects = SpriteEffects.None, float? depth = null)
+        {
+            Vector2 scale = _rectangle.Size / _texture.GetSize();
+            _texture.Draw(spriteBatch, _rectangle.Pos, _color, _sourceRectangle, scale, _rotation, _effects, depth);
+        }
+
+
+        /// <summary>
+        /// use this method, if you have many values either being x.5 or x.0, cause this will prevent unwanted floating point errors
+        /// </summary>
+        private static Vector2 RoundVectorCustom(this Vector2 vec)
+        {
+            return new Vector2((float)Math.Round(vec.X - 0.1f), (float)Math.Round(vec.Y - 0.1f));
+        }
+
+        #endregion
     }
 }
