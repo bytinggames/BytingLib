@@ -13,8 +13,7 @@ namespace BytingLib.Test.Input
         [TestMethod]
         public void Generate_GetKeysFromAssembly()
         {
-            string userProfileDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            string monoGameAssemblyFile = Path.Combine(userProfileDir, @".nuget\packages\monogame.framework.desktopgl\3.8.0.1641\lib\netstandard2.0\MonoGame.Framework.dll");
+            string monoGameAssemblyFile = "MonoGame.Framework.dll";
             Assembly a = Assembly.LoadFrom(monoGameAssemblyFile);
             var type = a.GetType("Microsoft.Xna.Framework.Input.Keys");
             if (type == null)
