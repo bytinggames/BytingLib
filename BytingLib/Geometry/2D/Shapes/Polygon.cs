@@ -7,7 +7,7 @@ namespace BytingLib
     {
         private Vector2 pos;
 
-        public List<Vector2> Vertices;
+        public IList<Vector2> Vertices;
 
         private byte _closed;
 
@@ -16,13 +16,13 @@ namespace BytingLib
             Vertices = new List<Vector2>();
             _closed = (byte)ClosedType.Closed;
         }
-        public Polygon(Vector2 pos, List<Vector2> vertices)
+        public Polygon(Vector2 pos, IList<Vector2> vertices)
         {
             this.pos = pos;
             Vertices = vertices;
             _closed = (byte)ClosedType.Closed;
         }
-        public Polygon(Vector2 pos, List<Vector2> vertices, ClosedType closed)
+        public Polygon(Vector2 pos, IList<Vector2> vertices, ClosedType closed)
         {
             this.pos = pos;
             Vertices = vertices;

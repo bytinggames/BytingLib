@@ -49,7 +49,7 @@ namespace BytingLib
             {
                 ReadDiffBuffer(diffBuffer);
 
-                ByteHelper.AddBytes(lastData, diffBuffer, lastData);
+                ByteExtension.AddBytes(lastData, diffBuffer, lastData);
 
                 return StructSerializer.Read(lastData, typeof(T));
             }

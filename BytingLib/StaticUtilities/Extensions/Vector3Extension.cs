@@ -51,6 +51,31 @@ namespace BytingLib
             else
                 return Vector3.Normalize(vec);
         }
+        public static Vector3 GetMoveTo(this Vector3 val, Vector3 goal, float speed)
+        {
+            if (val == goal)
+                return val;
+
+            Vector3 dist = goal - val;
+            float distLength = dist.Length();
+            if (distLength < speed)
+                return goal;
+            else
+                return val + dist * speed / distLength;
+        }
+        public static float AngleTo(this Vector3 vec1, Vector3 vec2)
+        {
+            float dot = Vector3.Dot(vec1, vec2) / (vec1.Length() * vec2.Length());
+            return MathF.Acos(dot);
+        }
+        public static Vector3 GetNonParallelVector(this Vector3 v)
+        {
+            if (v.X == 0 && v.Y == 0)
+                return new Vector3(0, v.Z, 0);
+            else
+                return new Vector3(-v.Y, v.X, v.Z);
+            // see https://math.stackexchange.com/a/3122025
+        }
 
         public static Vector2 XY(this Vector3 v) => new Vector2(v.X, v.Y);
         public static Vector2 XZ(this Vector3 v) => new Vector2(v.X, v.Z);
@@ -58,5 +83,44 @@ namespace BytingLib
         public static Vector2 YZ(this Vector3 v) => new Vector2(v.Y, v.Z);
         public static Vector2 ZX(this Vector3 v) => new Vector2(v.Z, v.X);
         public static Vector2 ZY(this Vector3 v) => new Vector2(v.Z, v.Y);
+
+
+        public static Matrix CreateMatrixRotationFromTo(Vector3 from, Vector3 to)
+        {
+            if (from == to)
+                return Matrix.Identity;
+            float dot = Vector3.Dot(Vector3.Normalize(from), Vector3.Normalize(to));
+            if (dot == 1f)
+                return Matrix.Identity;
+            float angle = MathF.Acos(dot);
+            Vector3 axis = Vector3.Normalize(Vector3.Cross(from, to));
+            return Matrix.CreateFromAxisAngle(axis, angle);
+        }
+
+        public static Vector3 Slerp(this Vector3 start, Vector3 end, float amount)
+        {
+            if (start == end)
+                return end;
+
+            // source: https://stackoverflow.com/a/67920029/6866837
+            // Dot product - the cosine of the angle between 2 vectors.
+            float dot = Vector3.Dot(start, end);
+
+            // Clamp it to be in the range of Acos()
+            // This may be unnecessary, but floating point
+            // precision can be a fickle mistress.
+            dot = MathF.Min(1f, MathF.Max(-1f, dot));
+
+            // Acos(dot) returns the angle between start and end,
+            // And multiplying that by percent returns the angle between
+            // start and the final result.
+            float theta = MathF.Acos(dot) * amount;
+            Vector3 RelativeVec = end - start * dot;
+            RelativeVec.Normalize();
+
+            // Orthonormal basis
+            // The final result.
+            return ((start * MathF.Cos(theta)) + (RelativeVec * MathF.Sin(theta)));
+        }
     }
 }

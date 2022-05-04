@@ -1884,7 +1884,7 @@ namespace BytingLib
 
         #endregion
 
-        public static List<Vector2> GetAxes(List<Vector2> edges)
+        public static List<Vector2> GetAxes(IList<Vector2> edges)
         {
             List<Vector2> axes = new List<Vector2>();
 
@@ -1914,7 +1914,7 @@ namespace BytingLib
             return axes;
         }
 
-        public static float[] GetProjection(Vector2 axis, Vector2 pos, List<Vector2> vertices, List<Vector2> edges)
+        public static float[] GetProjection(Vector2 axis, Vector2 pos, IList<Vector2> vertices, IList<Vector2> edges)
         {
             float[] projection = new float[2];
             bool hasValue = false;

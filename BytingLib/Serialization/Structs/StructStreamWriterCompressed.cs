@@ -35,7 +35,7 @@ namespace BytingLib
         {
             byte[] currentData = StructSerializer.GetBytes(currentState);
             byte[] difference = new byte[currentData.Length];
-            ByteHelper.SubtractBytes(currentData, previousData, difference);
+            ByteExtension.SubtractBytes(currentData, previousData, difference);
             previousData = currentData;
 
             byte zeros = 0;

@@ -71,5 +71,29 @@ namespace BytingLib
         {
             return new Vector2(vec.Y, -vec.X);
         }
+        public static Vector2 GetMoveTo(this Vector2 val, Vector2 goal, float speed)
+        {
+            if (val == goal)
+                return val;
+
+            Vector2 dist = goal - val;
+            float distLength = dist.Length();
+            if (distLength < speed)
+                return goal;
+            else
+                return val + dist * speed / distLength;
+        }
+        public static float ToAngle(this Vector2 vec)
+        {
+            return MathF.Atan2(vec.Y, vec.X);
+        }
+        public static Vector2 AngleToVector(this float angle)
+        {
+            return new Vector2(MathF.Cos(angle), MathF.Sin(angle));
+        }
+        public static float AngleTo(this Vector2 vec1, Vector2 vec2)
+        {
+            return MathExtension.AngleDistance(vec1.ToAngle(), vec2.ToAngle());
+        }
     }
 }

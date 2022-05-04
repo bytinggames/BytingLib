@@ -14,7 +14,7 @@ namespace BytingLib
         public float X { get => pos.X; set => Move(new Vector2(value - pos.X, 0f)); }
         public float Y { get => pos.Y; set => Move(new Vector2(0f, value - pos.X)); }
 
-        public List<IShape> Shapes { get; set; }
+        public IList<IShape> Shapes { get; set; }
 
         public ShapeCollection()
         {
@@ -23,12 +23,12 @@ namespace BytingLib
 
         public ShapeCollection(params IShape[] shapes)
         {
-            Shapes = shapes.ToList();
+            Shapes = shapes;
         }
 
         public ShapeCollection(Vector2 pos, params IShape[] shapes)
         {
-            Shapes = shapes.ToList();
+            Shapes = shapes;
             Move(pos);
         }
 
