@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace BytingLib
 {
+    /// <summary>
+    /// Not implemented yet
+    /// </summary>
     public class TextureShape : IShape
     {
         public Vector2 Pos { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -41,6 +45,11 @@ namespace BytingLib
         }
 
         internal bool IsTransformed()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Color color, float depth = 0)
         {
             throw new NotImplementedException();
         }

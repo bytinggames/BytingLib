@@ -49,8 +49,36 @@ namespace BytingLib
             return new Rect(a, b - a);
         }
 
+        public static Rect? FromRects(IEnumerable<Rect> rects)
+        {
+            IEnumerator<Rect> enumerator = rects.GetEnumerator();
+
+            if (!enumerator.MoveNext())
+                return null;
+
+            float left, top, bottom, right;
+            left = enumerator.Current.Left;
+            top = enumerator.Current.Top;
+            bottom = enumerator.Current.Bottom;
+            right = enumerator.Current.Right;
+
+            while (enumerator.MoveNext())
+            {
+                if (enumerator.Current.Left < left)
+                    left = enumerator.Current.Left;
+                if (enumerator.Current.Top < top)
+                    top = enumerator.Current.Top;
+                if (enumerator.Current.Right > right)
+                    right = enumerator.Current.Right;
+                if (enumerator.Current.Bottom > bottom)
+                    bottom = enumerator.Current.Bottom;
+            }
+            return new Rect(left, top, right - left, bottom - top);
+        }
+
         public Vector2 Pos { get => pos; set => pos = value; }
         public float X { get => pos.X; set => pos.X = value; }
+
         public float Y { get => pos.Y; set => pos.Y = value; }
         public float Width
         {
@@ -91,16 +119,6 @@ namespace BytingLib
 
             this.pos = pos;
             Size = size;
-        }
-
-        public bool CollidesWith(IShape shape)
-        {
-            throw new NotImplementedException();
-        }
-
-        public CollisionResult DistanceTo(IShape shape, Vector2 dir)
-        {
-            throw new NotImplementedException();
         }
 
         public Rect GetBoundingRectangle() => new Rect(this);
@@ -246,6 +264,11 @@ namespace BytingLib
         public Polygon ToPolygon()
         {
             return new Polygon(pos, new List<Vector2>() { Vector2.Zero, new Vector2(Size.X, 0), Size, new Vector2(0, Size.Y) });
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f)
+        {
+            spriteBatch.DrawRectangle(this, color, depth);
         }
     }
 }

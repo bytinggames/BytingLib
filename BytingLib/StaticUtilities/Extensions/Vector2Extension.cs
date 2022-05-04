@@ -63,5 +63,13 @@ namespace BytingLib
                 return -vec;
             return vec;
         }
+        public static Vector2 GetRotate90(this Vector2 vec)
+        {
+            return new Vector2(-vec.Y, vec.X);
+        }
+        public static Vector2 GetRotate90CounterClock(this Vector2 vec)
+        {
+            return new Vector2(vec.Y, -vec.X);
+        }
     }
 }

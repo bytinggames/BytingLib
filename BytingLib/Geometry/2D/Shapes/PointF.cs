@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
@@ -28,13 +29,14 @@ namespace BytingLib
             return new PointF(pos);
         }
 
-        public bool CollidesWith(IShape shape) => Collision.GetCollision(this, shape);
-        public CollisionResult DistanceTo(IShape shape, Vector2 dir) => Collision.GetDistance(this, shape, dir);
-
         public Rect GetBoundingRectangle()
         {
             return new Rect(pos, Vector2.Zero);
         }
-    }
 
+        public void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f)
+        {
+            spriteBatch.DrawCross(pos, 10f, 2f, color, depth);
+        }
+    }
 }

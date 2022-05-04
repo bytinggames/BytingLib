@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
@@ -6,30 +7,71 @@ namespace BytingLib
     {
         private Vector2 pos;
 
-        public List<Vector2> vertices;
+        public List<Vector2> Vertices;
 
-        public bool closed, startCorner, endCorner; //start and end corner when polygon is open
+        private byte _closed;
 
-        public Polygon(Vector2 pos, List<Vector2> vertices, bool closed = true)
+        public Polygon()
+        {
+            Vertices = new List<Vector2>();
+            _closed = (byte)ClosedType.Closed;
+        }
+        public Polygon(Vector2 pos, List<Vector2> vertices)
         {
             this.pos = pos;
-            this.vertices = vertices;
-            this.closed = closed;
-            startCorner = endCorner = true;
+            Vertices = vertices;
+            _closed = (byte)ClosedType.Closed;
+        }
+        public Polygon(Vector2 pos, List<Vector2> vertices, ClosedType closed)
+        {
+            this.pos = pos;
+            Vertices = vertices;
+            _closed = (byte)closed;
         }
 
         public Vector2 Pos { get => pos; set => pos = value; }
         public float X { get => pos.X; set => pos.X = value; }
         public float Y { get => pos.Y; set => pos.Y = value; }
 
-        public bool CollidesWith(IShape shape) => Collision.GetCollision(this, shape);
-        public CollisionResult DistanceTo(IShape shape, Vector2 dir) => Collision.GetDistance(this, shape, dir);
+        #region ClosedType
+
+        /// <summary>
+        /// Used for collision checks: the last edge between the last and first vertex can be included or excluded from collision checks.
+        /// The same goes for the first and last corner/vertex.
+        /// Only "Closed" is fully supported though.
+        /// The other ones only are regarded, when a collision check between two open polygons is made or an open polygon and a circle
+        /// (not tested though, it's been a long time).
+        /// </summary>
+        public enum ClosedType : byte
+        {
+            // 0b edge startCorner endCorner
+            Closed = 0b111,
+            OpenWithoutCorners = 0b000,
+            OpenWithStartCorner = 0b010,
+            OpenWithEndCorner = 0b001,
+            OpenWithStartAndEndCorners = 0b011
+        }
+
+        /// <inheritdoc cref="ClosedType"/>
+        public ClosedType Closed
+        {
+            get => (ClosedType)_closed;
+            set => _closed = (byte)value;
+        }
+        /// <inheritdoc cref="ClosedType"/>
+        public bool LastEdgeClosed => (_closed & 0b100) == 0b100;
+        /// <inheritdoc cref="ClosedType"/>
+        public bool StartCorner => (_closed & 0b010) == 0b010;
+        /// <inheritdoc cref="ClosedType"/>
+        public bool EndCorner => (_closed & 0b001) == 0b001;
+
+        #endregion
 
         public Polygon ApplyPosition()
         {
-            for (int i = 0; i < vertices.Count; i++)
+            for (int i = 0; i < Vertices.Count; i++)
             {
-                vertices[i] += pos;
+                Vertices[i] += pos;
             }
             pos = Vector2.Zero;
             return this;
@@ -38,13 +80,13 @@ namespace BytingLib
         public Rect GetBoundingRectangle()
         {
             Vector2 minPos, maxPos;
-            if (vertices.Count > 0)
+            if (Vertices.Count > 0)
             {
-                minPos = maxPos = vertices[0];
-                for (int i = 1; i < vertices.Count; i++)
+                minPos = maxPos = Vertices[0];
+                for (int i = 1; i < Vertices.Count; i++)
                 {
-                    minPos = Vector2.Min(minPos, vertices[i]);
-                    maxPos = Vector2.Max(maxPos, vertices[i]);
+                    minPos = Vector2.Min(minPos, Vertices[i]);
+                    maxPos = Vector2.Max(maxPos, Vertices[i]);
                 }
 
                 return new Rect(pos + minPos, maxPos - minPos);
@@ -56,34 +98,34 @@ namespace BytingLib
         public List<Vector2> GetEdges()
         {
             List<Vector2> edges = new List<Vector2>();
-            if (vertices.Count > 1)
+            if (Vertices.Count > 1)
             {
-                for (int i = 0; i < vertices.Count - 1; i++)
-                    edges.Add(vertices[i + 1] - vertices[i]);
+                for (int i = 0; i < Vertices.Count - 1; i++)
+                    edges.Add(Vertices[i + 1] - Vertices[i]);
 
                 //if (vertices.Count > 2)
-                if (closed)
-                    edges.Add(vertices[0] - vertices[vertices.Count - 1]);
+                if (LastEdgeClosed)
+                    edges.Add(Vertices[0] - Vertices[Vertices.Count - 1]);
             }
             return edges;
         }
 
-        public List<Vector2> GetClosedEdges()
+        internal List<Vector2> GetClosedEdges()
         {
             List<Vector2> edges = new List<Vector2>();
-            if (vertices.Count > 1)
+            if (Vertices.Count > 1)
             {
-                for (int i = 0; i < vertices.Count - 1; i++)
-                    edges.Add(vertices[i + 1] - vertices[i]);
-                edges.Add(vertices[0] - vertices[vertices.Count - 1]);
+                for (int i = 0; i < Vertices.Count - 1; i++)
+                    edges.Add(Vertices[i + 1] - Vertices[i]);
+                edges.Add(Vertices[0] - Vertices[Vertices.Count - 1]);
             }
             return edges;
         }
 
-        public Polygon Transform(Matrix transform)
+        public Polygon TransformVertices(Matrix transform)
         {
-            for (int i = 0; i < vertices.Count; i++)
-                vertices[i] = Vector2.Transform(vertices[i], transform);
+            for (int i = 0; i < Vertices.Count; i++)
+                Vertices[i] = Vector2.Transform(Vertices[i], transform);
 
             return this;
         }
@@ -99,14 +141,14 @@ namespace BytingLib
             {
                 //right angle rotation
                 if (angle == 90)
-                    for (int i = 0; i < vertices.Count; i++)
-                        vertices[i] = new Vector2(-vertices[i].Y, vertices[i].X);
+                    for (int i = 0; i < Vertices.Count; i++)
+                        Vertices[i] = new Vector2(-Vertices[i].Y, Vertices[i].X);
                 if (angle == 180)
-                    for (int i = 0; i < vertices.Count; i++)
-                        vertices[i] = new Vector2(-vertices[i].X, -vertices[i].Y);
+                    for (int i = 0; i < Vertices.Count; i++)
+                        Vertices[i] = new Vector2(-Vertices[i].X, -Vertices[i].Y);
                 if (angle == 270)
-                    for (int i = 0; i < vertices.Count; i++)
-                        vertices[i] = new Vector2(vertices[i].Y, -vertices[i].X);
+                    for (int i = 0; i < Vertices.Count; i++)
+                        Vertices[i] = new Vector2(Vertices[i].Y, -Vertices[i].X);
             }
             else
                 RotateRadians(angle * MathHelper.TwoPi / 360f);
@@ -122,33 +164,33 @@ namespace BytingLib
             {
                 //right angle rotation
                 if (angle == 90)
-                    for (int i = 0; i < vertices.Count; i++)
-                        vertices[i] = center + new Vector2(-vertices[i].Y + center.Y, vertices[i].X - center.X);
+                    for (int i = 0; i < Vertices.Count; i++)
+                        Vertices[i] = center + new Vector2(-Vertices[i].Y + center.Y, Vertices[i].X - center.X);
                 if (angle == 180)
-                    for (int i = 0; i < vertices.Count; i++)
-                        vertices[i] = center + new Vector2(-vertices[i].X + center.X, -vertices[i].Y + center.Y);
+                    for (int i = 0; i < Vertices.Count; i++)
+                        Vertices[i] = center + new Vector2(-Vertices[i].X + center.X, -Vertices[i].Y + center.Y);
                 if (angle == 270)
-                    for (int i = 0; i < vertices.Count; i++)
-                        vertices[i] = center + new Vector2(vertices[i].Y - center.Y, -vertices[i].X + center.X);
+                    for (int i = 0; i < Vertices.Count; i++)
+                        Vertices[i] = center + new Vector2(Vertices[i].Y - center.Y, -Vertices[i].X + center.X);
             }
             else
                 RotateRadians(angle * MathHelper.TwoPi / 360f, center);
         }
         public void RotateRadians(float angle)
         {
-            for (int i = 0; i < vertices.Count; i++)
+            for (int i = 0; i < Vertices.Count; i++)
             {
-                vertices[i] = new Vector2((float)(Math.Cos(angle) * vertices[i].X - Math.Sin(angle) * vertices[i].Y),
-                                            (float)(Math.Cos(angle) * vertices[i].Y + Math.Sin(angle) * vertices[i].X));
+                Vertices[i] = new Vector2((float)(Math.Cos(angle) * Vertices[i].X - Math.Sin(angle) * Vertices[i].Y),
+                                            (float)(Math.Cos(angle) * Vertices[i].Y + Math.Sin(angle) * Vertices[i].X));
             }
         }
         public void RotateRadians(float angle, Vector2 center)
         {
-            for (int i = 0; i < vertices.Count; i++)
+            for (int i = 0; i < Vertices.Count; i++)
             {
-                vertices[i] -= center;
-                vertices[i] = center + new Vector2((float)(Math.Cos(angle) * vertices[i].X - Math.Sin(angle) * vertices[i].Y),
-                                            (float)(Math.Cos(angle) * vertices[i].Y + Math.Sin(angle) * vertices[i].X));
+                Vertices[i] -= center;
+                Vertices[i] = center + new Vector2((float)(Math.Cos(angle) * Vertices[i].X - Math.Sin(angle) * Vertices[i].Y),
+                                            (float)(Math.Cos(angle) * Vertices[i].Y + Math.Sin(angle) * Vertices[i].X));
             }
         }
         public void Flip(bool horizontally, bool vertically)
@@ -159,11 +201,11 @@ namespace BytingLib
         public void Flip(bool horizontally, bool vertically, Vector2 center)
         {
             if (horizontally)
-                for (int i = 0; i < vertices.Count; i++)
-                    vertices[i] = new Vector2(2 * center.X - vertices[i].X, vertices[i].Y);
+                for (int i = 0; i < Vertices.Count; i++)
+                    Vertices[i] = new Vector2(2 * center.X - Vertices[i].X, Vertices[i].Y);
             if (vertically)
-                for (int i = 0; i < vertices.Count; i++)
-                    vertices[i] = new Vector2(vertices[i].X, 2 * center.Y - vertices[i].Y);
+                for (int i = 0; i < Vertices.Count; i++)
+                    Vertices[i] = new Vector2(Vertices[i].X, 2 * center.Y - Vertices[i].Y);
         }
         public void Scale(Vector2 scale)
         {
@@ -174,16 +216,16 @@ namespace BytingLib
             if (Math.Sign(scale.X * scale.Y) == -1)
             {
                 //invert vertice order
-                List<Vector2> oldVertices = vertices.ToList();
-                int j = vertices.Count - 1;
-                for (int i = 0; i < vertices.Count; i++, j--)
-                    vertices[i] = center + (oldVertices[j] - center) * scale;
+                List<Vector2> oldVertices = Vertices.ToList();
+                int j = Vertices.Count - 1;
+                for (int i = 0; i < Vertices.Count; i++, j--)
+                    Vertices[i] = center + (oldVertices[j] - center) * scale;
             }
             else
             {
                 //normal order
-                for (int i = 0; i < vertices.Count; i++)
-                    vertices[i] = center + (vertices[i] - center) * scale;
+                for (int i = 0; i < Vertices.Count; i++)
+                    Vertices[i] = center + (Vertices[i] - center) * scale;
             }
 
         }
@@ -192,7 +234,7 @@ namespace BytingLib
         public object Clone()
         {
             Polygon clone = (Polygon)MemberwiseClone();
-            clone.vertices = vertices.ToList();
+            clone.Vertices = Vertices.ToList();
             return clone;
         }
 
@@ -205,7 +247,7 @@ namespace BytingLib
 
             for (float a = 0f; a < MathHelper.TwoPi;)         // full circle
             {
-                poly.vertices.Add(new Vector2((float)Math.Cos(startAngle + a) * radius, (float)Math.Sin(startAngle + a) * radius));
+                poly.Vertices.Add(new Vector2((float)Math.Cos(startAngle + a) * radius, (float)Math.Sin(startAngle + a) * radius));
                 a += (float)((angleMin + (angleRange * rand.NextDouble())) * Math.PI / 180f);
             }
 
@@ -218,20 +260,14 @@ namespace BytingLib
             return GetRandomConvex(pos, rand, radius, minAngle, maxAngle - minAngle);
         }
 
-        public static Polygon GetCircleOpen(Vector2 pos, float radius, int vertices)
+        public static Polygon GetCircle(Vector2 pos, float radius, int vertices)
         {
             Polygon poly = new Polygon(pos, new List<Vector2>());
             for (int i = 0; i < vertices; i++)
             {
                 float a = i * MathHelper.TwoPi / vertices;
-                poly.vertices.Add(new Vector2((float)Math.Cos(a) * radius, (float)Math.Sin(a) * radius));
+                poly.Vertices.Add(new Vector2((float)Math.Cos(a) * radius, (float)Math.Sin(a) * radius));
             }
-            return poly;
-        }
-        public static Polygon GetCircleClosed(Vector2 pos, float radius, int vertices)
-        {
-            Polygon poly = GetCircleOpen(pos, radius, vertices - 1);
-            poly.vertices.Add(poly.vertices[0]);
             return poly;
         }
         public static Polygon GetCirclePart(Vector2 pos, float radius, float angle, float fov, int vertices)
@@ -241,7 +277,7 @@ namespace BytingLib
             float plus = fov / (vertices - 1);
             for (int i = 0; i < vertices; i++)
             {
-                poly.vertices.Add(new Vector2((float)Math.Cos(a) * radius, (float)Math.Sin(a) * radius));
+                poly.Vertices.Add(new Vector2((float)Math.Cos(a) * radius, (float)Math.Sin(a) * radius));
                 a += plus;
             }
             return poly;
@@ -272,6 +308,11 @@ namespace BytingLib
                 max,
                 new Vector2(min.X, max.Y)
             });
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f)
+        {
+            spriteBatch.DrawPolygon(this, color, depth);
         }
     }
 }

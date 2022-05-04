@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace BytingLib
 {
@@ -29,6 +30,7 @@ namespace BytingLib
         {
             previousState = currentState;
             currentState = keyboardState;
+            OnSetCurrentState();
 
             updateCount++;
             if (updateCount == 2)
@@ -39,6 +41,11 @@ namespace BytingLib
                 OnStateChanged?.Invoke(currentState, previousState);
         }
 
+        private void OnSetCurrentState()
+        {
+            Position = currentState.Position.ToVector2();
+        }
+
         public IKey Left => GetKey(f => f.LeftButton);
         public IKey Middle => GetKey(f => f.MiddleButton);
         public IKey Right => GetKey(f => f.RightButton);
@@ -47,11 +54,13 @@ namespace BytingLib
 
         public int X => currentState.X;
         public int Y => currentState.Y;
-        public Int2 Position => new Int2(currentState.Position);
+        public Int2 PositionInt => new Int2(currentState.Position);
+        public Vector2 Position { get; private set; }
 
         public int XDelta => isPreviousMouseStateSet ? (currentState.X - previousState.X) : 0;
         public int YDelta => isPreviousMouseStateSet ? (currentState.Y - previousState.Y) : 0;
-        public Int2 Move => isPreviousMouseStateSet ? (new Int2(currentState.Position - previousState.Position)) : Int2.Zero;
+        public Int2 MoveInt => isPreviousMouseStateSet ? (new Int2(currentState.Position - previousState.Position)) : Int2.Zero;
+        public Vector2 Move => isPreviousMouseStateSet ? (currentState.Position - previousState.Position).ToVector2() : Vector2.Zero;
 
         public int Scroll
         {

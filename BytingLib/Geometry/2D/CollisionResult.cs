@@ -37,5 +37,38 @@ namespace BytingLib
         {
             Collision = Math.Sign(Distance!.Value * DistanceReversed!.Value) == -1;
         }
+
+        /// <summary>Combines the collision result into this one.</summary>
+        public void Add(CollisionResult cr)
+        {
+            if (cr.Collision)
+                Collision = true;
+
+            if (cr.DistanceReversed.HasValue
+                && (!DistanceReversed.HasValue || cr.DistanceReversed > DistanceReversed))
+            {
+                CopyBackwardValues(cr);
+            }
+
+            if (cr.Distance.HasValue
+                && (!Distance.HasValue || cr.Distance < Distance))
+            {
+                CopyForwardValues(cr);
+            }
+        }
+
+        private void CopyBackwardValues(CollisionResult cr)
+        {
+            DistanceReversed = cr.DistanceReversed;
+            AxisColReversed = cr.AxisColReversed;
+        }
+
+        private void CopyForwardValues(CollisionResult cr)
+        {
+            Distance = cr.Distance;
+            AxisCol = cr.AxisCol;
+            ColCornerPoly = cr.ColCornerPoly;
+            ColCornerIndex = cr.ColCornerIndex;
+        }
     }
 }

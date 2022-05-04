@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
@@ -23,20 +24,17 @@ namespace BytingLib
             return new Rect(pos - new Vector2(Radius), new Vector2(Radius * 2));
         }
 
-        public CollisionResult DistanceTo(IShape shape, Vector2 dir)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool CollidesWith(IShape shape)
-        {
-            throw new NotImplementedException();
-        }
-
         public object Clone()
         {
             return new Circle(pos, Radius);
         }
+
+        public void Draw(SpriteBatch spriteBatch, Color color, float depth = 0f)
+        {
+            spriteBatch.DrawCircle(this, color, depth);
+        }
+
+        public Polygon ToPolygon(int vertexCount) => Polygon.GetCircle(Pos, Radius, vertexCount);
     }
 
 }
