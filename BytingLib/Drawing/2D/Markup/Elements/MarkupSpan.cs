@@ -27,7 +27,7 @@ namespace BytingLib.Markup
         }
 
         public MarkupSpan(string str)
-            : base(new ScriptReader(str))
+            : base(new ScriptReaderLiteral(str))
         {
         }
 

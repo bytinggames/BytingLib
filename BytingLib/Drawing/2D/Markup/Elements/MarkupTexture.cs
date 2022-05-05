@@ -30,13 +30,17 @@ namespace BytingLib.Markup
             Texture = content.Load<Texture2D>("Textures/" + texName);
         }
 
+        public void Flip()
+        {
+            Effects = Effects ^ (SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically);
+        }
         public void FlipX()
         {
-            Effects = SpriteEffects.FlipHorizontally;
+            Effects = Effects ^ SpriteEffects.FlipHorizontally;
         }
         public void FlipY()
         {
-            Effects = SpriteEffects.FlipVertically;
+            Effects = Effects ^ SpriteEffects.FlipVertically;
         }
         public void FlipNone()
         {
@@ -58,36 +62,37 @@ namespace BytingLib.Markup
 
         protected override void DrawChild(MarkupSettings settings)
         {
-            SpriteEffects flip = settings.Effects;
-            switch (Effects)
-            {
-                case SpriteEffects.FlipHorizontally:
-                    switch (flip)
-                    {
-                        case SpriteEffects.None:
-                            flip = SpriteEffects.FlipHorizontally;
-                            break;
-                        case SpriteEffects.FlipHorizontally:
-                            flip = SpriteEffects.None;
-                            break;
-                        case SpriteEffects.FlipVertically:
-                            throw new NotImplementedException();
-                    }
-                    break;
-                case SpriteEffects.FlipVertically:
-                    switch (flip)
-                    {
-                        case SpriteEffects.None:
-                            flip = SpriteEffects.FlipVertically;
-                            break;
-                        case SpriteEffects.FlipHorizontally:
-                            throw new NotImplementedException();
-                        case SpriteEffects.FlipVertically:
-                            flip = SpriteEffects.None;
-                            break;
-                    }
-                    break;
-            }
+            SpriteEffects flip = settings.Effects ^ Effects;
+            //flip = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically;
+            //switch (Effects)
+            //{
+            //    case SpriteEffects.FlipHorizontally:
+            //        switch (flip)
+            //        {
+            //            case SpriteEffects.None:
+            //                flip = SpriteEffects.FlipHorizontally;
+            //                break;
+            //            case SpriteEffects.FlipHorizontally:
+            //                flip = SpriteEffects.None;
+            //                break;
+            //            case SpriteEffects.FlipVertically:
+            //                throw new NotImplementedException();
+            //        }
+            //        break;
+            //    case SpriteEffects.FlipVertically:
+            //        switch (flip)
+            //        {
+            //            case SpriteEffects.None:
+            //                flip = SpriteEffects.FlipVertically;
+            //                break;
+            //            case SpriteEffects.FlipHorizontally:
+            //                throw new NotImplementedException();
+            //            case SpriteEffects.FlipVertically:
+            //                flip = SpriteEffects.None;
+            //                break;
+            //        }
+            //        break;
+            //}
             Texture.Draw(settings.SpriteBatch, settings.Anchor, ColorExtension.MultiplyColors(settings.TextureColor, Color), SourceRectangle, settings.Scale * ScaleXY, settings.Rotation, flip);
         }
 

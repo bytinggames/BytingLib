@@ -19,12 +19,13 @@ namespace BytingLib.Creation
 
         private readonly string defaultNamespace;
         private readonly Assembly[] assemblies;
+        private readonly Dictionary<Type, Func<string, object>> converters;
 
-        public Creator(string defaultNamespace, Assembly[] assemblies = null, object[] _autoParameters = null, Type shortcutAttributeType = null)
+        public Creator(string defaultNamespace, Assembly[] assemblies = null, object[] _autoParameters = null, Type shortcutAttributeType = null, Dictionary<Type, Func<string, object>> converters = null)
         {
             this.defaultNamespace = defaultNamespace;
             this.assemblies = assemblies;
-
+            this.converters = converters;
             if (assemblies == null)
                 assemblies = new Assembly[] { Assembly.GetCallingAssembly() };
 
@@ -53,27 +54,27 @@ namespace BytingLib.Creation
             }
         }
 
-        public object CreateObject(ScriptReader reader)
+        public object CreateObject(IScriptReader reader)
         {
             object entity = CreateObject(reader, typeof(object));
 
             return entity;
         }
 
-        public T CreateObject<T>(ScriptReader reader)
+        public T CreateObject<T>(IScriptReader reader)
         {
             object entity = CreateObject(reader, typeof(T));
             return (T)entity;
         }
 
-        public void ExecuteOnObject(object obj, ScriptReader reader)
+        public void ExecuteOnObject(object obj, IScriptReader reader)
         {
             Type type = obj.GetType();
 
             ExecuteOnObjectInner(obj, type, reader);
         }
 
-        private void ExecuteOnObjectInner(object obj, Type type, ScriptReader reader)
+        private void ExecuteOnObjectInner(object obj, Type type, IScriptReader reader)
         {
             char? c;
 
@@ -92,7 +93,7 @@ namespace BytingLib.Creation
         }
 
         /// <summary>"Type(ctorArg1)(ctorArg2)_Prop(val)_Method(arg1)(arg2)"</summary>
-        private object CreateObject(ScriptReader reader, Type objectBaseType)
+        private object CreateObject(IScriptReader reader, Type objectBaseType)
         {
             string typeStr = reader.ReadToChar(open);
 
@@ -126,7 +127,7 @@ namespace BytingLib.Creation
             return obj;
         }
 
-        private void SetPropertyMethodOrField(Type type, object obj, string setterName, ScriptReader reader)
+        private void SetPropertyMethodOrField(Type type, object obj, string setterName, IScriptReader reader)
         {
             var prop = type.GetProperty(setterName);
             if (prop != null)
@@ -158,7 +159,7 @@ namespace BytingLib.Creation
         }
 
         /// <summary>"ctorArg1,ctorArg2"</summary>
-        private object CreateObject(Type type, ScriptReader reader)
+        private object CreateObject(Type type, IScriptReader reader)
         {
             object[] args = GetParametersForConstructor(reader, type);
 
@@ -166,7 +167,7 @@ namespace BytingLib.Creation
         }
 
         /// <summary>"ctorArg1,ctorArg2"</summary>
-        private object[] GetParametersForConstructor(ScriptReader reader, Type constructorType)
+        private object[] GetParametersForConstructor(IScriptReader reader, Type constructorType)
         {
             var ctors = constructorType.GetConstructors();
 
@@ -225,16 +226,20 @@ namespace BytingLib.Creation
         {
             if (expectedType == typeof(string))
                 return argStr;
+            else if (converters.TryGetValue(expectedType, out var converter))
+            {
+                return converter.Invoke(argStr);
+            }
             else if (argStr.Contains(open))
             {
-                ScriptReader reader = new ScriptReader(argStr);
+                IScriptReader reader = new ScriptReaderLiteral(argStr);
                 return CreateObject(reader, expectedType);
             }
             else
                 return Convert.ChangeType(argStr, expectedType, CultureInfo.InvariantCulture);
         }
 
-        private string[] GetParameterStrings(ScriptReader reader)
+        private string[] GetParameterStrings(IScriptReader reader)
         {
             List<string> splits = new List<string>();
 
@@ -242,7 +247,7 @@ namespace BytingLib.Creation
             {
                 string para = reader.ReadToCharOrEndConsiderOpenCloseBraces(new char[] { close, parameterSeparator }, open, close);
                 splits.Add(para);
-            } while (reader.Peek(-1) == parameterSeparator);
+            } while (!reader.EndOfString() && reader.Peek(-1) == parameterSeparator);
 
             // clear list if paramters look like this: () <- empty
             if (splits.Count == 1 && splits[0] == "")

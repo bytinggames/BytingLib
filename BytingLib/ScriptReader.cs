@@ -6,10 +6,10 @@ namespace BytingLib
         public ScriptReaderException(string message) : base(message) { }
     }
 
-    public class ScriptReader
+    public class ScriptReader : IScriptReader
     {
-        private string str;
-        private int i;
+        protected string str;
+        protected int i;
 
         public ScriptReader(string str)
         {
@@ -24,12 +24,15 @@ namespace BytingLib
             return null;
         }
 
-        public string ReadToCharOrEnd(out char? foundChar, params char[] chars)
+        public virtual string ReadToCharOrEnd(out char? foundChar, params char[] chars)
         {
             int start = i;
             char? c;
             while ((c = ReadChar()) != null)
             {
+                if (SkipIfLiteral(c.Value))
+                    continue;
+
                 if (chars.Contains(c.Value))
                 {
                     int end = i - 1;
@@ -56,6 +59,9 @@ namespace BytingLib
             char? c;
             while ((c = ReadChar()) != null)
             {
+                if (SkipIfLiteral(c.Value))
+                    continue;
+
                 if (c.Value == untilChar)
                 {
                     int end = i - 1;
@@ -80,6 +86,9 @@ namespace BytingLib
             char? c;
             while ((c = ReadChar()) != null)
             {
+                if (SkipIfLiteral(c.Value))
+                    continue;
+
                 if (c.Value == open)
                 {
                     openCounter++;
@@ -114,6 +123,9 @@ namespace BytingLib
             char? c;
             while ((c = ReadChar()) != null)
             {
+                if (SkipIfLiteral(c.Value))
+                    continue;
+
                 if (c.Value == untilChar)
                 {
                     int end = i - 1;
@@ -133,6 +145,9 @@ namespace BytingLib
             char? c;
             while ((c = ReadChar()) != null)
             {
+                if (SkipIfLiteral(c.Value))
+                    continue;
+
                 if (untilChar.Contains(c.Value))
                 {
                     int end = i - 1;
@@ -155,5 +170,48 @@ namespace BytingLib
                 return "END";
             return $"{i}: '{c.Value}'";
         }
+
+        protected virtual bool SkipIfLiteral(char value) => false;
+    }
+
+    // example: "#span(example:) @*this doesn't interpret characters like # ( ) and @, it ignores everything except the character specified after the @, in this case the literal string ends here: * #span(span is recognized again)"
+    class ScriptReaderLiteral : ScriptReader
+    {
+        public char LiteralChar { get; }
+
+        public ScriptReaderLiteral(string str, char literalChar = '@')
+            : base(str)
+        {
+            LiteralChar = literalChar;
+        }
+
+        protected override bool SkipIfLiteral(char value)
+        {
+            if (value != LiteralChar)
+                return false;
+
+            SkipLiteral();
+            return true;
+        }
+        private void SkipLiteral()
+        {
+            str = str.Remove(--i, 1);
+
+            char? literalIdentifier = ReadChar();
+            if (literalIdentifier == null)
+                return;
+            str = str.Remove(--i, 1);
+
+            char? c;
+            while ((c = ReadChar()) != null)
+            {
+                if (c == literalIdentifier)
+                {
+                    str = str.Remove(--i, 1);
+                    return;
+                }
+            }
+        }
+
     }
 }

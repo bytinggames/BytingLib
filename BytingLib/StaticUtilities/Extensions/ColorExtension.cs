@@ -13,13 +13,14 @@ namespace BytingLib
             return new Color(c1.R + c2.R, c1.G + c2.G, c1.B + c2.B, c1.A + c2.A);
         }
 
-        public static Color MultiplyColors(Color c1, Color c2)
+
+        public static Color MultiplyColors(Color bottom, Color top)
         {
-            c1.R = (byte)(c1.R * c2.R / 255);
-            c1.R = (byte)(c1.G * c2.G / 255);
-            c1.B = (byte)(c1.B * c2.B / 255);
-            c1.A = (byte)(c1.A * c2.A / 255);
-            return c1;
+            bottom.R = (byte)(bottom.R * top.R / 255 * top.A / 255);
+            bottom.G = (byte)(bottom.G * top.G / 255 * top.A / 255);
+            bottom.B = (byte)(bottom.B * top.B / 255 * top.A / 255);
+            bottom.A = (byte)(bottom.A * top.A / 255);
+            return bottom;
         }
 
         public static Color AverageColor(Color c1, Color c2)
@@ -146,10 +147,15 @@ namespace BytingLib
         static readonly CultureInfo hexToColorCultureInfo = new CultureInfo("en-GB");
         public static Color HexToColor(string hex)
         {
+            if (string.IsNullOrEmpty(hex)
+                || (hex.Length != 1 && hex.Length != 3 && hex.Length != 4 && hex.Length != 6 && hex.Length != 8))
+                return Color.White;
             if (hex.Length == 1)
                 hex = new string(hex[0], 6);
-            if (hex.Length == 3)
+            else if (hex.Length == 3)
                 hex = hex.Insert(0, hex[0].ToString()).Insert(2, hex[1].ToString()).Insert(4, hex[2].ToString());
+            else if (hex.Length == 4)
+                hex = hex[0].ToString() + hex[0] + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
 
             byte r, g, b, a = 255;
             byte.TryParse(hex.Substring(0, 2), NumberStyles.HexNumber, hexToColorCultureInfo, out r);
