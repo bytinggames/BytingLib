@@ -43,6 +43,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="TextCopy" Version="6.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\MonoGame.BytingGames\MonoGame.Framework\MonoGame.Framework.DesktopGL.csproj" />
   </ItemGroup>
 

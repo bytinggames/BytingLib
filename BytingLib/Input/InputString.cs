@@ -39,7 +39,10 @@ namespace BytingLib
         public void Delete(int amountToRight)
         {
             if (RemoveSelectIfSelected())
+            {
+                OnTextChange?.Invoke(this);
                 return;
+            }
 
             int deleteTo = Cursor + amountToRight;
             if (deleteTo < 0)
@@ -148,6 +151,40 @@ namespace BytingLib
             OnCursorMoveOrSelectChanged?.Invoke(this);
         }
 
+        public void Cut()
+        {
+            if (!CheckIfAnyIsSelected())
+                return;
+
+            TextCopy.ClipboardService.SetText(GetSelected());
+
+            Delete(-1);
+        }
+
+        public void Copy()
+        {
+            if (!CheckIfAnyIsSelected())
+                return;
+
+            TextCopy.ClipboardService.SetText(GetSelected());
+        }
+
+        public void Paste()
+        {
+            Insert(TextCopy.ClipboardService.GetText());
+        }
+
+        private string GetSelected()
+        {
+            if (!CheckIfAnyIsSelected())
+                return "";
+
+            int min = Math.Min(SelectStart!.Value, Cursor);
+            int max = Math.Max(SelectStart.Value, Cursor);
+            return text.ToString().Substring(min, max - min);
+        }
+
+
         public bool MoveCursorVertically(int downwards)
         {
             return false;
@@ -206,7 +243,10 @@ namespace BytingLib
         public void DeleteWordLeft()
         {
             if (RemoveSelectIfSelected())
+            {
+                OnTextChange?.Invoke(this);
                 return;
+            }
 
             int start = Cursor;
             MoveOverWordLeft();
@@ -216,7 +256,10 @@ namespace BytingLib
         public void DeleteWordRight()
         {
             if (RemoveSelectIfSelected())
+            {
+                OnTextChange?.Invoke(this);
                 return;
+            }
 
             int start = Cursor;
             MoveOverWordRight();
