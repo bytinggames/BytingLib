@@ -26,7 +26,7 @@ namespace BytingLib.Markup
 
         public MarkupCollection(Creator creator, string text)
         {
-            IScriptReader reader = new ScriptReaderLiteral(text);
+            ScriptReaderLiteral reader = new ScriptReaderLiteral(text);
 
             INode element;
             while ((element = ReadElement(creator, reader)) != null)
@@ -35,7 +35,7 @@ namespace BytingLib.Markup
             }
         }
 
-        private static INode ReadElement(Creator creator, IScriptReader reader)
+        private static INode ReadElement(Creator creator, ScriptReaderLiteral reader)
         {
             char? peek = reader.Peek();
             if (!peek.HasValue)

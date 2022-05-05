@@ -6,7 +6,7 @@ namespace BytingLib.Markup
     {
         public string Text { get; }
 
-        public MarkupText(IScriptReader reader)
+        public MarkupText(ScriptReaderLiteral reader)
         {
             Text = reader.ReadToCharOrEnd(out char? until, '#', '\n');
 

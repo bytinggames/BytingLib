@@ -6,7 +6,7 @@ namespace BytingLib
         public ScriptReaderException(string message) : base(message) { }
     }
 
-    public class ScriptReader : IScriptReader
+    public class ScriptReader
     {
         protected string str;
         protected int i;
@@ -175,9 +175,10 @@ namespace BytingLib
     }
 
     // example: "#span(example:) @*this doesn't interpret characters like # ( ) and @, it ignores everything except the character specified after the @, in this case the literal string ends here: * #span(span is recognized again)"
-    class ScriptReaderLiteral : ScriptReader
+    public class ScriptReaderLiteral : ScriptReader
     {
         public char LiteralChar { get; }
+        public bool RemoveLiteralCharEnabled { get; set; } = true;
 
         public ScriptReaderLiteral(string str, char literalChar = '@')
             : base(str)
@@ -195,23 +196,28 @@ namespace BytingLib
         }
         private void SkipLiteral()
         {
-            str = str.Remove(--i, 1);
+            RemoveLiteralCharIfEnabled();
 
             char? literalIdentifier = ReadChar();
             if (literalIdentifier == null)
                 return;
-            str = str.Remove(--i, 1);
+            RemoveLiteralCharIfEnabled();
 
             char? c;
             while ((c = ReadChar()) != null)
             {
                 if (c == literalIdentifier)
                 {
-                    str = str.Remove(--i, 1);
+                    RemoveLiteralCharIfEnabled();
                     return;
                 }
             }
         }
 
+        private void RemoveLiteralCharIfEnabled()
+        {
+            if (RemoveLiteralCharEnabled)
+                str = str.Remove(--i, 1);
+        }
     }
 }
