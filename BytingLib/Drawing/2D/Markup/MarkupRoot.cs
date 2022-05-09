@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace BytingLib.Markup
 {
-    public class MarkupRoot
+    public class MarkupRoot : IDisposable
     {
         MarkupCollection Root { get; }
 
@@ -160,6 +160,11 @@ namespace BytingLib.Markup
         public Rect GetRectangleFontBased(MarkupSettings markupSettings)
         {
             return GetRectangle(markupSettings, markupSettings.Font.Value.LineSpacing - markupSettings.Font.Value.DefaultCharacterHeight);
+        }
+
+        public void Dispose()
+        {
+            Root.Dispose();
         }
     }
 }

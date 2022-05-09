@@ -55,5 +55,13 @@ namespace BytingLib.Markup
                     return new MarkupText(reader);
             }
         }
+
+        public void Dispose()
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].Dispose();
+            }
+        }
     }
 }

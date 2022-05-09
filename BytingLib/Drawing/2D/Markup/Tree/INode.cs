@@ -1,6 +1,6 @@
 ﻿namespace BytingLib.Markup
 {
-    public interface INode
+    public interface INode : IDisposable
     {
     }
 }

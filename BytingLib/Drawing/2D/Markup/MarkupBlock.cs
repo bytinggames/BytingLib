@@ -120,5 +120,9 @@ namespace BytingLib.Markup
             MarginLeft = val;
             MarginRight = val;
         }
+
+        public virtual void Dispose()
+        {
+        }
     }
 }

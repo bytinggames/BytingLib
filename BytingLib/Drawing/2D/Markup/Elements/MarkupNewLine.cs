@@ -15,5 +15,9 @@ namespace BytingLib.Markup
         {
             return "\\n";
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

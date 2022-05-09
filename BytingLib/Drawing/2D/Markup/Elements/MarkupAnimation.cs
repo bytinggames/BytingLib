@@ -34,5 +34,12 @@ namespace BytingLib.Markup
             SourceRectangle = animationData.Value.GetSourceRectangle(settings.TotalMilliseconds, frameTag);
             base.DrawChild(settings);
         }
+
+        public override void Dispose()
+        {
+            animationData.Dispose();
+
+            base.Dispose();
+        }
     }
 }

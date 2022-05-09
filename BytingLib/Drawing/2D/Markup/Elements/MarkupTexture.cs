@@ -7,7 +7,7 @@ using System;
 namespace BytingLib.Markup
 {
     [MarkupShortcut("tex")]
-    public class MarkupTexture : MarkupBlock
+    public class MarkupTexture : MarkupBlock, IDisposable
     {
         public Rectangle BoundingRectangle { get; }
 
@@ -99,6 +99,13 @@ namespace BytingLib.Markup
         public override string ToString()
         {
             return "tex: " + Texture.Value.Name;
+        }
+
+        public override void Dispose()
+        {
+            Texture.Dispose();
+
+            base.Dispose();
         }
     }
 }
