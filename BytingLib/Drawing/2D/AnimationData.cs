@@ -14,14 +14,14 @@ namespace BytingLib
 
         public void Initialize()
         {
-            int time = 0;
+            int ms = 0;
             foreach (var f in frames.Values)
             {
-                //f.timestamp = time;
-                time += f.duration;
+                //f.timestamp = ms;
+                ms += f.duration;
             }
 
-            TotalDuration = time;
+            TotalDuration = ms;
 
             if (meta?.frameTags != null)
             {
@@ -29,49 +29,56 @@ namespace BytingLib
                 {
                     tag.TotalDuration = frames.Skip(tag.from).Take(tag.to - tag.from + 1).Sum(f => f.Value.duration);
                 }
+
+                meta.InitializeFrameTagsDictionary();
             }
         }
 
-        private Rectangle GetSourceRectangle(long time)
+        private Rectangle GetSourceRectangle(long ms)
         {
-            time %= TotalDuration;
+            ms %= TotalDuration;
             foreach (var f in frames.Values)
             {
-                time -= f.duration;
-                if (time < 0)
+                ms -= f.duration;
+                if (ms < 0)
                     return f.rectangle;
             }
 
             throw new Exception();
         }
 
-        public Rectangle GetSourceRectangle(long time, string animationTagName)
+        public Rectangle GetSourceRectangle(double ms, string animationTagName)
+            => GetSourceRectangle(Convert.ToInt64(ms), animationTagName);
+        public Rectangle GetSourceRectangle(long ms, string animationTagName)
         {
             if (animationTagName == null)
-                return GetSourceRectangle(time);
+                return GetSourceRectangle(ms);
 
             var tag = GetFrameTag(animationTagName);
 
-            return GetSourceRectangle(time, tag);
+            return GetSourceRectangle(ms, tag);
         }
 
-        public Rectangle GetSourceRectangle(long time, Meta.FrameTag frameTag)
+
+        public Rectangle GetSourceRectangle(double ms, Meta.FrameTag frameTag)
+            => GetSourceRectangle(Convert.ToInt64(ms), frameTag);
+        public Rectangle GetSourceRectangle(long ms, Meta.FrameTag frameTag)
         {
             if (frameTag == null)
-                return GetSourceRectangle(time);
+                return GetSourceRectangle(ms);
 
             int tagFramesCount = frameTag.to - frameTag.from + 1;
             int tagTotalDuration = frameTag.TotalDuration;
 
-            time %= tagTotalDuration;
+            ms %= tagTotalDuration;
 
             if (frameTag.direction != "forward")
-                time = tagTotalDuration - time; // reverse time
+                ms = tagTotalDuration - ms; // reverse time
 
             foreach (var f in frames.Values.Skip(frameTag.from).Take(tagFramesCount))
             {
-                time -= f.duration;
-                if (time < 0)
+                ms -= f.duration;
+                if (ms < 0)
                     return f.rectangle;
             }
 
@@ -84,8 +91,7 @@ namespace BytingLib
                 throw new Exception("meta is null");
             if (meta.frameTags == null)
                 throw new Exception("meta.frameTags is null");
-            var tag = meta.frameTags.Find(f => f.name == animationTagName);
-            if (tag == null)
+            if (!meta.frameTagsDictionary.TryGetValue(animationTagName, out var tag))
                 throw new Exception("couldn't find tag " + animationTagName);
             return tag;
         }
@@ -118,6 +124,16 @@ namespace BytingLib
         public class Meta
         {
             public List<FrameTag> frameTags { get; set; }
+            public Dictionary<string, FrameTag> frameTagsDictionary { get; private set; }
+
+            internal void InitializeFrameTagsDictionary()
+            {
+                frameTagsDictionary = new Dictionary<string, FrameTag>();
+                foreach (var tag in frameTags)
+                {
+                    frameTagsDictionary.Add(tag.name, tag);
+                }
+            }
 
             public class FrameTag
             {
@@ -134,20 +150,6 @@ namespace BytingLib
         {
             var data = JsonSerializer.Deserialize<AnimationData>(json);
             data.Initialize();
-            return data;
-        }
-
-        static Dictionary<string, AnimationData> animationDatas = new Dictionary<string, AnimationData>();
-
-        public static AnimationData GetAnimationData(ContentManager content, string assetName)
-        {
-            if (animationDatas.ContainsKey(assetName))
-                return animationDatas[assetName];
-            
-            string file = Path.Combine(content.RootDirectory, assetName.Replace('/', '\\') + ".json");
-            string json = File.ReadAllText(file);
-            AnimationData data = FromJson(json);
-            animationDatas.Add(assetName, data);
             return data;
         }
     }

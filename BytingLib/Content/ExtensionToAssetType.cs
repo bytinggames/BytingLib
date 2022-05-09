@@ -5,8 +5,10 @@ namespace BytingLib
 {
     public static class ExtensionToAssetType
     {
-        public static Type? Convert(string extension)
+        public static Type? Convert(string localPath)
         {
+            string extension = Path.GetExtension(localPath);
+
             if (string.IsNullOrEmpty(extension))
                 return null;
             if (extension[0] == '.')
@@ -19,6 +21,7 @@ namespace BytingLib
                 "wav" or "mp3" or "ogg" => typeof(SoundEffect),
                 "fx" => typeof(Effect),
                 "fbx" => typeof(Model),
+                "json" => localPath.EndsWith("ani.json") ? typeof(AnimationData) : null,
                 _ => null,
             };
             return assetType;

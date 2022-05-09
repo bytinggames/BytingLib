@@ -22,8 +22,8 @@ namespace BytingLib.Markup
 
         protected override void DrawChild(MarkupSettings settings)
         {
-            if (settings.Time % 60 < 30)
-            settings.SpriteBatch.DrawRectangle(settings.Anchor.Rectangle(Math.Max(1, settings.Font.Value.LineSpacing / 12), settings.Font.Value.LineSpacing), Color.Black);
+            if (settings.TotalMilliseconds % 1000 < 500)
+                settings.SpriteBatch.DrawRectangle(settings.Anchor.Rectangle(Math.Max(1, settings.Font.Value.LineSpacing / 12), settings.Font.Value.LineSpacing), Color.Black);
         }
     }
 }

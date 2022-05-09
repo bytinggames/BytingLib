@@ -29,7 +29,7 @@ string[] models = GetFiles("Models", "fbx");
 
 List<string> copiesList = new List<string>();
 copiesList.AddRange(GetFiles("Fonts", "xnb"));
-copiesList.AddRange(GetFiles("Textures", "json"));
+copiesList.AddRange(GetFiles("Textures", "json")); // animations
 AddIfExists(copiesList, "Sounds\\settings.txt");
 
 string[] copies = copiesList.ToArray();

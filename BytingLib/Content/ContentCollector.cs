@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using Microsoft.Xna.Framework.Graphics;
+
+namespace BytingLib
 {
     public class ContentCollector : IContentCollector
     {
@@ -25,6 +27,33 @@
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
             {
                 assetHolder = new AssetHolder<T>(contentRaw.Load<T>(assetName)!, assetName, Unuse);
+                loadedAssets.Add(assetName, assetHolder);
+            }
+
+            Ref<T> asset = (assetHolder as AssetHolder<T>)!.Use();
+
+            return asset;
+        }
+
+        public Ref<string> UseString(string assetNameWithExtension)
+        {
+            return UseCustom(assetNameWithExtension, fileName => File.ReadAllText(fileName));
+        }
+
+        public Ref<byte[]> UseBytes(string assetNameWithExtension)
+        {
+            return UseCustom(assetNameWithExtension, fileName => File.ReadAllBytes(fileName));
+        }
+
+        private Ref<T> UseCustom<T>(string assetNameWithExtension, Func<string, T> readAsset)
+        {
+            string assetName = relativeAssetPath + assetNameWithExtension;
+
+            object? assetHolder;
+            if (!loadedAssets.TryGetValue(assetName, out assetHolder))
+            {
+                T assetContent = readAsset(Path.Combine(contentRaw.RootDirectory, assetName));
+                assetHolder = new AssetHolder<T>(assetContent, assetName, Unuse);
                 loadedAssets.Add(assetName, assetHolder);
             }
 

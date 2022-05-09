@@ -11,7 +11,7 @@ namespace BytingLib.Markup
     {
         public Rectangle BoundingRectangle { get; }
 
-        public Texture2D Texture { get; }
+        public Ref<Texture2D> Texture { get; }
 
         public Color Color { get; set; } = Color.White;
         public Rectangle? SourceRectangle { get; set; } = null;
@@ -25,9 +25,9 @@ namespace BytingLib.Markup
             set => ScaleXY = new Vector2(value);
         }
 
-        public MarkupTexture(ContentManager content, string texName)
+        public MarkupTexture(IContentCollector content, string texName)
         {
-            Texture = content.Load<Texture2D>("Textures/" + texName);
+            Texture = content.Use<Texture2D>("Textures/" + texName);
         }
 
         public void Flip()
@@ -55,7 +55,7 @@ namespace BytingLib.Markup
         private Vector2 GetSizeChildUnscaledInternal(MarkupSettings settings)
         {
             if (SourceRectangle == null)
-                return Texture.GetSize();
+                return Texture.Value.GetSize();
             else
                 return SourceRectangle.Value.Size.ToVector2();
         }
@@ -93,12 +93,12 @@ namespace BytingLib.Markup
             //        }
             //        break;
             //}
-            Texture.Draw(settings.SpriteBatch, settings.Anchor, ColorExtension.MultiplyColors(settings.TextureColor, Color), SourceRectangle, settings.Scale * ScaleXY, settings.Rotation, flip);
+            Texture.Value.Draw(settings.SpriteBatch, settings.Anchor, ColorExtension.MultiplyColors(settings.TextureColor, Color), SourceRectangle, settings.Scale * ScaleXY, settings.Rotation, flip);
         }
 
         public override string ToString()
         {
-            return "tex: " + Texture.Name;
+            return "tex: " + Texture.Value.Name;
         }
     }
 }

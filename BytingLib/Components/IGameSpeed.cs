@@ -2,11 +2,10 @@
 
 namespace BytingLib
 {
-    public interface IUpdateSpeed
+    public interface IGameSpeed
     {
         float Factor { get; }
         GameTime GameTime { get; }
-
-        void Update(GameTime gameTime);
+        void OnRefresh(GameTime gameTime);
     }
 }

@@ -8,30 +8,30 @@ namespace BytingLib.Markup
     [MarkupShortcut("anim")]
     public class MarkupAnimation : MarkupTexture
     {
-        private readonly AnimationData animationData;
-        private readonly AnimationData.Meta.FrameTag frameTag;
+        private readonly Ref<AnimationData> animationData;
+        private readonly string frameTag;
 
         // play the whole animation
-        public MarkupAnimation(ContentManager content, string texName) : base(content, texName)
+        public MarkupAnimation(IContentCollector content, string texName) : base(content, texName)
         {
-            animationData = AnimationData.GetAnimationData(content, "Textures/" + texName);
+            animationData = content.Use<AnimationData>("Textures/" + texName + ".ani");
             frameTag = null;
         }
 
-        public MarkupAnimation(ContentManager content, string texName, string animationTagName) : base(content, texName)
+        public MarkupAnimation(IContentCollector content, string texName, string animationTagName) : base(content, texName)
         {
-            animationData = AnimationData.GetAnimationData(content, "Textures/" + texName);
-            frameTag = animationData.GetFrameTag(animationTagName);
+            animationData = content.Use<AnimationData>("Textures/" + texName + ".ani");
+            frameTag = animationTagName;
         }
 
         protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings)
         {
-            return animationData.GetSourceRectangle(settings.Time, frameTag).Size.ToVector2();
+            return animationData.Value.GetSourceRectangle(settings.TotalMilliseconds, frameTag).Size.ToVector2();
         }
 
         protected override void DrawChild(MarkupSettings settings)
         {
-            SourceRectangle = animationData.GetSourceRectangle(settings.Time, frameTag);
+            SourceRectangle = animationData.Value.GetSourceRectangle(settings.TotalMilliseconds, frameTag);
             base.DrawChild(settings);
         }
     }

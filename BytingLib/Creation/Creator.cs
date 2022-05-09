@@ -190,7 +190,7 @@ namespace BytingLib.Creation
                 int parametersForSplitArray = 0;
                 for (int i = 0; i < parameters.Length; i++)
                 {
-                    if (!AutoParameters.ContainsKey(parameters[i].ParameterType))
+                    if (!TryGetAutoParameter(parameters[i].ParameterType, out _))
                         parametersForSplitArray++;
                 }
 
@@ -199,6 +199,23 @@ namespace BytingLib.Creation
             }
 
             return null;
+        }
+
+        private bool TryGetAutoParameter(Type parameterType, out object? obj)
+        {
+            if (AutoParameters.TryGetValue(parameterType, out obj))
+                return true;
+
+            if (parameterType.IsInterface)
+            {
+                var first = AutoParameters.FirstOrDefault(f => parameterType.IsAssignableFrom(f.Key));
+                if (first.Key != default)
+                {
+                    obj = first.Value;
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>{"ctorArg1", "ctorArg2"}</summary>
@@ -212,8 +229,8 @@ namespace BytingLib.Creation
             int splitIndex = 0;
             for (int i = 0; i < expectedTypes.Length; i++)
             {
-                if (AutoParameters.ContainsKey(expectedTypes[i]))
-                    output[i] = AutoParameters[expectedTypes[i]];
+                if (TryGetAutoParameter(expectedTypes[i], out object? obj))
+                    output[i] = obj!;
                 else
                     output[i] = GetParameters(split[splitIndex++], expectedTypes[i]);
             }

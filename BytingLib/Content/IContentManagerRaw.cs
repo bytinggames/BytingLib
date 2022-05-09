@@ -4,5 +4,6 @@
     {
         T Load<T>(string assetName);
         void UnloadAsset(string assetName);
+        string RootDirectory { get; }
     }
 }

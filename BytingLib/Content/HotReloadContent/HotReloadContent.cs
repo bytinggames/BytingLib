@@ -59,7 +59,7 @@ namespace BytingLib
             Get("Models", "*.fbx");
             Get("Music", "*.ogg");
             Get("Sounds", "*.ogg|*.wav");
-            Get("Textures", "*.png|*.jpg|*.jpeg");
+            Get("Textures", "*.png|*.jpg|*.jpeg|*.json");
             GetFile("Sounds\\settings.txt");
             GetFile("localization.csv");
 
@@ -120,72 +120,12 @@ namespace BytingLib
 
             void Iterate(DirectorySupervisor.FileStamp file, bool deleted)
             {
-                string extension = Path.GetExtension(file.LocalPath);
-                Type? assetType = ExtensionToAssetType.Convert(extension);
+                Type? assetType = ExtensionToAssetType.Convert(file.LocalPath);
                 if (assetType == null)
                     return;
 
                 ReloadIfLoadedFromType(assetType, file.AssetName, deleted);
-                
-                //if (file.LocalPath.StartsWith("Textures\\"))
-                //{
-                //    ReloadIfLoaded<Texture2D>(file.AssetName, deleted);
-                //}
-                //else if (file.LocalPath.StartsWith("Sounds\\"))
-                //{
-                //    throw new NotImplementedException();
-                //    //if (file.LocalPath == "Sounds\\settings.txt")
-                //    //{
-                //    //    // load default settings
-                //    //    string defaultFile = Path.Combine(content.RootDirectory, file.LocalPath);
-                //    //    Sounds.LoadSettings(defaultFile);
 
-                //    //    // load mod settings
-                //    //    if (!deleted && defaultFile != file.Path)
-                //    //        Sounds.LoadSettings(file.Path);
-                //    //}
-                //    //else
-                //    //{
-                //    //    var val = GetCurrentValue<Sounds>(file);
-                //    //    if (val is SoundItem sound)
-                //    //        sound.SoundEffect = Reload<SoundEffect>(file.AssetName, deleted);
-                //    //}
-                //}
-                //else if (file.LocalPath.StartsWith("Effects\\"))
-                //{
-                //    throw new NotImplementedException();
-                //    //var val = GetCurrentValue<Effects>(file);
-                //    //if (val is Pointer<Effect> effect)
-                //    //{
-                //    //    var parameters = effect.Value.Parameters;
-
-                //    //    effect.Value = Reload<Effect>(file.AssetName, deleted);
-
-                //    //    CopyParameters(parameters, effect.Value.Parameters);
-                //    //}
-                //}
-                //else if (file.LocalPath == "localization.csv")
-                //{
-                //    throw new NotImplementedException();
-                //    //string defaultFile = Path.Combine(content.RootDirectory, file.LocalPath);
-
-                //    //// load mod settings
-                //    //if (!deleted && defaultFile != file.Path)
-                //    //    Loca.Reload(file.Path);
-                //    //else
-                //    //    Loca.Reload(defaultFile);
-
-                //    //textChanged = true;
-                //}
-                //else if (file.LocalPath.StartsWith("Fonts\\"))
-                //{
-                //    throw new NotImplementedException();
-                //    //var val = GetCurrentValue<Fonts>(file);
-                //    //if (val is MyFont font)
-                //    //    font.ReloadFont(Reload<SpriteFont>(file.AssetName, deleted));
-
-                //    //textChanged = true;
-                //}
 
                 if (onReload.TryGetValue(file.AssetName, out List<Action> actions))
                 {

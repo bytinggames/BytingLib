@@ -2,7 +2,7 @@
 
 namespace BytingLib
 {
-    public class UpdateSpeed : IUpdateSpeed
+    public class GameSpeed : IGameSpeed
     {
         public GameTime GameTime { get; private set; } = new GameTime();
 
@@ -10,14 +10,14 @@ namespace BytingLib
 
         public float Factor => (float)(GameTime.ElapsedGameTime.TotalMilliseconds / defaultMSPerFrame);
 
-        public UpdateSpeed(TimeSpan defaultElapsedTime)
+        public GameSpeed(TimeSpan defaultElapsedTime)
         {
             defaultMSPerFrame = defaultElapsedTime.TotalMilliseconds;
             if (defaultMSPerFrame <= 0)
                 throw new ArgumentException("defaultElapsedTime must be larger than 0");
         }
 
-        public void Update(GameTime gameTime)
+        public void OnRefresh(GameTime gameTime)
         {
             GameTime = gameTime;
         }

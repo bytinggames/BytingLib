@@ -87,20 +87,29 @@ public class _{name}
 
             private readonly string assetType;
 
-            public File(string name)
+            private string? customPrint;
+
+            public File(string _name)
             {
-                this.name = name;
-
+                name = _name;
                 string ext = Path.GetExtension(name);
-                this.name = name.Remove(name.Length - ext.Length);
+                this.name = _name.Remove(_name.Length - ext.Length);
 
-
-                assetType = AssetTypes.Convert(ext)!;
+                if (ext == ".json" && name.EndsWith(".ani"))
+                {
+                    string nameWithoutAni = name.Remove(name.Length - ".ani".Length);
+                    customPrint = $"public Animation Use{nameWithoutAni}Animation() => collector.UseAnimation(\"{{0}}{nameWithoutAni}\");";
+                }
+                else
+                    assetType = AssetTypes.Convert(ext)!;
             }
 
             public string Print(string contentDirectory)
             {
-                return $"public Ref<{assetType}> Use{ToVariableName(name)}() => collector.Use<{assetType}>(\"{contentDirectory + name}\");";
+                if (customPrint != null)
+                    return string.Format(customPrint, contentDirectory);
+                else
+                    return $"public Ref<{assetType}> Use{ToVariableName(name)}() => collector.Use<{assetType}>(\"{contentDirectory + name}\");";
             }
 
             static string ToVariableName(string name)

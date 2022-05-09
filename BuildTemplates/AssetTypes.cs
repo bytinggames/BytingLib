@@ -9,6 +9,7 @@ namespace BuildTemplates
             { "SpriteFont", new[] { "spritefont" } },
             { "SoundEffect", new[] { "wav", "mp3", "ogg" } },
             { "Effect", new[] { "fx" } },
+            { "string", new[] { "json", "txt", "ini", "config" } },
         };
 
         public static string? Convert(string extension)

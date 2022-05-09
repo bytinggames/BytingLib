@@ -16,6 +16,12 @@ namespace BytingLib
         /// <summary>Foces the asset to be loaded from disc.</summary>
         public override T Load<T>(string assetName)
         {
+            if (typeof(T) == typeof(AnimationData))
+            {
+                string json = File.ReadAllText(Path.Combine(RootDirectory, assetName.Replace("/", "\\") + ".json"));
+                return (T)(object)AnimationData.FromJson(json);
+            }
+
             T asset = ReadAsset<T>(assetName, null);
             LoadedAssets.Add(assetName, asset);
             return asset;

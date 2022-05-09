@@ -16,7 +16,7 @@ namespace BytingLib.Markup
         public Vector2 Scale { get; set; }
         public float Rotation { get; }
         public SpriteEffects Effects { get; }
-        public long Time { get; set; }
+        public double TotalMilliseconds { get; set; }
         public float MinLineHeight { get; set; }
         public float VerticalSpaceBetweenLines { get; set; }
         public Outline TextOutline { get; set; }
