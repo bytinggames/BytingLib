@@ -16,10 +16,10 @@ using Microsoft.Xna.Framework.Graphics;
 namespace LevelSketch
 {
     <#
-
-
-    string output = ContentTemplate.Create();
-    output = output.Replace("\n", "\n\t");
+    var projectPath = Environment.CurrentDirectory;
+    projectPath = Path.GetFullPath(Path.Combine(projectPath, @"..\"));
+    string contentPath = Path.Combine(projectPath, "Content");
+    string output = ContentTemplate.Create(contentPath + "/");
 
     #>
     <#= output #>

@@ -31,6 +31,7 @@ List<string> copiesList = new List<string>();
 copiesList.AddRange(GetFiles("Fonts", "xnb"));
 copiesList.AddRange(GetFiles("Textures", "json")); // animations
 AddIfExists(copiesList, "Sounds\\settings.txt");
+AddIfExists(copiesList, "localization.csv");
 
 string[] copies = copiesList.ToArray();
 

@@ -23,14 +23,13 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>_ContentGenerate.tt.txt</DependentUpon>
     </None>
+    <None Update="Build\CSharpContent\ContentGenerate\_Content.tt.remove">
+      <LastGenOutput>_Content.tt.Generated.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="Build\CSharpContent\_ContentGenerate.tt.remove">
       <LastGenOutput>_ContentGenerate.tt.txt</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
-    <None Update="Build\CSharpContent\_ContentGenerate.tt.txt">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>_ContentGenerate.tt.remove</DependentUpon>
     </None>
   </ItemGroup>
 

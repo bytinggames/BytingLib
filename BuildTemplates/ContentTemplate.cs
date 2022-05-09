@@ -100,6 +100,10 @@ public class _{name}
                     string nameWithoutAni = name.Remove(name.Length - ".ani".Length);
                     customPrint = $"public Animation Use{nameWithoutAni}Animation() => collector.UseAnimation(\"{{0}}{nameWithoutAni}\");";
                 }
+                else if (ext == ".txt")
+                {
+                    customPrint = $"public Ref<string> Use{ToVariableName(name)}() => collector.UseString(\"{name}{ext}\");";
+                }
                 else
                     assetType = AssetTypes.Convert(ext)!;
             }
@@ -123,6 +127,9 @@ public class _{name}
 
         public static string Create(string contentPath)
         {
+            if (!contentPath.EndsWith("/"))
+                contentPath += "/";
+
             Folder root = new Folder("Content");
 
             LookIntoDirRecursive(contentPath, contentPath, root);

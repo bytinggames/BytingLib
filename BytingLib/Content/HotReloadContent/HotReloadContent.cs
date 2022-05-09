@@ -120,6 +120,12 @@ namespace BytingLib
 
             void Iterate(DirectorySupervisor.FileStamp file, bool deleted)
             {
+                if (file.LocalPath == "localization.csv")
+                {
+                    Loca.Reload(file.Path);
+                    return;
+                }
+
                 Type? assetType = ExtensionToAssetType.Convert(file.LocalPath);
                 if (assetType == null)
                     return;
