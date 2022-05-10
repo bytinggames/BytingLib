@@ -20,6 +20,7 @@ namespace BytingLib
             return shape.GetBoundingRectangle().GetCenter();
         }
         public static bool CollidesWith(this IShape myShape, IShape shape) => Collision.GetCollision(myShape, shape);
+        public static bool CollidesWith(this IShape myShape, Vector2 vec) => Collision.GetCollision(myShape, vec);
         public static CollisionResult DistanceTo(this IShape myShape, IShape shape, Vector2 dir) => Collision.GetDistance(myShape, shape, dir);
 
         public static void Draw(this IShape shape, SpriteBatch spriteBatch, Color color)

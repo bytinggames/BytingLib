@@ -46,6 +46,16 @@ namespace BytingLib
                 if (key.Item2 == TVector2)
                     collisionFunctions.Add((key.Item1, TPointF), (a, b) => collisionFunctions[key](a, ((PointF)b).Pos));
             }
+            // same for distance functions
+            keys = distanceFunctions.Keys.ToList();
+            foreach (var key in keys)
+            {
+                if (key.Item1 == TVector2)
+                    distanceFunctions.Add((TPointF, key.Item2), (a, b, dir) => distanceFunctions[key](((PointF)a).Pos, b, dir));
+
+                if (key.Item2 == TVector2)
+                    distanceFunctions.Add((key.Item1, TPointF), (a, b, dir) => distanceFunctions[key](a, ((PointF)b).Pos, dir));
+            }
         }
 
         static readonly Dictionary<(Type, Type), Func<object, object, bool>> collisionFunctions = new()
@@ -90,21 +100,28 @@ namespace BytingLib
             { (TVector2, TCircle), (a, b, dir) => DistVectorCircle((Vector2)a, (Circle)b, dir) },
             //{ (TVector2, TTextureShape), (a, b, dir) => DistVectorTextureShape((Vector2)a, (TextureShape)b, dir) },
             { (TVector2, TPolygon), (a, b, dir) => DistVectorPolygon((Vector2)a, (Polygon)b, dir) },
+            { (TVector2, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)b, a, -dir).InvertAxisAndReturn() },
 
             { (TRect, TRect), (a, b, dir) => DistRectangleRectangle((Rect)a, (Rect)b, dir) },
             { (TRect, TCircle), (a, b, dir) => DistRectangleCircle((Rect)a, (Circle)b, dir) },
             //{ (TRect, TTextureShape), (a, b, dir) => DistRectangleTextureShape((Rect)a, (TextureShape)b, dir) },
             { (TRect, TPolygon), (a, b, dir) => DistRectanglePolygon((Rect)a, (Polygon)b, dir) },
+            { (TRect, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)b, a, -dir).InvertAxisAndReturn() },
 
 
             { (TPolygon, TPolygon), (a, b, dir) => DistPolygonPolygon((Polygon)a, (Polygon)b, dir) },
             { (TPolygon, TCircle), (a, b, dir) => DistPolygonCircle((Polygon)a, (Circle)b, dir) },
             //{ (TPolygon, TTextureShape), (a, b, dir) => DistPolygonTextureShape((Polygon)a, (TextureShape)b, dir) },
+            { (TPolygon, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)b, a, -dir).InvertAxisAndReturn() },
 
             { (TCircle, TCircle), (a, b, dir) => DistCircleCircle((Circle)a, (Circle)b, dir) },
             //{ (TCircle, TTextureShape), (a, b, dir) => DistCircleTextureShape((Circle)a, (TextureShape)b, dir) },
+            { (TCircle, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)b, a, -dir).InvertAxisAndReturn() },
 
             //{ (TTextureShape, TTextureShape), (a, b, dir) => DistTextureShapeTextureShape((TextureShape)a, (TextureShape)b, dir) },
+            { (TTextureShape, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)b, a, -dir).InvertAxisAndReturn() },
+
+            { (TShapeCollection, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)b, a, -dir).InvertAxisAndReturn() },
         };
 
         public static bool GetCollision(object shape1, object shape2)
