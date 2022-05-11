@@ -40,7 +40,15 @@ namespace BytingLib
         }
 
         protected abstract void UpdateActive(GameTime gameTime);
-        protected abstract void DrawActive(GameTime gameTime);
+        /// <summary>
+        /// No need to call base.DrawActive() cause the base implementation only calls 
+        /// <code>GraphicsDevice.Clear(Color.CornflowerBlue);</code>
+        /// </summary>
+        /// <param name="gameTime"></param>
+        protected virtual void DrawActive(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+        }
         protected abstract void MyInitialize();
 
         protected override void Initialize()
