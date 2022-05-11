@@ -119,7 +119,9 @@ namespace BytingLib
             {
                 if (file.LocalPath == "localization.csv")
                 {
-                    Loca.Reload(file.Path);
+                    if (!deleted)
+                        Loca.Reload(file.Path);
+                    // TODO: when mod localization file is deleted, the default localization file should be loaded again
                     return;
                 }
 
