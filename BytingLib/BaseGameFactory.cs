@@ -5,7 +5,7 @@ namespace BytingLib
 {
     public static class BaseGameFactory
     {
-        public static IStuffDisposable CreateDefaultGame(Game game, GraphicsDeviceManager graphics, out KeyInput keys, out MouseInput mouse, out GamePadInput gamePad, bool mouseWithActivationClick = true)
+        public static IStuffDisposable CreateDefaultGame(Game game, GraphicsDeviceManager graphics, string? inputRecordingDir, out KeyInput keys, out MouseInput mouse, out GamePadInput gamePad, bool mouseWithActivationClick = true)
         {
             IStuffDisposable stuff = new StuffDisposable(typeof(IUpdate), typeof(IDraw));
 
@@ -36,7 +36,8 @@ namespace BytingLib
             stuff.Add(inputRecordingManager = new InputRecordingManager<FullInput>(stuff, inputSource, CreateInputRecorder, PlayInput));
 
             stuff.Add(new UpdateKeyPressed(keys, Keys.Escape, game.Exit));
-            stuff.Add(new InputRecorderTrigger<FullInput>(keysDev, inputRecordingManager));
+            if (inputRecordingDir != null)
+                stuff.Add(new InputRecordingTriggerer<FullInput>(keysDev, inputRecordingManager, inputRecordingDir));
 
             WindowManager windowManager = new WindowManager(true, game.Window, graphics);
             game.Window.AllowUserResizing = true;
@@ -47,30 +48,12 @@ namespace BytingLib
             return stuff;
         }
 
-        class InputRecorderTrigger<T> : IUpdate where T : struct
-        {
-            private readonly KeyInput keys;
-            private readonly InputRecordingManager<T> inputRecordingManager;
-
-            public InputRecorderTrigger(KeyInput keys, InputRecordingManager<T> inputRecordingManager)
-            {
-                this.keys = keys;
-                this.inputRecordingManager = inputRecordingManager;
-            }
-            public void Update()
-            {
-                if (keys.F5.Pressed)
-                {
-                    if (keys.Control.Down)
-                        inputRecordingManager.ToggleRecording("input.txt");
-                    else
-                        inputRecordingManager.TogglePlaying("input.txt");
-                }
-            }
-        }
-
         private static IDisposable CreateInputRecorder(StructSource<FullInput> inputSource, string path)
         {
+            string dir = Path.GetDirectoryName(path)!;
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
             FileStream fs = File.Create(path);
             StructStreamWriterCompressed<FullInput> recorder = new(fs);
             inputSource.OnUpdate += AddState;
