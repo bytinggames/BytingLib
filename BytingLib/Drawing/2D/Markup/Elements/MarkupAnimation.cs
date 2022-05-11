@@ -9,7 +9,7 @@ namespace BytingLib.Markup
     public class MarkupAnimation : MarkupTexture
     {
         private readonly Ref<AnimationData> animationData;
-        private readonly string frameTag;
+        private readonly string? frameTag;
 
         // play the whole animation
         public MarkupAnimation(IContentCollector content, string texName) : base(content, texName)

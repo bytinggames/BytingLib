@@ -7,7 +7,7 @@ namespace BytingLib
 {
     public class HotReloadContent
     {
-        ContentManagerRaw tempContentRaw;
+        public ContentManagerRaw TempContentRaw { get; }
         ContentBuilder contentBuilder;
 
         DirectorySupervisor dirSupervisor;
@@ -16,16 +16,13 @@ namespace BytingLib
         string sourceContentDir;
 
         /// <summary>Either localization.csv or any font changed.</summary>
-        public event Action OnTextReload;
+        public event Action? OnTextReload;
 
         public HotReloadContent(IServiceProvider serviceProvider, IContentCollector content, string hotReloadContentPath = @"..\..\..\Content")
         {
             this.content = content;
 
             sourceContentDir = Path.GetFullPath(hotReloadContentPath);
-
-            if (!Directory.Exists(sourceContentDir))
-                throw new DirectoryNotFoundException("directory not found: " + sourceContentDir);
 
             bool expectEmptyDir;
 
@@ -45,7 +42,7 @@ namespace BytingLib
 
             contentBuilder = new ContentBuilder(sourceContentDir, tempOutputPath, tempPath);
 
-            tempContentRaw = new ContentManagerRaw(serviceProvider, contentBuilder.OutputPath);
+            TempContentRaw = new ContentManagerRaw(serviceProvider, contentBuilder.OutputPath);
 
             if (expectEmptyDir)
                 UpdateChanges();
@@ -133,7 +130,7 @@ namespace BytingLib
                 ReloadIfLoadedFromType(assetType, file.AssetName, deleted);
 
 
-                if (onReload.TryGetValue(file.AssetName, out List<Action> actions))
+                if (onReload.TryGetValue(file.AssetName, out List<Action>? actions))
                 {
                     if (actions != null)
                     {
@@ -153,7 +150,7 @@ namespace BytingLib
             //    .Concat(changes.Deleted.Select(f => f.LocalPath + " deleted"))));
         }
 
-        private object GetCurrentValue<AssetContainer>(DirectorySupervisor.FileStamp file)
+        private object? GetCurrentValue<AssetContainer>(DirectorySupervisor.FileStamp file)
         {
             string name = Path.GetFileNameWithoutExtension(file.Path);
             var field = typeof(AssetContainer).GetField(name);
@@ -268,7 +265,7 @@ namespace BytingLib
             if (assetHolder == null) // check if the asset has already been loaded
                 return; // if not, then don't bother with replacing
 
-            tempContentRaw.UnloadAsset(assetName); // to dispose
+            TempContentRaw.UnloadAsset(assetName); // to dispose
 
             if (deleted)
             {
@@ -277,7 +274,7 @@ namespace BytingLib
             }
             else
             {
-                T? newlyLoadedAsset = tempContentRaw.Load<T>(assetName);
+                T? newlyLoadedAsset = TempContentRaw.Load<T>(assetName);
                 if (newlyLoadedAsset == null)
                     return;
                 assetHolder.Replace(newlyLoadedAsset);
@@ -290,7 +287,7 @@ namespace BytingLib
         internal void SubscribeToReload(string assetName, Action actionOnReload)
         {
             assetName = assetName.Replace('\\', '/');
-            List<Action> actions;
+            List<Action>? actions;
             if (!onReload.TryGetValue(assetName, out actions))
             {
                 actions = new List<Action>();
@@ -301,7 +298,7 @@ namespace BytingLib
         internal void UnsubscribeToReload(string assetName, Action actionOnReload)
         {
             assetName = assetName.Replace('\\', '/');
-            if (onReload.TryGetValue(assetName, out List<Action> actions))
+            if (onReload.TryGetValue(assetName, out List<Action>? actions))
             {
                 actions.Remove(actionOnReload);
             }

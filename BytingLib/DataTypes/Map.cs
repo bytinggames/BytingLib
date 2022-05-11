@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace BytingLib.DataTypes
 {
     // source: https://stackoverflow.com/questions/10966331/two-way-bidirectional-dictionary-in-c
-    public class Map<T1, T2>
+    public class Map<T1, T2> where T1 : notnull where T2 : notnull
     {
         private Dictionary<T1, T2> _forward = new Dictionary<T1, T2>();
         private Dictionary<T2, T1> _reverse = new Dictionary<T2, T1>();
@@ -18,7 +18,7 @@ namespace BytingLib.DataTypes
             this.Backward = new Indexer<T2, T1>(_reverse);
         }
 
-        public class Indexer<T3, T4>
+        public class Indexer<T3, T4> where T3 : notnull
         {
             private Dictionary<T3, T4> _dictionary;
             public Indexer(Dictionary<T3, T4> dictionary)

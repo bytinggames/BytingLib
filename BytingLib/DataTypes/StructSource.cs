@@ -1,6 +1,5 @@
-﻿using BytingLib;
-
-namespace LevelSketch
+﻿
+namespace BytingLib
 {
     public class StructSource<T> : IUpdate, IDisposable where T : struct
     {

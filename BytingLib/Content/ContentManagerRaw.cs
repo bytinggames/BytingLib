@@ -14,17 +14,25 @@ namespace BytingLib
         }
 
         /// <summary>Foces the asset to be loaded from disc.</summary>
+        /// <exception cref="ContentLoadException"/>
         public override T Load<T>(string assetName)
         {
             if (typeof(T) == typeof(AnimationData))
-            {
-                string json = File.ReadAllText(Path.Combine(RootDirectory, assetName.Replace("/", "\\") + ".json"));
-                return (T)(object)AnimationData.FromJson(json);
-            }
+                return LoadAnimationData<T>(assetName);
 
             T asset = ReadAsset<T>(assetName, null);
             LoadedAssets.Add(assetName, asset);
             return asset;
+        }
+
+        private T LoadAnimationData<T>(string assetName)
+        {
+            string filePath = Path.Combine(RootDirectory, assetName.Replace("/", "\\") + ".json");
+            if (!File.Exists(filePath))
+                throw new ContentLoadException("file " + filePath + " does not exist");
+
+            string json = File.ReadAllText(filePath);
+            return (T)(object)AnimationData.FromJson(json);
         }
 
         /// <summary>Foces the asset to be unloaded from RAM.</summary>

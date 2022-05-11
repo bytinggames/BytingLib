@@ -367,7 +367,7 @@ namespace BytingLib
 #if DEBUG
                 throw e;
 #else
-                Logger.Log(e);
+                //Logger.Log(e);
                 return "[" + key + "]";
 #endif
             }
@@ -378,7 +378,7 @@ namespace BytingLib
 #if DEBUG
                 throw e;
 #else
-                Logger.Log(e);
+                //Logger.Log(e);
                 return "[" + key + "]";
 #endif
             }
