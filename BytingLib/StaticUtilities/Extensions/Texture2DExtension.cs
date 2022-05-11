@@ -216,7 +216,7 @@ namespace BytingLib
             return new Int2(tex.Width, tex.Height);
         }
 
-        public static Texture2D BlendOver(this Texture2D tex1, Texture2D tex2, GraphicsDevice gDevice)
+        public static Texture2D? BlendOver(this Texture2D tex1, Texture2D tex2, GraphicsDevice gDevice)
         {
             if (tex1.Width != tex2.Width || tex1.Height != tex2.Height)
                 return null;

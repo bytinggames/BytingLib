@@ -2,6 +2,10 @@
  * Ported from https://gist.github.com/KdotJPG/b1270127455a94ac5d19
  * and heavily refactored to improve performance. */
 
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 using System.Runtime.CompilerServices;
 
 namespace BytingLib
@@ -449,3 +453,7 @@ namespace BytingLib
         }
     }
 }
+
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

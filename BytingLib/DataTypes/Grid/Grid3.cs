@@ -127,7 +127,7 @@ namespace BytingLib
 
         private void AddToCoord(Int3 c, T entity)
         {
-            if (Lists.TryGetValue(c, out List<T> list))
+            if (Lists.TryGetValue(c, out List<T>? list))
             {
                 list.Add(entity);
             }
@@ -161,7 +161,7 @@ namespace BytingLib
         }
         private bool RemoveFromCoord(Int3 c, T entity)
         {
-            if (Lists.TryGetValue(c, out List<T> list))
+            if (Lists.TryGetValue(c, out List<T>? list))
             {
                 list.Remove(entity);
 
@@ -178,7 +178,7 @@ namespace BytingLib
         public IEnumerable<T> this[int x, int y, int z] => GetEntities(x, y, z);
         public IEnumerable<T> GetEntities(Int3 c)
         {
-            if (Lists.TryGetValue(c, out List<T> list))
+            if (Lists.TryGetValue(c, out List<T>? list))
                 return list.AsEnumerable();
             else
                 return Enumerable.Empty<T>();

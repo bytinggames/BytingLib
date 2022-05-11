@@ -84,7 +84,7 @@ namespace BytingLib
             if (!CheckIfAnyIsSelected())
                 return false;
 
-            int min = Math.Min(SelectStart.Value, Cursor);
+            int min = Math.Min(SelectStart!.Value, Cursor);
             int max = Math.Max(SelectStart.Value, Cursor);
             text.Remove(min, max - min);
             Cursor = min;
@@ -171,7 +171,10 @@ namespace BytingLib
 
         public void Paste()
         {
-            Insert(TextCopy.ClipboardService.GetText());
+            string? text = TextCopy.ClipboardService.GetText();
+            if (text == null)
+                return;
+            Insert(text);
         }
 
         private string GetSelected()

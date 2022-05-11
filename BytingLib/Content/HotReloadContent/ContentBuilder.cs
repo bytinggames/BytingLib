@@ -9,9 +9,9 @@ namespace BytingLib
         private readonly string tempOutputPath;
         private readonly string tempPath;
 
-        string header;
-        Dictionary<string, CodePart> fileToCode;
-        string[] mgcbContents;
+        private readonly string header;
+        private readonly Dictionary<string, CodePart> fileToCode = new Dictionary<string, CodePart>();
+        private readonly string[] mgcbContents;
 
         static readonly string mgcbPathExe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             @".nuget\packages\monogame.content.builder.task\3.8.0.1641\tools\netcoreapp3.1\any\mgcb.exe");
@@ -50,11 +50,6 @@ namespace BytingLib
             this.tempOutputPath = tempOutputPath;
             this.tempPath = tempPath;
 
-            Initialize();
-        }
-
-        private void Initialize()
-        {
             //string cmd = $"/platform:DesktopGL /config: /profile:Reach /compress:False /importer:EffectImporter /processor:EffectProcessor /processorParam:DebugMode=Auto /intermediateDir:\"{tempPath}\" /outputDir:\"{tempOutputPath}\"";
 
             // get all mgcb files
@@ -80,7 +75,6 @@ namespace BytingLib
             int begin = mainContent.IndexOf("#begin");
             header = mainContent.Remove(begin);
 
-            fileToCode = new Dictionary<string, CodePart>();
             for (int i = 0; i < mgcbContents.Length; i++)
             {
                 int j = 0;
@@ -140,7 +134,7 @@ namespace BytingLib
             };
 
             //Get program output
-            string stdError = null;
+            string? stdError = null;
             StringBuilder stdOutput = new StringBuilder();
             process.OutputDataReceived += (sender, args) => stdOutput.Append(args.Data);
 

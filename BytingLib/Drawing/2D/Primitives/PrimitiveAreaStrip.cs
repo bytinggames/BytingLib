@@ -10,7 +10,7 @@ namespace BytingLib
     {
         public Vector2[] Vertices { get; set; }
 
-        private float[] lengths;
+        private float[]? lengths;
         private float totalLength;
         public float TotalLength
         {
@@ -121,13 +121,13 @@ namespace BytingLib
             length *= totalLength;
             while (length > 0)
             {
-                length -= lengths[i++];
+                length -= lengths![i++];
             }
 
             // draw vertices up to i * 2 + 2 newly dynamic vertex
             int vertexCount = i * 2;
 
-            float lerp = 1f - (-length / lengths[i - 1]);
+            float lerp = 1f - (-length / lengths![i - 1]);
             List<Vector2> endVertices = new List<Vector2>()
             {
                 ((1f - lerp) * Vertices[vertexCount - 2] + lerp * Vertices[vertexCount]),

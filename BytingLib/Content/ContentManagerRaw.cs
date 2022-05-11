@@ -35,8 +35,8 @@ namespace BytingLib
             return (T)(object)AnimationData.FromJson(json);
         }
 
-        /// <summary>Foces the asset to be unloaded from RAM.</summary>
-        public void UnloadAsset(string assetName)
+        /// <summary>Forces the asset to be unloaded from RAM.</summary>
+        public override void UnloadAsset(string assetName)
         {
             if (string.IsNullOrEmpty(assetName))
             {

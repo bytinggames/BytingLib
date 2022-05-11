@@ -19,6 +19,11 @@ namespace BytingLib
         public Int2 Size { get; set; }
         public Color[] colorData;
 
+        public TextureShape()
+        {
+            colorData = new Color[0];
+        }
+
         public object Clone()
         {
             throw new NotImplementedException();

@@ -23,7 +23,7 @@ namespace BytingLib.Markup
         /// <summary>No PaddingBottom support for SubSizeUnion yet.</summary>
         public float PaddingBottom { get; set; }
 
-        private MarkupRoot subContainer;
+        private MarkupRoot? subContainer;
 
         public bool SubSizeUnion { get; set; } = false;
 

@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿
+#pragma warning disable CS8629 // Nullable value type may be null.
+
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -2008,3 +2011,5 @@ namespace BytingLib
         }
     }
 }
+
+#pragma warning restore CS8629 // Nullable value type may be null.

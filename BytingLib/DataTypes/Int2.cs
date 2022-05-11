@@ -104,7 +104,7 @@ namespace BytingLib
             return HashCode.Combine(X, Y);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return base.Equals(obj);
         }

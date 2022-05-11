@@ -8,7 +8,7 @@ namespace BytingLib
         private readonly GameWindow window;
         public InputString? InputString { get; set; }
 
-        private bool control, alt, shift;
+        private bool control, shift;
 
         public KeyInputString(GameWindow window)
         {
@@ -30,10 +30,6 @@ namespace BytingLib
                 case Keys.RightShift:
                     shift = false;
                     break;
-                case Keys.LeftAlt:
-                case Keys.RightAlt:
-                    alt = false;
-                    break;
             }
         }
 
@@ -48,10 +44,6 @@ namespace BytingLib
                 case Keys.LeftShift:
                 case Keys.RightShift:
                     shift = true;
-                    break;
-                case Keys.LeftAlt:
-                case Keys.RightAlt:
-                    alt = true;
                     break;
             }
 

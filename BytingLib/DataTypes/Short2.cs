@@ -93,7 +93,7 @@ namespace BytingLib
             return ((int)x << 16) + (int)y;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return base.Equals(obj);
         }

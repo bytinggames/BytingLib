@@ -28,14 +28,14 @@ namespace BytingLib.Markup
         {
             ScriptReaderLiteral reader = new ScriptReaderLiteral(text);
 
-            INode element;
+            INode? element;
             while ((element = ReadElement(creator, reader)) != null)
             {
                 Children.Add(element);
             }
         }
 
-        private static INode ReadElement(Creator creator, ScriptReaderLiteral reader)
+        private static INode? ReadElement(Creator creator, ScriptReaderLiteral reader)
         {
             char? peek = reader.Peek();
             if (!peek.HasValue)

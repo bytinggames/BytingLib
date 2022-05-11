@@ -73,11 +73,7 @@ namespace BytingLib
         {
             this.directory = directory;
             this.getFiles = getFiles;
-            Initialize(expectEmptyDirectory);
-        }
 
-        private void Initialize(bool expectEmptyDirectory)
-        {
             if (expectEmptyDirectory)
             {
                 lastUpdate = DateTime.MinValue;
@@ -150,7 +146,7 @@ namespace BytingLib
 
                     FileStamp fileStamp = new FileStamp(cFile, changeTime, directory);
 
-                    RememberedFile rememberedFile;
+                    RememberedFile? rememberedFile;
 
                     if (files.TryGetValue(cFile, out rememberedFile))
                     {

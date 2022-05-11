@@ -19,8 +19,8 @@ namespace BytingLib.Markup
         public double TotalMilliseconds { get; set; }
         public float MinLineHeight { get; set; }
         public float VerticalSpaceBetweenLines { get; set; }
-        public Outline TextOutline { get; set; }
-        public Underline TextUnderline { get; set; }
+        public Outline? TextOutline { get; set; }
+        public Underline? TextUnderline { get; set; }
 
         public class Line : ICloneable
         {
@@ -79,7 +79,7 @@ namespace BytingLib.Markup
         public MarkupSettings CloneMarkupSettings()
         {
             MarkupSettings clone = (MarkupSettings)this.MemberwiseClone();
-            clone.Anchor = Anchor?.Clone();
+            clone.Anchor = Anchor.Clone();
             clone.TextOutline = TextOutline?.CloneOutline();
             clone.TextUnderline = TextUnderline?.CloneUnderline();
             return clone;

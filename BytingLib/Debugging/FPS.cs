@@ -6,7 +6,7 @@ namespace BytingLib
     {
         public List<long> timestamps = new List<long>();
 
-        Stopwatch sw;
+        Stopwatch? sw;
 
         public void NewFrame()
         {
@@ -35,6 +35,6 @@ namespace BytingLib
                 sw.Start();
         }
 
-        public int CurrentFPS => sw.Elapsed.TotalSeconds == 0 ? -1 : (int)(timestamps.Count / Math.Min(1d, sw.Elapsed.TotalSeconds));
+        public int CurrentFPS => sw == null ? -1 : sw.Elapsed.TotalSeconds == 0 ? -1 : (int)(timestamps.Count / Math.Min(1d, sw.Elapsed.TotalSeconds));
     }
 }

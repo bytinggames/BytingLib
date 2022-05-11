@@ -21,13 +21,13 @@ namespace BytingLib.Creation
         private readonly Assembly[] assemblies;
         private readonly Dictionary<Type, Func<string, object>> converters;
 
-        public Creator(string defaultNamespace, Assembly[] assemblies = null, object[] _autoParameters = null, Type shortcutAttributeType = null, Dictionary<Type, Func<string, object>> converters = null)
+        public Creator(string defaultNamespace, Assembly[]? assemblies = null, object[]? _autoParameters = null, Type? shortcutAttributeType = null, Dictionary<Type, Func<string, object>>? converters = null)
         {
+            assemblies ??= new Assembly[] { Assembly.GetCallingAssembly() };
+
             this.defaultNamespace = defaultNamespace;
             this.assemblies = assemblies;
-            this.converters = converters;
-            if (assemblies == null)
-                assemblies = new Assembly[] { Assembly.GetCallingAssembly() };
+            this.converters = converters ?? new Dictionary<Type, Func<string, object>>();
 
             AutoParameters.Add(GetType(), this);
             if (_autoParameters != null)
@@ -97,7 +97,7 @@ namespace BytingLib.Creation
         {
             string typeStr = reader.ReadToChar(open);
 
-            Type type = null;
+            Type? type = null;
             if (shortcuts.ContainsKey(typeStr))
             {
                 type = shortcuts[typeStr];
@@ -163,7 +163,7 @@ namespace BytingLib.Creation
         {
             object[] args = GetParametersForConstructor(reader, type);
 
-            return Activator.CreateInstance(type, args);
+            return Activator.CreateInstance(type, args)!;
         }
 
         /// <summary>"ctorArg1,ctorArg2"</summary>
@@ -173,7 +173,7 @@ namespace BytingLib.Creation
 
             string[] split = GetParameterStrings(reader);
 
-            ConstructorInfo ctorInfo = GetMatchingConstructor(ctors, split);
+            ConstructorInfo? ctorInfo = GetMatchingConstructor(ctors, split);
             if (ctorInfo == null)
                 throw new Exception("no matching constructor not found");
 
@@ -182,7 +182,7 @@ namespace BytingLib.Creation
             return GetParameters(split, parameterInfos.Select(f => f.ParameterType).ToArray());
         }
 
-        private ConstructorInfo GetMatchingConstructor(ConstructorInfo[] ctors, string[] split)
+        private ConstructorInfo? GetMatchingConstructor(ConstructorInfo[] ctors, string[] split)
         {
             foreach (var ctor in ctors)
             {

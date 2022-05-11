@@ -10,8 +10,6 @@ namespace BytingLib
 {
     public static class Loca
     {
-        public static CultureInfo Culture { get; private set; }
-
         private const char separator = ';';
         private const char textMarker = '"';
         private const char adder = '.';
@@ -19,7 +17,7 @@ namespace BytingLib
 
         private static Dictionary<string, string> dictionary = new Dictionary<string, string>();
 
-        public static string LanguageKey { get; private set; }
+        public static string LanguageKey { get; private set; } = "en";
 
         static string GetDisplayName()
         {
@@ -58,6 +56,8 @@ namespace BytingLib
         {
             if (dictionary != null)
                 dictionary.Clear();
+            else
+                dictionary = new Dictionary<string, string>();
 
             dictionary.Add("", ""); // add empty
 
@@ -181,7 +181,7 @@ namespace BytingLib
                         string command = value.Substring(jStart + 1, j - jStart - 1);
                         if (command.Length > 0)
                         {
-                            string replacement = null;
+                            string? replacement = null;
                             if (command == "+")
                             {
                                 // use same as language 1 (en)
@@ -228,7 +228,7 @@ namespace BytingLib
                                     int searchIndex = 0;
                                     List<string> parameters = new List<string>();
 
-                                    string realKey = null;
+                                    string? realKey = null;
 
                                     while ((searchIndex = c.IndexOf('{', searchIndex)) != -1)
                                     {
@@ -256,7 +256,7 @@ namespace BytingLib
                                         searchIndex = end + 1;
                                     }
 
-                                    return Get(realKey, parameters.ToArray());
+                                    return Get(realKey!, parameters.ToArray());
                                 }
                             }
 

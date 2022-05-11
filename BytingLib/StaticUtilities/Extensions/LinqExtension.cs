@@ -6,14 +6,14 @@ namespace BytingLib
 {
     public static class LinqExtension
     {
-        public static TSource MinByOrDefault<TSource, TKey>(this IEnumerable<TSource> source,
-            Func<TSource, TKey> selector, TSource defaultValue = default)
+        public static TSource? MinByOrDefault<TSource, TKey>(this IEnumerable<TSource> source,
+            Func<TSource, TKey> selector, TSource? defaultValue = default)
         {
             return source.MinByOrDefault(selector, null, defaultValue);
         }
 
-        public static TSource MinByOrDefault<TSource, TKey>(this IEnumerable<TSource> source,
-            Func<TSource, TKey> selector, IComparer<TKey> comparer, TSource defaultValue = default)
+        public static TSource? MinByOrDefault<TSource, TKey>(this IEnumerable<TSource> source,
+            Func<TSource, TKey> selector, IComparer<TKey>? comparer, TSource? defaultValue = default)
         {
             if (source == null) throw new ArgumentNullException("source");
             if (selector == null) throw new ArgumentNullException("selector");
@@ -25,7 +25,7 @@ namespace BytingLib
                 {
                     return defaultValue;
                 }
-                TSource min = defaultValue;
+                TSource? min = defaultValue;
                 TKey minKey = selector(sourceIterator.Current);
                 if (minKey != null)
                     min = sourceIterator.Current;
@@ -50,7 +50,7 @@ namespace BytingLib
         }
 
         /// <summary>Returns null if source is empty.</summary>
-        public static TSource MinByOrNull<TSource, TKey>(this IEnumerable<TSource> source,
+        public static TSource? MinByOrNull<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector) where TSource : class
         {
             try
@@ -64,7 +64,7 @@ namespace BytingLib
         }
 
         private static TSource MinBy_<TSource, TKey>(this IEnumerable<TSource> source,
-            Func<TSource, TKey> selector, IComparer<TKey> comparer)
+            Func<TSource, TKey> selector, IComparer<TKey>? comparer)
         {
             if (source == null) throw new ArgumentNullException("source");
             if (selector == null) throw new ArgumentNullException("selector");
@@ -100,7 +100,7 @@ namespace BytingLib
 
 
         public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
-            Func<TSource, TKey> selector, IComparer<TKey> comparer)
+            Func<TSource, TKey> selector, IComparer<TKey>? comparer)
         {
             if (source == null) throw new ArgumentNullException("source");
             if (selector == null) throw new ArgumentNullException("selector");
@@ -135,7 +135,7 @@ namespace BytingLib
         }
 
         public static int IndexOfMaxBy<TSource, TKey>(this IEnumerable<TSource> source,
-            Func<TSource, TKey> selector, IComparer<TKey> comparer)
+            Func<TSource, TKey> selector, IComparer<TKey>? comparer)
         {
             if (source == null) throw new ArgumentNullException("source");
             if (selector == null) throw new ArgumentNullException("selector");
@@ -174,7 +174,7 @@ namespace BytingLib
         }
 
         public static int IndexOfMinBy<TSource, TKey>(this IEnumerable<TSource> source,
-            Func<TSource, TKey> selector, IComparer<TKey> comparer)
+            Func<TSource, TKey> selector, IComparer<TKey>? comparer)
         {
             if (source == null) throw new ArgumentNullException("source");
             if (selector == null) throw new ArgumentNullException("selector");
