@@ -53,7 +53,12 @@ namespace BytingLib
             //string cmd = $"/platform:DesktopGL /config: /profile:Reach /compress:False /importer:EffectImporter /processor:EffectProcessor /processorParam:DebugMode=Auto /intermediateDir:\"{tempPath}\" /outputDir:\"{tempOutputPath}\"";
 
             // get all mgcb files
-            string[] mgcbFiles = Directory.GetFiles(outputPath, "*.mgcbcopy");
+            string[] mgcbFiles;
+            if (Directory.Exists(outputPath))
+                mgcbFiles = Directory.GetFiles(outputPath, "*.mgcbcopy");
+            else
+                return;
+
             mgcbContents = new string[mgcbFiles.Length];
 
             // check if main content file exists
