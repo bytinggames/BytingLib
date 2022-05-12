@@ -30,7 +30,6 @@ namespace BytingLib
         private bool previousUpdateWasActive = true;
         private bool previousDrawWasActive = true;
 
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public BaseGame()
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -38,6 +37,8 @@ namespace BytingLib
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
+
+        public bool IsActivatedThisUpdate => !previousUpdateWasActive && IsActive;
 
         protected abstract void UpdateActive(GameTime gameTime);
         /// <summary>

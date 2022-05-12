@@ -6,7 +6,7 @@ namespace BytingLib
     public class MouseInput : IUpdate
     {
         private readonly Func<MouseState> getState;
-
+        private readonly Func<bool> getIsActivatedThisFrame;
         private MouseState previousState;
         private MouseState currentState;
 
@@ -16,13 +16,19 @@ namespace BytingLib
         public delegate void StateChanged(MouseState current, MouseState previous);
         public event StateChanged? OnStateChanged;
 
-        public MouseInput(Func<MouseState> getState)
+        public bool IsActivatedThisFrame { get; private set; }
+
+        public MouseInput(Func<MouseState> getState, Func<bool> getIsActivatedThisFrame)
         {
             this.getState = getState;
+            this.getIsActivatedThisFrame = getIsActivatedThisFrame;
         }
 
         public void Update()
         {
+            IsActivatedThisFrame = getIsActivatedThisFrame();
+            if (IsActivatedThisFrame)
+            { }
             UpdateUsingState(getState());
         }
 
@@ -59,8 +65,8 @@ namespace BytingLib
 
         public int XDelta => isPreviousMouseStateSet ? (currentState.X - previousState.X) : 0;
         public int YDelta => isPreviousMouseStateSet ? (currentState.Y - previousState.Y) : 0;
-        public Int2 MoveInt => isPreviousMouseStateSet ? (new Int2(currentState.Position - previousState.Position)) : Int2.Zero;
-        public Vector2 Move => isPreviousMouseStateSet ? (currentState.Position - previousState.Position).ToVector2() : Vector2.Zero;
+        public Int2 MoveInt => IsActivatedThisFrame ? Int2.Zero : isPreviousMouseStateSet ? (new Int2(currentState.Position - previousState.Position)) : Int2.Zero;
+        public Vector2 Move => IsActivatedThisFrame ? Vector2.Zero : isPreviousMouseStateSet ? (currentState.Position - previousState.Position).ToVector2() : Vector2.Zero;
 
         public int Scroll
         {

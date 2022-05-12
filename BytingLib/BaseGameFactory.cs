@@ -5,7 +5,7 @@ namespace BytingLib
 {
     public static class BaseGameFactory
     {
-        public static IStuffDisposable CreateDefaultGame(Game game, GraphicsDeviceManager graphics, string? inputRecordingDir, out KeyInput keys, out MouseInput mouse, out GamePadInput gamePad, out WindowManager windowManager, bool mouseWithActivationClick = true)
+        public static IStuffDisposable CreateDefaultGame(BaseGame game, GraphicsDeviceManager graphics, string? inputRecordingDir, out KeyInput keys, out MouseInput mouse, out GamePadInput gamePad, out WindowManager windowManager, bool mouseWithActivationClick = true)
         {
             IStuffDisposable stuff = new StuffDisposable(typeof(IUpdate), typeof(IDraw));
 
@@ -26,7 +26,7 @@ namespace BytingLib
                 getMouseState = mouseFiltered.GetState;
             }
 
-            stuff.Add(inputSource = new StructSource<FullInput>(() => new FullInput(getMouseState(), Keyboard.GetState(), GamePad.GetState(0))));
+            stuff.Add(inputSource = new StructSource<FullInput>(() => new FullInput(getMouseState(), Keyboard.GetState(), GamePad.GetState(0), game.IsActivatedThisUpdate)));
             KeyInput _keys = new KeyInput(() => inputSource.Current.KeyState);
             stuff.Add(keys = _keys);
 #if DEBUG
@@ -34,7 +34,7 @@ namespace BytingLib
 #else
             stuff.Add(keysDev = new KeyInput(() => default));
 #endif
-            stuff.Add(mouse = new MouseInput(() => inputSource.Current.MouseState));
+            stuff.Add(mouse = new MouseInput(() => inputSource.Current.MouseState, () => inputSource.Current.IsActivatedThisUpdate));
             stuff.Add(gamePad = new GamePadInput(() => inputSource.Current.GamePadState));
             stuff.Add(inputRecordingManager = new InputRecordingManager<FullInput>(stuff, inputSource, CreateInputRecorder, PlayInput));
 
