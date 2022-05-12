@@ -40,6 +40,12 @@ namespace BytingLib
 
         public PrimitiveAreaStrip(PrimitiveLineStrip line, float thickness, float anchor = 0f)
         {
+            if (line.Vertices.Count <= 1)
+            {
+                Vertices = new Vector2[0];
+                return;
+            }
+
             Vertices = new Vector2[line.Vertices.Count * 2];
 
             float t = thickness / 2f;

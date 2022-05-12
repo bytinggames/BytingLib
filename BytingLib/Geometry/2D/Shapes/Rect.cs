@@ -226,6 +226,43 @@ namespace BytingLib
             return this;
         }
 
+        public Rect Encapsulate(Vector2 vec)
+        {
+            Vector2 expand = Vector2.Zero;
+            if (vec.X < Left)
+                expand.X = vec.X - Left;
+            else if (vec.X > Right)
+                expand.X = vec.X - Right;
+
+            if (vec.Y < Top)
+                expand.Y = vec.Y - Top;
+            else if (vec.Y > Bottom)
+                expand.Y = vec.Y - Bottom;
+
+            if (expand != Vector2.Zero)
+                Expand(expand);
+
+            return this;
+        }
+        public Rect Encapsulate(Rect rect)
+        {
+            Vector2 expand = Vector2.Zero;
+            if (rect.Left < Left)
+                expand.X = rect.Left - Left;
+            else if (rect.Right > Right)
+                expand.X = rect.Right - Right;
+
+            if (rect.Top < Top)
+                expand.Y = rect.Top - Top;
+            else if (rect.Bottom > Bottom)
+                expand.Y = rect.Bottom - Bottom;
+
+            if (expand != Vector2.Zero)
+                Expand(expand);
+
+            return this;
+        }
+
         public Rect ApplyPadding(float left, float right, float top, float bottom)
         {
             Size.X -= left + right;
