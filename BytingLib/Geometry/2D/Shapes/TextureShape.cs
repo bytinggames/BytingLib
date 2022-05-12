@@ -39,7 +39,7 @@ namespace BytingLib
             throw new NotImplementedException();
         }
 
-        public Rect GetBoundingRectangle()
+        public Rect GetBoundingRect()
         {
             throw new NotImplementedException();
         }

@@ -413,7 +413,7 @@ namespace BytingLib
 
         public static bool ColVectorTextureShape(Vector2 vec, TextureShape sprite) //TODO: test
         {
-            Rect rect = sprite.GetBoundingRectangle();
+            Rect rect = sprite.GetBoundingRect();
 
             if (ColVectorRectangle(vec, rect))
             {
@@ -526,7 +526,7 @@ namespace BytingLib
 
         public static bool ColRectangleTextureShape(Rect rect, TextureShape sprite) //TODO: fix precision error (bottom of rectangle is 1 px smaller than given)
         {
-            Rect rect2 = sprite.GetBoundingRectangle();
+            Rect rect2 = sprite.GetBoundingRect();
 
             if (ColRectangleRectangle(rect2, rect))
             {
@@ -1727,7 +1727,7 @@ namespace BytingLib
 
         public static bool ColCircleTextureShape(Circle circle, TextureShape sprite)
         {
-            Rect rect = sprite.GetBoundingRectangle();
+            Rect rect = sprite.GetBoundingRect();
 
             if (ColRectangleCircle(rect, circle))
             {
@@ -1804,8 +1804,8 @@ namespace BytingLib
 
         public static bool ColTextureShapeTextureShapeIdentity(TextureShape sprite1, TextureShape sprite2)
         {
-            Rect rect1 = sprite1.GetBoundingRectangle();
-            Rect rect2 = sprite2.GetBoundingRectangle();
+            Rect rect1 = sprite1.GetBoundingRect();
+            Rect rect2 = sprite2.GetBoundingRect();
             if (ColRectangleRectangle(rect1, rect2))
             {
                 int xdiff = (int)(rect2.X - rect1.X);
@@ -1835,8 +1835,8 @@ namespace BytingLib
 
         public static bool ColTextureShapeTextureShapeTransformed(TextureShape sprite1, TextureShape sprite2)
         {
-            Rect rect1 = sprite1.GetBoundingRectangle();
-            Rect rect2 = sprite2.GetBoundingRectangle();
+            Rect rect1 = sprite1.GetBoundingRect();
+            Rect rect2 = sprite2.GetBoundingRect();
 
             if (ColRectangleRectangle(rect1, rect2))
             {

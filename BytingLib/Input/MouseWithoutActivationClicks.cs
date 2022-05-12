@@ -2,13 +2,13 @@
 
 namespace BytingLib
 {
-    public class MouseWithoutActivationClick
+    public class MouseWithoutActivationClicks
     {
         private readonly Func<MouseState> getState;
 
         private bool blockLeftButton = false;
 
-        public MouseWithoutActivationClick(Func<MouseState> getState, Action<EventHandler<EventArgs>> subscribeToOnGameActivated)
+        public MouseWithoutActivationClicks(Func<MouseState> getState, Action<EventHandler<EventArgs>> subscribeToOnGameActivated)
         {
             this.getState = getState;
 

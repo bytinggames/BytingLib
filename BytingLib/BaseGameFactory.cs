@@ -5,7 +5,7 @@ namespace BytingLib
 {
     public static class BaseGameFactory
     {
-        public static IStuffDisposable CreateDefaultGame(Game game, GraphicsDeviceManager graphics, string? inputRecordingDir, out KeyInput keys, out MouseInput mouse, out GamePadInput gamePad, bool mouseWithActivationClick = true)
+        public static IStuffDisposable CreateDefaultGame(Game game, GraphicsDeviceManager graphics, string? inputRecordingDir, out KeyInput keys, out MouseInput mouse, out GamePadInput gamePad, out WindowManager windowManager, bool mouseWithActivationClick = true)
         {
             IStuffDisposable stuff = new StuffDisposable(typeof(IUpdate), typeof(IDraw));
 
@@ -15,11 +15,14 @@ namespace BytingLib
 
             Func<MouseState> getMouseState;
 
+            windowManager = new WindowManager(true, game.Window, graphics);
+            var mouseSource = new MouseWithoutOutOfWindowClicks(Mouse.GetState, windowManager);
+
             if (mouseWithActivationClick)
-                getMouseState = Mouse.GetState;
+                getMouseState = mouseSource.GetState;
             else
             {
-                MouseWithoutActivationClick mouseFiltered = new MouseWithoutActivationClick(Mouse.GetState, f => game.Activated += f);
+                MouseWithoutActivationClicks mouseFiltered = new MouseWithoutActivationClicks(mouseSource.GetState, f => game.Activated += f);
                 getMouseState = mouseFiltered.GetState;
             }
 
@@ -39,7 +42,6 @@ namespace BytingLib
             if (inputRecordingDir != null)
                 stuff.Add(new InputRecordingTriggerer<FullInput>(keysDev, inputRecordingManager, inputRecordingDir));
 
-            WindowManager windowManager = new WindowManager(true, game.Window, graphics);
             game.Window.AllowUserResizing = true;
             stuff.Add(new UpdateKeyPressed(keys, Keys.F11, windowManager.ToggleFullscreen));
             stuff.Add(new UpdateKeyPressed(keysDev, Keys.Right, windowManager.SwapScreen));

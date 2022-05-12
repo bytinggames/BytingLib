@@ -59,11 +59,11 @@ namespace BytingLib
                 Shapes[i].Draw(spriteBatch, color, depth);
         }
 
-        public Rect GetBoundingRectangle()
+        public Rect GetBoundingRect()
         {
             if (Shapes.Count == 0)
                 return new Rect(float.NaN, float.NaN, float.NaN, float.NaN); // TODO: not sure if that is a good idea...? but what is the alternative?
-            return Rect.FromRects(Shapes.Select(f => f.GetBoundingRectangle()))!;
+            return Rect.FromRects(Shapes.Select(f => f.GetBoundingRect()))!;
         }
     }
 }

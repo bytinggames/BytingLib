@@ -49,6 +49,22 @@ namespace BytingLib
             return new Rect(a, b - a);
         }
 
+        public static Rect? FromPoints(IEnumerable<Vector2> points)
+        {
+            IEnumerator<Vector2> enumerator = points.GetEnumerator();
+            if (!enumerator.MoveNext())
+                return null;
+            Vector2 min, max;
+            min = max = enumerator.Current;
+            while (enumerator.MoveNext())
+            {
+                var p = enumerator.Current;
+                min = Vector2.Min(p, min);
+                max = Vector2.Max(p, max);
+            }
+            return new Rect(min, max - min);
+        }
+
         public static Rect? FromRects(IEnumerable<Rect> rects)
         {
             IEnumerator<Rect> enumerator = rects.GetEnumerator();
@@ -121,7 +137,7 @@ namespace BytingLib
             Size = size;
         }
 
-        public Rect GetBoundingRectangle() => new Rect(this);
+        public Rect GetBoundingRect() => new Rect(this);
         public object Clone() => new Rect(this);
 
         public override string ToString()
@@ -144,7 +160,7 @@ namespace BytingLib
             return clone;
         }
 
-        public void PushIntoRectangle(Rect bounds) //no center, if bounds is smaller then this rectangle!
+        public void PushIntoRectangle(Rect bounds) //no center, if bounds is smaller than this rectangle!
         {
             if (X < bounds.X)
                 X = bounds.X;
@@ -157,7 +173,7 @@ namespace BytingLib
                 Y = bounds.Bottom - Size.Y;
         }
 
-        public Vector2 VectorPushInto(Vector2 pos) //no center, if bounds is smaller then this rectangle!
+        public Vector2 VectorPushInto(Vector2 pos) //no center, if bounds is smaller than this rectangle!
         {
             if (pos.X < X)
                 pos.X = X;

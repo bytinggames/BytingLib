@@ -1,7 +1,7 @@
 ﻿
 namespace BytingLib
 {
-    public class GridList<T> : Grid<T> where T : IBoundingRectangle
+    public class GridList<T> : Grid<T> where T : IBoundingRect
     {
         public GridList(float fieldSize)
             :base(fieldSize)

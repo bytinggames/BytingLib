@@ -45,10 +45,10 @@ namespace BytingLib
         {
             Vertices = new Vector2[]
             {
-                rect.TopRight,
-                rect.TopLeft,
+                rect.BottomRight,
                 rect.BottomLeft,
-                rect.BottomRight
+                rect.TopLeft,
+                rect.TopRight,
             };
         }
 

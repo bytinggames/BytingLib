@@ -3,6 +3,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
+    /// <summary>
+    /// TODO: replace this class by a class that is fully initialized when constructed. It can't inherit BaseGame then
+    /// </summary>
+    /// <typeparam name="Ingame"></typeparam>
     public abstract class BaseGamePrototype<Ingame> : BaseGame where Ingame : class, IStuffDisposable
     {
         protected readonly GameSpeed updateSpeed, drawSpeed;
@@ -13,6 +17,7 @@ namespace BytingLib
         protected MouseInput mouse;
         protected GamePadInput gamePad;
         protected bool triggerRestart;
+        protected WindowManager windowManager;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public BaseGamePrototype()
@@ -26,7 +31,7 @@ namespace BytingLib
 
         protected override void MyInitialize()
         {
-            gameStuff = BaseGameFactory.CreateDefaultGame(this, graphics, "input", out keys, out mouse, out gamePad, false); disposables.Add(gameStuff);
+            gameStuff = BaseGameFactory.CreateDefaultGame(this, graphics, "input", out keys, out mouse, out gamePad, out windowManager, false); disposables.Add(gameStuff);
 
             CreateIngame();
         }

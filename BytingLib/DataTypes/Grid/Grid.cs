@@ -2,7 +2,7 @@
 
 namespace BytingLib
 {
-    public class Grid<T> where T : IBoundingRectangle
+    public class Grid<T> where T : IBoundingRect
     {
         public float FieldSize { get; private set; }
         public Dictionary<Int2, List<T>> Lists { get; private set; } = new Dictionary<Int2, List<T>>();
@@ -65,7 +65,7 @@ namespace BytingLib
 
         public IEnumerable<Int2> GetCoords(T entity)
         {
-            return GetCoords(entity.GetBoundingRectangle());
+            return GetCoords(entity.GetBoundingRect());
         }
 
         public IEnumerable<T> GetEntities(IEnumerable<Int2> coords)
@@ -105,7 +105,7 @@ namespace BytingLib
 
         public IEnumerable<T> GetEntities(T searchingEntity, Vector2 movement)
         {
-            return GetEntities(searchingEntity.GetBoundingRectangle(), movement);
+            return GetEntities(searchingEntity.GetBoundingRect(), movement);
         }
         public IEnumerable<T> GetEntities(Rect boundingBox, Vector2 movement)
         {

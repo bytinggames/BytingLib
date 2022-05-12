@@ -25,7 +25,7 @@ namespace BytingLib
             this.Radius = radius;
         }
 
-        public Rect GetBoundingRectangle()
+        public Rect GetBoundingRect()
         {
             return new Rect(pos - new Vector2(Radius), new Vector2(Radius * 2));
         }

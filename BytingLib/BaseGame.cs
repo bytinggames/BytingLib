@@ -111,7 +111,7 @@ namespace BytingLib
                 // draw black blend to hint to the user, that the window isn't active
                 spriteBatch.Begin();
 
-                spriteBatch.DrawRectangle(new Rect(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight), InactiveBlendColor.Value);
+                spriteBatch.DrawRectangle(new Rect(0, 0, graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height), InactiveBlendColor.Value);
 
                 spriteBatch.End();
             }

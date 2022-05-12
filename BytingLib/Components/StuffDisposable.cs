@@ -19,7 +19,7 @@
             any = AddActual(thing, onRemove) || any;
 
             if (!any)
-                throw new ArgumentException("The thing didn't inherit any provided interface.");
+                throw new ArgumentException(thing.GetType() + " didn't inherit any provided interface.");
         }
 
         public override void Remove(object thing)

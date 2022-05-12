@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    class InputRecordingTriggerer<T> : IUpdate where T : struct
+    public class InputRecordingTriggerer<T> : IUpdate where T : struct
     {
         private readonly KeyInput keys;
         private readonly InputRecordingManager<T> inputRecordingManager;

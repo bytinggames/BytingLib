@@ -1,1 +1,1 @@
-dotnet t4 _Content.tt
+t4 _Content.tt

@@ -13,7 +13,7 @@
 using BytingLib;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace LevelSketch
+namespace [TODO: set namespace here]
 {
     <#
     var projectPath = Environment.CurrentDirectory;

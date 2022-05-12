@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
-    public interface IShape : IBoundingRectangle, ICloneable
+    public interface IShape : IBoundingRect, ICloneable
     {
         Vector2 Pos { get; set; }
         float X { get; set; }
@@ -17,7 +17,7 @@ namespace BytingLib
     {
         public static Vector2 GetCenter(this IShape shape)
         {
-            return shape.GetBoundingRectangle().GetCenter();
+            return shape.GetBoundingRect().GetCenter();
         }
         public static bool CollidesWith(this IShape myShape, IShape shape) => Collision.GetCollision(myShape, shape);
         public static bool CollidesWith(this IShape myShape, Vector2 vec) => Collision.GetCollision(myShape, vec);

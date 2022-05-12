@@ -29,7 +29,7 @@ namespace BytingLib
             return new PointF(pos);
         }
 
-        public Rect GetBoundingRectangle()
+        public Rect GetBoundingRect()
         {
             return new Rect(pos, Vector2.Zero);
         }

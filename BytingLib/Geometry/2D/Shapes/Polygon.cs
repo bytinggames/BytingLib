@@ -77,7 +77,7 @@ namespace BytingLib
             return this;
         }
 
-        public Rect GetBoundingRectangle()
+        public Rect GetBoundingRect()
         {
             Vector2 minPos, maxPos;
             if (Vertices.Count > 0)
