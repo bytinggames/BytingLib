@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace BytingLib.StaticUtilities.Extensions
+namespace BytingLib
 {
     public static class BinaryWriterReaderExtension
     {
