@@ -6,6 +6,8 @@
 
         public event Action? OnDispose;
 
+        public IEnumerable<object> AllThings => allThings;
+
         public StuffDisposable(params Type[] types)
             : base(false, types)
         { }

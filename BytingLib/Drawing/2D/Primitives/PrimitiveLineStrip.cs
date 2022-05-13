@@ -21,7 +21,6 @@ namespace BytingLib
         {
             this.Vertices = vertices;
         }
-        /// <summary>Warning: the list isn't cloned.</summary>
         public PrimitiveLineStrip(IEnumerable<Vector2> vertices)
         {
             this.Vertices = vertices.ToList();
