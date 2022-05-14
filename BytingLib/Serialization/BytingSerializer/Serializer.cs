@@ -7,8 +7,7 @@ namespace BytingLib.Serialization
         private Dictionary<Type, ReadObj> readTypes;
         private Dictionary<Type, Action<BytingWriterParent, object>> writeTypes;
 
-        const BindingFlags bindingFlagsDeclared = BindingFlags.Public
-                        | BindingFlags.Instance
+        const BindingFlags bindingFlagsDeclared = TypeSerializer.BindingFlagsDeclaredAndInherited
                         | BindingFlags.DeclaredOnly;
         private readonly TypeIDs typeIDs;
         public bool References { get; set; }
@@ -125,23 +124,28 @@ namespace BytingLib.Serialization
 
         }
 
-        public void Serialize<T>(Stream stream, T obj)
+        public void Serialize<T>(Stream stream, T? obj)
         {
-            if (obj == null)
-                throw new ArgumentException(nameof(obj));
-
             using (BytingWriterParent bw = 
                 References ? new BytingWriter(stream, writeTypes, typeIDs.IDs)
                 : new BytingWriterParent(stream, writeTypes, typeIDs.IDs))
             {
-                bw.WriteObject(obj, typeof(T));
+                if (obj == null)
+                    bw.Write((byte)0); // obj is null
+                else
+                {
+                    bw.Write((byte)1); // obj is not null
+                    bw.WriteObject(obj, typeof(T));
+                }
             }
         }
 
-        public T Deserialize<T>(Stream stream)
+        public T? Deserialize<T>(Stream stream)
         {
             using (BytingReader br = new BytingReader(stream, readTypes, typeIDs.Types, References))
             {
+                if (br.ReadByte() == 0) // obj is null?
+                    return default;
                 return (T)br.ReadObject(typeof(T));
             }
         }

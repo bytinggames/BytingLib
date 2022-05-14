@@ -77,5 +77,36 @@ namespace BytingLib.Test.BytingSerializer
                  }
             };
         }
+
+        public static Data CreatePrivateProp()
+        {
+            return new Data()
+            {
+                Objects = new()
+                {
+                    new PrivateProp(1)
+                }
+            };
+        }
+        public static Data CreatePublicField()
+        {
+            return new Data()
+            {
+                Objects = new()
+                {
+                    new PublicField() { Field = 1 }
+                }
+            };
+        }
+        public static Data CreatePrivateField()
+        {
+            return new Data()
+            {
+                Objects = new()
+                {
+                    new PrivateField(1)
+                }
+            };
+        }
     }
 }

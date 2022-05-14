@@ -70,4 +70,56 @@ namespace BytingLib.Test.BytingSerializer
         [BytingProp(0)]
         public float Thickness { get; set; }
     }
+
+    public class PrivateProp
+    {
+        [BytingProp(0)]
+        private float Prop { get; set; }
+
+        public PrivateProp()
+        {
+
+        }
+
+        public PrivateProp(float prop)
+        {
+            Prop = prop;
+        }
+
+        public override string ToString()
+        {
+            return $"PrivateProp({Prop})";
+        }
+    }
+
+    public class PublicField
+    {
+        [BytingProp(0)]
+        public float Field;
+
+        public override string ToString()
+        {
+            return $"PublicField({Field})";
+        }
+    }
+    public class PrivateField
+    {
+        [BytingProp(0)]
+        private float Field;
+
+        public PrivateField()
+        {
+
+        }
+
+        public PrivateField(float field)
+        {
+            Field = field;
+        }
+
+        public override string ToString()
+        {
+            return $"PublicField({Field})";
+        }
+    }
 }

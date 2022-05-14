@@ -16,25 +16,52 @@ namespace BytingLib.Test.BytingSerializer
             { typeof(Line), 2 },
             { typeof(List<object>), 3 },
             { typeof(LineThick), 4 },
+            { typeof(PrivateProp), 5 },
+            { typeof(PublicField), 6 },
+            { typeof(PrivateField), 7 },
         }), false);
 
-        public static IEnumerable<object[]> GetDataNoRef()
+        public static IEnumerable<object[]> GetAllData()
+        {
+            foreach (var item in GetDataPublic())
+            {
+                yield return item;
+            }
+
+            foreach (var item in GetDataLinked())
+            {
+                yield return item;
+            }
+
+            foreach (var item in GetDataPrivate())
+            {
+                yield return item;
+            }
+        }
+
+        public static IEnumerable<object[]> GetDataPublic()
         {
             yield return new object[] { DataFactory.CreateSimple() };
             yield return new object[] { DataFactory.Create() };
             yield return new object[] { DataFactory.CreateDerived() };
         }
 
-        public static IEnumerable<object[]> GetData()
+        public static IEnumerable<object[]> GetDataPrivate()
         {
-            foreach (var item in GetDataNoRef())
-                yield return item;
+            yield return new object[] { DataFactory.CreatePrivateProp() };
+            //yield return new object[] { DataFactory.CreatePublicField() }; // not supported
+            //yield return new object[] { DataFactory.CreatePrivateField() }; // not supported
+        }
+
+        public static IEnumerable<object[]> GetDataLinked()
+        {
             yield return new object[] { DataFactory.CreateInterlinked() };
             yield return new object[] { DataFactory.CreateCircular() };
         }
 
         [TestMethod]
-        [DynamicData(nameof(GetData), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(GetDataPublic), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(GetDataLinked), DynamicDataSourceType.Method)]
         public void TestNewtonsoftJson(Data data1)
         {
             TestSerialization(data1, () =>
@@ -53,7 +80,8 @@ namespace BytingLib.Test.BytingSerializer
         }
 
         [TestMethod]
-        [DynamicData(nameof(GetDataNoRef), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(GetDataPrivate), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(GetDataPublic), DynamicDataSourceType.Method)]
         public void TestBytingSerializer(Data data1)
         {
             mySerializer.References = false;
@@ -69,7 +97,7 @@ namespace BytingLib.Test.BytingSerializer
         }
 
         [TestMethod]
-        [DynamicData(nameof(GetData), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(GetAllData), DynamicDataSourceType.Method)]
         public void TestBytingSerializerRef(Data data1)
         {
             mySerializer.References = true;
@@ -107,6 +135,27 @@ namespace BytingLib.Test.BytingSerializer
             int count1 = data1.GetAllObjects().Distinct().Count();
             int count2 = data2.GetAllObjects().Distinct().Count();
             Assert.AreEqual(count1, count2);
+        }
+
+        [TestMethod]
+        public void TestSerializeNull()
+        {
+            mySerializer.References = false;
+
+            object? obj = null;
+            object? obj2;
+
+            byte[] data;
+            using (MemoryStream stream = new())
+            {
+                mySerializer.Serialize(stream, obj);
+                data = stream.ToArray();
+            }
+            Console.WriteLine("data size: " + data.Length);
+            using (MemoryStream stream = new(data))
+            {
+                obj2 = mySerializer.Deserialize<object>(stream);
+            }
         }
     }
 }
