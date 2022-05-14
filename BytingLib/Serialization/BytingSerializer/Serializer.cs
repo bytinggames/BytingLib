@@ -4,8 +4,8 @@ namespace BytingLib.Serialization
 {
     public class Serializer
     {
-        private Dictionary<Type, ReadObj> readTypes;
-        private Dictionary<Type, Action<BytingWriterParent, object>> writeTypes;
+        private readonly Dictionary<Type, ReadObj> readTypes;
+        private readonly Dictionary<Type, Action<BytingWriterParent, object>> writeTypes;
 
         const BindingFlags bindingFlagsDeclared = TypeSerializer.BindingFlagsDeclaredAndInherited
                         | BindingFlags.DeclaredOnly;
@@ -22,12 +22,8 @@ namespace BytingLib.Serialization
             this.typeIDs = typeIDs;
             References = references;
 
-            InitializeForSerialization();
-            InitializeForDeserialization();
-        }
+            #region initializer for serialization
 
-        void InitializeForSerialization()
-        {
             writeTypes = new();
 
             foreach (var item in BinaryObjectWriter.WriteFunctions)
@@ -57,10 +53,10 @@ namespace BytingLib.Serialization
                     });
                 }
             }
-        }
+            #endregion
 
-        void InitializeForDeserialization()
-        {
+            #region initialize for deserialization
+
             readTypes = new();
 
             Dictionary<(int, int), PropertyInfo> allProperties = new();
@@ -107,8 +103,8 @@ namespace BytingLib.Serialization
                             while (propsCount > 0)
                             {
                                 int propID = br.ReadInt32();
-                                // get member by propID
-                                var prop = allProperties[(currentID, propID)];
+                                    // get member by propID
+                                    var prop = allProperties[(currentID, propID)];
                                 prop.SetValue(obj, br.ReadObject(prop.PropertyType));
 
                                 propsCount--;
@@ -121,7 +117,7 @@ namespace BytingLib.Serialization
                     });
                 }
             }
-
+            #endregion
         }
 
         public void Serialize<T>(Stream stream, T? obj)
