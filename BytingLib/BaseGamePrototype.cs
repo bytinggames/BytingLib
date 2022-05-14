@@ -72,7 +72,7 @@ namespace BytingLib
 
             spriteBatch.Begin(SpriteSortMode.BackToFront, null, SamplerState.PointClamp);
 
-            gameStuff.ForEach<IDraw>(f => f.Draw());
+            gameStuff.ForEach<IDraw>(f => f.Draw(spriteBatch));
 
             spriteBatch.End();
         }

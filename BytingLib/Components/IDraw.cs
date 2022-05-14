@@ -1,7 +1,9 @@
-﻿namespace BytingLib
+﻿using Microsoft.Xna.Framework.Graphics;
+
+namespace BytingLib
 {
     public interface IDraw
     {
-        void Draw();
+        void Draw(SpriteBatch spriteBatch);
     }
 }
