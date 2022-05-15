@@ -7,8 +7,8 @@ namespace BytingLib
         byte[] previousData;
         int lastFrame;
 
-        public StructStreamWriterCompressed(Stream stream)
-            : base(stream)
+        public StructStreamWriterCompressed(Stream stream, bool alwaysFlush)
+            : base(stream, alwaysFlush)
         {
             previousData = new byte[Marshal.SizeOf<T>()];
         }

@@ -2,8 +2,8 @@
 {
     public interface IStuff
     {
-        void Add(object component, Action<object>? onRemove = null);
-        void Remove(object component);
+        void Add(object thing, Action<object>? onRemove = null);
+        void Remove(object thing);
         IReadOnlyCollection<T> Get<T>();
         void ForEach<T>(Action<T> doAction);
     }

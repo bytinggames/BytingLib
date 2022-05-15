@@ -3,15 +3,16 @@
     public abstract class StructStreamWriter<T> : IStructStreamWriter<T> where T : struct
     {
         protected readonly Stream stream;
-
+        private readonly bool alwaysFlush;
         T lastState;
         int frame = -1;
         protected int Frame => frame;
         private bool isDisposed;
 
-        public StructStreamWriter(Stream stream)
+        public StructStreamWriter(Stream stream, bool alwaysFlush)
         {
             this.stream = stream;
+            this.alwaysFlush = alwaysFlush;
         }
 
         public void AddState(T state)
@@ -34,6 +35,8 @@
 
             WriteFrame();
             WriteStructChange(currentState, previousState);
+            if (alwaysFlush)
+                stream.Flush();
         }
 
         public void Dispose()

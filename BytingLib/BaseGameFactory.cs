@@ -57,7 +57,7 @@ namespace BytingLib
                 Directory.CreateDirectory(dir);
 
             FileStream fs = File.Create(path);
-            StructStreamWriterCompressed<FullInput> recorder = new(fs);
+            StructStreamWriterCompressed<FullInput> recorder = new(fs, true);
             inputSource.OnUpdate += AddState;
 
             return new OnDispose(() =>

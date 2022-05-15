@@ -139,6 +139,7 @@ namespace BytingLib
 
         public Rect GetBoundingRect() => new Rect(this);
         public object Clone() => new Rect(this);
+        public Rect CloneRect() => new Rect(this);
 
         public override string ToString()
         {
@@ -243,6 +244,13 @@ namespace BytingLib
                 Expand(expand);
 
             return this;
+        }
+        public Rect Encapsulate(IEnumerable<Vector2> vertices)
+        {
+            Rect? rect = FromPoints(vertices);
+            if (rect == null)
+                return this;
+            return Encapsulate(rect);
         }
         public Rect Encapsulate(Rect rect)
         {
