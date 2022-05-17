@@ -2,7 +2,7 @@
 
 namespace BytingLib
 {
-    static class StructSerializer
+    public static class StructSerializer
     {
         /// <summary>returns null if stream couldn't read in the full structure.</summary>
         public static object? Read(Stream stream, Type t)
