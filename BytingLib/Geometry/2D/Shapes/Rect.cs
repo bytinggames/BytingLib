@@ -254,19 +254,25 @@ namespace BytingLib
         }
         public Rect Encapsulate(Rect rect)
         {
-            Vector2 expand = Vector2.Zero;
             if (rect.Left < Left)
-                expand.X = rect.Left - Left;
-            else if (rect.Right > Right)
-                expand.X = rect.Right - Right;
+            {
+                Size.X += Left - rect.Left;
+                Left = rect.Left;
+            }
+            if (rect.Right > Right)
+            {
+                Size.X += rect.Right - Right;
+            }
 
             if (rect.Top < Top)
-                expand.Y = rect.Top - Top;
-            else if (rect.Bottom > Bottom)
-                expand.Y = rect.Bottom - Bottom;
-
-            if (expand != Vector2.Zero)
-                Expand(expand);
+            {
+                Size.Y += Top - rect.Top;
+                Top = rect.Top;
+            }
+            if (rect.Bottom > Bottom)
+            {
+                Size.Y += rect.Bottom - Bottom;
+            }
 
             return this;
         }

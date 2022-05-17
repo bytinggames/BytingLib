@@ -316,5 +316,48 @@ namespace BytingLib
         }
 
         public PrimitiveLineRing Outline() => new PrimitiveLineRing(Vertices.Select(f => f + pos).ToList());
+
+        public static IEnumerable<(float, float)> GetDistanceSquaredToIndex(List<Vector2> vertices, Vector2 target)
+        {
+            if (vertices.Count == 0)
+                yield break;
+
+            // check edges
+            for (int i = 0; i < vertices.Count - 1; i++)
+            {
+                Vector2 lineStart = vertices[i];
+                Vector2 lineDir = vertices[i + 1] - lineStart;
+                if (lineDir == Vector2.Zero)
+                    continue;
+                //float lineDirLength = lineDir.Length();
+                //Vector2 lineDirN = lineDir / lineDirLength;
+
+                //float dirLengthSq = lineDir.LengthSquared();
+                Vector2 toPos = target - lineStart;
+                float dotTimesLineLength = Vector2.Dot(lineDir, toPos);
+                if (dotTimesLineLength < 0
+                    || dotTimesLineLength > lineDir.LengthSquared())
+                    continue;
+
+                float lineLength = lineDir.Length();
+                float dot = dotTimesLineLength / lineLength;
+                float distSq = Vector2.Dot((lineDir / lineLength).GetRotate90(), toPos);
+                distSq *= distSq;
+                yield return (distSq, i + dot / lineLength);
+            }
+
+            // check vertices
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                float distSq = (vertices[i] - target /* to prioritize docking inside of lines less */
+                    ).LengthSquared();
+                yield return (distSq, i);
+            }
+        }
+
+        public static float? GetNearestIndex(List<Vector2> vertices, Vector2 target)
+        {
+            return GetDistanceSquaredToIndex(vertices, target).MinBy(f => f.Item1).Item2;
+        }
     }
 }
