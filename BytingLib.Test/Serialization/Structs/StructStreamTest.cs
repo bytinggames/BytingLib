@@ -41,7 +41,7 @@ namespace BytingLib.Test.Serialization.Structs
 
             using (MemoryStream ms = new MemoryStream())
             {
-                using (var recorder = (TRecorder)Activator.CreateInstance(typeof(TRecorder), ms)!)
+                using (var recorder = (TRecorder)Activator.CreateInstance(typeof(TRecorder), ms, false)!)
                     keyStatesPerFrame = RecordKeys(recorder, forFrames);
 
                 using (var playback = (TPlayback)Activator.CreateInstance(typeof(TPlayback), ms, 0)!)
