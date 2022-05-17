@@ -25,14 +25,14 @@ namespace BytingLib.Test.Input
             MouseState msCatch = default;
             msCatch.LeftButton = ButtonState.Pressed;
             var catcher = new StructCatcher<MouseState>(msCatch);
-            filter.AddCatcher(catcher);
+            filter.AddListener(catcher);
 
             ms = filter.GetState();
             Assert.IsTrue(ms.LeftButton == ButtonState.Released);
             Assert.IsTrue(ms.MiddleButton == ButtonState.Released);
             Assert.IsTrue(ms.RightButton == ButtonState.Pressed);
 
-            filter.RemoveCatcher(catcher);
+            filter.RemoveListener(catcher);
             ms = filter.GetState();
             Assert.IsTrue(ms.LeftButton == ButtonState.Pressed);
             Assert.IsTrue(ms.MiddleButton == ButtonState.Released);
@@ -85,7 +85,7 @@ namespace BytingLib.Test.Input
                 Assert.IsTrue(frame == 0 || frame == 5);
                 none++;
             };
-            filter.AddCatcher(catcher);
+            filter.AddListener(catcher);
 
             while (inputs.Count > 0)
             {
@@ -113,13 +113,13 @@ namespace BytingLib.Test.Input
 
             KeyboardState ksCatch = new KeyboardState(Keys.A);
             var catcher = new StructCatcher<KeyboardState>(ksCatch);
-            filter.AddCatcher(catcher);
+            filter.AddListener(catcher);
 
             ks = filter.GetState();
             Assert.IsTrue(ks.IsKeyUp(Keys.A));
             Assert.IsTrue(ks.IsKeyDown(Keys.B));
 
-            filter.RemoveCatcher(catcher);
+            filter.RemoveListener(catcher);
             ks = filter.GetState();
             Assert.IsTrue(ks.IsKeyDown(Keys.A));
             Assert.IsTrue(ks.IsKeyDown(Keys.B));

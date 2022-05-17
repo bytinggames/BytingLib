@@ -4,21 +4,21 @@ namespace BytingLib
     public class StructChannel<T> where T : struct
     {
         private readonly Func<T> getState;
-        private List<IStructMatcher<T>> catchers = new List<IStructMatcher<T>>();
+        private List<IStructListener<T>> listeners = new List<IStructListener<T>>();
 
         public StructChannel(Func<T> getState)
         {
             this.getState = getState;
         }
 
-        public void AddCatcher(IStructMatcher<T> catcher)
+        public void AddListener(IStructListener<T> listener)
         {
-            catchers.Add(catcher);
+            listeners.Add(listener);
         }
 
-        public void RemoveCatcher(IStructMatcher<T> catcher)
+        public void RemoveListener(IStructListener<T> listener)
         {
-            catchers.Remove(catcher);
+            listeners.Remove(listener);
         }
 
         public T GetState()
@@ -28,13 +28,13 @@ namespace BytingLib
             // struct to bytes
             byte[] stateBytes = StructSerializer.GetBytes(state);
 
-            if (catchers.Count > 0)
+            if (listeners.Count > 0)
             {
-                List<IStructMatcher<T>> catched = catchers.Where(c => c.DoesMatch(stateBytes)).ToList();
+                List<IStructListener<T>> catched = listeners.Where(c => c.DoesMatch(stateBytes)).ToList();
 
                 foreach (var c in catched)
                 {
-                    c.Match(stateBytes);
+                    c.OnMatch(stateBytes);
                 }
 
                 if (catched.Count > 0)

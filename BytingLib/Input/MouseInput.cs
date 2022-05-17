@@ -27,9 +27,13 @@ namespace BytingLib
         public void Update()
         {
             IsActivatedThisFrame = getIsActivatedThisFrame();
-            if (IsActivatedThisFrame)
-            { }
             UpdateUsingState(getState());
+        }
+
+        public void RefreshStateForCurrentFrame()
+        {
+            currentState = getState();
+            OnSetCurrentState();
         }
 
         private void UpdateUsingState(MouseState keyboardState)

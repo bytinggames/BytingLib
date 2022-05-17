@@ -4,7 +4,7 @@ namespace BytingLib
     /// <summary>
     /// Removes flags if matching.
     /// </summary>
-    public class StructCatcher<T> : IStructMatcher<T> where T : struct
+    public class StructCatcher<T> : IStructListener<T> where T : struct
     {
         private readonly byte[] catchBytes;
 
@@ -26,7 +26,7 @@ namespace BytingLib
             return true;
         }
 
-        public virtual void Match(byte[] stateBytes)
+        public virtual void OnMatch(byte[] stateBytes)
         {
             for (int i = 0; i < catchBytes.Length; i++)
             {

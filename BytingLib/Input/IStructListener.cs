@@ -1,8 +1,8 @@
 ﻿namespace BytingLib
 {
-    public interface IStructMatcher<T>
+    public interface IStructListener<T>
     {
-        void Match(byte[] stateBytes);
+        void OnMatch(byte[] stateBytes);
         bool DoesMatch(byte[] stateBytes);
     }
 }

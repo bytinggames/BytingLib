@@ -23,6 +23,11 @@ namespace BytingLib
             UpdateUsingState(getState());
         }
 
+        public void RefreshStateForCurrentFrame()
+        {
+            currentState = getState();
+        }
+
         private void UpdateUsingState(KeyboardState keyboardState)
         {
             frame++;
