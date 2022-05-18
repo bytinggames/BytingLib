@@ -11,6 +11,8 @@ namespace BytingLib.Serialization
             { typeof(float), (br, _, _) => br.ReadSingle() },
             { typeof(Vector2), (br, _, _) => br.ReadVector2() },
             { typeof(List<>), (br, t, refs) => ReadList(br, t, refs) },
+            { typeof(string), (br, _, _) => br.ReadString() },
+            { typeof(Color), (br, _, _) => new Color(br.ReadUInt32()) },
         };
 
         private static IList ReadList(BytingReader br, Type listType, List<object>? refs)

@@ -11,6 +11,8 @@ namespace BytingLib.Serialization
             { typeof(float), (bw, obj) => bw.Write((float)obj) },
             { typeof(Vector2), (bw, obj) => bw.Write((Vector2)obj) },
             { typeof(List<>), WriteList },
+            { typeof(string), (bw, obj) => bw.Write((string)obj) },
+            { typeof(Color), (bw, obj) => bw.Write(((Color)obj).PackedValue) },
         };
 
         private static void WriteList(BytingWriterParent bw, object obj)
