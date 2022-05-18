@@ -52,7 +52,7 @@ namespace BytingLib
         public IKey GetKeyAny(params Keys[] keys)
         {
             bool downNow = keys.Any(f => currentState.IsKeyDown(f));
-            bool downPreviously = keys.All(f => previousState.IsKeyDown(f));
+            bool downPreviously = keys.Any(f => previousState.IsKeyDown(f));
             return new Key(downNow, downNow != downPreviously);
         }
 
@@ -103,5 +103,24 @@ namespace BytingLib
         public IKey Any7 => GetKeyAny(Keys.D7, Keys.NumPad7);
         public IKey Any8 => GetKeyAny(Keys.D8, Keys.NumPad8);
         public IKey Any9 => GetKeyAny(Keys.D9, Keys.NumPad9);
+
+        public IKey Number(int number)
+        {
+            switch (number)
+            {
+                case 0: return Any0;
+                case 1: return Any1;
+                case 2: return Any2;
+                case 3: return Any3;
+                case 4: return Any4;
+                case 5: return Any5;
+                case 6: return Any6;
+                case 7: return Any7;
+                case 8: return Any8;
+                case 9: return Any9;
+                default:
+                    throw new ArgumentException(nameof(number) + " " + number + " is not supported");
+            }
+        }
     }
 }

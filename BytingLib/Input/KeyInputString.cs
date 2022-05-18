@@ -94,6 +94,10 @@ namespace BytingLib
                     if (control)
                         InputString.Cut();
                     break;
+                case Keys.A:
+                    if (control)
+                        InputString.SelectAll();
+                    break;
             }
         }
 

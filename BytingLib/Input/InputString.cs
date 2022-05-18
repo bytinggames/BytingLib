@@ -268,5 +268,13 @@ namespace BytingLib
             MoveOverWordRight();
             Delete(start - Cursor);
         }
+
+        public void SelectAll()
+        {
+            SelectStart = 0;
+            Cursor = text.Length;
+
+            OnCursorMoveOrSelectChanged?.Invoke(this);
+        }
     }
 }
