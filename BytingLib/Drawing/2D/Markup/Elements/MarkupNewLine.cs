@@ -8,7 +8,7 @@ namespace BytingLib.Markup
 
         public Vector2 GetSize(MarkupSettings settings)
         {
-            return new Vector2(0, settings.Font.Value.LineSpacing * settings.Scale.X);
+            return new Vector2(0, settings.Font.Value.LineSpacing * settings.Scale.Y);
         }
 
         public override string ToString()

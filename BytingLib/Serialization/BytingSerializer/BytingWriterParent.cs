@@ -27,7 +27,11 @@
             {
                 type = type.GetGenericTypeDefinition();
             }
-
+            else if (type.IsEnum)
+            {
+                type = type.GetEnumUnderlyingType();
+            }
+            
             writeTypes[type].Invoke(this, obj);
         }
     }

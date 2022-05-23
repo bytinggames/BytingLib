@@ -13,6 +13,7 @@ namespace BytingLib.Serialization
             { typeof(List<>), (br, t, refs) => ReadList(br, t, refs) },
             { typeof(string), (br, _, _) => br.ReadString() },
             { typeof(Color), (br, _, _) => new Color(br.ReadUInt32()) },
+            { typeof(bool), (br, _, _) => br.ReadBoolean() },
         };
 
         private static IList ReadList(BytingReader br, Type listType, List<object>? refs)

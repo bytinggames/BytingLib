@@ -9,6 +9,7 @@ namespace BytingLib.Markup
     [MarkupShortcut("cursor")]
     public class MarkupCursor : MarkupBlock
     {
+        public Color Color { get; set; } = Color.Black;
 
         public override string ToString()
         {
@@ -23,7 +24,7 @@ namespace BytingLib.Markup
         protected override void DrawChild(MarkupSettings settings)
         {
             if (settings.TotalMilliseconds % 1000 < 500)
-                settings.SpriteBatch.DrawRectangle(settings.Anchor.Rectangle(Math.Max(1, settings.Font.Value.LineSpacing / 12), settings.Font.Value.LineSpacing), Color.Black);
+                settings.SpriteBatch.DrawRectangle(settings.Anchor.Rectangle(Math.Max(1, settings.Font.Value.LineSpacing / 12), settings.Font.Value.LineSpacing), Color);
         }
     }
 }

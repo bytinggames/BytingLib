@@ -6,16 +6,19 @@ namespace BytingLib
     public class KeyInputString : IDisposable
     {
         private readonly GameWindow window;
+        private readonly bool ignoreEnterWithoutShiftOrCtrl;
+
         public InputString? InputString { get; set; }
 
         private bool control, shift;
 
-        public KeyInputString(GameWindow window)
+        public KeyInputString(GameWindow window, bool ignoreEnterWithoutShiftOrCtrl)
         {
             window.KeyDown += Window_KeyDown;
             window.KeyUp += Window_KeyUp;
             window.TextInput += ReceiveTextInput;
             this.window = window;
+            this.ignoreEnterWithoutShiftOrCtrl = ignoreEnterWithoutShiftOrCtrl;
         }
 
         private void Window_KeyUp(object? sender, InputKeyEventArgs e)
@@ -130,6 +133,13 @@ namespace BytingLib
                             InputString.DeleteWordRight();
                         else
                             InputString.Delete(1);
+                        break;
+                    case Keys.Enter:
+                        if (ignoreEnterWithoutShiftOrCtrl
+                            && !shift
+                            && !control)
+                            break;
+                        InputString.Insert('\n');
                         break;
                 }
             }

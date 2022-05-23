@@ -12,7 +12,7 @@ namespace BytingLib.Serialization
 
         public TypeSerializer(Type type)
         {
-            var props = type.GetProperties(BindingFlagsDeclaredAndInherited).Where(f => Attribute.IsDefined(f, typeof(BytingPropAttribute))).ToList();
+            var props = type.GetProperties(BindingFlagsDeclaredAndInherited).Where(f => Attribute.IsDefined(f, typeof(BytingPropAttribute)) && f.GetGetMethod() != null).ToList();
             
             Type currentLevelType = type;
 

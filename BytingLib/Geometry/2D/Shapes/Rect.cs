@@ -339,5 +339,19 @@ namespace BytingLib
         }
 
         public PrimitiveLineRing Outline() => new PrimitiveLineRing(this);
+
+        public Rect GetTransformed(Matrix matrix)
+        {
+            Vector2[] vertices = new Vector2[]
+                {
+                    TopLeft, TopRight, BottomRight, BottomLeft
+                };
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i] = Vector2.Transform(vertices[i], matrix);
+            }
+            return FromPoints(vertices)!;
+        }
     }
 }

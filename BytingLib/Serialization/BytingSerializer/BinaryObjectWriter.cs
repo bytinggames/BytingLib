@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections;
 
 namespace BytingLib.Serialization
@@ -13,6 +14,7 @@ namespace BytingLib.Serialization
             { typeof(List<>), WriteList },
             { typeof(string), (bw, obj) => bw.Write((string)obj) },
             { typeof(Color), (bw, obj) => bw.Write(((Color)obj).PackedValue) },
+            { typeof(bool), (bw, obj) => bw.Write((bool)obj) },
         };
 
         private static void WriteList(BytingWriterParent bw, object obj)

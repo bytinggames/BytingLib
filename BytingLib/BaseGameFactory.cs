@@ -44,8 +44,8 @@ namespace BytingLib
 
             game.Window.AllowUserResizing = true;
             stuff.Add(new UpdateKeyPressed(keys, Keys.F11, windowManager.ToggleFullscreen));
-            stuff.Add(new UpdateKeyPressed(keysDev, Keys.Right, windowManager.SwapScreen));
-            stuff.Add(new UpdateKeyPressed(keysDev, Keys.Left, windowManager.SwapScreen));
+            //stuff.Add(new UpdateKeyPressed(keysDev, Keys.Right, windowManager.SwapScreen));
+            //stuff.Add(new UpdateKeyPressed(keysDev, Keys.Left, windowManager.SwapScreen));
 
             return stuff;
         }
