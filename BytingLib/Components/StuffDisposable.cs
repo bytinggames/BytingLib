@@ -83,6 +83,10 @@ namespace BytingLib
                         break;
                     }
                 }
+                if (i >= 0)
+                {
+                    i = match.List.IndexOf(allThings[i]);
+                }
                 i++;
 
                 match.List.Insert(i, thing);
