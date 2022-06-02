@@ -93,7 +93,7 @@ namespace BytingLib.Serialization
                             currentLevelType = currentLevelType!.BaseType;
                         }
 
-                        while (currentLevel >= 0)
+                        for (; currentLevel >= 0; currentLevel--)
                         {
                             int propsCount = br.ReadInt32();
                             if (propsCount == 0)
@@ -109,8 +109,6 @@ namespace BytingLib.Serialization
 
                                 propsCount--;
                             }
-
-                            currentLevel--;
                         }
 
                         return obj;
