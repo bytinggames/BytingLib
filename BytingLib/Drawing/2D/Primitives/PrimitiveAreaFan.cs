@@ -14,21 +14,20 @@ namespace BytingLib
             this.Vertices = vertices;
         }
 
-        public PrimitiveAreaFan(Circle circle, int outerVertexCount)
+        public PrimitiveAreaFan(Circle circle, int vertexCount)
         {
-            Vertices = new Vector2[outerVertexCount + 1];
-            Vertices[0] = circle.Pos;
+            Vertices = new Vector2[vertexCount];
 
-            for (int i = 0; i < outerVertexCount; i++)
+            for (int i = 0; i < vertexCount; i++)
             {
-                float angle = MathHelper.TwoPi * i / outerVertexCount;
-                Vertices[i + 1] = circle.Pos + new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * circle.Radius;
+                float angle = MathHelper.TwoPi * i / vertexCount;
+                Vertices[i] = circle.Pos + new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * circle.Radius;
             }
         }
 
         public override PrimitiveLineRing Outline()
         {
-            return new PrimitiveLineRing(Vertices.Skip(1).ToArray());
+            return new PrimitiveLineRing(Vertices);
         }
 
         public override void Draw(GraphicsDevice gDevice)
@@ -55,6 +54,23 @@ namespace BytingLib
         public override void Draw(SpriteBatch spriteBatch, Color color, float layerDepth)
         {
             spriteBatch.DrawPolygon(spriteBatch.GetPixel(), Vertices, color, layerDepth);
+        }
+
+        public PrimitiveAreaFan Enlarge(float enlarge)
+        {
+            if (enlarge < 0)
+                throw new ArgumentException(nameof(enlarge) + " < 0 is not supported");
+            if (enlarge == 0)
+                return this;
+
+            var vertices = Outline().ThickenOutside(enlarge).Vertices;
+
+            for (int i = 0; i < Vertices.Length; i++)
+            {
+                Vertices[i] = vertices[i * 2 + 1];
+            }
+
+            return this;
         }
     }
 }
