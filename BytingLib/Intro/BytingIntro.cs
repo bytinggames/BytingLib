@@ -188,8 +188,20 @@ namespace BytingLib.Intro
             using (var fs = File.OpenRead(introDataFile))
                 data = serializer.Deserialize<IntroData>(fs)!;
 
-            //data.Teeth.RemoveRange(16, data.Teeth.Count - 16);
             Vector2 center;
+
+            Rect bytingGamesRect = Rect.FromPoints(data.Teeth.Skip(0).SelectMany(f => f.Vertices))!;
+            center = bytingGamesRect.GetCenter();
+            for (int i = 0; i < data.Teeth.Count; i++)
+            {
+                for (int j = 0; j < data.Teeth[i].Vertices.Count; j++)
+                {
+                    Vector2 dist = data.Teeth[i].Vertices[j] - center;
+                    data.Teeth[i].Vertices[j] -= dist * 0.2f;
+                }
+            }
+
+            //data.Teeth.RemoveRange(16, data.Teeth.Count - 16);
             if (animate)
             {
                 for (int y = 0; y < 2; y++)
@@ -208,16 +220,16 @@ namespace BytingLib.Intro
                 }
             }
 
-            Rect bytingGamesRect = Rect.FromPoints(data.Teeth.Skip(16).SelectMany(f => f.Vertices))!;
-            center = bytingGamesRect.GetCenter();
-            for (int i = 16; i < data.Teeth.Count; i++)
-            {
-                for (int j = 0; j < data.Teeth[i].Vertices.Count; j++)
-                {
-                    Vector2 dist = data.Teeth[i].Vertices[j] - center;
-                    data.Teeth[i].Vertices[j] += dist * 0.1f;
-                }
-            }
+            //Rect bytingGamesRect = Rect.FromPoints(data.Teeth.Skip(16).SelectMany(f => f.Vertices))!;
+            //center = bytingGamesRect.GetCenter();
+            //for (int i = 16; i < data.Teeth.Count; i++)
+            //{
+            //    for (int j = 0; j < data.Teeth[i].Vertices.Count; j++)
+            //    {
+            //        Vector2 dist = data.Teeth[i].Vertices[j] - center;
+            //        data.Teeth[i].Vertices[j] += dist * 0.1f;
+            //    }
+            //}
         }
 
         public Texture2D DrawOnMyOwn(SpriteBatch spriteBatch, Int2 size, Color colorFG)
