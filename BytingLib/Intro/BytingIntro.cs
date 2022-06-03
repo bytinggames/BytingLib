@@ -33,6 +33,7 @@ namespace BytingLib.Intro
         public bool Shadow { get; set; }
         [BytingProp(3)]
         public ThickVertex[] ThickVertices { get; set; }
+        public Vector2 Move { get; set; }
 
         public Tooth()
         {
@@ -131,16 +132,29 @@ namespace BytingLib.Intro
                 index += Vertices.Count;
             return Vertices[index];
         }
+
+        public void Dispose()
+        {
+            Vertices.Clear();
+            ThickVertices = new ThickVertex[0];
+        }
     }
-    class IntroData
+    class IntroData : IDisposable
     {
         [BytingProp(0)]
-        public List<Tooth> teeth { get; set; } = new List<Tooth>();
+        public List<Tooth> Teeth { get; set; } = new List<Tooth>();
 
+        public void Dispose()
+        {
+            Teeth.ForEach(f => f.Dispose());
+            Teeth.Clear();
+        }
     }
 
     public class BytingIntro : IUpdate, IDisposable
     {
+        static readonly bool edit = true;
+        static readonly bool animate = false;
         private const string introDataFile = @"..\..\..\intro.bin";
         IntroData data = new IntroData();
 
@@ -173,6 +187,37 @@ namespace BytingLib.Intro
 
             using (var fs = File.OpenRead(introDataFile))
                 data = serializer.Deserialize<IntroData>(fs)!;
+
+            //data.Teeth.RemoveRange(16, data.Teeth.Count - 16);
+            Vector2 center;
+            if (animate)
+            {
+                for (int y = 0; y < 2; y++)
+                {
+                    Vector2 baseLine = Rect.FromPoints(data.Teeth[y * 8 + 7].Vertices)!.GetCenter();
+                    for (int x = 0; x < 8; x++)
+                    {
+                        var tooth = data.Teeth[y * 8 + 7 - x];
+                        center = Rect.FromPoints(tooth.Vertices)!.GetCenter();
+                        tooth.Move = -(baseLine - center + new Vector2(140 * (x + 1), 0));
+                        for (int i = 0; i < tooth.Vertices.Count; i++)
+                        {
+                            tooth.Vertices[i] -= tooth.Move;
+                        }
+                    }
+                }
+            }
+
+            Rect bytingGamesRect = Rect.FromPoints(data.Teeth.Skip(16).SelectMany(f => f.Vertices))!;
+            center = bytingGamesRect.GetCenter();
+            for (int i = 16; i < data.Teeth.Count; i++)
+            {
+                for (int j = 0; j < data.Teeth[i].Vertices.Count; j++)
+                {
+                    Vector2 dist = data.Teeth[i].Vertices[j] - center;
+                    data.Teeth[i].Vertices[j] += dist * 0.1f;
+                }
+            }
         }
 
         public Texture2D DrawOnMyOwn(SpriteBatch spriteBatch, Int2 size, Color colorFG)
@@ -198,9 +243,11 @@ namespace BytingLib.Intro
 
 
 
-            Matrix toInput = Matrix.Invert(transform);
-            //UpdateDraw(toInput);
-
+            if (edit)
+            {
+                Matrix toInput = Matrix.Invert(transform);
+                UpdateDraw(toInput);
+            }
             spriteBatch.GraphicsDevice.SetRenderTarget(renderTarget);
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
 
@@ -212,7 +259,7 @@ namespace BytingLib.Intro
             };
             spriteBatch.Begin(blendState: blendState, transformMatrix: transform);
 
-            foreach (var tooth in data.teeth)
+            foreach (var tooth in data.Teeth)
             {
                 tooth.Draw(spriteBatch, scale, colorFG);
             }
@@ -256,7 +303,7 @@ namespace BytingLib.Intro
                 {
                     float minDist = float.MaxValue;
 
-                    foreach (var tooth in data.teeth)
+                    foreach (var tooth in data.Teeth)
                     {
                         for (int i = 0; i < tooth.Vertices.Count; i++)
                         {
@@ -280,16 +327,46 @@ namespace BytingLib.Intro
             renderTarget = new RenderTarget2D(gDevice, size.X, size.Y, false, SurfaceFormat.Color, DepthFormat.None, 8, RenderTargetUsage.DiscardContents);
         }
 
+        float time = 0f;
+        float animTimePrevious = 0f;
+
         public void Update()
         {
+            if (!animate)
+                return;
+
+            time += 0.01f;
+
+            float animTime = Curves.EaseInOutQuad(time);
+
+            float timeDelta = animTime - animTimePrevious;
+            animTimePrevious = animTime;
+
+
+            if (time <= 1f)
+            {
+                foreach (var tooth in data.Teeth)
+                {
+                    for (int i = 0; i < tooth.Vertices.Count; i++)
+                    {
+                        tooth.Vertices[i] += tooth.Move * timeDelta;
+                    }
+                }
+            }
         }
 
         public void Dispose()
         {
-            File.Move(introDataFile, introDataFile + DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss_fff"));
-            using (var fs = File.Create(introDataFile))
-                serializer.Serialize(fs, data);
+            if (edit)
+            {
+                File.Move(introDataFile, introDataFile + DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss_fff"));
+                using (var fs = File.Create(introDataFile))
+                    serializer.Serialize(fs, data);
+            }
 
+            renderTarget?.Dispose();
+
+            data.Dispose();
         }
     }
 }
