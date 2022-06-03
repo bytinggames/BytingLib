@@ -249,8 +249,7 @@ namespace BytingLib.Intro
 2067;625 2064;531 2099;510 2125;528
 2115;622 2125;528 2156;520 2168;537 2165;622 
 2278;608 2237;628 2201;613 2183;555 2215;514 2250;502 2281;532 2283;574 2213;562 
-2327;567 2298;541 2304;510 2355;505 2378;524 
-2327;567 2363;563 2375;605 2341;622 2291;615 
+2378;524 2355;505 2310;510 2298;541 2327;567 2363;563 2375;605 2341;622 2291;615 
 ";
             totalOffset = new Vector2(-1700, -330);
 
@@ -286,11 +285,20 @@ namespace BytingLib.Intro
                     vertices.Add(v);
                 }
 
+                Rect rect = Rect.FromPoints(vertices)!;
+                Vector2 center = rect.GetCenter();
+                for (int j = 0; j < vertices.Count; j++)
+                {
+                    vertices[j] = center + (vertices[j] - center) * 0.94f;
+                }
+
                 Vector2 start = vertices[0];
                 if (reverse)
                 {
                     vertices.Reverse();
                 }
+
+
 
                 teeth.Add(new Tooth(vertices.Select(f => f - start + offsets[i] * 2f + totalOffset).ToList(), vertices.Count == 3, true, new ThickVertex[] { new ThickVertex(reverse ? vertices.Count - 1 : 0, !reverse) }));
 
@@ -374,11 +382,12 @@ namespace BytingLib.Intro
                         thicks.Add(new ThickVertex(7, false));
                         break;
                     case 15: // s1
-                        thicks.Add(new ThickVertex(1, true));
+                        thicks.Add(new ThickVertex(3, false));
+                        thicks.Add(new ThickVertex(6, false));
                         break;
-                    case 16: // s2
-                        thicks.Add(new ThickVertex(2, false));
-                        break;
+                    //case 16: // s2
+                    //    thicks.Add(new ThickVertex(2, false));
+                    //    break;
                 }
 
                 // TODO: a bit more offset between the letters probably

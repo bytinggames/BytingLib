@@ -44,6 +44,9 @@ namespace BytingIntroSandbox
             gameStuff.ForEach<IUpdate>(f => f.Update());
 
             intro.Update();
+
+            if (keys.R.Pressed)
+                intro = new BytingIntro();
         }
         protected override void DrawActive(GameTime gameTime)
         {
