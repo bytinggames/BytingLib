@@ -28,7 +28,10 @@ namespace BytingLib.Serialization
             }
 
             return readTypes
-                [declarationType.IsGenericType ? declarationType.GetGenericTypeDefinition() : declarationType.IsEnum ? declarationType.GetEnumUnderlyingType() : declarationType]
+                [declarationType.IsGenericType ? declarationType.GetGenericTypeDefinition()
+                : declarationType.IsEnum ? declarationType.GetEnumUnderlyingType()
+                : declarationType.IsArray ? typeof(Array)
+                : declarationType]
                 .Invoke(this, declarationType, refIDs);
         }
 

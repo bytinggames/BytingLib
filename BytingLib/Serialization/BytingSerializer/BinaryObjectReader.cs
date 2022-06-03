@@ -10,7 +10,8 @@ namespace BytingLib.Serialization
             { typeof(int), (br, _, _) => br.ReadInt32() },
             { typeof(float), (br, _, _) => br.ReadSingle() },
             { typeof(Vector2), (br, _, _) => br.ReadVector2() },
-            { typeof(List<>), (br, t, refs) => ReadList(br, t, refs) },
+            { typeof(List<>),ReadList },
+            { typeof(Array), ReadArray },
             { typeof(string), (br, _, _) => br.ReadString() },
             { typeof(Color), (br, _, _) => new Color(br.ReadUInt32()) },
             { typeof(bool), (br, _, _) => br.ReadBoolean() },
@@ -30,6 +31,27 @@ namespace BytingLib.Serialization
                 list.Add(br.ReadObject(itemType));
             }
             return list;
+        }
+
+        // TODO: unit test
+        private static Array ReadArray(BytingReader br, Type arrType, List<object>? refs)
+        {
+            Type itemType = arrType.GetElementType()!;
+
+            int count = br.ReadInt32();
+
+            Array arr = Array.CreateInstance(itemType, count);
+            refs?.Add(arr);
+
+            for (int i = 0; i < count; i++)
+            {
+                if (br.ReadByte() == 0)
+                    continue;
+
+                arr.SetValue(br.ReadObject(itemType), i);
+            }
+
+            return arr;
         }
     }
 }

@@ -31,6 +31,10 @@
             {
                 type = type.GetEnumUnderlyingType();
             }
+            else if (type.IsArray)
+            {
+                type = typeof(Array);
+            }
             
             writeTypes[type].Invoke(this, obj);
         }

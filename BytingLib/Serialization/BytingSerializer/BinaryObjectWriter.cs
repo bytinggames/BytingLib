@@ -12,6 +12,7 @@ namespace BytingLib.Serialization
             { typeof(float), (bw, obj) => bw.Write((float)obj) },
             { typeof(Vector2), (bw, obj) => bw.Write((Vector2)obj) },
             { typeof(List<>), WriteList },
+            { typeof(Array), WriteArray },
             { typeof(string), (bw, obj) => bw.Write((string)obj) },
             { typeof(Color), (bw, obj) => bw.Write(((Color)obj).PackedValue) },
             { typeof(bool), (bw, obj) => bw.Write((bool)obj) },
@@ -31,6 +32,26 @@ namespace BytingLib.Serialization
                 {
                     bw.Write((byte)1); // not null
                     bw.WriteObject(list[i]!, itemType);
+                }
+            }
+        }
+
+        private static void WriteArray(BytingWriterParent bw, object obj)
+        {
+            Array arr = (Array)obj;
+            Type itemType = arr.GetType().GetElementType()!;
+
+            bw.Write(arr.Length);
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                object? item = arr.GetValue(i);
+                if (item == null)
+                    bw.Write((byte)0); // null
+                else
+                {
+                    bw.Write((byte)1); // not null
+                    bw.WriteObject(item, itemType);
                 }
             }
         }

@@ -46,7 +46,10 @@ namespace BytingIntroSandbox
             intro.Update();
 
             if (keys.R.Pressed)
+            {
+                intro.Dispose();
                 intro = new BytingIntro();
+            }
         }
         protected override void DrawActive(GameTime gameTime)
         {
@@ -61,6 +64,13 @@ namespace BytingIntroSandbox
             tex.Draw(spriteBatch, Vector2.Zero);
 
             spriteBatch.End();
+        }
+
+        protected override void UnloadContent()
+        {
+            intro.Dispose();
+
+            base.UnloadContent();
         }
 
         private const int SW_MAXIMIZE = 3;
