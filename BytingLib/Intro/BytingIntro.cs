@@ -153,7 +153,7 @@ namespace BytingLib.Intro
 
     public class BytingIntro : IUpdate, IDisposable
     {
-        static readonly bool edit = true;
+        static readonly bool edit = false;
         static readonly bool animate = false;
         private const string introDataFile = @"..\..\..\intro.bin";
         IntroData data = new IntroData();
@@ -189,17 +189,6 @@ namespace BytingLib.Intro
                 data = serializer.Deserialize<IntroData>(fs)!;
 
             Vector2 center;
-
-            Rect bytingGamesRect = Rect.FromPoints(data.Teeth.Skip(0).SelectMany(f => f.Vertices))!;
-            center = bytingGamesRect.GetCenter();
-            for (int i = 0; i < data.Teeth.Count; i++)
-            {
-                for (int j = 0; j < data.Teeth[i].Vertices.Count; j++)
-                {
-                    Vector2 dist = data.Teeth[i].Vertices[j] - center;
-                    data.Teeth[i].Vertices[j] -= dist * 0.2f;
-                }
-            }
 
             //data.Teeth.RemoveRange(16, data.Teeth.Count - 16);
             if (animate)
