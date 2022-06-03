@@ -50,9 +50,9 @@ namespace BytingLib.Intro
 
         public void Draw(SpriteBatch spriteBatch, float scale, Color color)
         {
-            const float defaultLineThickness = 4f;
+            const float defaultLineThickness = 3f;
             const float minLineThickness = 1f;
-            const float defaultShadowThickness = defaultLineThickness + 8f;
+            const float defaultShadowThickness = defaultLineThickness + 9f;
             const float thickerThickness = 9f; // 9 seems right on full hd
 
             float lineThickness = defaultLineThickness;
