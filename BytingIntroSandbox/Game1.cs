@@ -29,9 +29,9 @@ namespace BytingIntroSandbox
 
         protected override void MyInitialize()
         {
-            intro = new BytingIntro();
-
             gameStuff = BaseGameFactory.CreateDefaultGame(this, graphics, "input", out keys, out mouse, out gamePad, out windowManager, false); disposables.Add(gameStuff);
+
+            intro = new BytingIntro(mouse, keys);
 
             IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, "BytingIntroSandbox");
             ShowWindow(hwnd, SW_MAXIMIZE);
@@ -48,7 +48,7 @@ namespace BytingIntroSandbox
             if (keys.R.Pressed)
             {
                 intro.Dispose();
-                intro = new BytingIntro();
+                intro = new BytingIntro(mouse, keys);
             }
         }
         protected override void DrawActive(GameTime gameTime)

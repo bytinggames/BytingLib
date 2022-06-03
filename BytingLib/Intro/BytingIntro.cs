@@ -26,13 +26,13 @@ namespace BytingLib.Intro
     {
 
         [BytingProp(0)]
-        public IList<Vector2> vertices { get; set; }
+        public IList<Vector2> Vertices { get; set; }
         [BytingProp(1)]
-        public bool open { get; set; }
+        public bool Open { get; set; }
         [BytingProp(2)]
-        public bool shadow { get; set; }
+        public bool Shadow { get; set; }
         [BytingProp(3)]
-        public ThickVertex[] thickVertices { get; set; }
+        public ThickVertex[] ThickVertices { get; set; }
 
         public Tooth()
         {
@@ -41,10 +41,10 @@ namespace BytingLib.Intro
 
         public Tooth(IList<Vector2> vertices, bool open, bool shadow, ThickVertex[] thickVertices)
         {
-            this.vertices = vertices;
-            this.open = open;
-            this.shadow = shadow;
-            this.thickVertices = thickVertices;
+            this.Vertices = vertices;
+            this.Open = open;
+            this.Shadow = shadow;
+            this.ThickVertices = thickVertices;
         }
 
         public void Draw(SpriteBatch spriteBatch, float scale, Color color)
@@ -59,18 +59,18 @@ namespace BytingLib.Intro
             if (displayedThickness < minLineThickness)
                 lineThickness *= minLineThickness / displayedThickness;
 
-            if (shadow)
+            if (Shadow)
             {
-                new PrimitiveAreaFan(vertices.ToArray())
+                new PrimitiveAreaFan(Vertices.ToArray())
                     .Enlarge(defaultShadowThickness)
                     .Draw(spriteBatch, Color.Transparent);
             }
 
 
             // enlarge the polygon and draw it to include the shadow outline
-            if (open)
+            if (Open)
             {
-                var strip = new PrimitiveLineStrip(vertices);
+                var strip = new PrimitiveLineStrip(Vertices);
                 //strip.ThickenOutside(defaultShadowThickness)
                 //    .Draw(spriteBatch, Color.Transparent);
 
@@ -78,13 +78,13 @@ namespace BytingLib.Intro
             }
             else
             {
-                new PrimitiveLineRing(vertices).ThickenOutside(lineThickness).Draw(spriteBatch, color);
+                new PrimitiveLineRing(Vertices).ThickenOutside(lineThickness).Draw(spriteBatch, color);
             }
 
-            foreach (var t in thickVertices)
+            foreach (var t in ThickVertices)
             {
                 int indexJau = t.Index + 2 * (t.DirectionForward ? 1 : -1);
-                if (vertices.Count > 2 && (!open || indexJau >= 0 && indexJau < vertices.Count))
+                if (Vertices.Count > 2 && (!Open || indexJau >= 0 && indexJau < Vertices.Count))
                 {
                     Vector2 a = GetWrapped(t.Index);
                     Vector2 b = GetWrapped(t.Index + 1 * (t.DirectionForward ? 1 : -1));
@@ -126,10 +126,10 @@ namespace BytingLib.Intro
 
         private Vector2 GetWrapped(int index)
         {
-            index %= vertices.Count;
+            index %= Vertices.Count;
             if (index < 0)
-                index += vertices.Count;
-            return vertices[index];
+                index += Vertices.Count;
+            return Vertices[index];
         }
     }
     class IntroData
@@ -139,18 +139,41 @@ namespace BytingLib.Intro
 
     }
 
-
     public class BytingIntro : IUpdate, IDisposable
     {
         private const string introDataFile = @"..\..\..\intro.bin";
-        IntroData intro = new IntroData();
+        IntroData data = new IntroData();
 
         private readonly Rect requiredSpace;
-
+        private readonly MouseInput mouse;
+        private readonly KeyInput keys;
         RenderTarget2D? renderTarget;
 
         private bool firstDraw = true;
         Serializer serializer;
+
+        Tooth? selectedTooth;
+        int? selectedVertex;
+
+        public BytingIntro(MouseInput mouse, KeyInput keys)
+        {
+            this.mouse = mouse;
+            this.keys = keys;
+
+            requiredSpace = Anchor.Center(Vector2.Zero).Rectangle(1920, 1080);
+
+            serializer = new Serializer(new TypeIDs(new Dictionary<Type, int>()
+            {
+                {typeof(IntroData), 0 },
+                {typeof(Tooth), 1 },
+                {typeof(ThickVertex), 2 },
+                {typeof(List<Tooth>), 3 },
+                {typeof(List<Vector2>), 4 },
+            }), false);
+
+            using (var fs = File.OpenRead(introDataFile))
+                data = serializer.Deserialize<IntroData>(fs)!;
+        }
 
         public Texture2D DrawOnMyOwn(SpriteBatch spriteBatch, Int2 size, Color colorFG)
         {
@@ -169,8 +192,14 @@ namespace BytingLib.Intro
             float hScale = size.Y / requiredSpace.Height;
             float scale = MathF.Min(wScale, hScale);
             Vector2 offset = size.ToVector2() / 2 - requiredSpace.GetCenter();
-            Matrix transform = Matrix.CreateScale(scale) 
+            Matrix transform = Matrix.CreateScale(scale)
                 * Matrix.CreateTranslation(new Vector3(offset, 0f));
+
+
+
+
+            Matrix toInput = Matrix.Invert(transform);
+            //UpdateDraw(toInput);
 
             spriteBatch.GraphicsDevice.SetRenderTarget(renderTarget);
             spriteBatch.GraphicsDevice.Clear(Color.Transparent);
@@ -183,15 +212,65 @@ namespace BytingLib.Intro
             };
             spriteBatch.Begin(blendState: blendState, transformMatrix: transform);
 
-            foreach (var tooth in intro.teeth)
+            foreach (var tooth in data.teeth)
             {
                 tooth.Draw(spriteBatch, scale, colorFG);
             }
+            //if (!mouse.Left.Down)
+            //    selectedTooth?.Draw(spriteBatch, scale, Color.Yellow);
 
             spriteBatch.End();
             spriteBatch.GraphicsDevice.SetRenderTarget(null);
 
+
+
             return renderTarget!;
+        }
+
+        private void UpdateDraw(Matrix toInput)
+        {
+            Vector2 mousePos = Vector2.Transform(mouse.Position, toInput);
+            Vector2 mouseMove = mousePos - Vector2.Transform(mouse.GetStatePrevious().Position.ToVector2(), toInput);
+
+            if ((mouse.Right.Down || mouse.Left.Down) && selectedTooth != null)
+            {
+                if (mouse.Move != Vector2.Zero)
+                {
+                    if (mouse.Left.Down)
+                    {
+                        for (int i = 0; i < selectedTooth.Vertices.Count; i++)
+                        {
+                            selectedTooth.Vertices[i] += mouseMove;
+                        }
+                    }
+                    else
+                    {
+                        selectedTooth.Vertices[selectedVertex!.Value] += mouseMove;
+                    }
+                }
+            }
+            else
+            {
+
+                //if (mouse.Right.Pressed || mouse.Left.Pressed)
+                {
+                    float minDist = float.MaxValue;
+
+                    foreach (var tooth in data.teeth)
+                    {
+                        for (int i = 0; i < tooth.Vertices.Count; i++)
+                        {
+                            float dist = (tooth.Vertices[i] - mousePos).LengthSquared();
+                            if (dist < minDist)
+                            {
+                                minDist = dist;
+                                selectedTooth = tooth;
+                                selectedVertex = i;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void RefreshRenderTarget(GraphicsDevice gDevice, Int2 size)
@@ -201,33 +280,15 @@ namespace BytingLib.Intro
             renderTarget = new RenderTarget2D(gDevice, size.X, size.Y, false, SurfaceFormat.Color, DepthFormat.None, 8, RenderTargetUsage.DiscardContents);
         }
 
-        public BytingIntro()
-        {
-
-            requiredSpace = Anchor.Center(Vector2.Zero).Rectangle(1920, 1080);
-
-            serializer = new Serializer(new TypeIDs(new Dictionary<Type, int>()
-            {
-                {typeof(IntroData), 0 },
-                {typeof(Tooth), 1 },
-                {typeof(ThickVertex), 2 },
-                {typeof(List<Tooth>), 3 },
-                {typeof(List<Vector2>), 4 },
-            }), false);
-
-            using (var fs = File.OpenRead(introDataFile))
-                intro = serializer.Deserialize<IntroData>(fs)!;
-        }
-
         public void Update()
         {
-
         }
 
         public void Dispose()
         {
+            File.Move(introDataFile, introDataFile + DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss_fff"));
             using (var fs = File.Create(introDataFile))
-                serializer.Serialize(fs, intro);
+                serializer.Serialize(fs, data);
 
         }
     }
