@@ -2009,6 +2009,11 @@ namespace BytingLib
                 axis = Vector2.Normalize(new Vector2(-edge.Y, edge.X));
             }
         }
+
+        public static float GetCollisionOf2Axes(Vector2 pos1, Vector2 dir1, Vector2 pos2, Vector2 dir2)
+        {
+            return (-pos1.Y * dir2.X + pos1.X * dir2.Y + pos2.Y * dir2.X - pos2.X * dir2.Y) / (dir2.X * dir1.Y - dir2.Y * dir1.X);
+        }
     }
 }
 
