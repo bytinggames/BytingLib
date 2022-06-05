@@ -190,9 +190,10 @@ namespace BytingLib.Intro
 
             Vector2 center;
 
-            data.Teeth.RemoveRange(16, data.Teeth.Count - 16);
             if (animate)
             {
+                data.Teeth.RemoveRange(16, data.Teeth.Count - 16);
+
                 for (int y = 0; y < 2; y++)
                 {
                     Vector2 baseLine = Rect.FromPoints(data.Teeth[y * 8 + 7].Vertices)!.GetCenter();
