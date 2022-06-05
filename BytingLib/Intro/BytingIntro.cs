@@ -50,10 +50,10 @@ namespace BytingLib.Intro
 
         public void Draw(SpriteBatch spriteBatch, float scale, Color color)
         {
-            const float defaultLineThickness = 3f;
+            const float defaultLineThickness = 3f * 2f;
             const float minLineThickness = 1f;
             const float defaultShadowThickness = defaultLineThickness + 9f;
-            const float thickerThickness = 9f; // 9 seems right on full hd
+            const float thickerThickness = 12f; // 9 seems right on full hd
 
             float lineThickness = defaultLineThickness;
             float displayedThickness = lineThickness * scale;
@@ -190,7 +190,7 @@ namespace BytingLib.Intro
 
             Vector2 center;
 
-            //data.Teeth.RemoveRange(16, data.Teeth.Count - 16);
+            data.Teeth.RemoveRange(16, data.Teeth.Count - 16);
             if (animate)
             {
                 for (int y = 0; y < 2; y++)
