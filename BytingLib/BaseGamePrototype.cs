@@ -68,8 +68,6 @@ namespace BytingLib
         {
             drawSpeed.OnRefresh(gameTime);
 
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
             spriteBatch.Begin(SpriteSortMode.BackToFront, null, SamplerState.PointClamp);
 
             gameStuff.ForEach<IDraw>(f => f.Draw(spriteBatch));

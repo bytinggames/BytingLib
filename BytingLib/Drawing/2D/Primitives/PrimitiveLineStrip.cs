@@ -67,7 +67,7 @@ namespace BytingLib
             Vector2[] vertices = new Vector2[vertexCount];
             for (int i = 0; i < vertexCount; i++)
             {
-                float angle = angleStart + arc * i / vertexCount;
+                float angle = angleStart + arc * i / (vertexCount - 1);
                 vertices[i] = center + new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * radius;
             }
             return new PrimitiveLineStrip(vertices);
