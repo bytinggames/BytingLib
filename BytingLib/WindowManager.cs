@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Runtime.InteropServices;
 
 namespace BytingLib
 {
@@ -15,6 +16,13 @@ namespace BytingLib
         private Int2 windowSizeBeforeFullscreen;
 
         public event Action<Int2>? OnResolutionChanged;
+
+        private const int SW_MAXIMIZE = 3;
+        [DllImport("user32.dll", EntryPoint = "FindWindow")]
+        public static extern IntPtr FindWindowByCaption(IntPtr ZeroOnly, string lpWindowName);
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         public WindowManager(bool realFullscreen, GameWindow window, GraphicsDeviceManager graphics)
         {
@@ -122,6 +130,12 @@ namespace BytingLib
         public Int2 GetResolution()
         {
             return new Int2(GetViewportWidth(), GetViewportHeight());
+        }
+
+        public void MaximizeWindow(string windowCaption)
+        {
+            IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);
+            ShowWindow(hwnd, SW_MAXIMIZE);
         }
     }
 }

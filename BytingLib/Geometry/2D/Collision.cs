@@ -1994,7 +1994,7 @@ namespace BytingLib
                 return new float?[] { null, null };
             else
             {
-                float sqrt = (float)Math.Sqrt(discriminant);
+                float sqrt = MathF.Sqrt(discriminant);
                 return new float?[] { (-b + sqrt) / (2f * a), (-b - sqrt) / (2f * a) };
             }
         }

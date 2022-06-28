@@ -5,6 +5,8 @@ namespace BytingLib
 {
     public static class MathExtension
     {
+        const double TwoPi = Math.PI * 2;
+
         public static float MinAbs(float val1, float val2)
         {
             return Math.Abs(val1) < Math.Abs(val2) ? val1 : val2;
@@ -24,10 +26,26 @@ namespace BytingLib
                 angleTo += MathHelper.TwoPi;
 
             float dist = angleTo - angleFrom;
-            if (Math.Abs(dist) <= Math.PI)
+            if (Math.Abs(dist) <= MathF.PI)
                 return dist;
             else
                 return -Math.Sign(dist) * (MathHelper.TwoPi - Math.Abs(dist));
+        }
+        public static double AngleDistance(this double angleFrom, double angleTo)
+        {
+            angleFrom = angleFrom % TwoPi;
+            if (angleFrom < 0)
+                angleFrom += TwoPi;
+
+            angleTo = angleTo % TwoPi;
+            if (angleTo < 0)
+                angleTo += TwoPi;
+
+            double dist = angleTo - angleFrom;
+            if (Math.Abs(dist) <= Math.PI)
+                return dist;
+            else
+                return -Math.Sign(dist) * (TwoPi - Math.Abs(dist));
         }
         public static float GetMoveTo(this float val, float goal, float speed)
         {
