@@ -13,9 +13,11 @@ namespace BytingLib
         private readonly Dictionary<string, CodePart> fileToCode = new Dictionary<string, CodePart>();
         private readonly string[] mgcbContents;
 
-        static readonly string mgcbPathExe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            @".nuget\packages\monogame.content.builder.task\3.8.0.1641\tools\netcoreapp3.1\any\mgcb.exe");
-        //@"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";  // this version didn't build my models
+        static readonly string mgcbPathExe = Path.Combine(Environment.CurrentDirectory,
+            @"..\..\..\..\..",
+            @"MonoGame.BytingGames\Artifacts\MonoGame.Content.Builder\Debug\mgcb.exe");
+            //Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            //@".nuget\packages\monogame.content.builder.task\3.8.0.1641\tools\netcoreapp3.1\any\mgcb.exe");
 
         static readonly string outputPath = Path.Combine(Environment.CurrentDirectory, "Content");
 
