@@ -359,5 +359,10 @@ namespace BytingLib
         {
             return GetDistanceSquaredToIndex(vertices, target).MinBy(f => f.Item1).Item2;
         }
+
+        public CollisionResultPolygonExtended DistToCircleExtended(Circle circle, Vector2 dir)
+        {
+            return Collision.DistPolygonCircleExtended(this, circle, dir);
+        }
     }
 }

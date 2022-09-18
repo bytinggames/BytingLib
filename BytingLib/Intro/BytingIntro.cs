@@ -35,7 +35,9 @@ namespace BytingLib.Intro
         public ThickVertex[] ThickVertices { get; set; }
         public Vector2 Move { get; set; }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Tooth()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
 
         }

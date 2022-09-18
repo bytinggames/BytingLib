@@ -76,6 +76,10 @@ namespace BytingLib
                 return new Vector3(-v.Y, v.X, v.Z);
             // see https://math.stackexchange.com/a/3122025
         }
+        public static Vector3 GetSqrt(this Vector3 v)
+        {
+            return new Vector3(MathF.Sqrt(v.X), MathF.Sqrt(v.Y), MathF.Sqrt(v.Z));
+        }
 
         public static Vector2 XY(this Vector3 v) => new Vector2(v.X, v.Y);
         public static Vector2 XZ(this Vector3 v) => new Vector2(v.X, v.Z);

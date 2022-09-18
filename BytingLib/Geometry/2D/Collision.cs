@@ -2,22 +2,17 @@
 #pragma warning disable CS8629 // Nullable value type may be null.
 
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BytingLib
 {
     public static class Collision
     {
+        static readonly Type TShapeCollection = typeof(ShapeCollection);
         static readonly Type TVector2 = typeof(Vector2);
         static readonly Type TRect = typeof(Rect);
         static readonly Type TPolygon = typeof(Polygon);
         static readonly Type TCircle = typeof(Circle);
         static readonly Type TTextureShape = typeof(TextureShape);
-        static readonly Type TShapeCollection = typeof(ShapeCollection);
 
         static readonly Type TPointF = typeof(PointF); // uses the same functions Vector2 can use
 
@@ -63,34 +58,33 @@ namespace BytingLib
 
         static readonly Dictionary<(Type, Type), Func<object, object, bool>> collisionFunctions = new()
         {
+            { (TShapeCollection, TVector2), (a, b) => ColShapeCollectionObject((ShapeCollection)a, b) },
+            { (TShapeCollection, TRect), (a, b) => ColShapeCollectionObject((ShapeCollection)a, b) },
+            { (TShapeCollection, TPolygon), (a, b) => ColShapeCollectionObject((ShapeCollection)a, b) },
+            { (TShapeCollection, TCircle), (a, b) => ColShapeCollectionObject((ShapeCollection)a, b) },
+            { (TShapeCollection, TTextureShape), (a, b) => ColShapeCollectionObject((ShapeCollection)a, b) },
+            { (TShapeCollection, TShapeCollection), (a, b) => ColShapeCollectionObject((ShapeCollection)a, b) },
+
             { (TVector2, TVector2), (a, b) => ColVectorVector((Vector2)a, (Vector2)b) },
             { (TVector2, TRect), (a, b) => ColVectorRectangle((Vector2)a, (Rect)b) },
             { (TVector2, TPolygon), (a, b) => ColVectorPolygon((Vector2)a, (Polygon)b) },
             { (TVector2, TCircle), (a, b) => ColVectorCircle((Vector2)a, (Circle)b) },
             { (TVector2, TTextureShape), (a, b) => ColVectorTextureShape((Vector2)a, (TextureShape)b) },
-            { (TVector2, TShapeCollection), (a, b) => ColShapeCollectionObject((ShapeCollection)b, a) },
 
             { (TRect, TRect), (a, b) => ColRectangleRectangle((Rect)a, (Rect)b) },
             { (TRect, TPolygon), (a, b) => ColRectanglePolygon((Rect)a, (Polygon)b) },
             { (TRect, TCircle), (a, b) => ColRectangleCircle((Rect)a, (Circle)b) },
             { (TRect, TTextureShape), (a, b) => ColRectangleTextureShape((Rect)a, (TextureShape)b) },
-            { (TRect, TShapeCollection), (a, b) => ColShapeCollectionObject((ShapeCollection)b, a) },
 
 
             { (TPolygon, TPolygon), (a, b) => ColPolygonPolygon((Polygon)a, (Polygon)b) },
             { (TPolygon, TCircle), (a, b) => ColPolygonCircle((Polygon)a, (Circle)b) },
             { (TPolygon, TTextureShape), (a, b) => ColPolygonTextureShape((Polygon)a, (TextureShape)b) },
-            { (TPolygon, TShapeCollection), (a, b) => ColShapeCollectionObject((ShapeCollection)b, a) },
 
             { (TCircle, TCircle), (a, b) => ColCircleCircle((Circle)a, (Circle)b) },
             { (TCircle, TTextureShape), (a, b) => ColCircleTextureShape((Circle)a, (TextureShape)b) },
-            { (TCircle, TShapeCollection), (a, b) => ColShapeCollectionObject((ShapeCollection)b, a) },
 
             { (TTextureShape, TTextureShape), (a, b) => ColTextureShapeTextureShape((TextureShape)a, (TextureShape)b) },
-            { (TTextureShape, TShapeCollection), (a, b) => ColShapeCollectionObject((ShapeCollection)b, a) },
-
-            { (TShapeCollection, TShapeCollection), (a, b) => ColShapeCollectionObject((ShapeCollection)b, a) },
-
 
             // special:
             { (TPointF, TPointF), (a, b) => ColVectorVector(((PointF)a).Pos, ((PointF)b).Pos) } // use (vector, vector) collision for (point, point)
@@ -98,33 +92,32 @@ namespace BytingLib
 
         static readonly Dictionary<(Type, Type), Func<object, object, Vector2, CollisionResult>> distanceFunctions = new()
         {
+            { (TShapeCollection, TVector2), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)a, b, dir) },
+            { (TShapeCollection, TRect), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)a, b, dir) },
+            { (TShapeCollection, TPolygon), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)a, b, dir) },
+            { (TShapeCollection, TCircle), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)a, b, dir) },
+            { (TShapeCollection, TTextureShape), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)a, b, dir) },
+            { (TShapeCollection, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)a, b, dir) },
+
             //{ (TVector2, TVector2), (a, b, dir) => DistVectorVector((Vector2)a, (Vector2)b, dir) },
             { (TVector2, TRect), (a, b, dir) => DistVectorRectangle((Vector2)a, (Rect)b, dir) },
             { (TVector2, TCircle), (a, b, dir) => DistVectorCircle((Vector2)a, (Circle)b, dir) },
             //{ (TVector2, TTextureShape), (a, b, dir) => DistVectorTextureShape((Vector2)a, (TextureShape)b, dir) },
             { (TVector2, TPolygon), (a, b, dir) => DistVectorPolygon((Vector2)a, (Polygon)b, dir) },
-            { (TVector2, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)b, a, -dir).InvertAxisAndReturn() },
 
             { (TRect, TRect), (a, b, dir) => DistRectangleRectangle((Rect)a, (Rect)b, dir) },
             { (TRect, TCircle), (a, b, dir) => DistRectangleCircle((Rect)a, (Circle)b, dir) },
             //{ (TRect, TTextureShape), (a, b, dir) => DistRectangleTextureShape((Rect)a, (TextureShape)b, dir) },
             { (TRect, TPolygon), (a, b, dir) => DistRectanglePolygon((Rect)a, (Polygon)b, dir) },
-            { (TRect, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)b, a, -dir).InvertAxisAndReturn() },
-
 
             { (TPolygon, TPolygon), (a, b, dir) => DistPolygonPolygon((Polygon)a, (Polygon)b, dir) },
             { (TPolygon, TCircle), (a, b, dir) => DistPolygonCircle((Polygon)a, (Circle)b, dir) },
             //{ (TPolygon, TTextureShape), (a, b, dir) => DistPolygonTextureShape((Polygon)a, (TextureShape)b, dir) },
-            { (TPolygon, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)b, a, -dir).InvertAxisAndReturn() },
 
             { (TCircle, TCircle), (a, b, dir) => DistCircleCircle((Circle)a, (Circle)b, dir) },
             //{ (TCircle, TTextureShape), (a, b, dir) => DistCircleTextureShape((Circle)a, (TextureShape)b, dir) },
-            { (TCircle, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)b, a, -dir).InvertAxisAndReturn() },
 
             //{ (TTextureShape, TTextureShape), (a, b, dir) => DistTextureShapeTextureShape((TextureShape)a, (TextureShape)b, dir) },
-            { (TTextureShape, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)b, a, -dir).InvertAxisAndReturn() },
-
-            { (TShapeCollection, TShapeCollection), (a, b, dir) => DistShapeCollectionObject((ShapeCollection)b, a, -dir).InvertAxisAndReturn() },
         };
 
         public static bool GetCollision(object shape1, object shape2)
@@ -154,6 +147,26 @@ namespace BytingLib
             return func(shape1, shape2, dir);
                 
         }
+
+        #region ShapeCollection
+
+        public static bool ColShapeCollectionObject(ShapeCollection collection, object obj)
+        {
+            return collection.Shapes.Any(shape => GetCollision(shape, obj));
+        }
+
+        public static CollisionResult DistShapeCollectionObject(ShapeCollection collection, object obj, Vector2 dir)
+        {
+            CollisionResult crTotal = new CollisionResult();
+            foreach (var shape in collection.Shapes)
+            {
+                var cr = GetDistance(shape, obj, dir);
+                crTotal.Add(cr);
+            }
+            return crTotal;
+        }
+
+        #endregion
 
         #region Vector
 
@@ -1881,26 +1894,6 @@ namespace BytingLib
             return false;
         }
 
-
-        #endregion
-
-        #region ShapeCollection
-
-        public static bool ColShapeCollectionObject(ShapeCollection collection, object obj)
-        {
-            return collection.Shapes.Any(shape => GetCollision(shape, obj));
-        }
-
-        public static CollisionResult DistShapeCollectionObject(ShapeCollection collection, object obj, Vector2 dir)
-        {
-            CollisionResult crTotal = new CollisionResult();
-            foreach (var shape in collection.Shapes)
-            {
-                var cr = GetDistance(shape, obj, dir);
-                crTotal.Add(cr);
-            }
-            return crTotal;
-        }
 
         #endregion
 

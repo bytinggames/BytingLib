@@ -9,9 +9,9 @@ namespace BytingLib
         private readonly string tempOutputPath;
         private readonly string tempPath;
 
-        private readonly string header;
+        private readonly string header = "";
         private readonly Dictionary<string, CodePart> fileToCode = new Dictionary<string, CodePart>();
-        private readonly string[] mgcbContents;
+        private readonly string[] mgcbContents = new string[0];
 
         static readonly string mgcbPathExe = Path.Combine(Environment.CurrentDirectory,
             @"..\..\..\..\..",
