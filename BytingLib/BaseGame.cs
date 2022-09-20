@@ -30,10 +30,13 @@ namespace BytingLib
         private bool previousUpdateWasActive = true;
         private bool previousDrawWasActive = true;
 
+        private readonly string directoryContainingMonoGame;
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public BaseGame()
+        public BaseGame(string directoryContainingMonoGame)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
+            this.directoryContainingMonoGame = directoryContainingMonoGame;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -67,7 +70,7 @@ namespace BytingLib
             contentCollector = new ContentCollector(rawContent); disposables.Add(contentCollector);
 
 #if DEBUG
-            hotReloadContent = new HotReloadContent(Services, contentCollector);
+            hotReloadContent = new HotReloadContent(Services, contentCollector, directoryContainingMonoGame);
 #else
             hotReloadContent = new HotReloadContent(Services, contentCollector, "ContentMod");
 #endif

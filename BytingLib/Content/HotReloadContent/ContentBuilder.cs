@@ -13,9 +13,7 @@ namespace BytingLib
         private readonly Dictionary<string, CodePart> fileToCode = new Dictionary<string, CodePart>();
         private readonly string[] mgcbContents = new string[0];
 
-        static readonly string mgcbPathExe = Path.Combine(Environment.CurrentDirectory,
-            @"..\..\..\..\..",
-            @"MonoGame.BytingGames\Artifacts\MonoGame.Content.Builder\Debug\mgcb.exe");
+        readonly string mgcbPathExe;
             //Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             //@".nuget\packages\monogame.content.builder.task\3.8.0.1641\tools\netcoreapp3.1\any\mgcb.exe");
 
@@ -46,11 +44,14 @@ namespace BytingLib
         }
 
 
-        public ContentBuilder(string modContentDir, string tempOutputPath, string tempPath)
+        public ContentBuilder(string modContentDir, string tempOutputPath, string tempPath, string directoryContainingMonoGame)
         {
             this.modContentDir = modContentDir;
             this.tempOutputPath = tempOutputPath;
             this.tempPath = tempPath;
+
+            mgcbPathExe = Path.Combine(directoryContainingMonoGame,
+                @"MonoGame.BytingGames\Artifacts\MonoGame.Content.Builder\Debug\mgcb.exe");
 
             //string cmd = $"/platform:DesktopGL /config: /profile:Reach /compress:False /importer:EffectImporter /processor:EffectProcessor /processorParam:DebugMode=Auto /intermediateDir:\"{tempPath}\" /outputDir:\"{tempOutputPath}\"";
 
@@ -80,6 +81,9 @@ namespace BytingLib
             // get header
             string mainContent = mgcbContents[mainContentIndex];
             int begin = mainContent.IndexOf("#begin");
+            if (begin == -1)
+                begin = mainContent.Length;
+
             header = mainContent.Remove(begin);
 
             for (int i = 0; i < mgcbContents.Length; i++)

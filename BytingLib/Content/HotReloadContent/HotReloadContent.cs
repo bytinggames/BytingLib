@@ -18,7 +18,9 @@ namespace BytingLib
         /// <summary>Either localization.csv or any font changed.</summary>
         public event Action? OnTextReload;
 
-        public HotReloadContent(IServiceProvider serviceProvider, IContentCollector content, string hotReloadContentPath = @"..\..\..\Content")
+        readonly Dictionary<string, List<string>> dependencies = new Dictionary<string, List<string>>();
+
+        public HotReloadContent(IServiceProvider serviceProvider, IContentCollector content, string directoryContainingMonoGame, string hotReloadContentPath = @"..\..\..\Content")
         {
             this.content = content;
 
@@ -37,10 +39,15 @@ namespace BytingLib
 
             dirSupervisor = new DirectorySupervisor(sourceContentDir, GetFiles, expectEmptyDir);
 
-            string tempPath = Path.Combine(sourceContentDir, "bin", "obj", "Content");
-            string tempOutputPath = Path.Combine(sourceContentDir, "bin", "bin", "Content");
+            string tempPath = Path.Combine(sourceContentDir, "obj", "HotReload", "Content");
+            string tempOutputPath = Path.Combine(sourceContentDir, "bin", "HotReload", "Content");
 
-            contentBuilder = new ContentBuilder(sourceContentDir, tempOutputPath, tempPath);
+            if (Directory.Exists(tempPath))
+                Directory.Delete(tempPath, true);
+            if (Directory.Exists(tempOutputPath))
+                Directory.Delete(tempOutputPath, true);
+
+            contentBuilder = new ContentBuilder(sourceContentDir, tempOutputPath, tempPath, directoryContainingMonoGame);
 
             TempContentRaw = new ContentManagerRaw(serviceProvider, contentBuilder.OutputPath);
 
@@ -51,7 +58,7 @@ namespace BytingLib
         private string[] GetFiles()
         {
             List<string> files = new List<string>();
-            Get("Effects", "*.fx");
+            Get("Effects", "*.fx|*.fxh");
             Get("Fonts", "*.xnb|*.spritefont");
             Get("Models", "*.fbx");
             Get("Music", "*.ogg");
@@ -59,6 +66,8 @@ namespace BytingLib
             Get("Textures", "*.png|*.jpg|*.jpeg|*.json");
             GetFile("Sounds\\settings.txt");
             GetFile("localization.csv");
+
+            AddEffectDependencies(files);
 
             void Get(string folder, string searchPattern)
             {
@@ -78,6 +87,44 @@ namespace BytingLib
             return files.ToArray();
         }
 
+        private void AddEffectDependencies(List<string> files)
+        {
+            // add effect dependencies (fx depend on fxh's)
+            const string includeStr = "#include \"";
+            foreach (var f in files)
+            {
+                string localFilePath = f.Substring(sourceContentDir.Length + 1);
+
+                string shaderCode = File.ReadAllText(f);
+                int i = 0;
+                while ((i = shaderCode.IndexOf(includeStr, i)) != -1)
+                {
+                    i += includeStr.Length;
+                    int i2 = shaderCode.IndexOf("\"", i);
+                    string file = shaderCode.Substring(i, i2 - i);
+                    file = "Effects\\" + file;
+                    if (!dependencies.ContainsKey(file))
+                        dependencies.Add(file, new List<string>());
+                    dependencies[file].Add(localFilePath);
+
+                    i = i2 + 1;
+                }
+            }
+        }
+
+        private void AddDependencies(DirectorySupervisor.Changes changes)
+        {
+            for (int i = 0; i < changes.Modified.Count; i++)
+            {
+                if (dependencies.TryGetValue(changes.Modified[i].LocalPath, out List<string>? d))
+                {
+                    for (int j = 0; j < d.Count; j++)
+                    {
+                        changes.Modified.Add(new DirectorySupervisor.FileStamp(Path.Combine(sourceContentDir, d[j]), DateTime.Now, sourceContentDir));
+                    }
+                }
+            }
+        }
 
         public void UpdateChanges()
         {
@@ -93,6 +140,8 @@ namespace BytingLib
 
             if (!changes.ModifiedOrCreated().Any() && !changes.Deleted.Any())
                 return;
+
+            AddDependencies(changes);
 
             bool textChanged = false;
 

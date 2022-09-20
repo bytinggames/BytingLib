@@ -19,7 +19,7 @@ namespace BytingLib.Test.ContentTest
             CreateGame(out ContentCollector collector, out HotReloadContent hotReloadContent);
 
             List<Texture2D> loadedTextures = new();
-
+            
             using (var playerTex = collector.Use<Texture2D>("Textures/Player"))
             using (var enemyTex = collector.Use<Texture2D>("Textures/Enemy"))
             {

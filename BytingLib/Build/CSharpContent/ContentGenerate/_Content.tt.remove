@@ -12,6 +12,7 @@
 
 using BytingLib;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Audio;
 
 namespace [TODO: set namespace here]
 {
