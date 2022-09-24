@@ -67,7 +67,9 @@ namespace BytingLib
             }
         }
 
-        public object Clone() => MemberwiseClone();
+        public Type GetCollisionType() => typeof(Box3);
+
+        public virtual object Clone() => MemberwiseClone();
 
         public BoundingBox GetBoundingBox()
         {

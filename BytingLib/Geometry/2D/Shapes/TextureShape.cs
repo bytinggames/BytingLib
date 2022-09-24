@@ -24,7 +24,9 @@ namespace BytingLib
             colorData = new Color[0];
         }
 
-        public object Clone()
+        public Type GetCollisionType() => typeof(TextureShape);
+
+        public virtual object Clone()
         {
             throw new NotImplementedException();
         }

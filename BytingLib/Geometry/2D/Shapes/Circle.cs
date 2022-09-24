@@ -30,7 +30,9 @@ namespace BytingLib
             return new Rect(pos - new Vector2(Radius), new Vector2(Radius * 2));
         }
 
-        public object Clone()
+        public Type GetCollisionType() => typeof(Circle);
+
+        public virtual object Clone()
         {
             return new Circle(pos, Radius);
         }

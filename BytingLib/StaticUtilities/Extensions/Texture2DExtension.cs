@@ -292,6 +292,17 @@ namespace BytingLib
             return output;
         }
 
+        public static void SaveAsPng(this Texture2D tex, string file)
+        {
+            using (FileStream f = File.Create(file))
+                tex.SaveAsPng(f, tex.Width, tex.Height);
+        }
+        public static void SaveAsJpeg(this Texture2D tex, string file)
+        {
+            using (FileStream f = File.Create(file))
+                tex.SaveAsJpeg(f, tex.Width, tex.Height);
+        }
+
         #region Drawing
 
         public static void Draw(this Texture2D _texture, SpriteBatch spriteBatch, Vector2 _position, Color? _color = null, Rectangle? _sourceRectangle = null, Vector2? _scale = null, float _rotation = 0f, SpriteEffects _effects = SpriteEffects.None, float? depth = null)

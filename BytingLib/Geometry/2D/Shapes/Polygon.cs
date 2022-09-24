@@ -230,8 +230,9 @@ namespace BytingLib
 
         }
 
+        public Type GetCollisionType() => typeof(Polygon);
 
-        public object Clone()
+        public virtual object Clone()
         {
             Polygon clone = (Polygon)MemberwiseClone();
             clone.Vertices = Vertices.ToList();

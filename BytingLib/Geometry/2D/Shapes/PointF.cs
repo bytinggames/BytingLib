@@ -24,7 +24,9 @@ namespace BytingLib
             pos = point.ToVector2();
         }
 
-        public object Clone()
+        public Type GetCollisionType() => typeof(PointF);
+
+        public virtual object Clone()
         {
             return new PointF(pos);
         }

@@ -107,7 +107,7 @@ namespace BytingLib
             public int duration { get; set; }
             //public int timestamp { get; internal set; }
 
-            public Rect frame
+            public _Rect frame
             {
                 set
                 {
@@ -117,7 +117,7 @@ namespace BytingLib
 
         }
 
-        public class Rect
+        public class _Rect
         {
             public int x { get; set; }
             public int y { get; set; }
@@ -156,6 +156,20 @@ namespace BytingLib
         {
             var data = JsonSerializer.Deserialize<AnimationData>(json);
             data!.Initialize();
+            return data;
+        }
+
+        static Dictionary<string, AnimationData> animationDatas = new Dictionary<string, AnimationData>();
+
+        public static AnimationData GetAnimationData(ContentManager content, string assetName)
+        {
+            if (animationDatas.ContainsKey(assetName))
+                return animationDatas[assetName];
+
+            string file = Path.Combine(content.RootDirectory, assetName.Replace('/', '\\') + ".json");
+            string json = File.ReadAllText(file);
+            AnimationData data = FromJson(json);
+            animationDatas.Add(assetName, data);
             return data;
         }
     }

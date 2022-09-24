@@ -85,7 +85,9 @@ namespace BytingLib
 
         public Vector3 N => Vector3.Normalize(Vector3.Cross(DirA, DirB));
 
-        public object Clone()
+        public Type GetCollisionType() => typeof(Triangle3);
+
+        public virtual object Clone()
         {
             return new Triangle3(this);
         }

@@ -31,6 +31,10 @@ namespace BytingLib
             else
                 return -Math.Sign(dist) * (MathHelper.TwoPi - Math.Abs(dist));
         }
+        public static float AngleDistanceAbs(this float angleFrom, float angleTo)
+        {
+            return MathF.Abs(AngleDistance(angleFrom, angleTo));
+        }
         public static double AngleDistance(this double angleFrom, double angleTo)
         {
             angleFrom = angleFrom % TwoPi;

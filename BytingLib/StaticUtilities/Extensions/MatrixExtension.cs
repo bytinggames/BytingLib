@@ -5,7 +5,7 @@ namespace BytingLib
 {
     public static class MatrixExtension
     {
-        public static void MatrixToPitchYawRoll(this Matrix rotationMatrix, out float yaw, out float pitch, out float roll)
+        public static void ToPitchYawRoll(this Matrix rotationMatrix, out float yaw, out float pitch, out float roll)
         {
             // source: https://www.dreamincode.net/forums/topic/349917-convert-from-quaternion-to-euler-angles-vector3/
             float ForwardY = -rotationMatrix.M32;
@@ -34,5 +34,17 @@ namespace BytingLib
             }
         }
 
+
+        public static Matrix CreateMatrixRotationFromTo(Vector3 from, Vector3 to)
+        {
+            if (from == to)
+                return Matrix.Identity;
+            float dot = Vector3.Dot(Vector3.Normalize(from), Vector3.Normalize(to));
+            if (dot == 1f)
+                return Matrix.Identity;
+            float angle = MathF.Acos(dot);
+            Vector3 axis = Vector3.Normalize(Vector3.Cross(from, to));
+            return Matrix.CreateFromAxisAngle(axis, angle);
+        }
     }
 }

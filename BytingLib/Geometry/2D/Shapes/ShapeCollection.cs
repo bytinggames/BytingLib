@@ -42,7 +42,9 @@ namespace BytingLib
             pos += move;
         }
 
-        public object Clone()
+        public Type GetCollisionType() => typeof(ShapeCollection);
+
+        public virtual object Clone()
         {
             ShapeCollection clone = (ShapeCollection)MemberwiseClone();
             clone.Shapes = Shapes.ToList();

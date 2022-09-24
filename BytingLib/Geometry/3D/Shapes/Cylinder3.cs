@@ -22,7 +22,9 @@ namespace BytingLib
         public float Z { get => pos.Z; set => pos.Z = value; }
         public Vector3 Pos2 => Pos + Length;
 
-        public object Clone() => MemberwiseClone();
+        public Type GetCollisionType() => typeof(Cylinder3);
+
+        public virtual object Clone() => MemberwiseClone();
 
         public BoundingBox GetBoundingBox()
         {

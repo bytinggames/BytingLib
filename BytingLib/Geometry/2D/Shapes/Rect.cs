@@ -137,8 +137,10 @@ namespace BytingLib
             Size = size;
         }
 
+        public Type GetCollisionType() => typeof(Rect);
+
         public Rect GetBoundingRect() => new Rect(this);
-        public object Clone() => new Rect(this);
+        public virtual object Clone() => new Rect(this);
         public Rect CloneRect() => new Rect(this);
 
         public override string ToString()
@@ -319,8 +321,16 @@ namespace BytingLib
             return new Anchor(GetPos(anchorX, anchorY), new Vector2(anchorX, anchorY));
         }
 
-        private Vector2 GetPos(float anchorX, float anchorY) => GetPos(new Vector2(anchorX, anchorY));
-        private Vector2 GetPos(Vector2 anchor) => pos + Size * anchor;
+        public Vector2 GetPos(float anchorX, float anchorY) => GetPos(new Vector2(anchorX, anchorY));
+        public Vector2 GetPos(Vector2 anchor) => pos + Size * anchor;
+        public float GetX(float xAnchor)
+        {
+            return pos.X + Size.X * xAnchor;
+        }
+        public float GetY(float yAnchor)
+        {
+            return pos.Y + Size.Y * yAnchor;
+        }
         public Vector2 GetCenter() => pos + Size / 2f;
 
         public Anchor GetAnchor(Vector2 anchor)
@@ -352,6 +362,24 @@ namespace BytingLib
                 vertices[i] = Vector2.Transform(vertices[i], matrix);
             }
             return FromPoints(vertices)!;
+        }
+    }
+
+    public static class RectExtension
+    {
+        /// <summary>Also considers if any is null.</summary>
+        public static bool EqualValue(this Rect rectA, Rect rectB)
+        {
+            if ((rectA == null) != (rectB == null))
+                return false;
+
+            if (rectA == null)
+                return true;
+
+            return rectA.X == rectB.X
+                && rectA.Y == rectB.Y
+                && rectA.Width == rectB.Width
+                && rectA.Height == rectB.Height;
         }
     }
 }

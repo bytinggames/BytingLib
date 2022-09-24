@@ -22,6 +22,8 @@ namespace BytingLib
             SphereDistance = sphereDistance;
         }
 
+        public Type GetCollisionType() => typeof(Capsule3);
+
         public Vector3 Pos
         {
             get => Spheres[0].Pos;
@@ -96,7 +98,7 @@ namespace BytingLib
         /// <summary>Gets the absolute position of the second sphere.</summary>
         public Vector3 Pos2 => Pos + SphereDistance;
 
-        public object Clone()
+        public virtual object Clone()
         {
             Capsule3 clone = (Capsule3)MemberwiseClone();
 

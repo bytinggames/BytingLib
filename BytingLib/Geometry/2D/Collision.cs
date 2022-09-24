@@ -122,8 +122,10 @@ namespace BytingLib
 
         public static bool GetCollision(object shape1, object shape2)
         {
+            Type t1 = (shape1 is IShape s1) ? s1.GetCollisionType() : shape1.GetType();
+            Type t2 = (shape2 is IShape s2) ? s2.GetCollisionType() : shape1.GetType();
             Func<object, object, bool>? func;
-            if (!collisionFunctions.TryGetValue((shape1.GetType(), shape2.GetType()), out func))
+            if (!collisionFunctions.TryGetValue((t1, t2), out func))
             {
                 //if (shape1 is ShapeCollection collection1)
                 //{
@@ -141,8 +143,10 @@ namespace BytingLib
 
         public static CollisionResult GetDistance(object shape1, object shape2, Vector2 dir)
         {
+            Type t1 = (shape1 is IShape s1) ? s1.GetCollisionType() : shape1.GetType();
+            Type t2 = (shape2 is IShape s2) ? s2.GetCollisionType() : shape1.GetType();
             Func<object, object, Vector2, CollisionResult>? func;
-            if (!distanceFunctions.TryGetValue((shape1.GetType(), shape2.GetType()), out func))
+            if (!distanceFunctions.TryGetValue((t1, t2), out func))
                 throw new NotImplementedException($"A distance check between {shape1.GetType()} and {shape2.GetType()} is not implemented yet.");
             return func(shape1, shape2, dir);
                 

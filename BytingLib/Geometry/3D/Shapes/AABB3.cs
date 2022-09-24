@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
@@ -19,19 +20,21 @@ namespace BytingLib
             return new AABB3(centerPos - size / 2f, size);
         }
 
-        public Vector3 Pos { get => pos; set => pos = value; }
-        public float X { get => pos.X; set => pos.X = value; }
-        public float Y { get => pos.Y; set => pos.Y = value; }
-        public float Z { get => pos.Z; set => pos.Z = value; }
-        public Vector3 Min => pos;
-        public Vector3 Max => pos + Size;
+        public virtual Vector3 Pos { get => pos; set => pos = value; }
+        public virtual float X { get => pos.X; set => pos.X = value; }
+        public virtual float Y { get => pos.Y; set => pos.Y = value; }
+        public virtual float Z { get => pos.Z; set => pos.Z = value; }
+        public virtual Vector3 Min => pos;
+        public virtual Vector3 Max => pos + Size;
         public Vector3 Center
         {
             get => Pos + Size / 2f;
             set => Pos = value - Size / 2f;
         }
 
-        public object Clone()
+        public Type GetCollisionType() => typeof(AABB3);
+
+        public virtual object Clone()
         {
             return new AABB3(pos, Size);
         }

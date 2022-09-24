@@ -3,13 +3,13 @@ using Microsoft.Xna.Framework;
 
 namespace BytingLib
 {
-    public class ShapeCollection3 : IShape3
+    public class Shape3Collection : IShape3
     {
         private Vector3 pos;
         public List<IShape3> Shapes { get; set; }
         public List<bool>? ShapesEnabled { get; set; } = null;
 
-        public ShapeCollection3(Vector3 pos, List<IShape3> shapes)
+        public Shape3Collection(Vector3 pos, List<IShape3> shapes)
         {
             Shapes = shapes;
             Pos = pos;
@@ -63,9 +63,11 @@ namespace BytingLib
             ShapesEnabled[index] = enable;
         }
 
+        public Type GetCollisionType() => typeof(Shape3Collection);
+
         public virtual object Clone()
         {
-            ShapeCollection3 clone = (ShapeCollection3)MemberwiseClone();
+            Shape3Collection clone = (Shape3Collection)MemberwiseClone();
 
             clone.Shapes = new List<IShape3>();
             for (int i = 0; i < Shapes.Count; i++)

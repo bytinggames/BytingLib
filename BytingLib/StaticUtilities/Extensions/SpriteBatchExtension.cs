@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using static BytingLib.Markup.MarkupSettings;
 
 namespace BytingLib
 {
@@ -56,6 +57,10 @@ namespace BytingLib
         {
             float angle = (float)Math.Atan2(size.Y, size.X);
             spriteBatch.Draw(GetPixel(spriteBatch), pos, null, color, angle, new Vector2(0, 0.5f), new Vector2(size.Length(), thickness), SpriteEffects.None, depth);
+        }
+        public static void DrawLineRounded(this SpriteBatch spriteBatch, Vector2 pos, Vector2 size, Color color, float thickness = 1f)
+        {
+            throw new NotImplementedException();
         }
 
         public static Texture2D GetPixel(this SpriteBatch spriteBatch)

@@ -98,11 +98,11 @@ public class _{name}
                 if (ext == ".json" && name.EndsWith(".ani"))
                 {
                     string nameWithoutAni = name.Remove(name.Length - ".ani".Length);
-                    customPrint = $"public Animation Use{nameWithoutAni}Animation() => collector.UseAnimation(\"{{0}}{nameWithoutAni}\");";
+                    customPrint = $"public Animation {nameWithoutAni}Ani() => collector.UseAnimation(\"{{0}}{nameWithoutAni}\");";
                 }
                 else if (ext == ".txt")
                 {
-                    customPrint = $"public Ref<string> Use{ToVariableName(name)}() => collector.UseString(\"{name}{ext}\");";
+                    customPrint = $"public Ref<string> {ToVariableName(name)}Txt() => collector.UseString(\"{name}{ext}\");";
                 }
                 else
                     assetType = AssetTypes.Convert(ext)!;
@@ -113,7 +113,10 @@ public class _{name}
                 if (customPrint != null)
                     return string.Format(customPrint, contentDirectory);
                 else
-                    return $"public Ref<{assetType}> Use{ToVariableName(name)}() => collector.Use<{assetType}>(\"{contentDirectory + name}\");";
+                {
+                    string VarName = AssetTypes.Extensions[assetType].VarName;
+                    return $"public Ref<{assetType}> {ToVariableName(name)}{VarName}() => collector.Use<{assetType}>(\"{contentDirectory + name}\");";
+                }
             }
 
             static string ToVariableName(string name)
@@ -147,7 +150,7 @@ public class _{name}
             {
                 string ext = Path.GetExtension(file);
                 ext = ext[1..];
-                if (!AssetTypes.Extensions.Values.Any(f => f.Any(g => g == ext)))
+                if (!AssetTypes.Extensions.Values.Any(f => f.Extensions.Any(g => g == ext)))
                     continue;
 
                 string localAssetPath = file[contentPath.Length..];

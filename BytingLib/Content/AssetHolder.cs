@@ -40,6 +40,14 @@ namespace BytingLib
 
         internal void Replace(T newValue)
         {
+            if (newValue is Effect newEffect
+                && assetPointer.Value != null)
+            {
+                Effect? oldEffect = assetPointer.Value as Effect;
+                oldEffect?.CopyParametersTo(newEffect);
+            }
+
+
             AssetDisposer.Dispose(assetPointer.Value);
 
             assetPointer.Value = newValue;

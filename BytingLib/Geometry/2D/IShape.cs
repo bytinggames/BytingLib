@@ -9,6 +9,7 @@ namespace BytingLib
         Vector2 Pos { get; set; }
         float X { get; set; }
         float Y { get; set; }
+        public Type GetCollisionType();
 
         void Draw(SpriteBatch spriteBatch, Color color, float depth);
     }

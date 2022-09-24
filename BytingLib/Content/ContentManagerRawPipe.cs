@@ -8,48 +8,48 @@ namespace BytingLib
     /// </summary>
     public class ContentManagerRawPipe : IContentManagerRaw
     {
-        public readonly List<IContentManagerRaw> contentManagers;
+        public readonly List<IContentManagerRaw> ContentManagers;
 
         public ContentManagerRawPipe(params IContentManagerRaw[] contentManagers)
         {
             if (contentManagers.Length == 0)
                 throw new ArgumentException("There must be at least one contentManager given in the arguments.");
 
-            this.contentManagers = contentManagers.ToList();
+            this.ContentManagers = contentManagers.ToList();
         }
 
-        public string RootDirectory => contentManagers[0].RootDirectory;
+        public string RootDirectory => ContentManagers[0].RootDirectory;
 
         public void Dispose()
         {
-            for (int i = 0; i < contentManagers.Count; i++)
+            for (int i = 0; i < ContentManagers.Count; i++)
             {
-                contentManagers[i].Dispose();
+                ContentManagers[i].Dispose();
             }
         }
 
         /// <exception cref="ContentLoadException"/>
         public T Load<T>(string assetName)
         {
-            for (int i = 0; i < contentManagers.Count - 1; i++)
+            for (int i = 0; i < ContentManagers.Count - 1; i++)
             {
                 try
                 {
-                    return contentManagers[i].Load<T>(assetName);
+                    return ContentManagers[i].Load<T>(assetName);
                 }
                 catch (ContentLoadException)
                 {
                 }
             }
 
-            return contentManagers.Last().Load<T>(assetName); // if this method throws an exception it is not catched, but passed to the calling function.
+            return ContentManagers.Last().Load<T>(assetName); // if this method throws an exception it is not catched, but passed to the calling function.
         }
 
         public void UnloadAsset(string assetName)
         {
-            for (int i = 0; i < contentManagers.Count; i++)
+            for (int i = 0; i < ContentManagers.Count; i++)
             {
-                contentManagers[i].UnloadAsset(assetName);
+                ContentManagers[i].UnloadAsset(assetName);
             }
         }
     }

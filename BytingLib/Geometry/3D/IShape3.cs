@@ -8,6 +8,7 @@ namespace BytingLib
         public float X { get; set; }
         public float Y { get; set; }
         public float Z { get; set; }
+        public Type GetCollisionType();
     }
 
     public static class IShape3Extension

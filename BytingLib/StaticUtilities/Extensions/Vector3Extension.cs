@@ -88,18 +88,8 @@ namespace BytingLib
         public static Vector2 ZX(this Vector3 v) => new Vector2(v.Z, v.X);
         public static Vector2 ZY(this Vector3 v) => new Vector2(v.Z, v.Y);
 
-
-        public static Matrix CreateMatrixRotationFromTo(Vector3 from, Vector3 to)
-        {
-            if (from == to)
-                return Matrix.Identity;
-            float dot = Vector3.Dot(Vector3.Normalize(from), Vector3.Normalize(to));
-            if (dot == 1f)
-                return Matrix.Identity;
-            float angle = MathF.Acos(dot);
-            Vector3 axis = Vector3.Normalize(Vector3.Cross(from, to));
-            return Matrix.CreateFromAxisAngle(axis, angle);
-        }
+        public static void SetXY(ref this Vector3 v, Vector2 xy) { v.X = xy.X; v.Y = xy.Y; }
+        public static void SetXZ(ref this Vector3 v, Vector2 xz) { v.X = xz.X; v.Z = xz.Y; }
 
         public static Vector3 Slerp(this Vector3 start, Vector3 end, float amount)
         {

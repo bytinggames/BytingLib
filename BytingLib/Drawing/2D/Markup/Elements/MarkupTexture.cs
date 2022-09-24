@@ -49,7 +49,7 @@ namespace BytingLib.Markup
 
         protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings)
         {
-            return GetSizeChildUnscaledInternal(settings) * ScaleXY;
+            return GetSizeChildUnscaledInternal(settings) * ScaleXY * settings.TextureScale;
         }
 
         private Vector2 GetSizeChildUnscaledInternal(MarkupSettings settings)
@@ -93,7 +93,7 @@ namespace BytingLib.Markup
             //        }
             //        break;
             //}
-            Texture.Value.Draw(settings.SpriteBatch, settings.Anchor, ColorExtension.MultiplyColors(settings.TextureColor, Color), SourceRectangle, settings.Scale * ScaleXY, settings.Rotation, flip);
+            Texture.Value.Draw(settings.SpriteBatch, settings.Anchor, ColorExtension.MultiplyColors(settings.TextureColor, Color), SourceRectangle, settings.Scale * ScaleXY * settings.TextureScale, settings.Rotation, flip);
         }
 
         public override string ToString()

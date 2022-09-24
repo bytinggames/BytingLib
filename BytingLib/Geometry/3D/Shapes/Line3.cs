@@ -45,7 +45,9 @@ namespace BytingLib
             set => Vertices[1] = value;
         }
 
-        public object Clone()
+        public Type GetCollisionType() => typeof(Line3);
+
+        public virtual object Clone()
         {
             Line3 clone = (Line3)MemberwiseClone();
 
@@ -58,6 +60,27 @@ namespace BytingLib
         public BoundingBox GetBoundingBox()
         {
             return new BoundingBox(Vector3.Min(Pos, Pos2), Vector3.Max(Pos, Pos2));
+        }
+
+        public Vector3 DistanceToVector(Vector3 v)
+        {
+            // check if v lies between Pos and Pos2
+            Vector3 dir = Dir;
+            float dirLength = dir.Length();
+            Vector3 dir1 = dir / dirLength;
+            Vector3 dist = v - Pos;
+            float onLine = Vector3.Dot(dist, dir1) / dirLength;
+            if (onLine >= 0f && onLine <= 1f) // 0.1f puffer
+            {
+                // v lies between Pos and Pos2
+                dist -= dir * onLine;
+                return dist;
+            }
+
+            if (onLine < 0) // v lies nearest to Pos
+                return v - Pos;
+            else // v lies nearest to Pos2
+                return v - Pos2;
         }
     }
 }

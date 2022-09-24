@@ -74,7 +74,7 @@ namespace BytingLib
 #else
             hotReloadContent = new HotReloadContent(Services, contentCollector, "ContentMod");
 #endif
-            _rawContent.contentManagers.Insert(0, hotReloadContent.TempContentRaw);
+            _rawContent.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
 
             MyInitialize();
         }

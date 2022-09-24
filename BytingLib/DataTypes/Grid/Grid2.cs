@@ -2,7 +2,7 @@
 
 namespace BytingLib
 {
-    public class Grid<T> where T : IBoundingRect
+    public class Grid2<T> where T : IBoundingRect
     {
         public float FieldSize { get; private set; }
         public Dictionary<Int2, List<T>> Lists { get; private set; } = new Dictionary<Int2, List<T>>();
@@ -19,7 +19,7 @@ namespace BytingLib
         private Int2 Min => new Int2(minX, minY);
         private Int2 Max => new Int2(maxX, maxY);
 
-        public Grid(float fieldSize)
+        public Grid2(float fieldSize)
         {
             FieldSize = fieldSize;
         }
