@@ -7,6 +7,7 @@ namespace BytingLib
         private readonly IContentManagerRaw contentRaw;
         private readonly string relativeAssetPath = "";
         private readonly Dictionary<string, object> loadedAssets = new(); // dictionary of AssetHolder<T>, but unknown T
+        private readonly Dictionary<string, Dictionary<string, Action<object>>> OnLoad = new();
 
         public ContentCollector(IContentManagerRaw content)
         {
@@ -19,20 +20,48 @@ namespace BytingLib
             }
         }
 
-        public Ref<T> Use<T>(string assetName)
+        private string ToTotalAssetName<T>(string assetName)
         {
             assetName = relativeAssetPath + assetName;
+            return assetName;
+        }
 
+        public Ref<T> Use<T>(string assetName)
+        {
+            assetName = ToTotalAssetName<T>(assetName);
+            bool triggerOnLoad = false;
             object? assetHolder;
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
             {
                 assetHolder = new AssetHolder<T>(contentRaw.Load<T>(assetName)!, assetName, Unuse);
                 loadedAssets.Add(assetName, assetHolder);
+
+                if (OnLoad.ContainsKey(assetName))
+                    triggerOnLoad = true;
             }
 
             Ref<T> asset = (assetHolder as AssetHolder<T>)!.Use();
+            if (triggerOnLoad && asset != null)
+                TriggerOnLoad(assetName, asset.Value);
 
             return asset;
+        }
+
+        public void TryTriggerOnLoad<T>(string assetName, T asset)
+        {
+            if (OnLoad.ContainsKey(assetName) && asset != null)
+                TriggerOnLoad<T>(assetName, asset);
+        }
+
+        private void TriggerOnLoad<T>(string assetName, T asset)
+        {
+            if (asset != null)
+            {
+                foreach (var action in OnLoad[assetName].Values)
+                {
+                    action.Invoke(asset);
+                }
+            }
         }
 
         public Ref<string> UseString(string assetNameWithExtension)
@@ -49,15 +78,22 @@ namespace BytingLib
         {
             string assetName = relativeAssetPath + assetNameWithExtension;
 
+            bool triggerOnLoad = false;
             object? assetHolder;
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
             {
                 T assetContent = readAsset(Path.Combine(contentRaw.RootDirectory, assetName));
                 assetHolder = new AssetHolder<T>(assetContent, assetName, Unuse);
                 loadedAssets.Add(assetName, assetHolder);
+
+                if (OnLoad.ContainsKey(assetName))
+                    triggerOnLoad = true;
             }
 
             Ref<T> asset = (assetHolder as AssetHolder<T>)!.Use();
+
+            if (triggerOnLoad && asset.Value != null)
+                TriggerOnLoad(assetName, asset.Value);
 
             return asset;
         }
@@ -120,6 +156,36 @@ namespace BytingLib
             T asset = contentRaw.Load<T>(assetHolder.AssetName);
 
             assetHolder.Replace(asset);
+
+            if (OnLoad.ContainsKey(assetHolder.AssetName))
+                TriggerOnLoad(assetHolder.AssetName, asset);
+        }
+
+        public void SubscribeToOnLoad<T>(string assetName, string key, Action<T> onLoadAction)
+        {
+            assetName = ToTotalAssetName<T>(assetName);
+
+            if (!OnLoad.ContainsKey(assetName))
+                OnLoad.Add(assetName, new Dictionary<string, Action<object>>());
+            else if (OnLoad[assetName].ContainsKey(key))
+                throw new Exception($"there is already a subscription on asset {assetName} with key {key}");
+            OnLoad[assetName].Add(key, obj => onLoadAction((T)obj));
+        }
+
+        public bool UnsubscribeToOnLoad<T>(string assetName, string key)
+        {
+            assetName = ToTotalAssetName<T>(assetName);
+
+            if (OnLoad.ContainsKey(assetName))
+            {
+                OnLoad[assetName].Remove(key);
+
+                if (OnLoad[assetName].Count == 0)
+                    OnLoad.Remove(assetName);
+
+                return true;
+            }
+            return false;
         }
 
         //public void ReplaceAsset<T>(string assetName, T newValue)

@@ -227,6 +227,7 @@ namespace BytingLib
                 if (newlyLoadedAsset == null)
                     return;
                 assetHolder.Replace(newlyLoadedAsset);
+                content.TryTriggerOnLoad(assetName, newlyLoadedAsset!);
             }
         }
 

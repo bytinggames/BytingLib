@@ -65,7 +65,7 @@ public class _{name}
 {{
 {folderProperties}
     
-    private readonly IContentCollector collector;
+    protected readonly IContentCollector collector;
 
     public _{name}(IContentCollector collector)
     {{
