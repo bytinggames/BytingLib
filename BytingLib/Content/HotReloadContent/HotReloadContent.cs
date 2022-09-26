@@ -66,7 +66,7 @@ namespace BytingLib
             Get("Textures", "*.png|*.jpg|*.jpeg");
             Get("", "*.txt|*.csv|*.json|*.xml|*.ini|*.config");
 
-            AddEffectDependencies(files);
+            InitEffectDependencies(files);
 
             void Get(string folder, string searchPattern)
             {
@@ -86,11 +86,12 @@ namespace BytingLib
             return files.ToArray();
         }
 
-        private void AddEffectDependencies(List<string> files)
+        private void InitEffectDependencies(IEnumerable<string> allFiles)
         {
+            dependencies.Clear();
             // add effect dependencies (fx depend on fxh's)
             const string includeStr = "#include \"";
-            foreach (var f in files)
+            foreach (var f in allFiles.Where(f => f.EndsWith(".fx") || f.EndsWith(".fxh")))
             {
                 string localFilePath = f.Substring(sourceContentDir.Length + 1);
 
