@@ -16,7 +16,8 @@ namespace BytingLib
                 get
                 {
                     string path = LocalPath;
-                    path = path.Remove(path.Length - System.IO.Path.GetExtension(path).Length); // remove extension
+                    if (ExtensionToAssetType.Convert(path) != typeof(string)) // string assets keep their extensions
+                        path = path.Remove(path.Length - System.IO.Path.GetExtension(path).Length); // remove extension
                     return path.Replace('\\', '/');
                 }
             }

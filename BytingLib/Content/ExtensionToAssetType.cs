@@ -21,7 +21,8 @@ namespace BytingLib
                 "wav" or "mp3" or "ogg" => typeof(SoundEffect),
                 "fx" => typeof(Effect),
                 "fbx" => typeof(Model),
-                "json" => localPath.EndsWith("ani.json") ? typeof(AnimationData) : null,
+                "json" => localPath.EndsWith("ani.json") ? typeof(AnimationData) : typeof(string),
+                "csv" or "txt" or "ini" or "config" or "xml" => typeof(string),
                 _ => null,
             };
             return assetType;

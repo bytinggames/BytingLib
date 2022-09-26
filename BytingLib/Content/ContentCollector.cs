@@ -1,4 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace BytingLib
 {
@@ -7,7 +10,7 @@ namespace BytingLib
         private readonly IContentManagerRaw contentRaw;
         private readonly string relativeAssetPath = "";
         private readonly Dictionary<string, object> loadedAssets = new(); // dictionary of AssetHolder<T>, but unknown T
-        private readonly Dictionary<string, Dictionary<string, Action<object>>> OnLoad = new();
+        private readonly Dictionary<string, Dictionary<object, Action<object>>> onLoad = new();
 
         public ContentCollector(IContentManagerRaw content)
         {
@@ -20,7 +23,7 @@ namespace BytingLib
             }
         }
 
-        private string ToTotalAssetName<T>(string assetName)
+        private string ToTotalAssetName(string assetName)
         {
             assetName = relativeAssetPath + assetName;
             return assetName;
@@ -28,7 +31,7 @@ namespace BytingLib
 
         public Ref<T> Use<T>(string assetName)
         {
-            assetName = ToTotalAssetName<T>(assetName);
+            assetName = ToTotalAssetName(assetName);
             bool triggerOnLoad = false;
             object? assetHolder;
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
@@ -36,7 +39,7 @@ namespace BytingLib
                 assetHolder = new AssetHolder<T>(contentRaw.Load<T>(assetName)!, assetName, Unuse);
                 loadedAssets.Add(assetName, assetHolder);
 
-                if (OnLoad.ContainsKey(assetName))
+                if (onLoad.ContainsKey(assetName))
                     triggerOnLoad = true;
             }
 
@@ -49,7 +52,7 @@ namespace BytingLib
 
         public void TryTriggerOnLoad<T>(string assetName, T asset)
         {
-            if (OnLoad.ContainsKey(assetName) && asset != null)
+            if (onLoad.ContainsKey(assetName) && asset != null)
                 TriggerOnLoad<T>(assetName, asset);
         }
 
@@ -57,7 +60,7 @@ namespace BytingLib
         {
             if (asset != null)
             {
-                foreach (var action in OnLoad[assetName].Values)
+                foreach (var action in onLoad[assetName].Values)
                 {
                     action.Invoke(asset);
                 }
@@ -86,7 +89,7 @@ namespace BytingLib
                 assetHolder = new AssetHolder<T>(assetContent, assetName, Unuse);
                 loadedAssets.Add(assetName, assetHolder);
 
-                if (OnLoad.ContainsKey(assetName))
+                if (onLoad.ContainsKey(assetName))
                     triggerOnLoad = true;
             }
 
@@ -157,31 +160,52 @@ namespace BytingLib
 
             assetHolder.Replace(asset);
 
-            if (OnLoad.ContainsKey(assetHolder.AssetName))
+            if (onLoad.ContainsKey(assetHolder.AssetName))
                 TriggerOnLoad(assetHolder.AssetName, asset);
         }
 
-        public void SubscribeToOnLoad<T>(string assetName, string key, Action<T> onLoadAction)
+        public void SubscribeToOnLoad<T>(string assetName, Action<T> onLoadAction)
         {
-            assetName = ToTotalAssetName<T>(assetName);
+            assetName = ToTotalAssetName(assetName);
 
-            if (!OnLoad.ContainsKey(assetName))
-                OnLoad.Add(assetName, new Dictionary<string, Action<object>>());
-            else if (OnLoad[assetName].ContainsKey(key))
-                throw new Exception($"there is already a subscription on asset {assetName} with key {key}");
-            OnLoad[assetName].Add(key, obj => onLoadAction((T)obj));
+            if (!onLoad.ContainsKey(assetName))
+                onLoad.Add(assetName, new Dictionary<object, Action<object>>());
+            else if (onLoad[assetName].ContainsKey(onLoadAction))
+                throw new Exception($"there is already a subscription on asset {assetName} with key {onLoadAction}");
+            onLoad[assetName].Add(onLoadAction, obj => onLoadAction((T)obj));
         }
 
-        public bool UnsubscribeToOnLoad<T>(string assetName, string key)
+        public void SubscribeToOnLoad(string assetName, Action onLoadAction)
         {
-            assetName = ToTotalAssetName<T>(assetName);
+            assetName = ToTotalAssetName(assetName);
 
-            if (OnLoad.ContainsKey(assetName))
+            if (!onLoad.ContainsKey(assetName))
+                onLoad.Add(assetName, new Dictionary<object, Action<object>>());
+            else if (onLoad[assetName].ContainsKey(onLoadAction))
+                throw new Exception($"there is already a subscription on asset {assetName} with key {onLoadAction}");
+            onLoad[assetName].Add(onLoadAction, obj => onLoadAction());
+        }
+
+        public bool UnsubscribeToOnLoad<T>(string assetName, Action<T> onLoadAction)
+        {
+            return PrivateUnsubscribeToOnLoad(assetName, onLoadAction);
+        }
+
+        public bool UnsubscribeToOnLoad(string assetName, Action onLoadAction)
+        {
+            return PrivateUnsubscribeToOnLoad(assetName, onLoadAction);
+        }
+
+        private bool PrivateUnsubscribeToOnLoad(string assetName, object action)
+        {
+            assetName = ToTotalAssetName(assetName);
+
+            if (onLoad.ContainsKey(assetName))
             {
-                OnLoad[assetName].Remove(key);
+                onLoad[assetName].Remove(action);
 
-                if (OnLoad[assetName].Count == 0)
-                    OnLoad.Remove(assetName);
+                if (onLoad[assetName].Count == 0)
+                    onLoad.Remove(assetName);
 
                 return true;
             }

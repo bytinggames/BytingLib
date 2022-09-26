@@ -13,7 +13,8 @@ namespace BytingLib.Test.ContentTest
         [TestMethod]
         public void TestDynamicTexturesDisposalResizeAndDelete()
         {
-            string enemyPng = @"Content\Textures\Enemy.png";
+            string enemyPng = @"ContentHot\Textures\Enemy.png";
+            Directory.CreateDirectory(Path.GetDirectoryName(enemyPng)!);
             File.Delete(enemyPng);
 
             CreateGame(out ContentCollector collector, out HotReloadContent hotReloadContent);
@@ -35,7 +36,7 @@ namespace BytingLib.Test.ContentTest
                 // save player tex as Enemy.png, so that Enemy looks like player
                 using (var fs = File.Create(enemyPng))
                     playerTex.Value.SaveAsPng(fs, playerTex.Value.Width, playerTex.Value.Height);
-                hotReloadContent.UpdateChanges();
+                Assert.IsTrue(hotReloadContent.UpdateChanges());
 
                 Color[] enemyColorsTemp = enemyTex.Value.ToColor();
 
@@ -68,14 +69,15 @@ namespace BytingLib.Test.ContentTest
 
             ContentManagerRaw rawContent = new ContentManagerRaw(game.Services, "Content");
             collector = new ContentCollector(rawContent);
-            hotReloadContent = new HotReloadContent(game.Services, collector, "Content");
+            hotReloadContent = new HotReloadContent(game.Services, collector, @"..\..\..\..\..", "ContentHot");
         }
 
         [TestMethod]
         public void TestDynamicFontsDisposalResizeAndDelete()
         {
-            string font2File = @"Content\Fonts\Font2.spritefont";
+            string font2File = @"ContentHot\Fonts\Font2.spritefont";
             string font1ResourceFile = @"ContentTest\HotReloadContent\Resources\Font1.spritefont";
+            Directory.CreateDirectory(Path.GetDirectoryName(font2File)!); 
             File.Delete(font2File);
 
             CreateGame(out ContentCollector collector, out HotReloadContent hotReloadContent);
@@ -121,5 +123,28 @@ namespace BytingLib.Test.ContentTest
             }
         }
 
+        [TestMethod]
+        public void TestDynamicTextAndOnLoadEvent()
+        {
+            string newTextFile = @"ContentHot\Text.txt";
+            Directory.CreateDirectory(Path.GetDirectoryName(newTextFile)!);
+            File.Delete(newTextFile);
+
+            CreateGame(out ContentCollector collector, out HotReloadContent hotReloadContent);
+
+            Ref<string> text = collector.Use<string>("Text.txt");
+            Assert.AreEqual("1", text.Value);
+            bool onLoad = false;
+            collector.SubscribeToOnLoad<string>("Text.txt", str =>
+            {
+                Assert.AreEqual("2", str);
+                onLoad = true;
+            });
+
+            File.WriteAllText(newTextFile, "2");
+            hotReloadContent.UpdateChanges();
+            Assert.AreEqual("2", text.Value);
+            Assert.IsTrue(onLoad);
+        }
     }
 }

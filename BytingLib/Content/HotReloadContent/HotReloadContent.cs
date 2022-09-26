@@ -63,9 +63,8 @@ namespace BytingLib
             Get("Models", "*.fbx");
             Get("Music", "*.ogg");
             Get("Sounds", "*.ogg|*.wav");
-            Get("Textures", "*.png|*.jpg|*.jpeg|*.json");
-            GetFile("Sounds\\settings.txt");
-            GetFile("localization.csv");
+            Get("Textures", "*.png|*.jpg|*.jpeg");
+            Get("", "*.txt|*.csv|*.json|*.xml|*.ini|*.config");
 
             AddEffectDependencies(files);
 
@@ -126,7 +125,10 @@ namespace BytingLib
             }
         }
 
-        public void UpdateChanges()
+        /// <summary>
+        /// Updates changes. Returns wether something changed.
+        /// </summary>
+        public bool UpdateChanges()
         {
             // waiting for models finishing exporting
             string modelPath = Path.Combine(sourceContentDir, "Models");
@@ -139,7 +141,7 @@ namespace BytingLib
             var changes = dirSupervisor.GetChanges();
 
             if (!changes.ModifiedOrCreated().Any() && !changes.Deleted.Any())
-                return;
+                return false;
 
             AddDependencies(changes);
 
@@ -166,14 +168,6 @@ namespace BytingLib
 
             void Iterate(DirectorySupervisor.FileStamp file, bool deleted)
             {
-                if (file.LocalPath == "localization.csv")
-                {
-                    if (!deleted)
-                        Loca.Reload(file.Path);
-                    // TODO: when mod localization file is deleted, the default localization file should be loaded again
-                    return;
-                }
-
                 Type? assetType = ExtensionToAssetType.Convert(file.LocalPath);
                 if (assetType == null)
                     return;
@@ -199,6 +193,8 @@ namespace BytingLib
             //    changes.Modified.Select(f => f.LocalPath + " changed")
             //    .Concat(changes.Created.Select(f => f.LocalPath + " created"))
             //    .Concat(changes.Deleted.Select(f => f.LocalPath + " deleted"))));
+
+            return true;
         }
 
         public void ReloadIfLoadedFromType(Type assetType, string assetName, bool deleted)
@@ -231,7 +227,7 @@ namespace BytingLib
             }
         }
 
-        Dictionary<string, List<Action>> onReload = new Dictionary<string, List<Action>>();
+        Dictionary<string, List<Action>> onReload = new Dictionary<string, List<Action>>(); // TODO: remove this, cause redundant, cause already in ContentCollector?
 
         /// <summary>Don't forget to unsubscribe.</summary>
         internal void SubscribeToReload(string assetName, Action actionOnReload)

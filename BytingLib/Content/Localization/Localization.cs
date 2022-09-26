@@ -8,51 +8,45 @@ using System.Threading.Tasks;
 
 namespace BytingLib
 {
-    public static class Loca
+    public partial class Localization
     {
         private const char separator = ';';
         private const char textMarker = '"';
         private const char adder = '.';
         private const char nestedLevel = '\t';
 
-        private static Dictionary<string, string> dictionary = new Dictionary<string, string>();
+        private Dictionary<string, string> dictionary = new Dictionary<string, string>();
 
-        public static string LanguageKey { get; private set; } = "en";
+        public string LanguageKey { get; private set; } = "en";
 
-        static string GetDisplayName()
+        string GetDisplayName()
         {
             //var displayName = Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
             return "en"; // currently only en is supported
         }
 
-        static Loca()
+        public Localization(string csvText)
         {
-            Initialize(GetDisplayName(), File.ReadAllLines(Path.Combine("Content", "localization.csv")));
+            Initialize(GetDisplayName(), CsvTextToLines(csvText));
         }
 
-        public static void Reload(string fromPath)
+        private string[] CsvTextToLines(string text)
+        {
+            return text.Replace("\r", "").Split(new char[] { '\n' });
+        }
+
+        public void Reload(string fromPath)
         {
             Initialize(GetDisplayName(), File.ReadAllLines(fromPath));
         }
 
-        class StackItem
+        public void ReloadFromText(string text)
         {
-            public string key;
-            public int subKeyCount;
 
-            public StackItem(string key)
-            {
-                this.key = key;
-                this.subKeyCount = 0;
-            }
-
-            public override string ToString()
-            {
-                return key + " " + subKeyCount;
-            }
+            Initialize(GetDisplayName(), CsvTextToLines(text));
         }
 
-        private static void Initialize(string languageKey, string[] localizationLines)
+        private void Initialize(string languageKey, string[] localizationLines)
         {
             if (dictionary != null)
                 dictionary.Clear();
@@ -336,7 +330,7 @@ namespace BytingLib
 
         }
 
-        public static string Get(string key, params object[] args)
+        public string Get(string key, params object[] args)
         {
             int braceOpenIndex = key.IndexOf('{');
             if (braceOpenIndex != -1)
@@ -359,7 +353,7 @@ namespace BytingLib
             return value;
         }
 
-        private static string Localize(string key)
+        private string Localize(string key)
         {
             if (!dictionary.ContainsKey(key))
             {
@@ -385,7 +379,7 @@ namespace BytingLib
             return dictionary[key];
         }
 
-        public static bool Contains(string key)
+        public bool Contains(string key)
         {
             return dictionary.ContainsKey(key);
         }

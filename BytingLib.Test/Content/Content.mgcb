@@ -27,6 +27,9 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Font2.spritefont
 
+#begin Text.txt
+/copy:Text.txt
+
 #begin Textures/Enemy.png
 /importer:TextureImporter
 /processor:TextureProcessor

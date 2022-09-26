@@ -17,10 +17,14 @@ namespace BytingLib
         /// <exception cref="ContentLoadException"/>
         public override T Load<T>(string assetName)
         {
+            T asset;
             if (typeof(T) == typeof(AnimationData))
-                return LoadAnimationData<T>(assetName);
-
-            T asset = ReadAsset<T>(assetName, null);
+                asset = LoadAnimationData<T>(assetName);
+            else if (typeof(T) == typeof(string))
+                asset = (T)(object)LoadText(assetName);
+            else
+                asset = ReadAsset<T>(assetName, null);
+            
             LoadedAssets.Add(assetName, asset);
             return asset;
         }
@@ -33,6 +37,15 @@ namespace BytingLib
 
             string json = File.ReadAllText(filePath);
             return (T)(object)AnimationData.FromJson(json);
+        }
+
+        private string LoadText(string assetNameWithExtension)
+        {
+            string filePath = Path.Combine(RootDirectory, assetNameWithExtension.Replace("/", "\\"));
+            if (!File.Exists(filePath))
+                throw new ContentLoadException("file " + filePath + " does not exist");
+
+            return File.ReadAllText(filePath);
         }
 
         /// <summary>Forces the asset to be unloaded from RAM.</summary>
