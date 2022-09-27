@@ -19,7 +19,7 @@ namespace BytingIntroSandbox
         protected WindowManager windowManager;
         private BytingIntro intro;
 
-        public Game1()
+        public Game1() : base(@"..\..\..\..\..")
         {
             IsMouseVisible = true;
             updateSpeed = new GameSpeed(TargetElapsedTime);
