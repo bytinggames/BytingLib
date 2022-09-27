@@ -63,7 +63,7 @@ namespace BytingLib
             Get("Models", "*.fbx");
             Get("Music", "*.ogg");
             Get("Sounds", "*.ogg|*.wav");
-            Get("Textures", "*.png|*.jpg|*.jpeg");
+            Get("Textures", "*.png|*.jpg|*.jpeg|*.ani");
             Get("", "*.txt|*.csv|*.json|*.xml|*.ini|*.config");
 
             InitEffectDependencies(files);

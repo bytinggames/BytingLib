@@ -95,14 +95,14 @@ public class _{name}
                 string ext = Path.GetExtension(name);
                 this.name = _name.Remove(_name.Length - ext.Length);
 
-                if (ext == ".json" && name.EndsWith(".ani"))
+                if (ext == ".ani")
                 {
-                    string nameWithoutAni = name.Remove(name.Length - ".ani".Length);
-                    customPrint = $"public Animation {nameWithoutAni}Ani() => collector.UseAnimation(\"{{0}}{nameWithoutAni}\");";
+                    customPrint = $"public Animation {ToVariableName(name)}Ani() => collector.UseAnimation(\"{{0}}{name}\");";
                 }
-                else if (ext == ".txt")
+                else
+                if (ext == ".txt")
                 {
-                    customPrint = $"public Ref<string> {ToVariableName(name)}Txt() => collector.UseString(\"{name}{ext}\");";
+                    customPrint = $"public Ref<string> {ToVariableName(name)}Txt() => collector.UseString(\"{{0}}{_name}\");";
                 }
                 else
                     assetType = AssetTypes.Convert(ext)!;

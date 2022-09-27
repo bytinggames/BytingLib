@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoGame.Framework.DesktopG
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BytingIntroSandbox", "BytingIntroSandbox\BytingIntroSandbox.csproj", "{41EF40E9-95F2-49A6-8864-7A7BDAD2098A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildTemplates", "..\..\BytingLib\BuildTemplates\BuildTemplates.csproj", "{8B0775A4-BB31-45E4-B1A3-A469920D1FB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildTemplates", "BuildTemplates\BuildTemplates.csproj", "{92704BFD-3806-41F4-A101-AF3CA9B76CDA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{41EF40E9-95F2-49A6-8864-7A7BDAD2098A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41EF40E9-95F2-49A6-8864-7A7BDAD2098A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41EF40E9-95F2-49A6-8864-7A7BDAD2098A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8B0775A4-BB31-45E4-B1A3-A469920D1FB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8B0775A4-BB31-45E4-B1A3-A469920D1FB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8B0775A4-BB31-45E4-B1A3-A469920D1FB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8B0775A4-BB31-45E4-B1A3-A469920D1FB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92704BFD-3806-41F4-A101-AF3CA9B76CDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92704BFD-3806-41F4-A101-AF3CA9B76CDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92704BFD-3806-41F4-A101-AF3CA9B76CDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92704BFD-3806-41F4-A101-AF3CA9B76CDA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
