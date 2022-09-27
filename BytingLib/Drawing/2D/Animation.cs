@@ -13,6 +13,12 @@ namespace BytingLib
             this.Data = data;
         }
 
+        public Animation(Ref<Texture2D> texture, string json)
+        {
+            this.Texture = texture;
+            Data = new Ref<AnimationData>(new Pointer<AnimationData>(AnimationData.FromJson(json)), null);
+        }
+
         public void Dispose()
         {
             Texture?.Dispose();

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32413.511
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BytingLib", "BytingLib\BytingLib.csproj", "{BA4037CB-EBB7-47F4-BAA1-E4BB18982D9A}"
 EndProject
@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BytingLib.Test", "BytingLib
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoGame.Framework.DesktopGL", "..\MonoGame.BytingGames\MonoGame.Framework\MonoGame.Framework.DesktopGL.csproj", "{303E275E-45E9-45C0-8335-8EA2ECA5B0A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BytingIntroSandbox", "BytingIntroSandbox\BytingIntroSandbox.csproj", "{41EF40E9-95F2-49A6-8864-7A7BDAD2098A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BytingIntroSandbox", "BytingIntroSandbox\BytingIntroSandbox.csproj", "{41EF40E9-95F2-49A6-8864-7A7BDAD2098A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildTemplates", "..\..\BytingLib\BuildTemplates\BuildTemplates.csproj", "{8B0775A4-BB31-45E4-B1A3-A469920D1FB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{41EF40E9-95F2-49A6-8864-7A7BDAD2098A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41EF40E9-95F2-49A6-8864-7A7BDAD2098A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41EF40E9-95F2-49A6-8864-7A7BDAD2098A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B0775A4-BB31-45E4-B1A3-A469920D1FB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B0775A4-BB31-45E4-B1A3-A469920D1FB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B0775A4-BB31-45E4-B1A3-A469920D1FB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B0775A4-BB31-45E4-B1A3-A469920D1FB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

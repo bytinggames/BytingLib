@@ -31,7 +31,7 @@ namespace BytingLib
 
         private T LoadAnimationData<T>(string assetName)
         {
-            string filePath = Path.Combine(RootDirectory, assetName.Replace("/", "\\") + ".json");
+            string filePath = Path.Combine(RootDirectory, assetName.Replace("/", "\\"));
             if (!File.Exists(filePath))
                 throw new ContentLoadException("file " + filePath + " does not exist");
 
