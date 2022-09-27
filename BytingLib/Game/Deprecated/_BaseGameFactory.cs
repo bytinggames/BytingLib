@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace BytingLib
 {
-    public static class BaseGameFactory
+    public static class _BaseGameFactory
     {
-        public static IStuffDisposable CreateDefaultGame(BaseGame game, GraphicsDeviceManager graphics, string? inputRecordingDir, out KeyInput keys, out MouseInput mouse, out GamePadInput gamePad, out WindowManager windowManager, bool mouseWithActivationClick = true)
+        public static IStuffDisposable CreateDefaultGame(_BaseGame game, GraphicsDeviceManager graphics, string? inputRecordingDir, out KeyInput keys, out MouseInput mouse, out GamePadInput gamePad, out WindowManager windowManager, bool mouseWithActivationClick = true)
         {
             IStuffDisposable stuff = new StuffDisposable(typeof(IUpdate), typeof(IDraw));
 

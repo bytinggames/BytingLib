@@ -11,7 +11,7 @@ namespace BytingLib
     /// <item>Default Initialization (graphics, spriteBatch, rawContent, contentCollector, hotReloadContent)</item>
     /// </list>
     /// </summary>
-    public abstract class BaseGame : Game
+    public abstract class _BaseGame : Game
     {
         protected readonly GraphicsDeviceManager graphics;
         protected readonly List<IDisposable> disposables = new List<IDisposable>();
@@ -33,7 +33,7 @@ namespace BytingLib
         private readonly string directoryContainingMonoGame;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public BaseGame(string directoryContainingMonoGame)
+        public _BaseGame(string directoryContainingMonoGame)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             this.directoryContainingMonoGame = directoryContainingMonoGame;

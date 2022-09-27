@@ -7,7 +7,7 @@ namespace BytingLib
     /// TODO: replace this class by a class that is fully initialized when constructed. It can't inherit BaseGame then
     /// </summary>
     /// <typeparam name="Ingame"></typeparam>
-    public abstract class BaseGamePrototype<Ingame> : BaseGame where Ingame : class, IStuffDisposable
+    public abstract class _BaseGamePrototype<Ingame> : _BaseGame where Ingame : class, IStuffDisposable
     {
         protected readonly GameSpeed updateSpeed, drawSpeed;
         protected IStuffDisposable gameStuff;
@@ -20,7 +20,7 @@ namespace BytingLib
         protected WindowManager windowManager;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public BaseGamePrototype(string directoryContainingMonoGame)
+        public _BaseGamePrototype(string directoryContainingMonoGame)
             : base(directoryContainingMonoGame)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
@@ -32,7 +32,7 @@ namespace BytingLib
 
         protected override void MyInitialize()
         {
-            gameStuff = BaseGameFactory.CreateDefaultGame(this, graphics, "input", out keys, out mouse, out gamePad, out windowManager, false); disposables.Add(gameStuff);
+            gameStuff = _BaseGameFactory.CreateDefaultGame(this, graphics, "input", out keys, out mouse, out gamePad, out windowManager, false); disposables.Add(gameStuff);
 
             CreateIngame();
         }

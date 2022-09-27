@@ -94,30 +94,32 @@ namespace BytingLib
 
             { (TRay3, TPlane3), (a, b) => ColRayPlane((Ray3)a, (Plane3)b) },
             { (TRay3, TTriangle3), (a, b) => ColRayTriangle((Ray3)a, (Triangle3)b, out _, out _) },
-            { (TRay3, TCapsule3), (a, b) => ColAnyCapsule(new Point3((Vector3)a), (Capsule3)b) },
+            { (TRay3, TCapsule3), (a, b) => ColAnyCapsule((IShape3)a, (Capsule3)b) },
 
             { (TLine3, TPlane3), (a, b) => ColLinePlane((Line3)a, (Plane3)b) },
             { (TLine3, TTriangle3), (a, b) => ColLineTriangle((Line3)a, (Triangle3)b, out _, out _) },
-            { (TLine3, TCapsule3), (a, b) => ColAnyCapsule(new Point3((Vector3)a), (Capsule3)b) },
+            { (TLine3, TCapsule3), (a, b) => ColAnyCapsule((IShape3)a, (Capsule3)b) },
 
-            { (TAxis3, TCapsule3), (a, b) => ColAnyCapsule(new Point3((Vector3)a), (Capsule3)b) },
+            { (TAxis3, TCapsule3), (a, b) => ColAnyCapsule((IShape3)a, (Capsule3)b) },
 
-            { (TPlane3, TCapsule3), (a, b) => ColAnyCapsule(new Point3((Vector3)a), (Capsule3)b) },
+            { (TPlane3, TCapsule3), (a, b) => ColAnyCapsule((IShape3)a, (Capsule3)b) },
 
             { (TTriangle3, TAxisRadius3), (a, b) => ColTriangleAxisRadius((Triangle3)a, (AxisRadius3)b) },
             { (TTriangle3, TCylinder3), (a, b) => ColTriangleCylinder((Triangle3)a, (Cylinder3)b) },
             { (TTriangle3, TTriangle3), (a, b) => ColTriangleTriangle((Triangle3)a, (Triangle3)b, out _, out _) },
-            { (TTriangle3, TCapsule3), (a, b) => ColAnyCapsule(new Point3((Vector3)a), (Capsule3)b) },
+            { (TTriangle3, TCapsule3), (a, b) => ColAnyCapsule((IShape3)a, (Capsule3)b) },
 
-            { (TAxisRadius3, TCapsule3), (a, b) => ColAnyCapsule(new Point3((Vector3)a), (Capsule3)b) },
+            { (TAxisRadius3, TCapsule3), (a, b) => ColAnyCapsule((AxisRadius3)a, (Capsule3)b) },
 
-            { (TCapsule3, TCapsule3), (a, b) => ColAnyCapsule(new Point3((Vector3)a), (Capsule3)b) },
+            { (TCapsule3, TCapsule3), (a, b) => ColAnyCapsule((IShape3)a, (Capsule3)b) },
+            
+            { (TAABB3, TCapsule3), (a, b) => ColAnyCapsule((IShape3)a, (Capsule3)b) },
+            { (TAABB3, TCylinder3), (a, b) => ColAABBCylinder((AABB3)a, (Cylinder3)b) },
 
-            { (TAABB3, TCapsule3), (a, b) => ColAnyCapsule(new Point3((Vector3)a), (Capsule3)b) },
+            { (TBox3, TCapsule3), (a, b) => ColAnyCapsule((IShape3)a, (Capsule3)b) },
+            { (TBox3, TCylinder3), (a, b) => ColBoxCylinder((Box3)a, (Cylinder3)b) },
 
-            { (TBox3, TCapsule3), (a, b) => ColAnyCapsule(new Point3((Vector3)a), (Capsule3)b) },
-
-            { (TCylinder3, TCapsule3), (a, b) => ColAnyCapsule(new Point3((Vector3)a), (Capsule3)b) },
+            { (TCylinder3, TCapsule3), (a, b) => ColAnyCapsule((IShape3)a, (Capsule3)b) },
 
             // special:
             { (TPoint3, TPoint3), (a, b) => ColVectorVector(((Point3)a).Pos, ((Point3)b).Pos) } // use (vector, vector) collision for (point, point)
@@ -1349,10 +1351,22 @@ namespace BytingLib
 
         #region AABB
 
+        public static bool ColAABBCylinder(AABB3 aabb, Cylinder3 cylinder)
+        {
+            return ColBoxCylinder(aabb.ToBox(), cylinder);
+        }
+
         #endregion
 
         #region Box
 
+        public static bool ColBoxCylinder(Box3 box, Cylinder3 cylinder)
+        {
+            // separating axis algorithm?
+
+
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region Cylinder

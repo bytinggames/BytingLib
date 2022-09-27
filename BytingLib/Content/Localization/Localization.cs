@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace BytingLib
         private const char nestedLevel = '\t';
 
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
+
+        private OrderedDictionary reloadSubscriptions = new();
 
         public string LanguageKey { get; private set; } = "en";
 
@@ -42,11 +45,17 @@ namespace BytingLib
 
         public void ReloadFromText(string text)
         {
-
             Initialize(GetDisplayName(), CsvTextToLines(text));
         }
 
         private void Initialize(string languageKey, string[] localizationLines)
+        {
+            InitializeInner(languageKey, localizationLines);
+
+            TriggerReloadSubs();
+        }
+
+        private void InitializeInner(string languageKey, string[] localizationLines)
         {
             if (dictionary != null)
                 dictionary.Clear();
@@ -327,7 +336,6 @@ namespace BytingLib
                     return GetCellValue(start + 1, end, marked);
                 }
             }
-
         }
 
         public string Get(string key, params object[] args)
@@ -382,6 +390,24 @@ namespace BytingLib
         public bool Contains(string key)
         {
             return dictionary.ContainsKey(key);
+        }
+
+        public void SubscribeToReload(Action initText)
+        {
+            reloadSubscriptions.Add(initText, initText);
+        }
+
+        public void UnsubscribeToReload(Action initText)
+        {
+            reloadSubscriptions.Remove(initText);
+        }
+
+        private void TriggerReloadSubs()
+        {
+            foreach (var action in reloadSubscriptions.Values)
+            {
+                ((Action)action)();
+            }
         }
     }
 }

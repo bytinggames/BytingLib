@@ -69,5 +69,10 @@ namespace BytingLib
                 nearestInBox.Z = pos.Z;
             return nearestInBox;
         }
+
+        public Box3 ToBox()
+        {
+            return new Box3(Matrix.CreateScale(Size) * Matrix.CreateTranslation(Center));
+        }
     }
 }
