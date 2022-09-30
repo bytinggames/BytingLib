@@ -5,7 +5,7 @@ namespace BytingLib.Serialization
     public class Serializer
     {
         private readonly Dictionary<Type, ReadObj> readTypes;
-        private readonly Dictionary<Type, Action<BytingWriterParent, object>> writeTypes;
+        private readonly Dictionary<Type, Action<BytingWriter, object>> writeTypes;
 
         const BindingFlags bindingFlagsDeclared = TypeSerializer.BindingFlagsDeclaredAndInherited
                         | BindingFlags.DeclaredOnly;
@@ -120,9 +120,9 @@ namespace BytingLib.Serialization
 
         public void Serialize<T>(Stream stream, T? obj)
         {
-            using (BytingWriterParent bw = 
-                References ? new BytingWriter(stream, writeTypes, typeIDs.IDs)
-                : new BytingWriterParent(stream, writeTypes, typeIDs.IDs))
+            using (BytingWriter bw = 
+                References ? new BytingWriterRefs(stream, writeTypes, typeIDs.IDs)
+                : new BytingWriter(stream, writeTypes, typeIDs.IDs))
             {
                 if (obj == null)
                     bw.Write((byte)0); // obj is null

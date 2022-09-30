@@ -4,9 +4,9 @@ using System.Collections;
 
 namespace BytingLib.Serialization
 {
-    class BinaryObjectWriter
+    public static class BinaryObjectWriter
     {
-        public static Dictionary<Type, Action<BytingWriterParent, object>> WriteFunctions { get; } = new()
+        public static Dictionary<Type, Action<BytingWriter, object>> WriteFunctions { get; } = new()
         {
             { typeof(int), (bw, obj) => bw.Write((int)obj) },
             { typeof(float), (bw, obj) => bw.Write((float)obj) },
@@ -18,7 +18,7 @@ namespace BytingLib.Serialization
             { typeof(bool), (bw, obj) => bw.Write((bool)obj) },
         };
 
-        private static void WriteList(BytingWriterParent bw, object obj)
+        private static void WriteList(BytingWriter bw, object obj)
         {
             IList list = (IList)obj;
             Type itemType = list.GetType().GenericTypeArguments[0];
@@ -36,7 +36,7 @@ namespace BytingLib.Serialization
             }
         }
 
-        private static void WriteArray(BytingWriterParent bw, object obj)
+        private static void WriteArray(BytingWriter bw, object obj)
         {
             Array arr = (Array)obj;
             Type itemType = arr.GetType().GetElementType()!;

@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace BytingLib.Serialization
 {
-    class BinaryObjectReader
+    public static class BinaryObjectReader
     {
         public static Dictionary<Type, ReadObj> ReadFunctions { get; } = new()
         {

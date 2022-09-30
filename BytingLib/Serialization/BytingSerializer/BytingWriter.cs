@@ -1,38 +1,44 @@
-﻿
-namespace BytingLib.Serialization
+﻿namespace BytingLib.Serialization
 {
-    /// <summary>
-    /// not recommended to use for big complex files. only [int.MaxValue] different reference types allowed
-    /// Also probably not very performant?
-    /// </summary>
-    internal class BytingWriter : BytingWriterParent
+    public class BytingWriter : BinaryWriter
     {
-        Dictionary<object, int> refIDs = new();
-        int idCount = 0;
+        public Dictionary<Type, Action<BytingWriter, object>> WriteTypes { get; }
+        public Dictionary<Type, int> TypeToID { get; }
 
-        public BytingWriter(Stream output, Dictionary<Type, Action<BytingWriterParent, object>> writeTypes, Dictionary<Type, int> typeToID) : base(output, writeTypes, typeToID)
+        public BytingWriter(Stream output, Dictionary<Type, Action<BytingWriter, object>> writeTypes, Dictionary<Type, int> typeToID) : base(output)
         {
+            this.WriteTypes = writeTypes;
+            this.TypeToID = typeToID;
         }
 
-        public override void WriteObject(object obj, Type declarationType)
+        public virtual void WriteObject(object obj, Type declarationType)
         {
-            if (declarationType.IsValueType)
+            if (!declarationType.IsSealed)
             {
-                base.WriteObject(obj, declarationType);
-                return;
+                Type type = obj.GetType();
+                Write(TypeToID[type]);
             }
 
-            if (refIDs.TryGetValue(obj, out int refID))
+            WriteObjectInternal(obj);
+        }
+
+        private void WriteObjectInternal(object obj)
+        {
+            Type type = obj.GetType();
+            if (type.IsGenericType)
             {
-                Write((byte)1); // old reference
-                Write(refID);
+                type = type.GetGenericTypeDefinition();
             }
-            else
+            else if (type.IsEnum)
             {
-                Write((byte)0); // new reference
-                refIDs.Add(obj, idCount++);
-                base.WriteObject(obj, declarationType);
+                type = type.GetEnumUnderlyingType();
             }
+            else if (type.IsArray)
+            {
+                type = typeof(Array);
+            }
+            
+            WriteTypes[type].Invoke(this, obj);
         }
     }
 }

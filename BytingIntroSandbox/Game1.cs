@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace BytingIntroSandbox
 {
-    public class Game1 : BaseGame
+    public class Game1 : _BaseGame
     {
         protected readonly GameSpeed updateSpeed, drawSpeed;
         protected IStuffDisposable gameStuff;
@@ -29,7 +29,7 @@ namespace BytingIntroSandbox
 
         protected override void MyInitialize()
         {
-            gameStuff = BaseGameFactory.CreateDefaultGame(this, graphics, "input", out keys, out mouse, out gamePad, out windowManager, false); disposables.Add(gameStuff);
+            gameStuff = _BaseGameFactory.CreateDefaultGame(this, graphics, "input", out keys, out mouse, out gamePad, out windowManager, false); disposables.Add(gameStuff);
 
             intro = new BytingIntro(mouse, keys);
 
