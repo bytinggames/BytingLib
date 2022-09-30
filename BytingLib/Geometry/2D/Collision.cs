@@ -123,7 +123,7 @@ namespace BytingLib
         public static bool GetCollision(object shape1, object shape2)
         {
             Type t1 = (shape1 is IShape s1) ? s1.GetCollisionType() : shape1.GetType();
-            Type t2 = (shape2 is IShape s2) ? s2.GetCollisionType() : shape1.GetType();
+            Type t2 = (shape2 is IShape s2) ? s2.GetCollisionType() : shape2.GetType();
             Func<object, object, bool>? func;
             if (!collisionFunctions.TryGetValue((t1, t2), out func))
             {
