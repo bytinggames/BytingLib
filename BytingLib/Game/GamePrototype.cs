@@ -57,5 +57,12 @@ namespace BytingLib
             stuff.ForEach<IDraw>(f => f.Draw(spriteBatch));
             spriteBatch.End();
         }
+
+        public override void Dispose()
+        {
+            stuff.Dispose();
+
+            base.Dispose();
+        }
     }
 }
