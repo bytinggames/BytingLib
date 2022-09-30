@@ -11,7 +11,7 @@ namespace BytingLib.Test.CtorSerialization
 {
     abstract class Entity : ICtorSerializable
     {
-        public abstract (byte ID, object Value)[] Serialize();
+        public abstract CtorData Serialize();
     }
 
     abstract class Coin : Entity
@@ -34,7 +34,7 @@ namespace BytingLib.Test.CtorSerialization
             this.name = name;
         }
 
-        public override (byte ID, object Value)[] Serialize() => new (byte, object)[] { (0, pos), (1, name) };
+        public override CtorData Serialize() => new((0, pos), (1, name));
     }
     class Coin2 : Coin
     {
@@ -44,7 +44,7 @@ namespace BytingLib.Test.CtorSerialization
             this.name = name;
         }
 
-        public override (byte ID, object Value)[] Serialize() => new (byte, object)[] { (1, name), (0, pos) };
+        public override CtorData Serialize() => new((1, name), (0, pos));
     }
     class Coin3 : Coin
     {
@@ -54,7 +54,7 @@ namespace BytingLib.Test.CtorSerialization
             this.name = name;
         }
 
-        public override (byte ID, object Value)[] Serialize() => new (byte, object)[] { (0, name), (1, pos) };
+        public override CtorData Serialize() => new((0, name), (1, pos));
     }
     class Coin4 : Coin
     {
@@ -67,7 +67,7 @@ namespace BytingLib.Test.CtorSerialization
 
         public SomeRef SomeRef { get; }
 
-        public override (byte ID, object Value)[] Serialize() => new (byte, object)[] { (0, name), (1, pos) };
+        public override CtorData Serialize() => new ((0, name), (1, pos));
     }
 
     [TestClass]

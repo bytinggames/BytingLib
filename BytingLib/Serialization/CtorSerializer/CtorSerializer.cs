@@ -3,9 +3,19 @@ using System.Reflection;
 
 namespace BytingLib.Serialization
 {
+    public class CtorData
+    {
+        public (byte ID, object Value)[] Data { get; set; }
+
+        public CtorData(params (byte ID, object Value)[] parameters)
+        {
+            this.Data = parameters;
+        }
+    }
+
     public interface ICtorSerializable
     {
-        (byte ID, object Value)[] Serialize();
+        CtorData Serialize();
     }
 
     public class CtorSerializer
@@ -39,7 +49,7 @@ namespace BytingLib.Serialization
                 for (int i = 0; i < entities.Count; i++)
                 {
                     bw.Write(typeIDs.Forward[entities[i].GetType()]);
-                    var dict = entities[i].Serialize();
+                    var dict = entities[i].Serialize().Data;
                     bw.Write(dict.Length);
                     foreach (var item in dict)
                     {
