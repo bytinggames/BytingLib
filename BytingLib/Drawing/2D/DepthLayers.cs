@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
 
-namespace LevelSketch
+namespace BytingLib
 {
     public class DepthLayers : IDepthGetter
     {
