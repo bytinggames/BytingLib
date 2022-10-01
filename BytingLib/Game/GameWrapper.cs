@@ -31,10 +31,16 @@ namespace BytingLib
             {
                 game?.UpdateActive(gameTime);
             }
+            else
+                game?.UpdateInactive(gameTime);
 
             if (IsActive && !previousUpdateWasActive)
             {
                 game?.OnActivate();
+            }
+            else if (!IsActive && previousUpdateWasActive)
+            {
+                game?.OnDeactivate();
             }
             if (!IsActive)
             {

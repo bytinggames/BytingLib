@@ -37,6 +37,7 @@ namespace BytingLib
         }
 
         public abstract void UpdateActive(GameTime gameTime);
+        public virtual void UpdateInactive(GameTime gameTime) { }
 
         public abstract void DrawActive(GameTime gameTime);
 
@@ -51,6 +52,10 @@ namespace BytingLib
         public virtual void OnActivate()
         {
             hotReloadContent?.UpdateChanges();
+        }
+
+        public virtual void OnDeactivate()
+        {
         }
     }
 }
