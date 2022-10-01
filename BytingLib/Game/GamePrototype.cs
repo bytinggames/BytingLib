@@ -9,7 +9,6 @@ namespace BytingLib
     public abstract class GamePrototype : GameBase
     {
         protected readonly GameSpeed updateSpeed, drawSpeed;
-        protected readonly IStuffDisposable stuff;
         protected readonly KeyInput keys;
         protected readonly MouseInput mouse;
         protected readonly Creator creator;
@@ -27,12 +26,6 @@ namespace BytingLib
 
             keys = new KeyInput(Keyboard.GetState);
             mouse = new MouseInput(Mouse.GetState, g.IsActivatedThisFrame);
-
-            stuff = Use(new StuffDisposable(typeof(IUpdate), typeof(IDraw)));
-            stuff.AddRange(
-                keys,
-                mouse
-                );
         }
 
         public override void UpdateActive(GameTime gameTime)
@@ -44,25 +37,13 @@ namespace BytingLib
             if (keys.Tab.Pressed)
                 windowManager.SwapScreen();
 
-            stuff.ForEach<IUpdate>(f => f.Update());
+            keys.Update();
+            mouse.Update();
         }
 
         public override void DrawActive(GameTime gameTime)
         {
             drawSpeed.OnRefresh(gameTime);
-
-            gDevice.Clear(Color.CornflowerBlue);
-
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            stuff.ForEach<IDraw>(f => f.Draw(spriteBatch));
-            spriteBatch.End();
-        }
-
-        public override void Dispose()
-        {
-            stuff.Dispose();
-
-            base.Dispose();
         }
     }
 }
