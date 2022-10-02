@@ -10,7 +10,7 @@ namespace BytingLib
     public class WindowManager : IGetResolution
     {
         private readonly bool realFullscreen;
-        private readonly GameWindow window;
+        public GameWindow Window { get; }
         private readonly GraphicsDeviceManager graphics;
 
         private Int2 windowSizeBeforeFullscreen;
@@ -27,7 +27,7 @@ namespace BytingLib
         public WindowManager(bool realFullscreen, GameWindow window, GraphicsDeviceManager graphics)
         {
             this.realFullscreen = realFullscreen;
-            this.window = window;
+            this.Window = window;
             this.graphics = graphics;
 
             window.ClientSizeChanged += Window_ClientSizeChanged;
@@ -45,11 +45,11 @@ namespace BytingLib
                 if (realFullscreen)
                     graphics.ToggleFullScreen();
                 else
-                    window.IsBorderless = false;
+                    Window.IsBorderless = false;
                 graphics.PreferredBackBufferWidth = windowSizeBeforeFullscreen.X;
                 graphics.PreferredBackBufferHeight = windowSizeBeforeFullscreen.Y;
                 
-                window.Position = new Point(
+                Window.Position = new Point(
                     (GetScreenWidth() - windowSizeBeforeFullscreen.X) / 2,
                     (GetScreenHeight() - windowSizeBeforeFullscreen.Y) / 2);
                 graphics.ApplyChanges();
@@ -62,8 +62,8 @@ namespace BytingLib
 
                 if (!realFullscreen)
                 {
-                    window.IsBorderless = true;
-                    window.Position = new Point(0, 0);
+                    Window.IsBorderless = true;
+                    Window.Position = new Point(0, 0);
                 }
 
                 graphics.PreferredBackBufferWidth = GetScreenWidth();
@@ -92,7 +92,7 @@ namespace BytingLib
             if (isFullScreen)
                 graphics.ToggleFullScreen();
 
-            if (window.Position.X < GetScreenWidth())
+            if (Window.Position.X < GetScreenWidth())
                 MoveWindow(GetScreenWidth(), 0);
             else
                 MoveWindow(-GetScreenWidth(), 0);
@@ -106,7 +106,7 @@ namespace BytingLib
         /// </summary>
         private void MoveWindow(int byX, int byY)
         {
-            window.Position = new Point(window.Position.X + byX, window.Position.Y + byY);
+            Window.Position = new Point(Window.Position.X + byX, Window.Position.Y + byY);
         }
 
         public bool IsFullscreen()
@@ -114,7 +114,7 @@ namespace BytingLib
             if (realFullscreen)
                 return graphics.IsFullScreen;
             else
-                return window.IsBorderless;
+                return Window.IsBorderless;
         }
 
         private static int GetScreenHeight()
