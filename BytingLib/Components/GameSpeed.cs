@@ -9,6 +9,7 @@ namespace BytingLib
         private readonly double defaultMSPerFrame;
 
         public float Factor => (float)(GameTime.ElapsedGameTime.TotalMilliseconds / defaultMSPerFrame);
+        public float DeltaMS => (float)GameTime.ElapsedGameTime.TotalMilliseconds;
 
         public GameSpeed(TimeSpan defaultElapsedTime)
         {
