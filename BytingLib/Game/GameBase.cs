@@ -28,10 +28,12 @@ namespace BytingLib
 
 #if DEBUG
             hotReloadContent = new HotReloadContent(g.Services, contentCollector, @"..\..\..\..\..");
-#else
-            hotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod");
-#endif
             contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
+#else
+            //hotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod");
+            //contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
+#endif
+
 
             windowManager = new WindowManager(false, g.Window, graphics);
         }
