@@ -32,13 +32,13 @@ namespace BytingLib
         {
             updateSpeed.OnRefresh(gameTime);
 
+            keys.Update();
+            mouse.Update();
+
             if (keys.F11.Pressed)
                 windowManager.ToggleFullscreen();
             if (keys.Tab.Pressed)
                 windowManager.SwapScreen();
-
-            keys.Update();
-            mouse.Update();
         }
 
         public override void DrawActive(GameTime gameTime)
