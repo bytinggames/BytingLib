@@ -166,7 +166,7 @@ namespace BytingLib
             if (animationDatas.ContainsKey(assetName))
                 return animationDatas[assetName];
 
-            string file = Path.Combine(content.RootDirectory, assetName.Replace('/', '\\') + ".json");
+            string file = Path.Combine(content.RootDirectory, assetName.Replace('/', Path.DirectorySeparatorChar) + ".json");
             string json = File.ReadAllText(file);
             AnimationData data = FromJson(json);
             animationDatas.Add(assetName, data);

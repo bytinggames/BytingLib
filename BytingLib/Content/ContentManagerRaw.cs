@@ -31,7 +31,7 @@ namespace BytingLib
 
         private T LoadAnimationData<T>(string assetName)
         {
-            string filePath = Path.Combine(RootDirectory, assetName.Replace("/", "\\"));
+            string filePath = Path.Combine(RootDirectory, assetName.Replace('/',  Path.DirectorySeparatorChar));
             if (!File.Exists(filePath))
                 throw new ContentLoadException("file " + filePath + " does not exist");
 
@@ -41,7 +41,7 @@ namespace BytingLib
 
         private string LoadText(string assetNameWithExtension)
         {
-            string filePath = Path.Combine(RootDirectory, assetNameWithExtension.Replace("/", "\\"));
+            string filePath = Path.Combine(RootDirectory, assetNameWithExtension.Replace('/', Path.DirectorySeparatorChar));
             if (!File.Exists(filePath))
                 throw new ContentLoadException("file " + filePath + " does not exist");
 
