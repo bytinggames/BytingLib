@@ -45,5 +45,9 @@ namespace BytingLib
         {
             drawSpeed.OnRefresh(gameTime);
         }
+
+        public override void DrawInactiveOnce()
+        {
+        }
     }
 }
