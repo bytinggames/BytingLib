@@ -15,6 +15,12 @@ namespace BytingLib
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+#if !WINDOWS
+            Graphics.IsFullScreen = true;
+            Graphics.ApplyChanges();
+#endif
+
             this.createMyGame = createMyGame;
         }
 

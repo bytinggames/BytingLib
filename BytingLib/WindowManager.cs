@@ -134,8 +134,10 @@ namespace BytingLib
 
         public void MaximizeWindow(string windowCaption)
         {
+#if WINDOWS
             IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);
             ShowWindow(hwnd, SW_MAXIMIZE);
+#endif
         }
     }
 }
