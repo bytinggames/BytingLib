@@ -72,7 +72,7 @@ namespace BytingLib
 #if DEBUG
             hotReloadContent = new HotReloadContent(Services, contentCollector, directoryContainingMonoGame, Path.Combine("..", "..", "..", "Content"));
 #else
-            hotReloadContent = new HotReloadContent(Services, contentCollector, directoryContainingMonoGame, "ContentMod"));
+            hotReloadContent = new HotReloadContent(Services, contentCollector, directoryContainingMonoGame, "ContentMod");
 #endif
             _rawContent.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
 
