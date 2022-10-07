@@ -38,7 +38,12 @@ namespace BytingLib
 #endif
 
 
-            windowManager = new WindowManager(false, g.Window, graphics);
+#if WINDOWS
+		bool realFullscreen = false;
+#else
+		bool realFullscreen = true;
+#endif
+            windowManager = new WindowManager(realFullscreen, g.Window, graphics);
         }
 
         public abstract void UpdateActive(GameTime gameTime);

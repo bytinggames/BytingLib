@@ -42,12 +42,13 @@ namespace BytingLib
         {
             if (IsFullscreen())
             {
+                graphics.PreferredBackBufferWidth = windowSizeBeforeFullscreen.X;
+                graphics.PreferredBackBufferHeight = windowSizeBeforeFullscreen.Y;
+                
                 if (realFullscreen)
                     graphics.ToggleFullScreen();
                 else
                     Window.IsBorderless = false;
-                graphics.PreferredBackBufferWidth = windowSizeBeforeFullscreen.X;
-                graphics.PreferredBackBufferHeight = windowSizeBeforeFullscreen.Y;
                 
                 Window.Position = new Point(
                     (GetScreenWidth() - windowSizeBeforeFullscreen.X) / 2,
@@ -68,10 +69,11 @@ namespace BytingLib
 
                 graphics.PreferredBackBufferWidth = GetScreenWidth();
                 graphics.PreferredBackBufferHeight = GetScreenHeight();
-                graphics.ApplyChanges();
-
-                if (realFullscreen)
-                    graphics.ToggleFullScreen();
+                
+                if (!realFullscreen)
+                   graphics.ApplyChanges();
+		else
+              	    graphics.ToggleFullScreen();
             }
         }
 
