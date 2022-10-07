@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BytingLib\BytingLib.csproj" />
+    <ProjectReference Include="../BytingLib/BytingLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>

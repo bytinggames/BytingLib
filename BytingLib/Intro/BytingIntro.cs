@@ -157,7 +157,7 @@ namespace BytingLib.Intro
     {
         static readonly bool edit = false;
         static readonly bool animate = false;
-        private const string introDataFile = @"..\..\..\intro.bin";
+        private static readonly string introDataFile = Path.Combine("..", "..", "..", "intro.bin");
         IntroData data = new IntroData();
 
         private readonly Rect requiredSpace;

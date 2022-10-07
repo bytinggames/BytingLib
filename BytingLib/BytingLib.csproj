@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -18,26 +18,26 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-    <None Remove="Build\_ContentGenerate.txt" />
+    <None Remove="Build/_ContentGenerate.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Build\Content\_Content.tt.txt">
+    <None Update="Build/Content/_Content.tt.txt">
       <LastGenOutput>_Content.tt.Generated.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
-    <None Update="Build\Content\_ContentGenerate.tt.txt">
+    <None Update="Build/Content/_ContentGenerate.tt.txt">
       <LastGenOutput>_ContentGenerate.tt.txt</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>_ContentGenerate.tt.txt</DependentUpon>
     </None>
-    <None Update="Build\CSharpContent\ContentGenerate\_Content.tt.remove">
+    <None Update="Build/CSharpContent/ContentGenerate/_Content.tt.remove">
       <LastGenOutput>_Content.tt.Generated.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
-    <None Update="Build\CSharpContent\_ContentGenerate.tt.remove">
+    <None Update="Build/CSharpContent/_ContentGenerate.tt.remove">
       <LastGenOutput>_ContentGenerate.tt.txt</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
@@ -48,7 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Drawing\3D\" />
+    <Folder Include="Drawing/3D/" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,7 +56,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MonoGame.BytingGames\MonoGame.Framework\MonoGame.Framework.DesktopGL.csproj" />
+    <ProjectReference Include="../../MonoGame.BytingGames/MonoGame.Framework/MonoGame.Framework.DesktopGL.csproj" />
   </ItemGroup>
 
 </Project>

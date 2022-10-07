@@ -5,6 +5,7 @@ using BytingLib;
 using BytingLib.Intro;
 using System;
 using System.Runtime.InteropServices;
+using System.IO;
 
 namespace BytingIntroSandbox
 {
@@ -18,8 +19,8 @@ namespace BytingIntroSandbox
         protected bool triggerRestart;
         protected WindowManager windowManager;
         private BytingIntro intro;
-
-        public Game1() : base(@"..\..\..\..\..")
+        
+        public Game1() : base(Path.Combine("..","..","..","..",".."))
         {
             IsMouseVisible = true;
             updateSpeed = new GameSpeed(TargetElapsedTime);

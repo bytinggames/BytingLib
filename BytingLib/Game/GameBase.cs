@@ -27,7 +27,10 @@ namespace BytingLib
             contentCollector = new ContentCollector(contentRawPipe);
 
 #if DEBUG
-            hotReloadContent = new HotReloadContent(g.Services, contentCollector, @"..\..\..\..\..");
+            hotReloadContent = new HotReloadContent(g.Services,
+                contentCollector,
+                Path.Combine(@"..", "..", "..", "..", ".."),
+                Path.Combine("..", "..", "..", "Content"));
             contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
 #else
             //hotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod");

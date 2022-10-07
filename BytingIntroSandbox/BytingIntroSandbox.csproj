@@ -19,7 +19,7 @@
     <EmbeddedResource Include="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <MonoGameContentReference Include="Content\Content.mgcb" />
+    <MonoGameContentReference Include="Content/Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
@@ -28,7 +28,7 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MonoGame.BytingGames\MonoGame.Framework\MonoGame.Framework.DesktopGL.csproj" />
-    <ProjectReference Include="..\BytingLib\BytingLib.csproj" />
+    <ProjectReference Include="../../MonoGame.BytingGames/MonoGame.Framework/MonoGame.Framework.DesktopGL.csproj" />
+    <ProjectReference Include="../BytingLib/BytingLib.csproj" />
   </ItemGroup>
 </Project>

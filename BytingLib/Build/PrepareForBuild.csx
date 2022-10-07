@@ -30,7 +30,7 @@ string[] models = GetFiles("Models", "fbx");
 List<string> copiesList = new List<string>();
 copiesList.AddRange(GetFiles("Fonts", "xnb"));
 copiesList.AddRange(GetFiles("Textures", "ani")); // animations
-AddIfExists(copiesList, "Sounds\\settings.txt");
+AddIfExists(copiesList, Path.Combine("Sounds", "settings.txt"));
 AddIfExists(copiesList, "localization.csv");
 
 string[] copies = copiesList.ToArray();

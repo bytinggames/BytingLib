@@ -31,7 +31,7 @@ namespace BytingLib
                 LastChange = lastChange;
 
                 supervisorDirLength = supervisorDir.Length;
-                if (!supervisorDir.EndsWith("\\"))
+                if (!supervisorDir.EndsWith(System.IO.Path.DirectorySeparatorChar.ToString()))
                     supervisorDirLength++;
             }
         }

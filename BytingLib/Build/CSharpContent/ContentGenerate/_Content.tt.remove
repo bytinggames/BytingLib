@@ -18,7 +18,7 @@ namespace [TODO: set namespace here]
 {
     <#
     var projectPath = Environment.CurrentDirectory;
-    projectPath = Path.GetFullPath(Path.Combine(projectPath, @"..\"));
+    projectPath = Path.GetFullPath(Path.Combine(projectPath, ".."));
     string contentPath = Path.Combine(projectPath, "Content");
     string output = ContentTemplate.Create(contentPath + "/");
 

@@ -20,7 +20,7 @@ namespace BytingLib
 
         readonly Dictionary<string, List<string>> dependencies = new Dictionary<string, List<string>>();
 
-        public HotReloadContent(IServiceProvider serviceProvider, IContentCollector content, string directoryContainingMonoGame, string hotReloadContentPath = @"..\..\..\Content")
+        public HotReloadContent(IServiceProvider serviceProvider, IContentCollector content, string directoryContainingMonoGame, string hotReloadContentPath)
         {
             this.content = content;
 
@@ -34,7 +34,7 @@ namespace BytingLib
             else
                 expectEmptyDir = true;
 
-            //sourceContentDir = Paths.ModContent;// Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\Content"));
+            //sourceContentDir = Paths.ModContent;// Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"../../../../Content"));
             //bool expectEmptyDir = true;
 
             dirSupervisor = new DirectorySupervisor(sourceContentDir, GetFiles, expectEmptyDir);
@@ -102,7 +102,7 @@ namespace BytingLib
                     i += includeStr.Length;
                     int i2 = shaderCode.IndexOf("\"", i);
                     string file = shaderCode.Substring(i, i2 - i);
-                    file = "Effects\\" + file;
+                    file = Path.Combine("Effects", file);
                     if (!dependencies.ContainsKey(file))
                         dependencies.Add(file, new List<string>());
                     dependencies[file].Add(localFilePath);
