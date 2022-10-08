@@ -1,0 +1,31 @@
+﻿<Project>
+	<PropertyGroup Condition=" '$(OSTarget)' == 'Windows' ">
+		<DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(OSTarget)' == '' AND '$(OS)' == 'Windows_NT' ">
+		<DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(OSTarget)' == 'Linux' ">
+		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(OSTarget)' == 'Linux' AND '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'  ">
+		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(OSTarget)' == 'OSX' ">
+		<DefineConstants>$(DefineConstants);OSX</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(OSTarget)' == 'OSX' AND '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">
+		<DefineConstants>$(DefineConstants);OSX</DefineConstants>
+	</PropertyGroup>
+
+
+	<PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+		<ThisIsWindows>True</ThisIsWindows>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' ">
+		<ThisIsLinux>True</ThisIsLinux>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">
+		<ThisIsOSX>True</ThisIsOSX>
+	</PropertyGroup>
+</Project>
