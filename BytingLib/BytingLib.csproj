@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../../BytingLib/BytingLib/OS.targets" />
+  <Import Project="OS.targets" />
 	
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -43,11 +43,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BytingGames.MonoGame.Framework.DesktopGL" Version="3.8.1.1-develop" />
     <PackageReference Include="TextCopy" Version="6.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="../../MonoGame.BytingGames/MonoGame.Framework/MonoGame.Framework.DesktopGL.csproj" />
   </ItemGroup>
 
 </Project>

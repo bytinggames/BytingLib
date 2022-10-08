@@ -13,10 +13,6 @@ namespace BytingLib
         private readonly Dictionary<string, CodePart> fileToCode = new Dictionary<string, CodePart>();
         private readonly string[] mgcbContents = new string[0];
 
-        readonly string mgcbPathExe;
-            //Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            //@".nuget/packages/monogame.content.builder.task/3.8.0.1641/tools/netcoreapp3.1/any/mgcb.exe");
-
         static readonly string outputPath = Path.Combine(Environment.CurrentDirectory, "Content");
 
         public string OutputPath => tempOutputPath;
@@ -44,22 +40,11 @@ namespace BytingLib
         }
 
 
-        public ContentBuilder(string modContentDir, string tempOutputPath, string tempPath, string directoryContainingMonoGame)
+        public ContentBuilder(string modContentDir, string tempOutputPath, string tempPath)
         {
             this.modContentDir = modContentDir;
             this.tempOutputPath = tempOutputPath;
             this.tempPath = tempPath;
-
-            mgcbPathExe = Path.Combine(directoryContainingMonoGame,
-                @"MonoGame.BytingGames", "Artifacts", "MonoGame.Content.Builder", "Debug"
-#if WINDOWS
-                , "mgcb.exe"
-#else
-                ,"mgcb"
-#endif
-                );
-
-            //string cmd = $"/platform:DesktopGL /config: /profile:Reach /compress:False /importer:EffectImporter /processor:EffectProcessor /processorParam:DebugMode=Auto /intermediateDir:\"{tempPath}\" /outputDir:\"{tempOutputPath}\"";
 
             // get all mgcb files
             string[] mgcbFiles;
@@ -134,14 +119,14 @@ namespace BytingLib
 
             File.WriteAllText(contentTempFile, cmd);
 
-            string newCmd = "/@:\"" + contentTempFile + "\"";
+            string arguments = "/@:\"" + contentTempFile + "\"";
 
             Process process = new Process
             {
                 StartInfo =
                 {
-                    FileName = mgcbPathExe,
-                    Arguments = newCmd,
+                    FileName = "cmd.exe",
+                    Arguments = "/C dotnet mgcb " + arguments,
                     CreateNoWindow = true,
                     WorkingDirectory = modContentDir,
                     UseShellExecute = false,

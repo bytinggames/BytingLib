@@ -7,7 +7,7 @@ namespace BytingLib
         private readonly Pointer<T> assetPointer;
         private readonly string assetName;
         private readonly Action<string> onUnusedTo0References;
-        //private readonly List<Ref<T>> assetReferences = new List<Ref<T>>();
+        private readonly List<Ref<T>> assetReferences = new List<Ref<T>>();
         Ref<T>? assetRef;
 
         public AssetHolder(T asset, string assetName, Action<string> onUnusedTo0References)
@@ -21,8 +21,8 @@ namespace BytingLib
 
         public Ref<T> Use()
         {
-            //Ref<T> assetRef = new Ref<T>(assetPointer, Unuse);
-            //assetReferences.Add(assetRef);
+            Ref<T> assetRef = new Ref<T>(assetPointer, Unuse);
+            assetReferences.Add(assetRef);
 
             if (assetRef == null)
                 assetRef = new Ref<T>(assetPointer, Unuse);
@@ -32,9 +32,9 @@ namespace BytingLib
 
         private void Unuse(Ref<T> asset)
         {
-            //assetReferences.Remove(asset);
-            //if (assetReferences.Count == 0)
-            //    onUnusedTo0References?.Invoke(assetName);
+            assetReferences.Remove(asset);
+            if (assetReferences.Count == 0)
+                onUnusedTo0References?.Invoke(assetName);
         }
 
         public T Peek()

@@ -69,7 +69,7 @@ namespace BytingLib.Test.ContentTest
 
             ContentManagerRaw rawContent = new ContentManagerRaw(game.Services, "Content");
             collector = new ContentCollector(rawContent);
-            hotReloadContent = new HotReloadContent(game.Services, collector, @"..\..\..\..\..", "ContentHot");
+            hotReloadContent = new HotReloadContent(game.Services, collector, "ContentHot");
         }
 
         [TestMethod]

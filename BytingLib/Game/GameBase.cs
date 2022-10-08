@@ -29,7 +29,6 @@ namespace BytingLib
 #if DEBUG
             hotReloadContent = new HotReloadContent(g.Services,
                 contentCollector,
-                Path.Combine(@"..", "..", "..", "..", ".."),
                 Path.Combine("..", "..", "..", "Content"));
             contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
 #else
