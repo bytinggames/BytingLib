@@ -84,9 +84,11 @@ namespace BytingLib
                 {
                     int start = j;
                     int startName = start + "#begin ".Length;
-                    int endName = mgcbContents[i].IndexOf("\r\n", startName);
-                    int end = mgcbContents[i].IndexOf("#begin", start + 1);
+                    int endName = mgcbContents[i].IndexOf("\n", startName);
+                    if (mgcbContents[i][endName - 1] == '\r') // check if it's a \r\n
+                        endName--;
                     string key = mgcbContents[i].Substring(startName, endName - startName);
+                    int end = mgcbContents[i].IndexOf("#begin", start + 1);
                     fileToCode.Add(key, new CodePart(i, start, end == -1 ? -1 : end - start));
                     j = end;
                 }
