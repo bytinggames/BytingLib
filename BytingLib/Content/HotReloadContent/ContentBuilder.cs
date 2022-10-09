@@ -121,14 +121,23 @@ namespace BytingLib
 
             File.WriteAllText(contentTempFile, cmd);
 
-            string arguments = "/@:\"" + contentTempFile + "\"";
+            string command = "dotnet mgcb /@:\"" + contentTempFile + "\"";
+            string fileName;
+#if WINDOWS
+            command = "/C " + command;
+            fileName = "cmd.exe";
+#else
+            command = command.Replace("\"", "\"\"");
+            command = "-c  \"" + command + "\"";
+            fileName = "/bin/bash";
+#endif
 
             Process process = new Process
             {
                 StartInfo =
                 {
-                    FileName = "cmd.exe",
-                    Arguments = "/C dotnet mgcb " + arguments,
+                    FileName = fileName,
+                    Arguments = command,
                     CreateNoWindow = true,
                     WorkingDirectory = modContentDir,
                     UseShellExecute = false,
@@ -136,6 +145,7 @@ namespace BytingLib
                     RedirectStandardOutput = true
                 }
             };
+
 
             //Get program output
             string? stdError = null;
