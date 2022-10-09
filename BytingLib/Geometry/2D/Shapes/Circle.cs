@@ -42,11 +42,6 @@ namespace BytingLib
             spriteBatch.DrawCircle(this, color, depth);
         }
 
-        public void DrawGradient(SpriteBatch spriteBatch, Color colorInner, Color colorOuter, float depth)
-        {
-            spriteBatch.DrawCircleGradient(this, colorInner, colorOuter, depth);
-        }
-
         public Polygon ToPolygon(int vertexCount) => Polygon.GetCircle(Pos, Radius, vertexCount);
 
         public PrimitiveLineRing Outline(int vertexCount) => new PrimitiveLineRing(this, vertexCount);
