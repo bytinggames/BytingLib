@@ -8,13 +8,13 @@
 	<PropertyGroup Condition=" '$(OSTarget)' == 'Linux' ">
 		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
 	</PropertyGroup>
-	<PropertyGroup Condition=" '$(OSTarget)' == 'Linux' AND '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'  ">
+	<PropertyGroup Condition=" '$(OSTarget)' == '' AND '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'  ">
 		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(OSTarget)' == 'OSX' ">
 		<DefineConstants>$(DefineConstants);OSX</DefineConstants>
 	</PropertyGroup>
-	<PropertyGroup Condition=" '$(OSTarget)' == 'OSX' AND '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">
+	<PropertyGroup Condition=" '$(OSTarget)' == '' AND '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">
 		<DefineConstants>$(DefineConstants);OSX</DefineConstants>
 	</PropertyGroup>
 
