@@ -47,6 +47,15 @@ namespace BytingLib
             spriteBatch.DrawStrip(spriteBatch.GetPixel(), arr.ToList(), color, depth);
         }
 
+        public void DrawGradient(SpriteBatch spriteBatch, Color color1, Color color2)
+            => DrawGradient(spriteBatch, color1, color2, spriteBatch.DefaultDepth);
+        public void DrawGradient(SpriteBatch spriteBatch, Color color1, Color color2, float depth)
+        {
+            spriteBatch.DrawStrip(spriteBatch.GetPixel(),
+                    GetDrawableVertexPositionsGradient(color1, color2, depth)
+                );
+        }
+
         public VertexPosition[] GetDrawableVertexPositions()
         {
             return Vertices.Select(f => new VertexPosition(new Vector3(f, 0f)))
@@ -56,6 +65,14 @@ namespace BytingLib
                     new VertexPosition(new Vector3(Vertices[1], 0f))
                 })
                 .ToArray();
+        }
+
+        public VertexPositionColorTexture[] GetDrawableVertexPositionsGradient(Color color1, Color color2, float depth)
+        {
+            bool toggle = true;
+            return GetDrawableVertexVectors()
+                    .Select(f => new VertexPositionColorTexture(new Vector3(f.X, f.Y, depth), (toggle = !toggle) ? color1 : color2, Vector2.Zero))
+                    .ToArray();
         }
 
         public IEnumerable<Vector2> GetDrawableVertexVectors()

@@ -29,6 +29,19 @@ namespace BytingLib
             var polygon = circle.ToPolygon(GetExtended(spriteBatch).RadiusToVertexCount(circle.Radius));
             spriteBatch.DrawPolygon(polygon, color, depth);
         }
+        public static void DrawCircleGradient(this SpriteBatch spriteBatch, Circle circle, Color colorInner, Color colorOuter)
+            => DrawCircleGradient(spriteBatch, circle, colorInner, colorOuter, spriteBatch.DefaultDepth);
+        public static void DrawCircleGradient(this SpriteBatch spriteBatch, Circle circle, Color colorInner, Color colorOuter, float depth)
+        {
+            var polygon = circle.ToPolygon(GetExtended(spriteBatch).RadiusToVertexCount(circle.Radius));
+            List<VertexPositionColorTexture> v = polygon.Vertices
+                .Select(f => new VertexPositionColorTexture(new Vector3(polygon.X + f.X, polygon.Y + f.Y, depth), colorOuter, Vector2.Zero))
+                .ToList();
+            v.Add(v[0]);
+            v.Insert(0, new VertexPositionColorTexture(new Vector3(circle.X, circle.Y, depth), colorInner, Vector2.Zero));
+
+            spriteBatch.DrawPolygon(spriteBatch.GetPixel(), v);
+        }
 
         public static void DrawCross(this SpriteBatch spriteBatch, Vector2 pos, float diameter, float thickness, Color color)
             => DrawCross(spriteBatch, pos, diameter, thickness, color, spriteBatch.DefaultDepth);
