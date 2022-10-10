@@ -43,6 +43,19 @@ namespace BytingLib
             spriteBatch.DrawPolygon(spriteBatch.GetPixel(), v);
         }
 
+        public static void DrawCone(this SpriteBatch spriteBatch, Vector2 origin, float radius, float angleStart, float angle, Color colorInner, Color colorOuter)
+            => DrawCone(spriteBatch, origin, radius, angleStart, angle, colorInner, colorOuter, spriteBatch.DefaultDepth);
+        public static void DrawCone(this SpriteBatch spriteBatch, Vector2 origin, float radius, float angleStart, float angle, Color colorInner, Color colorOuter, float depth)
+        {
+            var polygon = Polygon.GetCone(origin, radius, angleStart, angle, (int)(GetExtended(spriteBatch).RadiusToVertexCount(radius) * angle / MathHelper.TwoPi));
+            List<VertexPositionColorTexture> v = polygon.Vertices
+                .Select(f => new VertexPositionColorTexture(new Vector3(polygon.X + f.X, polygon.Y + f.Y, depth), colorOuter, Vector2.Zero))
+                .ToList();
+            v.Insert(0, new VertexPositionColorTexture(new Vector3(origin.X, origin.Y, depth), colorInner, Vector2.Zero));
+
+            spriteBatch.DrawPolygon(spriteBatch.GetPixel(), v);
+        }
+
         public static void DrawCross(this SpriteBatch spriteBatch, Vector2 pos, float diameter, float thickness, Color color)
             => DrawCross(spriteBatch, pos, diameter, thickness, color, spriteBatch.DefaultDepth);
         public static void DrawCross(this SpriteBatch spriteBatch, Vector2 pos, float diameter, float thickness, Color color, float depth)

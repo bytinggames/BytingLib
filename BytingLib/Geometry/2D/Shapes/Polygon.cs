@@ -271,11 +271,11 @@ namespace BytingLib
             }
             return poly;
         }
-        public static Polygon GetCirclePart(Vector2 pos, float radius, float angle, float fov, int vertices)
+        public static Polygon GetCone(Vector2 pos, float radius, float angleStart, float angle, int vertices)
         {
             Polygon poly = new Polygon(pos, new List<Vector2>() { Vector2.Zero });
-            float a = angle - fov / 2f;
-            float plus = fov / (vertices - 1);
+            float a = angleStart;
+            float plus = angle / (vertices - 1);
             for (int i = 0; i < vertices; i++)
             {
                 poly.Vertices.Add(new Vector2((float)Math.Cos(a) * radius, (float)Math.Sin(a) * radius));
