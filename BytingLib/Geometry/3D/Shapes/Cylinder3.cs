@@ -21,6 +21,7 @@ namespace BytingLib
         public float Y { get => pos.Y; set => pos.Y = value; }
         public float Z { get => pos.Z; set => pos.Z = value; }
         public Vector3 Pos2 => Pos + Length;
+        public Vector3 Center => pos + Length * 0.5f;
 
         public Type GetCollisionType() => typeof(Cylinder3);
 

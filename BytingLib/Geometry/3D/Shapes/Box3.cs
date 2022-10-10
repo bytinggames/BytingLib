@@ -104,5 +104,25 @@ namespace BytingLib
             scale = scale.GetAbs();
             return new AABB3(Vector3.Zero, scale * 2f);
         }
+
+        public IEnumerable<Triangle3> Triangulate()
+        {
+            var corners = GetCorners();
+            yield return new Triangle3(corners[7], corners[5], corners[3]);
+            yield return new Triangle3(corners[7], corners[3], corners[6]);
+            yield return new Triangle3(corners[7], corners[6], corners[5]);
+
+            yield return new Triangle3(corners[4], corners[5], corners[6]);
+            yield return new Triangle3(corners[4], corners[6], corners[0]);
+            yield return new Triangle3(corners[4], corners[0], corners[5]);
+
+            yield return new Triangle3(corners[2], corners[6], corners[3]);
+            yield return new Triangle3(corners[2], corners[3], corners[0]);
+            yield return new Triangle3(corners[2], corners[0], corners[6]);
+
+            yield return new Triangle3(corners[1], corners[3], corners[5]);
+            yield return new Triangle3(corners[1], corners[5], corners[0]);
+            yield return new Triangle3(corners[1], corners[0], corners[3]);
+        }
     }
 }

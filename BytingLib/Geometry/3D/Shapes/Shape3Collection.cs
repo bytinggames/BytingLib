@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace BytingLib
 {
-    public class Shape3Collection : IShape3
+    public class Shape3Collection : IShape3Collection
     {
         private Vector3 pos;
         public List<IShape3> Shapes { get; set; }
@@ -63,7 +63,7 @@ namespace BytingLib
             ShapesEnabled[index] = enable;
         }
 
-        public Type GetCollisionType() => typeof(Shape3Collection);
+        public Type GetCollisionType() => typeof(IShape3Collection);
 
         public virtual object Clone()
         {

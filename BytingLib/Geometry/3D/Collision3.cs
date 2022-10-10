@@ -9,7 +9,7 @@ namespace BytingLib
 {
     public static class Collision3
     {
-        static readonly Type TShapeCollection3 = typeof(Shape3Collection);
+        static readonly Type TShapeCollection3 = typeof(IShape3Collection);
         static readonly Type TVector3 = typeof(Vector3);
         static readonly Type TSphere3 = typeof(Sphere3);
         static readonly Type TAxis3 = typeof(Axis3);
@@ -67,19 +67,19 @@ namespace BytingLib
 
         static readonly Dictionary<(Type, Type), Func<object, object, bool>> collisionFunctions = new()
         {
-            { (TShapeCollection3, TVector3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
-            { (TShapeCollection3, TSphere3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
-            { (TShapeCollection3, TAxis3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
-            { (TShapeCollection3, TRay3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
-            { (TShapeCollection3, TLine3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
-            { (TShapeCollection3, TPlane3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
-            { (TShapeCollection3, TTriangle3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
-            { (TShapeCollection3, TAxisRadius3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
-            { (TShapeCollection3, TCapsule3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
-            { (TShapeCollection3, TAABB3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
-            { (TShapeCollection3, TBox3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
-            { (TShapeCollection3, TCylinder3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
-            { (TShapeCollection3, TShapeCollection3), (a, b) => ColShapeCollectionObject((Shape3Collection)a, b) },
+            { (TShapeCollection3, TVector3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
+            { (TShapeCollection3, TSphere3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
+            { (TShapeCollection3, TAxis3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
+            { (TShapeCollection3, TRay3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
+            { (TShapeCollection3, TLine3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
+            { (TShapeCollection3, TPlane3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
+            { (TShapeCollection3, TTriangle3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
+            { (TShapeCollection3, TAxisRadius3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
+            { (TShapeCollection3, TCapsule3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
+            { (TShapeCollection3, TAABB3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
+            { (TShapeCollection3, TBox3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
+            { (TShapeCollection3, TCylinder3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
+            { (TShapeCollection3, TShapeCollection3), (a, b) => ColShapeCollectionObject((IShape3Collection)a, b) },
 
             { (TVector3, TVector3), (a, b) => ColVectorVector((Vector3)a, (Vector3)b) },
             { (TVector3, TAABB3), (a, b) => ColVectorAABB((Vector3)a, (AABB3)b) },
@@ -127,19 +127,19 @@ namespace BytingLib
 
         static readonly Dictionary<(Type, Type), Func<object, object, Vector3, CollisionResult3>> distanceFunctions = new()
         {
-            { (TShapeCollection3, TVector3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
-            { (TShapeCollection3, TSphere3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
-            { (TShapeCollection3, TAxis3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
-            { (TShapeCollection3, TRay3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
-            { (TShapeCollection3, TLine3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
-            { (TShapeCollection3, TPlane3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
-            { (TShapeCollection3, TTriangle3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
-            { (TShapeCollection3, TAxisRadius3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
-            { (TShapeCollection3, TCapsule3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
-            { (TShapeCollection3, TAABB3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
-            { (TShapeCollection3, TBox3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
-            { (TShapeCollection3, TCylinder3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
-            { (TShapeCollection3, TShapeCollection3), (a, b, dir) => DistShapeCollectionObject((Shape3Collection)a, b, dir) },
+            { (TShapeCollection3, TVector3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
+            { (TShapeCollection3, TSphere3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
+            { (TShapeCollection3, TAxis3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
+            { (TShapeCollection3, TRay3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
+            { (TShapeCollection3, TLine3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
+            { (TShapeCollection3, TPlane3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
+            { (TShapeCollection3, TTriangle3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
+            { (TShapeCollection3, TAxisRadius3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
+            { (TShapeCollection3, TCapsule3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
+            { (TShapeCollection3, TAABB3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
+            { (TShapeCollection3, TBox3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
+            { (TShapeCollection3, TCylinder3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
+            { (TShapeCollection3, TShapeCollection3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
 
             { (TVector3, TPlane3), (a, b, dir) => DistVectorPlane((Vector3)a, (Plane3)b, dir) },
             { (TVector3, TSphere3), (a, b, dir) => DistVectorSphere((Vector3)a, (Sphere3)b, dir) },
@@ -181,7 +181,7 @@ namespace BytingLib
         public static bool GetCollision(object shape1, object shape2)
         {
             Type t1 = (shape1 is IShape3 s1) ? s1.GetCollisionType() : shape1.GetType();
-            Type t2 = (shape2 is IShape3 s2) ? s2.GetCollisionType() : shape1.GetType();
+            Type t2 = (shape2 is IShape3 s2) ? s2.GetCollisionType() : shape2.GetType();
             Func<object, object, bool>? func;
             if (!collisionFunctions.TryGetValue((t1, t2), out func))
             {
@@ -202,7 +202,7 @@ namespace BytingLib
         public static CollisionResult3 GetDistance(object shape1, object shape2, Vector3 dir)
         {
             Type t1 = (shape1 is IShape3 s1) ? s1.GetCollisionType() : shape1.GetType();
-            Type t2 = (shape2 is IShape3 s2) ? s2.GetCollisionType() : shape1.GetType();
+            Type t2 = (shape2 is IShape3 s2) ? s2.GetCollisionType() : shape2.GetType();
             Func<object, object, Vector3, CollisionResult3>? func;
             if (!distanceFunctions.TryGetValue((t1, t2), out func))
                 throw new NotImplementedException($"A distance check between {shape1.GetType()} and {shape2.GetType()} is not implemented yet.");
@@ -260,15 +260,15 @@ namespace BytingLib
 
         #region ShapeCollection
 
-        public static bool ColShapeCollectionObject(Shape3Collection collection, object obj)
+        public static bool ColShapeCollectionObject(IShape3Collection collection, object obj)
         {
-            return collection.Shapes.Any(shape => GetCollision(shape, obj));
+            return collection.ShapesEnumerable.Any(shape => GetCollision(shape, obj));
         }
 
-        public static CollisionResult3 DistShapeCollectionObject(Shape3Collection collection, object obj, Vector3 dir)
+        public static CollisionResult3 DistShapeCollectionObject(IShape3Collection collection, object obj, Vector3 dir)
         {
             CollisionResult3 crTotal = new CollisionResult3();
-            foreach (var shape in collection.Shapes)
+            foreach (var shape in collection.ShapesEnumerable)
             {
                 var cr = GetDistance(shape, obj, dir);
                 crTotal.MinResult(cr);
@@ -1362,11 +1362,19 @@ namespace BytingLib
 
         public static bool ColBoxCylinder(Box3 box, Cylinder3 cylinder)
         {
-            // separating axis algorithm?
+            // check if cylinder origin is inside the box
+            if (box.CollidesWith(cylinder.Center))
+                return true;
 
-
-            throw new NotImplementedException();
+            // triangulate the box and check if any triangle collides with the cylinder
+            foreach (var tri in box.Triangulate())
+            {
+                if (ColTriangleCylinder(tri, cylinder))
+                    return true;
+            }
+            return false;
         }
+
         #endregion
 
         #region Cylinder
