@@ -9,7 +9,7 @@ namespace BuildTemplates
             { "SpriteFont", ("Font", new[] { "spritefont" } )},
             { "SoundEffect", ("Sfx", new[] { "wav", "mp3", "ogg" } )},
             { "Effect", ("Fx", new[] { "fx" } )},
-            { "string", ("Txt", new[] { "json", "ini", "config" } )},
+            { "string", ("Txt", new[] { "json", "ini", "config", "txt" } )},
             { "MyModel", ("Model", new[] { "fbx" }) },
             { "Animation", ("Ani", new[] { "ani" }) },
         };

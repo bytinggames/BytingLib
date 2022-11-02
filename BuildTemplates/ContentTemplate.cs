@@ -102,7 +102,7 @@ public class _{name}
                 else
                 if (ext == ".txt")
                 {
-                    customPrint = $"public Ref<string> {ToVariableName(name)}Txt() => collector.UseString(\"{{0}}{_name}\");";
+                    customPrint = $"public Ref<string> {ToVariableName(name)}Txt() => collector.Use<string>(\"{{0}}{_name}\");";
                 }
                 else
                     assetType = AssetTypes.Convert(ext)!;

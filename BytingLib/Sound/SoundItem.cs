@@ -10,32 +10,27 @@ namespace BytingLib
     // TODO: check if this class is coded beautifully
     public class SoundItem : SoundItemAbstract
     {
-        public SoundEffect SoundEffect { get; set; }
-        public float Volume { get; set; }
+        public Ref<SoundEffect> Sfx { get; }
 
-        public override void Dispose()
+        public SoundItem(ISoundBus bus, Ref<SoundEffect> sfx)
+            : base(bus)
         {
-            throw new NotImplementedException();
+            Sfx = sfx;
         }
 
-        public void Play(float v1, object value, float v2)
+        public override void Play()
         {
-            throw new NotImplementedException();
+            Sfx.Value.Play(GetOutputVolume(), GetOutputPitch(), GetOutputPan());
         }
 
-        public override bool Play()
+        public override void Play(float volumeMultiplier)
         {
-            throw new NotImplementedException();
+            Sfx.Value.Play(GetOutputVolume(volumeMultiplier), GetOutputPitch(), GetOutputPan());
         }
 
-        public override bool Play(float relativeVolume, float relativePitch, float relativePan)
+        public override void Play(float volumeMultiplier, float relativePitch, float relativePan)
         {
-            throw new NotImplementedException();
-        }
-
-        public override bool Play(float volumeMultiplier)
-        {
-            throw new NotImplementedException();
+            Sfx.Value.Play(GetOutputVolume(volumeMultiplier), GetOutputPitch(relativePitch), GetOutputPan(relativePan));
         }
     }
 }

@@ -2,30 +2,37 @@
 
 namespace BytingLib
 {
-    public abstract class SoundItemAbstract : IDisposable
+    public abstract class SoundItemAbstract
     {
-        private float volume = 0.5f;
-        private float pitch = 0f;
-        private float pan = 0f;
+        public ISoundBus Bus { get; }
 
-        public float Volume { get => volume; set => volume = Math.Min(Math.Max(value, 0f), 1f); }
-        public float Pitch { get => pitch; set => pitch = Math.Min(Math.Max(value, -1f), 1f); }
-        public float Pan { get => pan; set => pan = Math.Min(Math.Max(value, -1f), 1f); }
+        public float Volume { get; set; } = 0.5f;
+        public float Pitch { get; set; } = 0f;
+        public float Pan { get; set; } = 0f;
 
-        public abstract void Dispose();
+        public abstract void Play();
+        public abstract void Play(float volumeMultiplier);
+        public abstract void Play(float volumeMultiplier, float relativePitch, float relativePan);
 
-        public abstract bool Play();
-        public abstract bool Play(float relativeVolume, float relativePitch, float relativePan);
-        public abstract bool Play(float volumeMultiplier);
+        public float GetOutputVolume() => Math.Clamp(Volume * Bus.Volume, 0f, 1f);
+        protected float GetOutputVolume(float volumeMultiplier) => Math.Clamp(Volume * volumeMultiplier * Bus.Volume, 0f, 1f);
 
-        public float GetOutputVolume() => GetOutputVolume(Volume);
-        public float GetOutputVolume(float volume) => Math.Min(Math.Max(volume * SoundMaster.Volume, 0f), 1f);
+        public float GetOutputPitch() => Math.Clamp(Pitch + Bus.Pitch, -1f, 1f);
+        protected float GetOutputPitch(float relativePitch) => Math.Clamp(Pitch + Bus.Pitch + relativePitch, -1f, 1f);
+
+        public float GetOutputPan() => Math.Clamp(Pan + Bus.Pan, -1f, 1f);
+        protected float GetOutputPan(float relativePan) => Math.Clamp(Pan + Bus.Pan + relativePan, -1f, 1f);
+
+        public SoundItemAbstract(ISoundBus bus)
+        {
+            Bus = bus;
+        }
 
         public void ResetVolumePitchPan()
         {
-            volume = 0.5f;
-            pitch = 0f;
-            pan = 0f;
+            Volume = 0.5f;
+            Pitch = 0f;
+            Pan = 0f;
         }
     }
 }

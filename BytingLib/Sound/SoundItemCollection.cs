@@ -3,67 +3,60 @@ using System;
 
 namespace BytingLib
 {
-    public class SoundItemCollection : SoundItemAbstract
-    {
-        static Random rand = new Random();
+    //public class SoundItemCollection : SoundItemAbstract
+    //{
+    //    static Random rand = new Random();
 
-        private SoundEffect[] soundEffects;
+    //    private SoundItem[] sfxs;
 
-        public SoundEffect[] SoundEffects
-        {
-            get => soundEffects;
-            set
-            {
-                if (soundEffects != null)
-                {
-                    for (int i = 0; i < soundEffects.Length; i++)
-                    {
-                        soundEffects[i]?.Dispose();
-                    }
-                }
-                soundEffects = value;
-            }
-        }
+    //    public SoundItem[] Sfxs
+    //    {
+    //        get => sfxs;
+    //        set
+    //        {
+    //            if (sfxs != null)
+    //            {
+    //                for (int i = 0; i < sfxs.Length; i++)
+    //                {
+    //                    sfxs[i]?.Dispose();
+    //                }
+    //            }
+    //            sfxs = value;
+    //        }
+    //    }
 
-        public SoundItemCollection(SoundEffect[] soundEffects)
-        {
-            SoundEffects = soundEffects;
-        }
+    //    public SoundItemCollection(ISoundBus bus, SoundItem[] sfxs)
+    //        : base(bus)
+    //    {
+    //        this.sfxs = sfxs;
+    //    }
 
-        public override void Dispose()
-        {
-            for (int i = 0; i < soundEffects.Length; i++)
-            {
-                soundEffects[i]?.Dispose();
-            }
-        }
+    //    public Ref<SoundEffect> GetRandomSoundEffect() => sfxs[rand.Next(sfxs.Length)];
 
-        public SoundEffect GetRandomSoundEffect() => soundEffects[rand.Next(soundEffects.Length)];
+    //    public override void Play()
+    //    {
+    //        if (SoundMaster.Muted)
+    //            return true;
 
-        public override bool Play()
-        {
-            if (SoundMaster.Muted)
-                return true;
+    //        return GetRandomSoundEffect().Play(GetOutputVolume(), Pitch, Pan);
+    //    }
+    //    public override void Play(float relativeVolume, float relativePitch, float relativePan)
+    //    {
+    //        if (SoundMaster.Muted)
+    //            return true;
 
-            return GetRandomSoundEffect().Play(GetOutputVolume(), Pitch, Pan);
-        }
-        public override bool Play(float relativeVolume, float relativePitch, float relativePan)
-        {
-            if (SoundMaster.Muted)
-                return true;
+    //        return GetRandomSoundEffect().Play(
+    //            GetOutputVolume(Volume + relativeVolume)
+    //            , Math.Min(Math.Max(Pitch + relativePitch, -1f), 1f)
+    //            , Math.Min(Math.Max(Pan + relativePan, -1f), 1f));
+    //    }
+    //    public override void Play(float volumeMultiplier)
+    //    {
+    //        if (SoundMaster.Muted)
+    //            return true;
 
-            return GetRandomSoundEffect().Play(
-                GetOutputVolume(Volume + relativeVolume)
-                , Math.Min(Math.Max(Pitch + relativePitch, -1f), 1f)
-                , Math.Min(Math.Max(Pan + relativePan, -1f), 1f));
-        }
-        public override bool Play(float volumeMultiplier)
-        {
-            if (SoundMaster.Muted)
-                return true;
-
-            return GetRandomSoundEffect().Play(
-                GetOutputVolume(Volume * volumeMultiplier), Pitch, Pan);
-        }
-    }
+    //        return GetRandomSoundEffect().Play(
+    //            GetOutputVolume(Volume * volumeMultiplier), Pitch, Pan);
+    //    }
+    //}
 }
