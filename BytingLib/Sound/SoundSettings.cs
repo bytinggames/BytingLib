@@ -77,7 +77,7 @@ namespace BytingLib
                         }
                     }
 
-                    string fileName = string.Join('/', folderStack);
+                    string fileName = "Sounds/" + string.Join('/', folderStack);
 
                     Settings.Add(fileName, s);
                 }
