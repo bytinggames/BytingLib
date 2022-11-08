@@ -11,6 +11,8 @@ namespace BytingIntroSandbox
 {
     public class Game1 : _BaseGame
     {
+        const bool forWebsite = true;
+
         protected readonly GameSpeed updateSpeed, drawSpeed;
         protected IStuffDisposable gameStuff;
         protected KeyInput keys;
@@ -19,13 +21,19 @@ namespace BytingIntroSandbox
         protected bool triggerRestart;
         protected WindowManager windowManager;
         private BytingIntro intro;
-        
+
         public Game1()
         {
             IsMouseVisible = true;
             updateSpeed = new GameSpeed(TargetElapsedTime);
             drawSpeed = new GameSpeed(TargetElapsedTime);
             InactiveBlendColor = null;
+
+            if (forWebsite)
+            {
+                graphics.PreferredBackBufferWidth = 600;
+                graphics.PreferredBackBufferHeight = 340;
+            }
         }
 
         protected override void MyInitialize()
@@ -34,8 +42,11 @@ namespace BytingIntroSandbox
 
             intro = new BytingIntro(mouse, keys);
 
-            IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, "BytingIntroSandbox");
-            ShowWindow(hwnd, SW_MAXIMIZE);
+            if (!forWebsite)
+            {
+                IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, "BytingIntroSandbox");
+                ShowWindow(hwnd, SW_MAXIMIZE);
+            }
         }
 
         protected override void UpdateActive(GameTime gameTime)
@@ -58,6 +69,11 @@ namespace BytingIntroSandbox
 
             var tex = intro.DrawOnMyOwn(spriteBatch, new Int2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
 
+            if (keys.Enter.Pressed)
+            {
+                tex = ExportPng(tex);
+            }
+
             GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin();
@@ -65,6 +81,27 @@ namespace BytingIntroSandbox
             tex.Draw(spriteBatch, Vector2.Zero);
 
             spriteBatch.End();
+        }
+
+        private static Texture2D ExportPng(Texture2D tex)
+        {
+            Color[] colors = tex.ToColor();
+
+            // correct premultiplied alpha
+            for (int i = 0; i < colors.Length; i++)
+            {
+                colors[i].R = 255;
+                colors[i].G = 255;
+                colors[i].B = 255;
+            }
+
+            tex = colors.ToTexture(tex.Width, tex.GraphicsDevice);
+
+            using (var trimmed = tex.GetTrimmed())
+            {
+                trimmed.SaveAsPng("logo-export.png");
+            }
+            return tex;
         }
 
         protected override void UnloadContent()
