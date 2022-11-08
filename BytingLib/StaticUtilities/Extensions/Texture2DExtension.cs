@@ -303,6 +303,109 @@ namespace BytingLib
                 tex.SaveAsJpeg(f, tex.Width, tex.Height);
         }
 
+        // TODO: this method needs to be tested for cases, where some edges can't be trimmed
+        public static Texture2D GetTrimmed(this Texture2D tex)
+        {
+            int widthIn = tex.Width;
+            Color[] colors = tex.ToColor();
+            Color trimColor = colors[0];
+            bool trimmedAny = false;
+
+            // trim top
+            int i;
+            for (i = 0; i < colors.Length && colors[i] == trimColor; i++)
+            { }
+            // if the whole texture has the same color, return a transparent pixel texture
+            if (i == colors.Length)
+                return new Color[] { Color.Transparent }.ToTexture(1, tex.GraphicsDevice);
+
+            int trimYStart = i / tex.Width;
+
+            // if top couldn't be trimmed, try trimming with the bottom right most pixel color
+            if (trimYStart == 0)
+                trimColor = colors[colors.Length - 1];
+            else
+                trimmedAny = true;
+
+            // trim bottom
+            for (i = colors.Length - 1; i >= 0 && colors[i] == trimColor; i--)
+            { }
+
+            int trimYEnd = i / tex.Width;
+
+            // if still nothing has been trimmed, try trimming with the top left most pixel color
+            if (!trimmedAny && trimYEnd == tex.Height - 1)
+                trimColor = colors[0];
+            else
+                trimmedAny = true;
+
+
+            int trimXStart = TrimLeft(widthIn, colors, trimColor, trimYStart, trimYEnd);
+            // if still nothing has been trimmed, try trimming with the bottom right most pixel color
+            if (!trimmedAny && trimXStart == 0)
+                trimColor = colors[colors.Length - 1];
+            else
+                trimmedAny = true;
+
+            int trimXEnd = TrimRight(widthIn, colors, trimColor, trimYStart, trimYEnd);
+
+            // if nothing has been trimmed, return a clone of the input texture
+            if (!trimmedAny && trimXEnd == tex.Width - 1)
+                return colors.ToTexture(widthIn, tex.GraphicsDevice);
+
+            int widthOut = trimXEnd - trimXStart + 1;
+            int heightOut = trimYEnd - trimYStart + 1;
+            Color[] colorsOut = new Color[widthOut * heightOut];
+
+            int indexOut = 0;
+            for (int yOut = 0; yOut < heightOut; yOut++)
+            {
+                for (int xOut = 0; xOut < widthOut; xOut++)
+                {
+                    int x = xOut + trimXStart;
+                    int y = yOut + trimYStart;
+                    int index = x + y * widthIn;
+                    colorsOut[indexOut] = colors[index];
+
+                    indexOut++;
+                }
+            }
+
+            return colorsOut.ToTexture(widthOut, tex.GraphicsDevice);
+        }
+
+        private static int TrimLeft(int widthIn, Color[] colors, Color trimColor, int trimYBegin, int trimYEnd)
+        {
+            int x;
+            for (x = 0; x < widthIn; x++)
+            {
+                for (int y = trimYBegin; y <= trimYEnd; y++)
+                {
+                    int i = x + y * widthIn;
+                    if (colors[i] != trimColor)
+                        return x;
+                }
+            }
+
+            return x;
+        }
+
+        private static int TrimRight(int widthIn, Color[] colors, Color trimColor, int trimYBegin, int trimYEnd)
+        {
+            int x;
+            for (x = widthIn - 1; x >= 0; x--)
+            {
+                for (int y = trimYBegin; y <= trimYEnd; y++)
+                {
+                    int i = x + y * widthIn;
+                    if (colors[i] != trimColor)
+                        return x;
+                }
+            }
+
+            return x;
+        }
+
         #region Drawing
 
         public static void Draw(this Texture2D _texture, SpriteBatch spriteBatch, Vector2 _position, Color? _color = null, Rectangle? _sourceRectangle = null, Vector2? _scale = null, float _rotation = 0f, SpriteEffects _effects = SpriteEffects.None, float? depth = null)
