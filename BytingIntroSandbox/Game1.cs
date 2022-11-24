@@ -12,6 +12,7 @@ namespace BytingIntroSandbox
     public class Game1 : _BaseGame
     {
         const bool forWebsite = true;
+        const int forWebsiteScale = 1;
 
         protected readonly GameSpeed updateSpeed, drawSpeed;
         protected IStuffDisposable gameStuff;
@@ -31,8 +32,8 @@ namespace BytingIntroSandbox
 
             if (forWebsite)
             {
-                graphics.PreferredBackBufferWidth = 600;
-                graphics.PreferredBackBufferHeight = 340;
+                graphics.PreferredBackBufferWidth = 600 * forWebsiteScale;
+                graphics.PreferredBackBufferHeight = 340 * forWebsiteScale;
             }
         }
 
