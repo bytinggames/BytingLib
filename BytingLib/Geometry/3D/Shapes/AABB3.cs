@@ -74,5 +74,10 @@ namespace BytingLib
         {
             return new Box3(Matrix.CreateScale(Size) * Matrix.CreateTranslation(Center));
         }
+
+        public Vector3 GetPos(Vector3 normalizedPosInside)
+        {
+            return Min + (Max - Min) * normalizedPosInside;
+        }
     }
 }

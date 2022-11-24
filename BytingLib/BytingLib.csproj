@@ -39,12 +39,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Drawing/3D/" />
+    <PackageReference Include="BytingGames.MonoGame.Framework.DesktopGL" Version="3.8.1.2-develop" />
+    <PackageReference Include="TextCopy" Version="6.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BytingGames.MonoGame.Framework.DesktopGL" Version="3.8.1.2-develop" />
-    <PackageReference Include="TextCopy" Version="6.1.0" />
+    <Folder Include="Drawing/3D/" />
   </ItemGroup>
 
 </Project>
