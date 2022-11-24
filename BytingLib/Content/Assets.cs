@@ -27,6 +27,13 @@ namespace BytingLib
             return sound;
         }
 
+        protected T Load<T>(Func<Ref<T>> loadFunc)
+        {
+            Ref<T> reference = loadFunc();
+            disposables.Add(reference);
+            return reference.Value;
+        }
+
         public void Dispose()
         {
             for (int i = disposables.Count - 1; i >= 0; i--)
