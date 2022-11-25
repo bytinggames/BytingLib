@@ -23,29 +23,22 @@ namespace BytingLib
         public delegate IDisposable CreateInputRecorder(StructSource<T> inputSource, string filePath);
         public delegate void PlayInput(StructSource<T> inputSource, string path, Action onFinish);
 
-        public enum State
-        {
-            None,
-            Playing,
-            Recording
-        }
-
-        public State CurrentState
+        public InputRecordingState CurrentState
         {
             get
             {
                 if (playing)
-                    return State.Playing;
+                    return InputRecordingState.Playing;
                 else if (recorder != null)
-                    return State.Recording;
+                    return InputRecordingState.Recording;
                 else
-                    return State.None;
+                    return InputRecordingState.None;
             }
         }
 
         public void ToggleRecording(string filePath)
         {
-            if (CurrentState == State.Recording)
+            if (CurrentState == InputRecordingState.Recording)
                 StopRecording();
             else
                 StartRecording(filePath);
@@ -64,7 +57,7 @@ namespace BytingLib
 
         public void TogglePlaying(string filePath)
         {
-            if (CurrentState == State.Playing)
+            if (CurrentState == InputRecordingState.Playing)
                 StopPlaying();
             else
                 StartPlaying(filePath);

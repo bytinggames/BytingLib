@@ -8,7 +8,7 @@
 
         public InputRecordingTriggerer(KeyInput devKeys, InputRecordingManager<T> inputRecordingManager, string inputRecordingDir)
         {
-            this.keys = devKeys;
+            keys = devKeys;
             this.inputRecordingManager = inputRecordingManager;
             this.inputRecordingDir = inputRecordingDir;
             if (inputRecordingDir != null)
