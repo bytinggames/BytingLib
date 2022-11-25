@@ -26,7 +26,7 @@ namespace BytingLib
                 getMouseState = mouseFiltered.GetState;
             }
 
-            stuff.Add(inputSource = new StructSource<FullInput>(() => new FullInput(getMouseState(), Keyboard.GetState(), GamePad.GetState(0), game.IsActivatedThisUpdate)));
+            stuff.Add(inputSource = new StructSource<FullInput>(() => new FullInput(getMouseState(), Keyboard.GetState(), GamePad.GetState(0), new MetaInputState(game.IsActivatedThisUpdate))));
             KeyInput _keys = new KeyInput(() => inputSource.Current.KeyState);
             stuff.Add(keys = _keys);
 #if DEBUG
@@ -34,7 +34,7 @@ namespace BytingLib
 #else
             stuff.Add(keysDev = new KeyInput(() => default));
 #endif
-            stuff.Add(mouse = new MouseInput(() => inputSource.Current.MouseState, () => inputSource.Current.IsActivatedThisUpdate));
+            stuff.Add(mouse = new MouseInput(() => inputSource.Current.MouseState, () => inputSource.Current.MetaState.IsActivatedThisUpdate));
             stuff.Add(gamePad = new GamePadInput(() => inputSource.Current.GamePadState));
             stuff.Add(inputRecordingManager = new InputRecordingManager<FullInput>(stuff, inputSource, CreateInputRecorder, PlayInput));
 

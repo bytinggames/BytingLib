@@ -8,14 +8,14 @@ namespace BytingLib
         public MouseState MouseState { get; }
         public KeyboardState KeyState { get; }
         public GamePadState GamePadState { get; }
-        public bool IsActivatedThisUpdate { get; }
+        public MetaInputState MetaState { get; }
 
-        public FullInput(MouseState mouseState, KeyboardState keyState, GamePadState gamePad, bool isActivatedThisUpdate)
+        public FullInput(MouseState mouseState, KeyboardState keyState, GamePadState gamePad, MetaInputState metaState)
         {
             MouseState = mouseState;
             KeyState = keyState;
             GamePadState = gamePad;
-            IsActivatedThisUpdate = isActivatedThisUpdate;
+            MetaState = metaState;
         }
     }
 }
