@@ -222,12 +222,12 @@ namespace BytingLib
             CollisionResult3 cr;
 
             // calculate distance to cylinder
-            cr = shape.DistanceTo(capsule.Cylinder, dir);
+            cr = shape.DistanceTo(capsule.AxisRadius, dir);
             // if collision is between both sphere origins, return it
             if (cr.ColPoint.HasValue)
             {
                 float dot = Vector3.Dot(cr.ColPoint.Value - capsule.Pos, Vector3.Normalize(capsule.SphereDistance));
-                if (dot >= 0f && dot <= 1f)
+                if (dot >= 0f && dot * dot <= capsule.SphereDistance.LengthSquared())
                     return cr;
             }
 
@@ -249,7 +249,7 @@ namespace BytingLib
             if (shape.CollidesWith(capsule.Sphere1))
                 return true;
 
-            Cylinder3 cylinder = new Cylinder3(capsule.Cylinder.Pos, capsule.SphereDistance, capsule.Radius);
+            Cylinder3 cylinder = new Cylinder3(capsule.AxisRadius.Pos, capsule.SphereDistance, capsule.Radius);
             if (cylinder.CollidesWith(shape))
                 return true;
 

@@ -7,7 +7,7 @@ namespace BytingLib
     {
         private Vector3 sphereDistance;
         public Sphere3[] Spheres { get; private set; }
-        public AxisRadius3 Cylinder { get; private set; }
+        public AxisRadius3 AxisRadius { get; private set; }
 
         public Capsule3(Vector3 pos, Vector3 sphereDistance, float radius)
         {
@@ -17,7 +17,7 @@ namespace BytingLib
                 new Sphere3(pos + sphereDistance, radius)
             };
 
-            Cylinder = new AxisRadius3(pos, Vector3.Zero /* will be set with SphereDistance */, radius);
+            AxisRadius = new AxisRadius3(pos, Vector3.Zero /* will be set with SphereDistance */, radius);
 
             SphereDistance = sphereDistance;
         }
@@ -29,7 +29,7 @@ namespace BytingLib
             get => Spheres[0].Pos;
             set
             {
-                Cylinder.Pos = Spheres[0].Pos = value;
+                AxisRadius.Pos = Spheres[0].Pos = value;
                 Spheres[1].Pos = value + SphereDistance;
             }
         }
@@ -48,7 +48,7 @@ namespace BytingLib
             {
                 sphereDistance = value;
                 Spheres[1].Pos = Pos + value;
-                Cylinder.Dir = Vector3.Normalize(sphereDistance);
+                AxisRadius.Dir = Vector3.Normalize(sphereDistance);
             }
         }
         /// <summary>Gets or sets the x-distance between the origin of both spheres.</summary>
@@ -59,7 +59,7 @@ namespace BytingLib
             {
                 sphereDistance.X = value;
                 Spheres[1].X = Pos.X + value;
-                Cylinder.Dir = Vector3.Normalize(sphereDistance);
+                AxisRadius.Dir = Vector3.Normalize(sphereDistance);
             }
         }
         /// <summary>Gets or sets the y-distance between the origin of both spheres.</summary>
@@ -70,7 +70,7 @@ namespace BytingLib
             {
                 sphereDistance.Y = value;
                 Spheres[1].Y = Pos.Y + value;
-                Cylinder.Dir = Vector3.Normalize(sphereDistance);
+                AxisRadius.Dir = Vector3.Normalize(sphereDistance);
             }
         }
         /// <summary>Gets or sets the z-distance between the origin of both spheres.</summary>
@@ -81,17 +81,17 @@ namespace BytingLib
             {
                 sphereDistance.Z = value;
                 Spheres[1].Z = Pos.Z + value;
-                Cylinder.Dir = Vector3.Normalize(sphereDistance);
+                AxisRadius.Dir = Vector3.Normalize(sphereDistance);
             }
         }
-        public Vector3 DistanceN => Cylinder.Dir;
+        public Vector3 DistanceN => AxisRadius.Dir;
 
         public float Radius
         {
             get => Spheres[0].Radius;
             set
             {
-                Cylinder.Radius = Spheres[0].Radius = Spheres[1].Radius = value;
+                AxisRadius.Radius = Spheres[0].Radius = Spheres[1].Radius = value;
             }
         }
 
@@ -102,7 +102,7 @@ namespace BytingLib
         {
             Capsule3 clone = (Capsule3)MemberwiseClone();
 
-            clone.Cylinder = (AxisRadius3)Cylinder.Clone();
+            clone.AxisRadius = (AxisRadius3)AxisRadius.Clone();
             clone.Spheres = new Sphere3[]
             {
                 (Sphere3)Sphere0.Clone(),
