@@ -211,30 +211,6 @@ namespace BytingLib.Intro
                     }
                 }
             }
-
-            Rect bytingGamesRect = Rect.FromPoints(data.Teeth.Take(16).SelectMany(f => f.Vertices))!;
-            center = bytingGamesRect.GetCenter();
-            center.X += 200;
-            for (int i = 0; i < 16; i++)
-            {
-                for (int j = 0; j < data.Teeth[i].Vertices.Count; j++)
-                {
-                    Vector2 dist = data.Teeth[i].Vertices[j] - center;
-                    data.Teeth[i].Vertices[j] += dist * 0.3f;
-                }
-            }
-
-            bytingGamesRect = Rect.FromPoints(data.Teeth.Skip(16).SelectMany(f => f.Vertices))!;
-            center = bytingGamesRect.GetCenter();
-            center.X -= 200;
-            for (int i = 16; i < data.Teeth.Count; i++)
-            {
-                for (int j = 0; j < data.Teeth[i].Vertices.Count; j++)
-                {
-                    Vector2 dist = data.Teeth[i].Vertices[j] - center;
-                    data.Teeth[i].Vertices[j] += dist * 0.3f;
-                }
-            }
         }
 
         public Texture2D DrawOnMyOwn(SpriteBatch spriteBatch, Int2 size, Color colorFG)
