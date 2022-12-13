@@ -91,9 +91,9 @@ namespace BytingIntroSandbox
             // correct premultiplied alpha
             for (int i = 0; i < colors.Length; i++)
             {
-                colors[i].R = 255;
-                colors[i].G = 255;
-                colors[i].B = 255;
+                colors[i].R = 0;
+                colors[i].G = 0;
+                colors[i].B = 0;
             }
 
             tex = colors.ToTexture(tex.Width, tex.GraphicsDevice);
