@@ -12,7 +12,7 @@ namespace BytingIntroSandbox
     public class Game1 : _BaseGame
     {
         const bool forWebsite = true;
-        const int forWebsiteScale = 1; // 4 to convert to svg
+        const int forWebsiteScale = 4; // 4 to convert to svg
 
         protected readonly GameSpeed updateSpeed, drawSpeed;
         protected IStuffDisposable gameStuff;

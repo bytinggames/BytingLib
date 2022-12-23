@@ -52,10 +52,12 @@ namespace BytingLib.Intro
 
         public void Draw(SpriteBatch spriteBatch, float scale, Color color)
         {
-            const float defaultLineThickness = 8f; // 6 previously. 8 for the website
-            const float minLineThickness = 1f;
-            const float defaultShadowThickness = defaultLineThickness + 9f;
-            const float thickerThickness = 16f; // 12 previously. 16 for the website
+            const float thicknessScale = 1.3f;
+
+            const float defaultLineThickness = 8f * thicknessScale; // 6 previously. 8 for the website
+            const float minLineThickness = 1f * thicknessScale;
+            const float defaultShadowThickness = defaultLineThickness + 9f * thicknessScale;
+            const float thickerThickness = 16f * thicknessScale; // 12 previously. 16 for the website
 
             float lineThickness = defaultLineThickness;
             float displayedThickness = lineThickness * scale;
