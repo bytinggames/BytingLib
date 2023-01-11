@@ -54,7 +54,7 @@ namespace BuildTemplates
                 foreach (var folder in folders)
                 {
                     folderProperties += "\t" + $"public _{folder.Value.name} {folder.Value.name} {{ get; }}" + endl;
-                    folderConstruct += "\t\t" + $"{folder.Value.name} = new _{folder.Value.name}(collector);" + endl;
+                    folderConstruct += "\t\t" + $"{folder.Value.name} = new _{folder.Value.name}(collector, disposables);" + endl;
                     classes += "\t" + folder.Value.Print(contentDirectory + folder.Value.name, tabs + "\t") + endl;
                 }
 
@@ -69,10 +69,11 @@ public class {className}
 {folderProperties}
     
     protected readonly IContentCollector collector;
-
-    public {className}(IContentCollector collector)
+    protected readonly DisposableContainer disposables;
+    public {className}(IContentCollector collector, DisposableContainer disposables)
     {{
         this.collector = collector;
+        this.disposables = disposables;
 {folderConstruct}
     }}
 
@@ -161,12 +162,12 @@ public class {className}
 
                 if (extension == "ani")
                 {
-                    customPrint = $"public Animation {ToVariableName(name)}Ani => collector.UseAnimation(\"{{0}}{name}\");";
+                    customPrint = $"public Animation {ToVariableName(name)}Ani => disposables.Use(collector.UseAnimation(\"{{0}}{name}\"));";
                 }
                 else
                 if (extension == "txt")
                 {
-                    customPrint = $"public Ref<string> {ToVariableName(name)}Txt => collector.Use<string>(\"{{0}}{_name}\");";
+                    customPrint = $"public Ref<string> {ToVariableName(name)}Txt => disposables.Use(collector.Use<string>(\"{{0}}{_name}\"));";
                 }
                 else
                     assetType = AssetTypes.Convert(extension)!;
@@ -179,7 +180,7 @@ public class {className}
                 else
                 {
                     string VarName = AssetTypes.Extensions[assetType].VarName;
-                    return $"public Ref<{assetType}> {ToVariableName(name)}{VarName} => collector.Use<{assetType}>(\"{contentDirectory + name}\");";
+                    return $"public Ref<{assetType}> {ToVariableName(name)}{VarName} => disposables.Use(collector.Use<{assetType}>(\"{contentDirectory + name}\"));";
                 }
             }
 

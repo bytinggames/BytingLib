@@ -4,7 +4,7 @@
     {
         protected readonly List<IDisposable> disposables = new List<IDisposable>();
 
-        protected T Use<T>(T disposable) where T : IDisposable
+        public T Use<T>(T disposable) where T : IDisposable
         {
             disposables.Add(disposable);
             return disposable;
