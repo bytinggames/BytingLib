@@ -13,7 +13,7 @@ namespace BytingLib
         protected readonly MouseInput mouse;
         protected readonly Creator creator;
 
-        public GamePrototype(GameWrapper g, GraphicsDeviceManager graphics) : base(g, graphics)
+        public GamePrototype(GameWrapper g) : base(g)
         {
             updateSpeed = new GameSpeed(g.TargetElapsedTime);
             drawSpeed = new GameSpeed(g.TargetElapsedTime);

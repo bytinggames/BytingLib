@@ -1,0 +1,33 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.IO" #>
+<#@ output extension=".meta" #>
+
+<#
+	const string CSPROJ = [TODO: set project file here, example: "MyCoolGame.csproj"];
+
+	Stopwatch sw = new Stopwatch();
+	sw.Start();
+
+	// get BytingLib location
+    string csproj = File.ReadAllText(CSPROJ);
+    int index = csproj.IndexOf(@"\BytingLib\BytingLib.csproj");
+    const string include = "<ProjectReference Include=\"";
+    int start = csproj.LastIndexOf(include, index) + include.Length;
+    string path = csproj.Substring(start, index - start);
+	path = Path.Combine(path, "BytingLib", "Build", "BuildTemplates", "Debug", "net6.0", "BuildTemplates.exe");
+
+	// Run BuildTemplates.exe
+    var p = new ProcessStartInfo(path);
+    p.CreateNoWindow = true;
+    p.WindowStyle = ProcessWindowStyle.Hidden;
+	p.Arguments = "FastMonoGameBuild";
+    var process = Process.Start(p);
+	process.WaitForExit();
+	
+	sw.Stop();
+	string output = "Seconds it took to generate the content: " + sw.ElapsedMilliseconds / 1000f;
+#>
+
+<#= output #>

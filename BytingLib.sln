@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BytingIntroSandbox", "Bytin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildTemplates", "BuildTemplates\BuildTemplates.csproj", "{92704BFD-3806-41F4-A101-AF3CA9B76CDA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildTemplates.Test", "BuildTemplates.Test\BuildTemplates.Test.csproj", "{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{92704BFD-3806-41F4-A101-AF3CA9B76CDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92704BFD-3806-41F4-A101-AF3CA9B76CDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92704BFD-3806-41F4-A101-AF3CA9B76CDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

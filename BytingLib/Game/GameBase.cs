@@ -15,7 +15,7 @@ namespace BytingLib
         protected readonly ContentManagerRawPipe contentRawPipe;
         protected readonly IContentCollector contentCollector;
 
-        public GameBase(GameWrapper g, GraphicsDeviceManager graphics)
+        public GameBase(GameWrapper g)
         {
             gDevice = g.GraphicsDevice;
             g.Window.AllowUserResizing = true;
@@ -42,7 +42,7 @@ namespace BytingLib
 #else
 		bool realFullscreen = true;
 #endif
-            windowManager = new WindowManager(realFullscreen, g.Window, graphics);
+            windowManager = new WindowManager(realFullscreen, g.Window, g.Graphics);
         }
 
         public abstract void UpdateActive(GameTime gameTime);
