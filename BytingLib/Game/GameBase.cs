@@ -8,32 +8,32 @@ namespace BytingLib
 {
     public abstract class GameBase : DisposableContainer, IGameBase
     {
-        protected readonly GraphicsDevice gDevice;
+        public readonly GraphicsDevice GraphicsDevice;
         protected readonly SpriteBatch spriteBatch;
         protected readonly HotReloadContent hotReloadContent;
-        protected readonly WindowManager windowManager;
+        public readonly WindowManager WindowManager;
         protected readonly ContentManagerRawPipe contentRawPipe;
-        protected readonly IContentCollector contentCollector;
+        public readonly IContentCollector ContentCollector;
         protected readonly GraphicsDeviceManager graphics;
 
         protected readonly Action Exit;
 
         public GameBase(GameWrapper g)
         {
-            gDevice = g.GraphicsDevice;
+            GraphicsDevice = g.GraphicsDevice;
             graphics = g.Graphics;
             g.Window.AllowUserResizing = true;
             Exit = g.Exit;
 
-            spriteBatch = new SpriteBatch(gDevice);
+            spriteBatch = new SpriteBatch(GraphicsDevice);
             disposables.Add(spriteBatch);
 
             contentRawPipe = Use(new ContentManagerRawPipe(new ContentManagerRaw(g.Services, "Content")));
-            contentCollector = new ContentCollector(contentRawPipe);
+            ContentCollector = new ContentCollector(contentRawPipe);
 
 #if DEBUG
             hotReloadContent = new HotReloadContent(g.Services,
-                contentCollector,
+                ContentCollector,
                 Path.Combine("..", "..", "..", "Content"));
             contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
 #else
@@ -47,7 +47,7 @@ namespace BytingLib
 #else
 		bool realFullscreen = true;
 #endif
-            windowManager = new WindowManager(realFullscreen, g.Window, g.Graphics);
+            WindowManager = new WindowManager(realFullscreen, g.Window, g.Graphics);
         }
 
         public abstract void UpdateActive(GameTime gameTime);
@@ -59,7 +59,7 @@ namespace BytingLib
         {
             // draw black blend to hint to the user, that the window isn't active
             spriteBatch.Begin();
-            spriteBatch.DrawRectangle(new Rect(0, 0, gDevice.Viewport.Width, gDevice.Viewport.Height), Color.Black * 0.25f);
+            spriteBatch.DrawRectangle(new Rect(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.Black * 0.25f);
             spriteBatch.End();
         }
 
