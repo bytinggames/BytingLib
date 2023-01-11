@@ -117,7 +117,7 @@ namespace BytingLib
                 }
             }
 
-            string contentTempFile = Path.Combine(modContentDir, "Content.mgcbtemp");
+            string contentTempFile = Path.Combine(modContentDir, "Content.mgcb.tmp");
 
             File.WriteAllText(contentTempFile, cmd);
 
