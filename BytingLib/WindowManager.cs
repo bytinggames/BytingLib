@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace BytingLib
@@ -23,6 +24,10 @@ namespace BytingLib
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+#if WINDOWS
+        string windowCaption = Process.GetCurrentProcess().ProcessName;
+#endif
 
         public WindowManager(bool realFullscreen, GameWindow window, GraphicsDeviceManager graphics)
         {
@@ -134,7 +139,8 @@ namespace BytingLib
             return new Int2(GetViewportWidth(), GetViewportHeight());
         }
 
-        public void MaximizeWindow(string windowCaption)
+        /// <summary>Only supported on Windows</summary>
+        public void MaximizeWindow()
         {
 #if WINDOWS
             IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);

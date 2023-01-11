@@ -26,6 +26,17 @@ namespace BytingLib
 
             keys = new KeyInput(Keyboard.GetState);
             mouse = new MouseInput(Mouse.GetState, g.IsActivatedThisFrame);
+
+            InitWindowAndGraphics();
+        }
+
+        protected virtual void InitWindowAndGraphics()
+        {
+            // enable vsync for disabling stuttering, which probably appears mostly in window mode
+            graphics.SynchronizeWithVerticalRetrace = false;
+            graphics.ApplyChanges();
+            // maximize window
+            windowManager.MaximizeWindow();
         }
 
         public override void UpdateActive(GameTime gameTime)

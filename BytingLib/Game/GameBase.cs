@@ -14,11 +14,16 @@ namespace BytingLib
         protected readonly WindowManager windowManager;
         protected readonly ContentManagerRawPipe contentRawPipe;
         protected readonly IContentCollector contentCollector;
+        protected readonly GraphicsDeviceManager graphics;
+
+        protected readonly Action Exit;
 
         public GameBase(GameWrapper g)
         {
             gDevice = g.GraphicsDevice;
+            graphics = g.Graphics;
             g.Window.AllowUserResizing = true;
+            Exit = g.Exit;
 
             spriteBatch = new SpriteBatch(gDevice);
             disposables.Add(spriteBatch);
