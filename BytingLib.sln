@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildTemplates", "BuildTemp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildTemplates.Test", "BuildTemplates.Test\BuildTemplates.Test.csproj", "{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmptyGame", "EmptyGame\EmptyGame.csproj", "{144476BC-8B7C-48A3-AAB7-234850B3CDE0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,10 +39,6 @@ Global
 		{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{144476BC-8B7C-48A3-AAB7-234850B3CDE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{144476BC-8B7C-48A3-AAB7-234850B3CDE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{144476BC-8B7C-48A3-AAB7-234850B3CDE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{144476BC-8B7C-48A3-AAB7-234850B3CDE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
