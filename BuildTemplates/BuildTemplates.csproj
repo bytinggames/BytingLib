@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
-    <BaseOutputPath>..\BytingLib\Build\BuildTemplates</BaseOutputPath>
+    <BaseOutputPath>../BytingLib/Build/BuildTemplates</BaseOutputPath>
   </PropertyGroup>
 
 </Project>
