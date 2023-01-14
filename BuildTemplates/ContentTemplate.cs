@@ -284,7 +284,9 @@ public class {className}
 
         private static void LookIntoDirRecursive(string contentPath, string currentPath, Folder root)
         {
-            foreach (var file in Directory.EnumerateFiles(currentPath))
+            var files = Directory.GetFiles(currentPath).OrderBy(f => f);
+
+            foreach (var file in files)
             {
                 string ext = Path.GetExtension(file);
                 ext = ext[1..];
@@ -297,7 +299,8 @@ public class {className}
                 root.Insert(localAssetPath);
             }
 
-            foreach (var dir in Directory.EnumerateDirectories(currentPath))
+            var dirs = Directory.GetDirectories(currentPath).OrderBy(f => f);
+            foreach (var dir in dirs)
             {
                 string dirName = Path.GetFileName(dir);
                 if (dirName != "bin" && dirName != "obj")
