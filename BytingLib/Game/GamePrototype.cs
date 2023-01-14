@@ -8,24 +8,24 @@ namespace BytingLib
 {
     public abstract class GamePrototype : GameBase
     {
-        public readonly GameSpeed UpdateSpeed, DrawSpeed;
-        public readonly KeyInput Keys;
-        public readonly MouseInput Mouse;
-        public readonly Creator Creator;
+        protected readonly GameSpeed updateSpeed, drawSpeed;
+        protected readonly KeyInput keys;
+        protected readonly MouseInput mouse;
+        protected readonly Creator creator;
 
         public GamePrototype(GameWrapper g) : base(g)
         {
-            UpdateSpeed = new GameSpeed(g.TargetElapsedTime);
-            DrawSpeed = new GameSpeed(g.TargetElapsedTime);
+            updateSpeed = new GameSpeed(g.TargetElapsedTime);
+            drawSpeed = new GameSpeed(g.TargetElapsedTime);
 
             var converters = new Dictionary<Type, Func<string, object>>()
             {
                 { typeof(Color), str => ColorExtension.HexToColor(str) }
             };
-            Creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, null, typeof(MarkupShortcutAttribute), converters);
+            creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, null, typeof(MarkupShortcutAttribute), converters);
 
-            Keys = new KeyInput(Keyboard.GetState);
-            Mouse = new MouseInput(Microsoft.Xna.Framework.Input.Mouse.GetState, g.IsActivatedThisFrame);
+            keys = new KeyInput(Keyboard.GetState);
+            mouse = new MouseInput(Microsoft.Xna.Framework.Input.Mouse.GetState, g.IsActivatedThisFrame);
 
             InitWindowAndGraphics();
         }
@@ -36,25 +36,25 @@ namespace BytingLib
             graphics.SynchronizeWithVerticalRetrace = false;
             graphics.ApplyChanges();
             // maximize window
-            WindowManager.MaximizeWindow();
+            windowManager.MaximizeWindow();
         }
 
         public override void UpdateActive(GameTime gameTime)
         {
-            UpdateSpeed.OnRefresh(gameTime);
+            updateSpeed.OnRefresh(gameTime);
 
-            Keys.Update();
-            Mouse.Update();
+            keys.Update();
+            mouse.Update();
 
-            if (Keys.F11.Pressed)
-                WindowManager.ToggleFullscreen();
-            if (Keys.Tab.Pressed)
-                WindowManager.SwapScreen();
+            if (keys.F11.Pressed)
+                windowManager.ToggleFullscreen();
+            if (keys.Tab.Pressed)
+                windowManager.SwapScreen();
         }
 
         public override void DrawActive(GameTime gameTime)
         {
-            DrawSpeed.OnRefresh(gameTime);
+            drawSpeed.OnRefresh(gameTime);
         }
 
         public override void DrawInactiveOnce()
