@@ -39,6 +39,14 @@ namespace BuildTemplates
                 folder.Insert(localPath);
             }
 
+
+                const string endl = "\r\n";
+                public const string tab = "    ";
+		static string Endl(string? existingString)
+		{
+			return (existingString?.Length > 0 ? endl : "");
+		}
+		
             public string Print(string contentDirectory, string tabs)
             {
                 if (!string.IsNullOrEmpty(contentDirectory))
@@ -49,40 +57,31 @@ namespace BuildTemplates
                 string assets = "";
                 string classes = "";
 
-                string endl = "\r\n";
 
                 foreach (var folder in folders)
                 {
-                    folderProperties += "\t" + $"public _{folder.Value.name} {folder.Value.name} {{ get; }}" + endl;
-                    folderConstruct += "\t\t" + $"{folder.Value.name} = new _{folder.Value.name}(collector, disposables);" + endl;
-                    classes += "\t" + folder.Value.Print(contentDirectory + folder.Value.name, tabs + "\t") + endl;
+                    folderProperties += endl + tab + $"public _{folder.Value.name} {folder.Value.name} {{ get; }}";
+                    folderConstruct += endl + tab + tab + $"{folder.Value.name} = new _{folder.Value.name}(collector, disposables);";
+                    classes += endl + tab + folder.Value.Print(contentDirectory + folder.Value.name, tabs);
                 }
 
                 foreach (var file in files)
                 {
-                    assets += "\t" + file.Print(contentDirectory) + endl;
+                    assets += endl + tab + file.Print(contentDirectory);
                 }
 
-                string output = $@"
-public class {className}
-{{
-{folderProperties}
-    
-    protected readonly IContentCollector collector;
-    protected readonly DisposableContainer disposables;
-    public {className}(IContentCollector collector, DisposableContainer disposables)
-    {{
-        this.collector = collector;
-        this.disposables = disposables;
-{folderConstruct}
-    }}
-
-{assets}
-     
-{classes}
-}}
-";
-                return output.Replace("\n", "\n" + tabs);
+                string output = $@"public class {className}
+{{{folderProperties}
+{tab}protected readonly IContentCollector collector;
+{tab}protected readonly DisposableContainer disposables;
+{tab}public {className}(IContentCollector collector, DisposableContainer disposables)
+{tab}{{
+{tab}{tab}this.collector = collector;
+{tab}{tab}this.disposables = disposables;{folderConstruct}
+{tab}}}{assets}{classes}
+}}";
+                return output.Replace("\r\n", "\n") // make consistent among OSs
+                	.Replace("\n", "\n" + tabs); // indent
             }
 
             public void GetFilesRecursively(List<File> allFiles)
@@ -115,7 +114,6 @@ public class {className}
                 if (!string.IsNullOrEmpty(contentDirectory))
                     contentDirectory += "/";
 
-                string endl = "\r\n";
                 string references = "";
                 string assets = "";
 
@@ -273,9 +271,9 @@ public class {className}
 
             LookIntoDirRecursive(contentPath, contentPath, root);
 
-            string output = root.Print("", "");
+            string output = root.Print("", Folder.tab);
 
-            output = Regex.Replace(output, "\n( |\t)*\r", "");
+            //output = Regex.Replace(output, "\n( |\t)*\r", "");
 
             string mgcbOutput = root.PrintMGCB("");
 
