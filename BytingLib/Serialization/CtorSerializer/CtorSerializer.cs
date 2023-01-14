@@ -20,7 +20,7 @@ namespace BytingLib.Serialization
 
     public class CtorSerializer
     {
-        private readonly Map<Type, int> typeIDs = new Map<Type, int>();
+        private readonly Map<Type, int> typeIDs = new();
         private readonly Dictionary<Type, object> autoParams;
 
         public CtorSerializer(Dictionary<Type, int> typeIDs, object[] autoParams)
@@ -40,35 +40,33 @@ namespace BytingLib.Serialization
 
         public void Serialize(BytingWriter bw, List<ICtorSerializable> entities)
         {
-            using (MemoryStream ms = new MemoryStream())
+            using MemoryStream ms = new();
+            BytingWriter temp = new(ms, bw.WriteTypes, bw.TypeToID);
+            long tempPos = 0;
+
+            bw.Write(entities.Count);
+            for (int i = 0; i < entities.Count; i++)
             {
-                BytingWriter temp = new(ms, bw.WriteTypes, bw.TypeToID);
-                long tempPos = 0;
-        
-                bw.Write(entities.Count);
-                for (int i = 0; i < entities.Count; i++)
+                bw.Write(typeIDs.Forward[entities[i].GetType()]);
+                var dict = entities[i].Serialize().Data;
+                bw.Write(dict.Length);
+                foreach (var item in dict)
                 {
-                    bw.Write(typeIDs.Forward[entities[i].GetType()]);
-                    var dict = entities[i].Serialize().Data;
-                    bw.Write(dict.Length);
-                    foreach (var item in dict)
-                    {
-                        bw.Write(item.ID);
-                    }
-                    foreach (var item in dict)
-                    {
-                        temp.WriteObject(item.Value, item.Value.GetType());
-                        bw.Write((int)(temp.BaseStream.Position - tempPos)); // object length
-                        tempPos = temp.BaseStream.Position;
-                        bw.WriteObject(item.Value, item.Value.GetType()); // TODO: copy from temp buffer instead?
-                    }
+                    bw.Write(item.ID);
+                }
+                foreach (var item in dict)
+                {
+                    temp.WriteObject(item.Value, item.Value.GetType());
+                    bw.Write((int)(temp.BaseStream.Position - tempPos)); // object length
+                    tempPos = temp.BaseStream.Position;
+                    bw.WriteObject(item.Value, item.Value.GetType()); // TODO: copy from temp buffer instead?
                 }
             }
         }
 
         public List<ICtorSerializable> Deserialize(BytingReader br)
         {
-            List<ICtorSerializable> entities = new List<ICtorSerializable>();
+            List<ICtorSerializable> entities = new();
 
             int entityCount = br.ReadInt32();
             for (int entityIndex = 0; entityIndex < entityCount; entityIndex++)

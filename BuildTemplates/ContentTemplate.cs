@@ -16,7 +16,7 @@ namespace BuildTemplates
 
             public Dictionary<string, Folder> folders = new();
 
-            public List<File> files = new List<File>();
+            public List<File> files = new();
 
             public Folder(string name, string? customClassName = null)
             {
@@ -40,13 +40,8 @@ namespace BuildTemplates
                 folder.Insert(localPath);
             }
 
-
-                const string endl = "\r\n";
-                public const string tab = "    ";
-        static string Endl(string? existingString)
-        {
-            return (existingString?.Length > 0 ? endl : "");
-        }
+            const string endl = "\r\n";
+            public const string tab = "    ";
         
             public string Print(string contentDirectory, string tabs)
             {
@@ -147,10 +142,8 @@ namespace BuildTemplates
             private readonly string fullName;
             private readonly string name;
             private readonly string extension;
-
             private readonly string? assetType;
-
-            private string? customPrint;
+            private readonly string? customPrint;
 
             public File(string _name)
             {
@@ -273,7 +266,7 @@ namespace BuildTemplates
             if (!contentPath.EndsWith("/"))
                 contentPath += "/";
 
-            Folder root = new Folder("Content", "ContentLoader");
+            Folder root = new("Content", "ContentLoader");
 
             LookIntoDirRecursive(contentPath, contentPath, root);
 
