@@ -10,11 +10,9 @@ namespace BytingLib
 
     public static class IStuffDisposableExtension
     {
-        // TODO: this method performance could be improved by directly removing from index inside the implementation of the interface
-        public static void RemoveAt(this IStuffDisposable stuff, int index)
+        public static object RemoveAt(this IStuffDisposable stuff, int index)
         {
-            object obj = stuff.AllThings[index];
-            stuff.Remove(obj);
+            return stuff.AllThings.RemoveAtGet(index);
         }
     }
 }

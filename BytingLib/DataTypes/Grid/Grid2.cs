@@ -193,8 +193,6 @@ namespace BytingLib
 
         public IEnumerable<Int2> GetCoords(Vector2 rayOrigin, Vector2 rayDirection)
         {
-            // TODO: get level bounds
-
             float x = rayOrigin.X / FieldSize;
             float y = rayOrigin.Y / FieldSize;
             float dx = rayDirection.X;

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace BytingLib
 {
+    [Obsolete]
     public static class _BaseGameFactory
     {
         public static IStuffDisposable CreateDefaultGame(_BaseGame game, GraphicsDeviceManager graphics, string? inputRecordingDir, out KeyInput keys, out MouseInput mouse, out GamePadInput gamePad, out WindowManager windowManager, bool mouseWithActivationClick = true)

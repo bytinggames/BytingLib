@@ -11,6 +11,7 @@ namespace BytingLib
     /// <item>Default Initialization (graphics, spriteBatch, rawContent, contentCollector, hotReloadContent)</item>
     /// </list>
     /// </summary>
+    [Obsolete]
     public abstract class _BaseGame : Game
     {
         protected readonly GraphicsDeviceManager graphics;

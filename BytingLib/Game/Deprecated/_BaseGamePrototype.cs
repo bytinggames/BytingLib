@@ -3,10 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
-    /// <summary>
-    /// TODO: replace this class by a class that is fully initialized when constructed. It can't inherit BaseGame then
-    /// </summary>
-    /// <typeparam name="Ingame"></typeparam>
+    [Obsolete]
     public abstract class _BaseGamePrototype<Ingame> : _BaseGame where Ingame : class, IStuffDisposable
     {
         protected readonly GameSpeed updateSpeed, drawSpeed;

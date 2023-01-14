@@ -16,18 +16,19 @@ namespace BytingLib
 
         public IList<IShape> Shapes { get; set; }
 
-        public ShapeCollection()
-        {
-            Shapes = new List<IShape>();
-        }
-
         public ShapeCollection(params IShape[] shapes)
         {
+            if (shapes.Length == 0)
+                throw new BytingException("ShapeCollection contains 0 shapes. That should never happen.");
+
             Shapes = shapes;
         }
 
         public ShapeCollection(Vector2 pos, params IShape[] shapes)
         {
+            if (shapes.Length == 0)
+                throw new BytingException("ShapeCollection contains 0 shapes. That should never happen.");
+
             Shapes = shapes;
             Move(pos);
         }
@@ -64,7 +65,7 @@ namespace BytingLib
         public Rect GetBoundingRect()
         {
             if (Shapes.Count == 0)
-                return new Rect(float.NaN, float.NaN, float.NaN, float.NaN); // TODO: not sure if that is a good idea...? but what is the alternative?
+                throw new BytingException("ShapeCollection contains 0 shapes. That should never happen.");
             return Rect.FromRects(Shapes.Select(f => f.GetBoundingRect()))!;
         }
     }

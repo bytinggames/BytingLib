@@ -419,7 +419,7 @@ namespace BytingLib
 
             Vector2 pos = _anchor.pos;
 
-            if (roundPositionTo != 0) // TODO: improve this correction, by calculating the anchor by yourself
+            if (roundPositionTo != 0) // TODO: improve this correction, by calculating the anchor by yourself (the actual position that is drawn to)
             {
                 if (_rotation == 0)
                 {

@@ -12,6 +12,7 @@ namespace BuildTemplates.Test
             string contentPath = @"D:\Documents\Visual Studio 2017\Projects\FastMonoGameBuild\FastMonoGameBuild\Content\";
             (string output, string mgcbOutput) = ContentTemplate.Create(contentPath);
             Assert.IsNotNull(output);
+            Assert.IsNotNull(mgcbOutput);
         }
     }
 }
