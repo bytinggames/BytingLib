@@ -42,11 +42,11 @@ namespace BuildTemplates
 
                 const string endl = "\r\n";
                 public const string tab = "    ";
-		static string Endl(string? existingString)
-		{
-			return (existingString?.Length > 0 ? endl : "");
-		}
-		
+        static string Endl(string? existingString)
+        {
+            return (existingString?.Length > 0 ? endl : "");
+        }
+        
             public string Print(string contentDirectory, string tabs)
             {
                 if (!string.IsNullOrEmpty(contentDirectory))
@@ -81,7 +81,7 @@ namespace BuildTemplates
 {tab}}}{assets}{classes}
 }}";
                 return output.Replace("\r\n", "\n") // make consistent among OSs
-                	.Replace("\n", "\n" + tabs); // indent
+                    .Replace("\n", "\n" + tabs); // indent
             }
 
             public void GetFilesRecursively(List<File> allFiles)
