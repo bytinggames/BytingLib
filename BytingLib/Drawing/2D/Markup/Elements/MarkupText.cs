@@ -44,7 +44,7 @@ namespace BytingLib.Markup
         private void DrawChildInner(MarkupSettings settings)
         {
             settings.Font.Value.Draw(settings.SpriteBatch, Text, settings.Anchor, settings.TextColor, settings.Scale, settings.Rotation, settings.Effects,
-                settings.TextUnderline, settings.TextOutline);
+                settings.TextUnderline, settings.TextOutline, settings.RoundPositionTo);
         }
 
         public override string ToString()

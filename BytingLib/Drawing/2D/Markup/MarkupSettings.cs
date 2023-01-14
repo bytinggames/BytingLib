@@ -22,6 +22,7 @@ namespace BytingLib.Markup
         public float VerticalSpaceBetweenLines { get; set; }
         public Outline? TextOutline { get; set; }
         public Underline? TextUnderline { get; set; }
+        public float RoundPositionTo { get; set; } = 1f;
 
         public class Line : ICloneable
         {
