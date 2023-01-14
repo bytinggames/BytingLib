@@ -76,12 +76,12 @@ namespace BytingLib
                 foreach (string sp in searchPatterns)
                     files.AddRange(Directory.GetFiles(Path.Combine(sourceContentDir, folder), sp, SearchOption.AllDirectories));
             }
-            void GetFile(string file)
-            {
-                file = Path.Combine(sourceContentDir, file);
-                if (File.Exists(file))
-                    files.Add(file);
-            }
+            //void GetFile(string file)
+            //{
+            //    file = Path.Combine(sourceContentDir, file);
+            //    if (File.Exists(file))
+            //        files.Add(file);
+            //}
 
             return files.ToArray();
         }

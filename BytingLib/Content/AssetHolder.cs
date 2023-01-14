@@ -8,7 +8,6 @@ namespace BytingLib
         private readonly string assetName;
         private readonly Action<string> onUnusedTo0References;
         private readonly List<Ref<T>> assetReferences = new List<Ref<T>>();
-        Ref<T>? assetRef;
 
         public AssetHolder(T asset, string assetName, Action<string> onUnusedTo0References)
         {

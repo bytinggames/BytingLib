@@ -82,7 +82,7 @@ namespace BytingLib.Serialization
                 var ctors = t.GetConstructors();
 
                 int cIndex;
-                ParameterInfo[] parameters = null;
+                ParameterInfo[]? parameters = null;
                 List<byte?> ctorParamIDs = new();
                 for (cIndex = 0; cIndex < ctors.Length; cIndex++)
                 {

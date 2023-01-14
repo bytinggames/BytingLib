@@ -376,7 +376,7 @@ namespace BytingLib
             if (rectA == null)
                 return true;
 
-            return rectA.X == rectB.X
+            return rectA.X == rectB!.X
                 && rectA.Y == rectB.Y
                 && rectA.Width == rectB.Width
                 && rectA.Height == rectB.Height;

@@ -47,7 +47,7 @@ namespace BytingLib
             if (triggerOnLoad && asset != null)
                 TriggerOnLoad(assetName, asset.Value);
 
-            return asset;
+            return asset!;
         }
 
         public void TryTriggerOnLoad<T>(string assetName, T asset)
