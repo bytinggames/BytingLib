@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
@@ -147,7 +148,7 @@ namespace BuildTemplates
             private readonly string name;
             private readonly string extension;
 
-            private readonly string assetType;
+            private readonly string? assetType;
 
             private string? customPrint;
 
@@ -177,8 +178,13 @@ namespace BuildTemplates
                     return string.Format(customPrint, contentDirectory);
                 else
                 {
-                    string VarName = AssetTypes.Extensions[assetType].VarName;
-                    return $"public Ref<{assetType}> {ToVariableName(name)}{VarName} => disposables.Use(collector.Use<{assetType}>(\"{contentDirectory + name}\"));";
+                    if (assetType != null)
+                    {
+                        string VarName = AssetTypes.Extensions[assetType].VarName;
+                        return $"public Ref<{assetType}> {ToVariableName(name)}{VarName} => disposables.Use(collector.Use<{assetType}>(\"{contentDirectory + name}\"));";
+                    }
+                    else
+                        return "";
                 }
             }
 
