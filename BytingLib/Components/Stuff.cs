@@ -118,6 +118,7 @@ namespace BytingLib
             return (list as List<T>)!.AsReadOnly();
         }
 
+        /// <summary>Takes care of altering the collection while in the ForEach loop.</summary>
         public void ForEach<T>(Action<T> doAction)
         {
             IReadOnlyCollection<T> list = Get<T>();

@@ -56,14 +56,14 @@ namespace BytingLib
         }
         public static Vector2 NextVector2(this Random rand, Vector2 minValue, Vector2 maxValue)
         {
-            return new Vector2(rand.NextSingle(minValue.X, maxValue.Y),
-                               rand.NextSingle(minValue.X, maxValue.Y));
+            return new Vector2(rand.NextSingle(minValue.X, maxValue.X),
+                               rand.NextSingle(minValue.Y, maxValue.Y));
         }
         public static Vector3 NextVector3(this Random rand, Vector3 minValue, Vector3 maxValue)
         {
-            return new Vector3(rand.NextSingle(minValue.X, maxValue.Y),
-                               rand.NextSingle(minValue.X, maxValue.Y),
-                               rand.NextSingle(minValue.X, maxValue.Y));
+            return new Vector3(rand.NextSingle(minValue.X, maxValue.X),
+                               rand.NextSingle(minValue.Y, maxValue.Y),
+                               rand.NextSingle(minValue.Z, maxValue.Z));
         }
         public static Vector2 NextVector2Sphere(this Random rand)
         {
