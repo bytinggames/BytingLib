@@ -9,54 +9,60 @@ using System.Threading.Tasks;
 
 namespace BytingLib
 {
-    public partial class Localization
+    public partial class Localization : ILocaChanger
     {
         private const char separator = ';';
         private const char textMarker = '"';
         private const char adder = '.';
         private const char nestedLevel = '\t';
-
+        private string csvFile;
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
 
-        private OrderedDictionary reloadSubscriptions = new();
+        public event Action? OnLocaReload;
 
-        public string LanguageKey { get; private set; } = "en";
+        public string LanguageKey { get; private set; }
 
-        string GetDisplayName()
+        public Localization(string csvFile, string languageKey)
         {
-            //var displayName = Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
-            return "en"; // currently only en is supported
+            this.csvFile = csvFile;
+            LanguageKey = languageKey;
+            Initialize();
         }
 
-        public Localization(string csvText)
+        private string[] CsvFileToLines(string file)
         {
-            Initialize(GetDisplayName(), CsvTextToLines(csvText));
+            return File.ReadAllLines(file, Encoding.UTF8); // file.Replace("\r", "").Split(new char[] { '\n' });
         }
 
-        private string[] CsvTextToLines(string text)
+        public void Reload()
         {
-            return text.Replace("\r", "").Split(new char[] { '\n' });
+            Initialize();
         }
 
-        public void Reload(string fromPath)
+        public void Reload(string languageKey)
         {
-            Initialize(GetDisplayName(), File.ReadAllLines(fromPath));
+            LanguageKey = languageKey;
+            Reload();
         }
 
-        public void ReloadFromText(string text)
+        public void Reload(string csvFile, string languageKey)
         {
-            Initialize(GetDisplayName(), CsvTextToLines(text));
+            this.csvFile = csvFile;
+            LanguageKey = languageKey;
+            Reload();
         }
 
-        private void Initialize(string languageKey, string[] localizationLines)
+        private void Initialize()
         {
-            InitializeInner(languageKey, localizationLines);
+            InitializeInner();
 
             TriggerReloadSubs();
         }
 
-        private void InitializeInner(string languageKey, string[] localizationLines)
+        private void InitializeInner()
         {
+            string[] localizationLines = CsvFileToLines(csvFile);
+
             if (dictionary != null)
                 dictionary.Clear();
             else
@@ -80,7 +86,7 @@ namespace BytingLib
 
                 languageIndex++;
                 string language = head.Substring(i, nextI - i);
-                if (language == languageKey)
+                if (language == LanguageKey)
                 {
                     foundLanguage = true;
                     break;
@@ -88,7 +94,7 @@ namespace BytingLib
             }
 
             if (!foundLanguage)
-                throw new InvalidDataException("language " + languageKey + " not found");
+                throw new InvalidDataException("language " + LanguageKey + " not found");
 
             List<StackItem> keyStack = new List<StackItem>();
             keyStack.Add(new StackItem("NONE"));
@@ -392,22 +398,11 @@ namespace BytingLib
             return dictionary.ContainsKey(key);
         }
 
-        public void SubscribeToReload(Action initText)
-        {
-            reloadSubscriptions.Add(initText, initText);
-        }
-
-        public void UnsubscribeToReload(Action initText)
-        {
-            reloadSubscriptions.Remove(initText);
-        }
-
         private void TriggerReloadSubs()
         {
-            foreach (var action in reloadSubscriptions.Values)
-            {
-                ((Action)action)();
-            }
+            OnLocaReload?.Invoke();
         }
+
+        public Dictionary<string, string> GetDictionary() => dictionary;
     }
 }

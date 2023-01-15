@@ -16,7 +16,7 @@ namespace BytingLib
         string sourceContentDir;
 
         /// <summary>Either localization.csv or any font changed.</summary>
-        public event Action? OnTextReload;
+        public event Action<string>? OnTextReload;
 
         readonly Dictionary<string, List<string>> dependencies = new Dictionary<string, List<string>>();
 
@@ -65,6 +65,7 @@ namespace BytingLib
             Get("Sounds", "*.ogg|*.wav");
             Get("Textures", "*.png|*.jpg|*.jpeg|*.ani");
             Get("", "*.txt|*.csv|*.json|*.xml|*.ini|*.config");
+            GetFile("Loca.loca");
 
             InitEffectDependencies(files);
 
@@ -76,12 +77,12 @@ namespace BytingLib
                 foreach (string sp in searchPatterns)
                     files.AddRange(Directory.GetFiles(Path.Combine(sourceContentDir, folder), sp, SearchOption.AllDirectories));
             }
-            //void GetFile(string file)
-            //{
-            //    file = Path.Combine(sourceContentDir, file);
-            //    if (File.Exists(file))
-            //        files.Add(file);
-            //}
+            void GetFile(string file)
+            {
+                file = Path.Combine(sourceContentDir, file);
+                if (File.Exists(file))
+                    files.Add(file);
+            }
 
             return files.ToArray();
         }
@@ -146,8 +147,6 @@ namespace BytingLib
 
             AddDependencies(changes);
 
-            bool textChanged = false;
-
             if (contentBuilder.Build(changes.ModifiedOrCreated().Select(f => f.Path).ToArray()))//, changes.Deleted.Select(f => f.LocalPath).ToArray());
             {
                 foreach (var file in changes.ModifiedOrCreated())
@@ -164,14 +163,15 @@ namespace BytingLib
                 }
             }
 
-            if (textChanged)
-                OnTextReload?.Invoke();
-
             void Iterate(DirectorySupervisor.FileStamp file, bool deleted)
             {
                 Type? assetType = ExtensionToAssetType.Convert(file.LocalPath);
                 if (assetType == null)
+                {
+                    if (Path.GetExtension(file.LocalPath) == ".loca")
+                        OnTextReload?.Invoke(Path.Combine(TempContentRaw.RootDirectory, file.LocalPath));
                     return;
+                }
 
                 ReloadIfLoadedFromType(assetType, file.AssetName, deleted);
 

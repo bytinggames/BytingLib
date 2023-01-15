@@ -11,14 +11,15 @@ namespace BuildTemplates
     {
         public static void Main(string[] args)
         {
+            string nameSpace = args.Length == 0 ? "NAMESPACE" : args[0];
+
             var projectPath = Environment.CurrentDirectory;
             string contentPath = Path.Combine(projectPath, "Content");
-            (string code, string mgcbOutput) = ContentTemplate.Create(contentPath + "/");
+            (string code, string mgcbOutput, string locaCode) = ContentTemplate.Create(contentPath + "/", nameSpace);
 
             string mgcbFile = Path.Combine(contentPath, "Content.Generated.mgcb");
             File.WriteAllText(mgcbFile, mgcbOutput);
 
-            string nameSpace = args.Length == 0 ? "NAMESPACE" : args[0];
 
             code = $@"// THIS IS A GENERATED FILE, DO NOT EDIT!
 // generate it by saving the file '../_ContentGenerate.tt'. It should be located next to the *.csproj file.
@@ -35,6 +36,8 @@ namespace {nameSpace}
             string contentFile = Path.Combine(contentPath, "ContentLoader.Generated.cs");
             File.WriteAllText(contentFile, code);
 
+            string locaCodeFile = Path.Combine(contentPath, "Loca.Generated.cs");
+            File.WriteAllText(locaCodeFile, locaCode);
         }
     }
 }

@@ -1,18 +1,21 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace BuildTemplates.Test
 {
     [TestClass]
     public class ContentTemplateTest
     {
+        // TODO: make independent of global path. include own content here inside the BuildTemplates.Test project (and namespaces below)
+        const string contentPath = @"D:\Documents\Visual Studio 2017\Projects\BytingLibGame\BytingLibGame\Content\";
+
         [TestMethod]
         public void TestBuild()
         {
-            // TODO: make independent of global path. include own content here inside the BuildTemplates.Test project
-            string contentPath = @"D:\Documents\Visual Studio 2017\Projects\FastMonoGameBuild\FastMonoGameBuild\Content\";
-            (string output, string mgcbOutput) = ContentTemplate.Create(contentPath);
+            (string output, string mgcbOutput, string locaCode) = ContentTemplate.Create(contentPath, "BytingLibGame");
             Assert.IsNotNull(output);
             Assert.IsNotNull(mgcbOutput);
+            Assert.IsNotNull(locaCode);
         }
     }
 }

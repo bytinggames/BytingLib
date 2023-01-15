@@ -11,7 +11,7 @@ namespace BuildTemplates
             { "Effect", ("Fx", new[] { "fx" } )},
             { "string", ("Txt", new[] { "json", "ini", "config", "txt" } )},
             { "MyModel", ("Model", new[] { "fbx" }) },
-            { "Animation", ("Ani", new[] { "ani" }) },
+            { "Animation", ("Ani", new[] { "ani" }) }
         };
 
         public static string? Convert(string extension)

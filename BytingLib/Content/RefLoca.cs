@@ -11,13 +11,13 @@
         {
             this.key = key;
             this.loca = loca;
-            loca.SubscribeToReload(InitText);
+            loca.OnLocaReload += InitText;
             Text = GetText();
         }
 
         public void Dispose()
         {
-            loca.UnsubscribeToReload(InitText);
+            loca.OnLocaReload -= InitText;
         }
 
         protected virtual void InitText()

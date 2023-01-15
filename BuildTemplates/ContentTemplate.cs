@@ -261,34 +261,38 @@ namespace BuildTemplates
             }
         }
 
-        public static (string output, string mgcbOutput) Create(string contentPath)
+        public static (string output, string mgcbOutput, string locaCode) Create(string contentPath, string nameSpace)
         {
             if (!contentPath.EndsWith("/"))
                 contentPath += "/";
 
             Folder root = new("Content", "ContentLoader");
 
-            LookIntoDirRecursive(contentPath, contentPath, root);
+            List<string> locaFiles = new();
+            LookIntoDirRecursive(contentPath, contentPath, root, ref locaFiles);
 
             string output = root.Print("", Folder.tab);
 
-            //output = Regex.Replace(output, "\n( |\t)*\r", "");
-
             string mgcbOutput = root.PrintMGCB("");
 
-            return (output, mgcbOutput);
+            string locaCode = LocaGenerator.Generate(nameSpace, locaFiles.ToArray());
+
+            return (output, mgcbOutput, locaCode);
         }
 
-        private static void LookIntoDirRecursive(string contentPath, string currentPath, Folder root)
+        private static void LookIntoDirRecursive(string contentPath, string currentPath, Folder root, ref List<string> locaFiles)
         {
             var files = Directory.GetFiles(currentPath).OrderBy(f => f);
-
             foreach (var file in files)
             {
                 string ext = Path.GetExtension(file);
                 ext = ext[1..];
                 if (!AssetTypes.Extensions.Values.Any(f => f.Extensions.Any(g => g == ext)))
+                {
+                    if (ext == "loca")
+                        locaFiles.Add(file);
                     continue;
+                }
 
                 string localAssetPath = file[contentPath.Length..];
                 localAssetPath = localAssetPath.Replace('\\', '/');
@@ -301,7 +305,7 @@ namespace BuildTemplates
             {
                 string dirName = Path.GetFileName(dir);
                 if (dirName != "bin" && dirName != "obj")
-                    LookIntoDirRecursive(contentPath, dir, root);
+                    LookIntoDirRecursive(contentPath, dir, root, ref locaFiles);
             }
         }
     }

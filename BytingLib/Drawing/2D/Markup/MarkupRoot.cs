@@ -8,11 +8,23 @@ namespace BytingLib.Markup
 {
     public class MarkupRoot : IDisposable
     {
-        MarkupCollection Root { get; }
+        MarkupCollection root;
 
+        Action? unsubscribeOnDispose;
+
+        /// <summary>Don't forget to dispose!</summary>
         public MarkupRoot(Creator creator, string text)
         {
-            Root = new MarkupCollection(creator, text);
+            root = new MarkupCollection(creator, text);
+        }
+
+        /// <summary>Don't forget to dispose!</summary>
+        public MarkupRoot(Creator creator, Func<string> text, ILocaChanger loca)
+        {
+            root = new MarkupCollection(creator, text());
+            Action a = () => root = new MarkupCollection(creator, text());
+            loca.OnLocaReload += a;
+            unsubscribeOnDispose += () => loca.OnLocaReload -= a;
         }
 
         public void Draw(MarkupSettings _settings)
@@ -111,7 +123,7 @@ namespace BytingLib.Markup
 
         public IEnumerable<IEnumerable<ILeaf>> GetLinesOfLeaves(MarkupSettings settings)
         {
-            IEnumerator<ILeaf> enumerator = Root.IterateOverLeaves(settings).GetEnumerator();
+            IEnumerator<ILeaf> enumerator = root.IterateOverLeaves(settings).GetEnumerator();
             
             while (enumerator.MoveNext())
             {
@@ -135,7 +147,7 @@ namespace BytingLib.Markup
 
         public override string ToString()
         {
-            return string.Join(" ", Root.Children.Select(f => f.ToString()));
+            return string.Join(" ", root.Children.Select(f => f.ToString()));
         }
 
         public Rect GetRectangle(MarkupSettings markupSettings)
@@ -164,7 +176,10 @@ namespace BytingLib.Markup
 
         public void Dispose()
         {
-            Root.Dispose();
+            unsubscribeOnDispose?.Invoke();
+            unsubscribeOnDispose = null;
+
+            root.Dispose();
         }
     }
 }
