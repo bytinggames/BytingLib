@@ -58,24 +58,46 @@ namespace BytingLib
         private string[] GetFiles()
         {
             List<string> files = new List<string>();
-            Get("Effects", "*.fx|*.fxh");
-            Get("Fonts", "*.xnb|*.spritefont");
-            Get("Models", "*.fbx");
-            Get("Music", "*.ogg");
-            Get("Sounds", "*.ogg|*.wav");
-            Get("Textures", "*.png|*.jpg|*.jpeg|*.ani");
-            Get("", "*.txt|*.csv|*.json|*.xml|*.ini|*.config");
+            //GetFromFolder("Effects", "*.fx|*.fxh");
+            //GetFromFolder("Fonts", "*.xnb|*.spritefont");
+            //GetFromFolder("Models", "*.fbx");
+            //GetFromFolder("Music", "*.ogg");
+            //GetFromFolder("Sounds", "*.ogg|*.wav");
+            //GetFromFolder("Textures", "*.png|*.jpg|*.jpeg|*.ani");
+            //GetFromFolder("", "*.txt|*.csv|*.json|*.xml|*.ini|*.config");
+            Get("*.fx|*.fxh|*.xnb|*.spritefont|*.fbx|*.ogg|*.wav|*.png|*.jpg|*.jpeg|*.ani|*.txt|*.csv|*.json|*.xml|*.ini|*.config");
             GetFile("Loca.loca");
 
             InitEffectDependencies(files);
 
-            void Get(string folder, string searchPattern)
+            //void GetFromFolder(string folder, string searchPattern)
+            //{
+            //    if (!Directory.Exists(Path.Combine(sourceContentDir, folder)))
+            //        return;
+            //    string[] searchPatterns = searchPattern.Split('|');
+            //    foreach (string sp in searchPatterns)
+            //    {
+            //        files.AddRange(Directory.GetFiles(Path.Combine(sourceContentDir, folder), sp, SearchOption.AllDirectories));
+            //    }
+            //}
+
+            void Get(string searchPattern)
             {
-                if (!Directory.Exists(Path.Combine(sourceContentDir, folder)))
+                if (!Directory.Exists(sourceContentDir))
                     return;
                 string[] searchPatterns = searchPattern.Split('|');
                 foreach (string sp in searchPatterns)
-                    files.AddRange(Directory.GetFiles(Path.Combine(sourceContentDir, folder), sp, SearchOption.AllDirectories));
+                {
+                    files.AddRange(Directory.GetFiles(sourceContentDir, sp, SearchOption.TopDirectoryOnly));
+
+                    foreach (string dir in Directory.GetDirectories(sourceContentDir))
+                    {
+                        string? dirName = Path.GetFileName(dir);
+                        if (dirName == null || dirName == "bin" || dirName == "obj")
+                            continue;
+                        files.AddRange(Directory.GetFiles(dir, sp, SearchOption.AllDirectories));
+                    }
+                }
             }
             void GetFile(string file)
             {
