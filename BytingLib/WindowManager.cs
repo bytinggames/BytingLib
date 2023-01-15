@@ -49,12 +49,12 @@ namespace BytingLib
             {
                 graphics.PreferredBackBufferWidth = windowSizeBeforeFullscreen.X;
                 graphics.PreferredBackBufferHeight = windowSizeBeforeFullscreen.Y;
-                
+
                 if (realFullscreen)
                     graphics.ToggleFullScreen();
                 else
                     Window.IsBorderless = false;
-                
+
                 Window.Position = new Point(
                     (GetScreenWidth() - windowSizeBeforeFullscreen.X) / 2,
                     (GetScreenHeight() - windowSizeBeforeFullscreen.Y) / 2);
@@ -74,11 +74,17 @@ namespace BytingLib
 
                 graphics.PreferredBackBufferWidth = GetScreenWidth();
                 graphics.PreferredBackBufferHeight = GetScreenHeight();
-                
+
                 if (!realFullscreen)
-                   graphics.ApplyChanges();
-		else
-              	    graphics.ToggleFullScreen();
+                    graphics.ApplyChanges();
+                else
+                {
+#if !WINDOWS
+                    // this is required on linux, otherwise the screen would just turn black and freeze
+                    graphics.ApplyChanges();
+#endif
+                    graphics.ToggleFullScreen();
+                }
             }
         }
 
