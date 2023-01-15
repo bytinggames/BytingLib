@@ -245,6 +245,14 @@ namespace BuildTemplates
 /importer:FbxImporter
 /processor:MyModelProcessor";
                         break;
+
+                        // copy
+                    case "ani":
+                        return $@"
+#begin {contentDirectory}{fullName}
+/copy:{contentDirectory}{fullName}
+";
+
                     default:
                         return "# couldn't generate mgcb code for file " + fullName;
                 }
@@ -255,15 +263,12 @@ namespace BuildTemplates
 /build:{contentDirectory}{fullName}
 ";
 
-//                return $@"#begin {fullName}
-///copy:{fullName}
-//";
             }
         }
 
         public static (string output, string mgcbOutput, string locaCode) Create(string contentPath, string nameSpace)
         {
-            if (!contentPath.EndsWith("/"))
+            if (!contentPath.EndsWith("/") && !contentPath.EndsWith("\\"))
                 contentPath += "/";
 
             Folder root = new("Content", "ContentLoader");

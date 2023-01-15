@@ -2,6 +2,7 @@
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.Diagnostics" #>
 <#@ import namespace="System.IO" #>
+<#@ import namespace="System.Runtime.InteropServices" #>
 <#@ output extension=".meta" #>
 
 <#
@@ -15,12 +16,43 @@
 
 	// get BytingLib location
     string csproj = File.ReadAllText(csprojName);
-    int index = csproj.IndexOf(@"\BytingLib\BytingLib.csproj");
+    int index = csproj.IndexOf(@"/BytingLib/BytingLib.csproj");
+    
     const string include = "<ProjectReference Include=\"";
     int start = csproj.LastIndexOf(include, index) + include.Length;
     string path = csproj.Substring(start, index - start);
-	path = Path.Combine(path, "BytingLib", "Build", "BuildTemplates", "Debug", "net6.0", "BuildTemplates.exe");
+	string buildTemplatesProjectPath = Path.Combine(path, "BuildTemplates");
+	path = Path.Combine(buildTemplatesProjectPath, "bin", "Debug", "net6.0", "BuildTemplates");
 
+	bool windows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+	if (windows)
+		path += ".exe";
+	if (!File.Exists(path))
+	{
+		// build BuildTemplates
+		Process buildProcess;
+		string command = "dotnet build \"" + buildTemplatesProjectPath + "\"";
+		if (windows)
+		{
+			var p1 = new ProcessStartInfo("CMD.exe");
+			p1.CreateNoWindow = true;
+			p1.WindowStyle = ProcessWindowStyle.Hidden;
+			p1.Arguments = "/C " + command;
+			buildProcess = Process.Start(p1);
+		}
+		else
+		{
+            buildProcess = new System.Diagnostics.Process ();
+            buildProcess.StartInfo.FileName = "/bin/bash";
+            buildProcess.StartInfo.Arguments = "-c \" " + command + " \"";
+            buildProcess.StartInfo.UseShellExecute = false; 
+            buildProcess.StartInfo.RedirectStandardOutput = true;
+            buildProcess.Start ();
+		}
+		buildProcess.WaitForExit();
+	}
+	
+	
 	// Run BuildTemplates.exe
     var p = new ProcessStartInfo(path);
     p.CreateNoWindow = true;
