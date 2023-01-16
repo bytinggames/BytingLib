@@ -44,8 +44,4 @@
     <PackageReference Include="TextCopy" Version="6.1.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Drawing/3D/" />
-  </ItemGroup>
-
 </Project>

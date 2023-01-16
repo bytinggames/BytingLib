@@ -2,9 +2,9 @@
 {
     public struct MetaInputState
     {
-        public MetaInputState(bool isActiveThisUpdate)
+        public MetaInputState(bool isActivedThisUpdate)
         {
-            IsActivatedThisUpdate = isActiveThisUpdate;
+            IsActivatedThisUpdate = isActivedThisUpdate;
         }
 
         public bool IsActivatedThisUpdate { get; internal set; }

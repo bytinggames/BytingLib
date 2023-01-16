@@ -99,5 +99,41 @@ namespace BytingLib
             }
         }
 
+        public static void Render<V>(this Effect effect, V[] vertices, int vertexCount, int[] indices,
+            int indexCount, PrimitiveType primitiveType = PrimitiveType.TriangleList, Texture2D? texture = null) where V : struct, IVertexType
+        {
+            int primitiveCount;
+            switch (primitiveType)
+            {
+                case PrimitiveType.TriangleList:
+                    primitiveCount = indexCount / 3;
+                    break;
+                case PrimitiveType.TriangleStrip:
+                    primitiveCount = indexCount - 2;
+                    break;
+                case PrimitiveType.LineList:
+                    primitiveCount = indexCount / 2;
+                    break;
+                case PrimitiveType.LineStrip:
+                    primitiveCount = indexCount - 1;
+                    break;
+                case PrimitiveType.PointList:
+                    primitiveCount = indexCount;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            if (primitiveCount <= 0)
+                return;
+
+            foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                if (texture != null)
+                    effect.GraphicsDevice.Textures[0] = texture;
+                effect.GraphicsDevice.DrawUserIndexedPrimitives(primitiveType, vertices, 0, vertexCount, indices, 0, primitiveCount);
+            }
+        }
     }
 }

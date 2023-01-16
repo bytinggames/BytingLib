@@ -1,7 +1,6 @@
 ﻿using BytingLib.Creation;
 using BytingLib.Markup;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace BytingLib
@@ -25,7 +24,7 @@ namespace BytingLib
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, null, typeof(MarkupShortcutAttribute), converters);
 
             keys = new KeyInput(Keyboard.GetState);
-            mouse = new MouseInput(Microsoft.Xna.Framework.Input.Mouse.GetState, g.IsActivatedThisFrame);
+            mouse = new MouseInput(Mouse.GetState, g.IsActivatedThisFrame);
 
             InitWindowAndGraphics();
         }
