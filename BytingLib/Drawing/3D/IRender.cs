@@ -2,6 +2,6 @@
 {
     public interface IRender
     {
-        public void Render(TriBatch batch);
+        public void Render(MeshBatch batch);
     }
 }

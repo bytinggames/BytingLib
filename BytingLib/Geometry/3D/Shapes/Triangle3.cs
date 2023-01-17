@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
@@ -83,7 +84,7 @@ namespace BytingLib
             set => Vertices[2] = Vertices[0] + value;
         }
 
-        public Vector3 N => Vector3.Normalize(Vector3.Cross(DirA, DirB));
+        public Vector3 N => Vector3.Normalize(Vector3.Cross(DirB, DirA));
 
         public Type GetCollisionType() => typeof(Triangle3);
 
@@ -115,6 +116,24 @@ namespace BytingLib
         public override int GetHashCode()
         {
             return HashCode.Combine(Vertices);
+        }
+
+        public void Render(PrimitiveBatcher batcher, Color color)
+        {
+            var b = batcher.TriBatcher;
+
+            b.EnsureAdditionalArrayCapacity(3, 3);
+
+            for (int i = 0; i < 3; i++)
+                b.indices[b.indicesIndex++] = b.verticesIndex + i;
+
+            Vector3 normal = N;
+            for (int i = 0; i < 3; i++)
+            {
+                b.vertices[b.verticesIndex].Position = Vertices[i];
+                b.vertices[b.verticesIndex].Color = color;
+                b.vertices[b.verticesIndex++].Normal = normal;
+            }
         }
     }
 }

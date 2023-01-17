@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace BytingLib
 {
-    public class TriBatch
+    public class MeshBatch
     {
         struct TriangleBatchKey
         {
@@ -18,42 +18,42 @@ namespace BytingLib
             }
         }
 
-        Dictionary<TriangleBatchKey, TriBatcher> batches = new();
+        Dictionary<TriangleBatchKey, MeshBatcher> batches = new();
 
         RenderSettings? defaultRenderSettings;
 
         public void Render<V>(V[] vertices, int[] indices, RenderSettingsOverride settings) where V : struct, IVertexType
         {
-            TriBatcher? batch = GetBatcher<V>(settings);
-            ((TriBatcher<V>)batch!).Add(vertices, indices);
+            MeshBatcher? batch = GetBatcher<V>(settings);
+            ((MeshBatcher<V>)batch!).Add(vertices, indices);
         }
         public void Render<V>(V[] vertices, RenderSettingsOverride settings) where V : struct, IVertexType
         {
-            TriBatcher? batch = GetBatcher<V>(settings);
-            ((TriBatcher<V>)batch!).Add(vertices);
+            MeshBatcher? batch = GetBatcher<V>(settings);
+            ((MeshBatcher<V>)batch!).Add(vertices);
         }
         public void Render<V>(V[] vertices) where V : struct, IVertexType
         {
-            TriBatcher? batch = GetBatcher<V>(default(RenderSettingsOverride));
-            ((TriBatcher<V>)batch!).Add(vertices);
+            MeshBatcher? batch = GetBatcher<V>(default(RenderSettingsOverride));
+            ((MeshBatcher<V>)batch!).Add(vertices);
         }
         public void Render<V>(V[] vertices, int[] indices) where V : struct, IVertexType
         {
-            TriBatcher? batch = GetBatcher<V>(default(RenderSettingsOverride));
-            ((TriBatcher<V>)batch!).Add(vertices, indices);
+            MeshBatcher? batch = GetBatcher<V>(default(RenderSettingsOverride));
+            ((MeshBatcher<V>)batch!).Add(vertices, indices);
         }
 
-        public TriBatcher<V> GetBatcher<V>(RenderSettingsOverride settings) where V : struct, IVertexType
+        public MeshBatcher<V> GetBatcher<V>(RenderSettingsOverride settings) where V : struct, IVertexType
         {
             Type vertexType = typeof(V);
-            if (!batches.TryGetValue(new(settings, vertexType), out TriBatcher? batch))
+            if (!batches.TryGetValue(new(settings, vertexType), out MeshBatcher? batch))
             {
-                Type genericType = typeof(TriBatcher<>).MakeGenericType(typeof(V));
-                batch = (TriBatcher)Activator.CreateInstance(genericType)!;
+                Type genericType = typeof(MeshBatcher<>).MakeGenericType(typeof(V));
+                batch = (MeshBatcher)Activator.CreateInstance(genericType)!;
                 batches.Add(new(settings, vertexType), batch);
             }
 
-            return (TriBatcher<V>)batch;
+            return (MeshBatcher<V>)batch;
         }
 
         public void Begin(RenderSettings defaultRenderSettings)

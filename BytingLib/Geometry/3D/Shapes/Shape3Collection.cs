@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
@@ -109,6 +110,23 @@ namespace BytingLib
                 throw new Exception("empty shape collection cannot return a BoundingBox");
 
             return box;
+        }
+
+        public void Render(PrimitiveBatcher batcher, Color color)
+        {
+            if (ShapesEnabled == null)
+            {
+                for (int i = 0; i < Shapes.Count; i++)
+                    Shapes[i].Render(batcher, color);
+            }
+            else
+            {
+                for (int i = 0; i < Shapes.Count; i++)
+                {
+                    if (ShapesEnabled.Count <= i || ShapesEnabled[i])
+                        Shapes[i].Render(batcher, color);
+                }
+            }
         }
     }
 }

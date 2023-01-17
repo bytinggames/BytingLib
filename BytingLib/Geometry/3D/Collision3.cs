@@ -396,7 +396,7 @@ namespace BytingLib
         public static bool ColSphereTriangle(Sphere3 sphere, Triangle3 tri)
         {
             // check sphere vs triangle face
-            Vector3 dir = tri.N;
+            Vector3 dir = -tri.N; // negative, cause I swapped the normal of the tri
             CollisionResult3 cr = DistSpherePlane(sphere, tri.ToPlane(), dir);
 
             if (!cr.Distance.HasValue)
@@ -852,7 +852,7 @@ namespace BytingLib
                 int b = (a + 1) % 3;
                 int c = (a + 2) % 3;
                 Vector3 bc = triangle[c] - triangle[b];
-                Vector3 a_bc = Vector3.Normalize(Vector3.Cross(bc, triangle.N));
+                Vector3 a_bc = Vector3.Normalize(Vector3.Cross(triangle.N, bc));
                 float d = Vector3.Dot(a_bc, triangle[b] - triangle[a]);
 
                 float col_a = Vector3.Dot(colPoint - triangle[a], a_bc);
@@ -1275,7 +1275,7 @@ namespace BytingLib
             // to later determine where the collision happened on the triangle
             List<int> triToPolyIndex = new List<int>() { 0, 1, 2 };
 
-            float dot = Vector3.Dot(tri.N, axisRadius3.Dir);
+            float dot = Vector3.Dot(-tri.N, axisRadius3.Dir);
             if (dot < 0)
             {
                 // if the triangle faces into the other direction of the axis, swap vertices so that the triangle is still clockwisely defined

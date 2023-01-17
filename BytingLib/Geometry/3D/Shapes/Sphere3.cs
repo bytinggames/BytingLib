@@ -1,5 +1,5 @@
-﻿
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
@@ -27,6 +27,44 @@ namespace BytingLib
         {
             Vector3 r = new Vector3(Radius);
             return new BoundingBox(Pos - r, Pos + r);
+        }
+
+        public void Render(PrimitiveBatcher batcher, Color color)
+        {
+            var b = batcher.TriBatcher;
+
+            var v = Icosahedron.VerticesSub;
+            var ind = Icosahedron.IndicesSub;
+
+            b.EnsureAdditionalArrayCapacity(v.Length, ind.Length * 3);
+
+            for (int i = 0; i < ind.Length; i++)
+            {
+                b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][0];
+                b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][1];
+                b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][2];
+            }
+            for (int i = 0; i < v.Length; i++)
+                b.vertices[b.verticesIndex++] = new VertexPositionColorNormal(pos + v[i] * Radius, color, v[i]);
+        }
+
+        public void RenderSimple(PrimitiveBatcher batcher, Color color)
+        {
+            var b = batcher.TriBatcher;
+
+            var v = Icosahedron.Vertices;
+            var ind = Icosahedron.Indices;
+
+            b.EnsureAdditionalArrayCapacity(v.Length, ind.Length * 3);
+
+            for (int i = 0; i < ind.Length; i++)
+            {
+                b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][0];
+                b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][1];
+                b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][2];
+            }
+            for (int i = 0; i < v.Length; i++)
+                b.vertices[b.verticesIndex++] = new VertexPositionColorNormal(pos + v[i] * Radius, color, v[i]);
         }
     }
 }

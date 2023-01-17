@@ -9,6 +9,7 @@ namespace BytingLib
         public float Y { get; set; }
         public float Z { get; set; }
         public Type GetCollisionType();
+        public void Render(PrimitiveBatcher batcher, Color color);
     }
 
     public static class IShape3Extension
