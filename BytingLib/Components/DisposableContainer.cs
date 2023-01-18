@@ -2,7 +2,17 @@
 {
     public class DisposableContainer : IDisposable
     {
-        protected readonly List<IDisposable> disposables = new List<IDisposable>();
+        protected readonly List<IDisposable> disposables;
+
+        public DisposableContainer()
+        {
+            disposables = new List<IDisposable>();
+        }
+
+        public DisposableContainer(params IDisposable?[] disposables)
+        {
+            this.disposables = disposables.Where(f => f != null).ToList()!;
+        }
 
         public T Use<T>(T disposable) where T : IDisposable
         {

@@ -10,7 +10,8 @@ namespace BuildTemplates
             { "SoundEffect", ("Sfx", new[] { "wav", "mp3", "ogg" } )},
             { "Effect", ("Fx", new[] { "fx" } )},
             { "string", ("Txt", new[] { "json", "ini", "config", "txt" } )},
-            { "MyModel", ("Model", new[] { "fbx" }) },
+            { "Model", ("Model", new[] { "fbx" }) },
+            { "MyModel", ("Model", new[] { "myfbx" }) },
             { "Animation", ("Ani", new[] { "ani" }) }
         };
 

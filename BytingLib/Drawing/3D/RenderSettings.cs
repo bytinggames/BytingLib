@@ -48,17 +48,27 @@ namespace BytingLib
         public void Render<V>(V[] vertices, int vertexCount, int[] indices, int indexCount) 
             where V : struct, IVertexType
         {
-            Effect.Parameters["Color"].SetValue(Color.ToVector4());
+            ApplySettings<V>();
+            Effect.Render(vertices, vertexCount, indices, indexCount, PrimitiveType, Texture);
+        }
+
+        public void ApplySettingsToGraphicsDevice()
+        {
             Effect.GraphicsDevice.Textures[0] = Texture;
             Effect.GraphicsDevice.RasterizerState = Rasterizer;
             Effect.GraphicsDevice.SamplerStates[0] = SamplerState;
             Effect.GraphicsDevice.BlendState = BlendState;
             Effect.GraphicsDevice.DepthStencilState = DepthStencilState;
-            Effect.CurrentTechnique = Effect.Techniques["Render" + typeof(V).Name.Substring("VertexPosition".Length)];
-            Effect.Render(vertices, vertexCount, indices, indexCount, PrimitiveType, Texture);
         }
 
-        internal RenderSettings Clone()
+        public void ApplySettings<V>() where V : struct, IVertexType
+        {
+            ApplySettingsToGraphicsDevice();
+            Effect.Parameters["Color"].SetValue(Color.ToVector4());
+            Effect.CurrentTechnique = Effect.Techniques["Render" + typeof(V).Name.Substring("VertexPosition".Length)];
+        }
+
+        public RenderSettings Clone()
         {
             return (RenderSettings)MemberwiseClone();
         }
