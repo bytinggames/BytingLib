@@ -84,7 +84,7 @@ namespace BytingLib
                 return v - Pos2;
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color)
+        public void Render(PrimitiveBatcherOld batcher, Color color)
         {
             var b = batcher.LineBatcher;
 

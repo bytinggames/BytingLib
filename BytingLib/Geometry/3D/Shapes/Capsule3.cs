@@ -121,7 +121,7 @@ namespace BytingLib
             return box;
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color)
+        public void Render(PrimitiveBatcherOld batcher, Color color)
         {
             Sphere0.Render(batcher, color);
             Sphere1.Render(batcher, color);

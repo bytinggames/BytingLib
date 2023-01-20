@@ -127,7 +127,7 @@ namespace BytingLib
             yield return new Triangle3(corners[1], corners[0], corners[3]);
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color)
+        public void Render(PrimitiveBatcherOld batcher, Color color)
         {
             var b = batcher.TriBatcher;
 

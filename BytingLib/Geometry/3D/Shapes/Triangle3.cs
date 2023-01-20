@@ -118,7 +118,7 @@ namespace BytingLib
             return HashCode.Combine(Vertices);
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color)
+        public void Render(PrimitiveBatcherOld batcher, Color color)
         {
             var b = batcher.TriBatcher;
 

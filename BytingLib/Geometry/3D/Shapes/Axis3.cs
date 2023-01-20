@@ -41,7 +41,7 @@ namespace BytingLib
             return new BoundingBox(Pos - boundingSize, Pos + boundingSize);
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color)
+        public void Render(PrimitiveBatcherOld batcher, Color color)
         {
             var b = batcher.LineBatcher;
 

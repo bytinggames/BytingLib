@@ -27,17 +27,17 @@ namespace BytingLib
             return new BoundingBox(Pos, Pos);
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color)
+        public void Render(PrimitiveBatcherOld batcher, Color color)
         {
             Render(batcher, color, 1f);
         }
 
-        public void RenderCross(PrimitiveBatcher batcher, Color color)
+        public void RenderCross(PrimitiveBatcherOld batcher, Color color)
         {
             RenderCross(batcher, color, 3);
         }
 
-        public void RenderCross(PrimitiveBatcher batcher, Color color, float lineLength)
+        public void RenderCross(PrimitiveBatcherOld batcher, Color color, float lineLength)
         {
             float l = MathF.Pow(lineLength / 2f, 1f / 3f);
             // draw a cross
@@ -63,7 +63,7 @@ namespace BytingLib
             b.vertices[b.verticesIndex++] = new(Pos - new Vector3(l, l, -l), color);
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color, float radius)
+        public void Render(PrimitiveBatcherOld batcher, Color color, float radius)
         {
             new Sphere3(pos, radius).RenderSimple(batcher, color);
         }

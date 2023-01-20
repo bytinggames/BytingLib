@@ -29,7 +29,7 @@ namespace BytingLib
             return new BoundingBox(Pos - r, Pos + r);
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color)
+        public void Render(PrimitiveBatcherOld batcher, Color color)
         {
             var b = batcher.TriBatcher;
 
@@ -48,7 +48,7 @@ namespace BytingLib
                 b.vertices[b.verticesIndex++] = new VertexPositionColorNormal(pos + v[i] * Radius, color, v[i]);
         }
 
-        public void RenderSimple(PrimitiveBatcher batcher, Color color)
+        public void RenderSimple(PrimitiveBatcherOld batcher, Color color)
         {
             var b = batcher.TriBatcher;
 

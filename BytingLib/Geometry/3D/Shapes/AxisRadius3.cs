@@ -48,12 +48,12 @@ namespace BytingLib
             return new BoundingBox(Pos - boundingSize, Pos + boundingSize);
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color)
+        public void Render(PrimitiveBatcherOld batcher, Color color)
         {
             Render(batcher, color, -1000f, 1000f);
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color, float cylinderMin, float cylinderMax)
+        public void Render(PrimitiveBatcherOld batcher, Color color, float cylinderMin, float cylinderMax)
         {
             var b = batcher.TriBatcher;
 

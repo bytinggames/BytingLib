@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
-    public class PrimitiveBatcher
+    public class PrimitiveBatcherOld
     {
-        public PrimitiveBatcher(MeshBatcher<VertexPositionColorNormal> triBatcher, MeshBatcher<VertexPositionColor> lineBatcher)
+        public PrimitiveBatcherOld(MeshBatcher<VertexPositionColorNormal> triBatcher, MeshBatcher<VertexPositionColor> lineBatcher)
         {
             TriBatcher = triBatcher;
             LineBatcher = lineBatcher;

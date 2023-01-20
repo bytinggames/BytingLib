@@ -80,7 +80,7 @@ namespace BytingLib
             return Min + (Max - Min) * normalizedPosInside;
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color)
+        public void Render(PrimitiveBatcherOld batcher, Color color)
         {
             var b = batcher.TriBatcher;
 

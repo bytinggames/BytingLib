@@ -36,7 +36,7 @@ namespace BytingLib
                 , Vector3.Max(Pos + e, Pos + Length + e));
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color)
+        public void Render(PrimitiveBatcherOld batcher, Color color)
         {
             var b = batcher.TriBatcher;
 

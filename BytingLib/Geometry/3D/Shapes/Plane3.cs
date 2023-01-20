@@ -30,12 +30,12 @@ namespace BytingLib
             throw new NotImplementedException();
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color)
+        public void Render(PrimitiveBatcherOld batcher, Color color)
         {
             Render(batcher, color, 1000f);
         }
 
-        public void Render(PrimitiveBatcher batcher, Color color, float size)
+        public void Render(PrimitiveBatcherOld batcher, Color color, float size)
         {
             var b = batcher.TriBatcher;
 
