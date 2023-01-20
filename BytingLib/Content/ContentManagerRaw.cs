@@ -25,7 +25,7 @@ namespace BytingLib
             else
                 asset = ReadAsset<T>(assetName, null);
             
-            LoadedAssets.Add(assetName, asset);
+            LoadedAssets.TryAdd(assetName, asset);
             return asset;
         }
 
