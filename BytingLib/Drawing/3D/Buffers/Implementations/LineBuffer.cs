@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
-    class LineBuffer : MultiBuffer<VertexPosition>, IMultiBuffer<Line3>
+    class LineBuffer : RenderBuffer<VertexPosition>, IRenderBuffer<Line3>
     {
         public LineBuffer(GraphicsDevice gDevice)
             : base(gDevice, new VertexPosition[]

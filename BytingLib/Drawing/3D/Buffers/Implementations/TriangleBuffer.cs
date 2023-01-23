@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
-    class TriangleBuffer : MultiBuffer<VertexPositionNormal>, IMultiBuffer<Triangle3>
+    class TriangleBuffer : RenderBuffer<VertexPositionNormal>, IRenderBuffer<Triangle3>
     {
         public TriangleBuffer(GraphicsDevice gDevice)
             : base(gDevice, new VertexPositionNormal[]

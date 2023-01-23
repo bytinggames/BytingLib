@@ -4,7 +4,7 @@ namespace BytingLib
 {
     public class PrimitiveBatch : IDisposable
     {
-        private List<IMultiBuffer> buffers = new();
+        private List<IRenderBuffer> buffers = new();
         private DynamicVertexBuffer? InstanceBuffer;
         private readonly GraphicsDevice gDevice;
         private readonly int growBuffersBy;
@@ -33,7 +33,7 @@ namespace BytingLib
 
         private bool CanAdd() => begun;
 
-        private T AddBuffer<T>(T buffer) where T : IMultiBuffer
+        private T AddBuffer<T>(T buffer) where T : IRenderBuffer
         {
             buffers.Add(buffer);
             return buffer;
@@ -50,6 +50,16 @@ namespace BytingLib
 
         public void End(Effect effect)
         {
+            InnerEnd((instanceBuffer, b) => b.Draw(instanceBuffer, effect));
+        }
+
+        public void End(IShader shader)
+        {
+            InnerEnd((instanceBuffer, b) => b.Draw(instanceBuffer, shader));
+        }
+
+        private void InnerEnd(Action<DynamicVertexBuffer, IRenderBuffer> renderAction)
+        {
             if (!begun)
                 throw new BytingException("Begin() has not yet been called.");
 
@@ -62,7 +72,7 @@ namespace BytingLib
 
                 for (int i = 0; i < buffers.Count; i++)
                 {
-                    buffers[i].Draw(instanceBuffer, effect);
+                    renderAction(instanceBuffer, buffers[i]);
                 }
             }
             finally

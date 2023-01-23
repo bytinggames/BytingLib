@@ -5,17 +5,17 @@ namespace BytingLib
 {
     public class BufferWrapper<T>
     {
-        private IMultiBuffer<T>? _lineBuffer;
-        private readonly Func<IMultiBuffer<T>> setValue;
+        private IRenderBuffer<T>? _lineBuffer;
+        private readonly Func<IRenderBuffer<T>> setValue;
         private readonly Func<bool> canAdd;
 
-        public BufferWrapper(Func<IMultiBuffer<T>> setValue, Func<bool> canAdd)
+        public BufferWrapper(Func<IRenderBuffer<T>> setValue, Func<bool> canAdd)
         {
             this.setValue = setValue;
             this.canAdd = canAdd;
         }
 
-        private IMultiBuffer<T> Buffer => _lineBuffer ??= setValue();
+        private IRenderBuffer<T> Buffer => _lineBuffer ??= setValue();
         public void Draw(T t, Color color)
         {
             if (!canAdd())

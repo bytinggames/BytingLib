@@ -3,14 +3,15 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BytingLib
 {
-    public abstract class MultiBuffer<V> : IDisposable, IMultiBuffer where V : struct, IVertexType
+
+    public abstract class RenderBuffer<V> : IDisposable, IRenderBuffer where V : struct, IVertexType
     {
         VertexBuffer VertexBuffer;
         IndexBuffer IndexBuffer;
         SimpleArrayList<VertexInstanceTransformColor> Instances = new();
         private readonly GraphicsDevice gDevice;
 
-        public MultiBuffer(GraphicsDevice gDevice, V[] vertices, short[] indices)
+        public RenderBuffer(GraphicsDevice gDevice, V[] vertices, short[] indices)
         {
             VertexBuffer = new(gDevice, vertices.GetType().GetElementType(), vertices.Length, BufferUsage.WriteOnly);
             VertexBuffer.SetData(vertices);
@@ -56,6 +57,12 @@ namespace BytingLib
             }
 
             Clear();
+        }
+
+        public void Draw(DynamicVertexBuffer instanceBuffer, IShader shader)
+        {
+            shader.ApplyParameters();
+            Draw(instanceBuffer, shader.Effect);
         }
 
         public void Dispose()
