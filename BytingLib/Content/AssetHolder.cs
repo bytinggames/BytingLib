@@ -55,5 +55,13 @@ namespace BytingLib
 
             assetPointer.Value = newValue;
         }
+
+        internal void TryTriggerOnLoad()
+        {
+            for (int i = 0; i < assetReferences.Count; i++)
+            {
+                assetReferences[i].TriggerOnReload();
+            }
+        }
     }
 }

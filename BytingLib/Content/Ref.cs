@@ -5,6 +5,7 @@ namespace BytingLib
     {
         private readonly Pointer<T> pointerToValue;
         private readonly Action<Ref<T>>? onDispose;
+        public event Action<Ref<T>>? OnReload;
 
         public T Value => pointerToValue.Value!;
 
@@ -17,6 +18,11 @@ namespace BytingLib
         public void Dispose()
         {
             onDispose?.Invoke(this);
+        }
+
+        internal void TriggerOnReload()
+        {
+            OnReload?.Invoke(this);
         }
     }
 }

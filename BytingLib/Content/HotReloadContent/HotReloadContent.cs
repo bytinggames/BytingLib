@@ -247,6 +247,7 @@ namespace BytingLib
                     return;
                 assetHolder.Replace(newlyLoadedAsset);
                 content.TryTriggerOnLoad(assetName, newlyLoadedAsset!);
+                assetHolder.TryTriggerOnLoad();
             }
         }
 
