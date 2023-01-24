@@ -7,5 +7,6 @@ namespace BytingLib
         Effect Effect { get; }
 
         void ApplyParameters();
+        IDisposable UseTechnique(string technique);
     }
 }

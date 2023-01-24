@@ -5,9 +5,11 @@ namespace BytingLib
 {
     public abstract class Shader : IShaderTexWorld, IDisposable
     {
+        /// <summary>To change the current technique, use UseTechnique()</summary>
         protected readonly Ref<Effect> effect;
         protected readonly GraphicsDevice gDevice;
         protected Matrix view, projection;
+        private string currentTechnique;
 
         protected List<IEffectParameterStack> parameters = new();
 
@@ -22,10 +24,13 @@ namespace BytingLib
         {
             this.effect = effect;
             gDevice = effect.Value.GraphicsDevice;
+            currentTechnique = effect.Value.CurrentTechnique.Name;
         }
 
         public void ApplyParameters()
         {
+            effect.Value.CurrentTechnique = effect.Value.Techniques[currentTechnique];
+
             for (int i = 0; i < parameters.Count; i++)
             {
                 parameters[i].Apply();
@@ -55,27 +60,15 @@ namespace BytingLib
                 {
                     foreach (var part in mesh.MeshParts)
                     {
-                        switch (part.VertexBuffer.VertexDeclaration.VertexStride)
-                        {
-                            case 24:
-                                e.CurrentTechnique = e.Techniques["RenderNormal"];
-                                break;
-                            case 28:
-                                e.CurrentTechnique = e.Techniques["RenderColorNormal"];
-                                break;
-                            case 36:
-                                e.CurrentTechnique = e.Techniques["RenderColorNormalTexture"];
-                                break;
-                            default: // 32
-                                e.CurrentTechnique = e.Techniques["RenderNormalTexture"];
-                                break;
-                        }
-
                         gDevice.SetVertexBuffer(part.VertexBuffer);
                         gDevice.Indices = part.IndexBuffer;
 
                         var basicEffect = (part.Effect as BasicEffect)!;
                         var texture = basicEffect.Texture;
+
+                        string techniqueName = GetTechniqueName(part.VertexBuffer.VertexDeclaration);
+
+                        using (UseTechnique(techniqueName))
                         using (ColorTex.Use(texture))
                         {
                             ApplyParameters();
@@ -91,6 +84,28 @@ namespace BytingLib
             }
         }
 
+        private static string GetTechniqueName(VertexDeclaration vertexDeclaration)
+        {
+            string techniqueName;
+            switch (vertexDeclaration.VertexStride)
+            {
+                case 24:
+                    techniqueName = "RenderNormal";
+                    break;
+                case 28:
+                    techniqueName = "RenderColorNormal";
+                    break;
+                case 36:
+                    techniqueName = "RenderColorNormalTexture";
+                    break;
+                default: // 32
+                    techniqueName = "RenderNormalTexture";
+                    break;
+            }
+
+            return techniqueName;
+        }
+
         public void DrawTriangles<V>(V[] vertices) where V : struct, IVertexType
         {
             var e = effect.Value;
@@ -98,13 +113,14 @@ namespace BytingLib
             string vertexName = typeof(V).Name;
             string technique = "Render" + vertexName.Substring("VertexPosition".Length);
 
-            e.CurrentTechnique = e.Techniques[technique];
-
-            ApplyParameters();
-            foreach (var pass in e.CurrentTechnique.Passes)
+            using (UseTechnique(technique))
             {
-                pass.Apply();
-                gDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
+                ApplyParameters();
+                foreach (var pass in e.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    gDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
+                }
             }
         }
 
@@ -142,6 +158,14 @@ namespace BytingLib
             gDevice.ScissorRectangle = scissorsRectangle;
 
             return new OnDispose(() => gDevice.ScissorRectangle = storeVal);
+        }
+
+        public IDisposable UseTechnique(string technique)
+        {
+            var storeTechnique = currentTechnique;
+            currentTechnique = technique; // gets applied on ApplyParameters()
+
+            return new OnDispose(() => currentTechnique = storeTechnique);
         }
 
         public void Dispose()

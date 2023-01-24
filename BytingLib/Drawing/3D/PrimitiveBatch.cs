@@ -58,19 +58,22 @@ namespace BytingLib
             {
                 DrawCustom();
 
-                shader.Effect.CurrentTechnique = shader.Effect.Techniques[positionNormalTechnique];
-                foreach (var instancesAndBuffer in triInstances)
+                using (shader.UseTechnique(positionNormalTechnique))
                 {
-                    InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
-                        GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
+                    foreach (var instancesAndBuffer in triInstances)
+                    {
+                        InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
+                            GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
+                    }
                 }
-                shader.Effect.CurrentTechnique = shader.Effect.Techniques[positionTechnique];
-                foreach (var instancesAndBuffer in lineInstances)
+                using (shader.UseTechnique(positionTechnique))
                 {
-                    InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
-                        GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
+                    foreach (var instancesAndBuffer in lineInstances)
+                    {
+                        InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
+                            GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
+                    }
                 }
-
             }
             finally
             {
