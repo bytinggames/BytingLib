@@ -2,7 +2,7 @@
 
 namespace BytingLib
 {
-    class SimpleArrayList<T> : ISimpleArrayList
+    public class SimpleArrayList<T> : ISimpleArrayList
     {
         private readonly int growBy;
         public T[] Arr;

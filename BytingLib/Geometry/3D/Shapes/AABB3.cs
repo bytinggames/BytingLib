@@ -80,66 +80,66 @@ namespace BytingLib
             return Min + (Max - Min) * normalizedPosInside;
         }
 
-        public void Render(PrimitiveBatcherOld batcher, Color color)
-        {
-            var b = batcher.TriBatcher;
+        //public void Render(PrimitiveBatcherOld batcher, Color color)
+        //{
+        //    var b = batcher.TriBatcher;
 
-            const int faces = 6;
-            // draw 6 quads, where each quad has 6 indices and 4 vertices
-            b.EnsureAdditionalArrayCapacity(4 * faces, 6 * faces);
+        //    const int faces = 6;
+        //    // draw 6 quads, where each quad has 6 indices and 4 vertices
+        //    b.EnsureAdditionalArrayCapacity(4 * faces, 6 * faces);
 
-            // indices
-            // 3 - 2
-            // | / |
-            // 0 - 1
-            int startIndex = b.verticesIndex;
-            for (int face = 0; face < faces; face++)
-            {
-                b.indices[b.indicesIndex++] = startIndex + 0;
-                b.indices[b.indicesIndex++] = startIndex + 2;
-                b.indices[b.indicesIndex++] = startIndex + 1;
-                b.indices[b.indicesIndex++] = startIndex + 0;
-                b.indices[b.indicesIndex++] = startIndex + 3;
-                b.indices[b.indicesIndex++] = startIndex + 2;
-                startIndex += 4;
-            }
+        //    // indices
+        //    // 3 - 2
+        //    // | / |
+        //    // 0 - 1
+        //    int startIndex = b.verticesIndex;
+        //    for (int face = 0; face < faces; face++)
+        //    {
+        //        b.indices[b.indicesIndex++] = startIndex + 0;
+        //        b.indices[b.indicesIndex++] = startIndex + 2;
+        //        b.indices[b.indicesIndex++] = startIndex + 1;
+        //        b.indices[b.indicesIndex++] = startIndex + 0;
+        //        b.indices[b.indicesIndex++] = startIndex + 3;
+        //        b.indices[b.indicesIndex++] = startIndex + 2;
+        //        startIndex += 4;
+        //    }
 
-            // +z face
-            b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Min.Y, Max.Z), color, Vector3.UnitZ);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Min.Y, Max.Z), color, Vector3.UnitZ);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Max.Y, Max.Z), color, Vector3.UnitZ);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Max.Y, Max.Z), color, Vector3.UnitZ);
+        //    // +z face
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Min.Y, Max.Z), color, Vector3.UnitZ);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Min.Y, Max.Z), color, Vector3.UnitZ);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Max.Y, Max.Z), color, Vector3.UnitZ);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Max.Y, Max.Z), color, Vector3.UnitZ);
 
-            // +y face
-            b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Max.Y, Max.Z), color, Vector3.UnitY);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Max.Y, Max.Z), color, Vector3.UnitY);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Max.Y, Min.Z), color, Vector3.UnitY);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Max.Y, Min.Z), color, Vector3.UnitY);
+        //    // +y face
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Max.Y, Max.Z), color, Vector3.UnitY);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Max.Y, Max.Z), color, Vector3.UnitY);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Max.Y, Min.Z), color, Vector3.UnitY);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Max.Y, Min.Z), color, Vector3.UnitY);
 
-            // -z face
-            b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Max.Y, Min.Z), color, -Vector3.UnitZ);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Max.Y, Min.Z), color, -Vector3.UnitZ);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Min.Y, Min.Z), color, -Vector3.UnitZ);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Min.Y, Min.Z), color, -Vector3.UnitZ);
+        //    // -z face
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Max.Y, Min.Z), color, -Vector3.UnitZ);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Max.Y, Min.Z), color, -Vector3.UnitZ);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Min.Y, Min.Z), color, -Vector3.UnitZ);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Min.Y, Min.Z), color, -Vector3.UnitZ);
 
-            // -y face
-            b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Min.Y, Min.Z), color, -Vector3.UnitY);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Min.Y, Min.Z), color, -Vector3.UnitY);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Min.Y, Max.Z), color, -Vector3.UnitY);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Min.Y, Max.Z), color, -Vector3.UnitY);
+        //    // -y face
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Min.Y, Min.Z), color, -Vector3.UnitY);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Min.Y, Min.Z), color, -Vector3.UnitY);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Min.Y, Max.Z), color, -Vector3.UnitY);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Min.Y, Max.Z), color, -Vector3.UnitY);
 
-            // +x face
-            b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Min.Y, Max.Z), color, Vector3.UnitX);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Min.Y, Min.Z), color, Vector3.UnitX);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Max.Y, Min.Z), color, Vector3.UnitX);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Max.Y, Max.Z), color, Vector3.UnitX);
+        //    // +x face
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Min.Y, Max.Z), color, Vector3.UnitX);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Min.Y, Min.Z), color, Vector3.UnitX);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Max.Y, Min.Z), color, Vector3.UnitX);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Max.X, Max.Y, Max.Z), color, Vector3.UnitX);
 
-            // -x face
-            b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Min.Y, Min.Z), color, -Vector3.UnitX);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Min.Y, Max.Z), color, -Vector3.UnitX);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Max.Y, Max.Z), color, -Vector3.UnitX);
-            b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Max.Y, Min.Z), color, -Vector3.UnitX);
+        //    // -x face
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Min.Y, Min.Z), color, -Vector3.UnitX);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Min.Y, Max.Z), color, -Vector3.UnitX);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Max.Y, Max.Z), color, -Vector3.UnitX);
+        //    b.vertices[b.verticesIndex++] = new(new Vector3(Min.X, Max.Y, Min.Z), color, -Vector3.UnitX);
 
-        }
+        //}
     }
 }

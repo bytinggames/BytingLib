@@ -32,26 +32,26 @@ namespace BytingLib
             throw new NotImplementedException();
         }
 
-        public void Render(PrimitiveBatcherOld batcher, Color color)
-        {
-            Render(batcher, color, 1000f);
-        }
+        //public void Render(PrimitiveBatcherOld batcher, Color color)
+        //{
+        //    Render(batcher, color, 1000f);
+        //}
 
-        public void Render(PrimitiveBatcherOld batcher, Color color, float lineLength)
-        {
-            var b = batcher.LineBatcher;
+        //public void Render(PrimitiveBatcherOld batcher, Color color, float lineLength)
+        //{
+        //    var b = batcher.LineBatcher;
 
-            // draw two lines originating from the origin
-            b.EnsureAdditionalArrayCapacity(2, 2);
+        //    // draw two lines originating from the origin
+        //    b.EnsureAdditionalArrayCapacity(2, 2);
 
-            // indices
-            // 0 - 1
-            b.indices[b.indicesIndex++] = b.verticesIndex + 0;
-            b.indices[b.indicesIndex++] = b.verticesIndex + 1;
+        //    // indices
+        //    // 0 - 1
+        //    b.indices[b.indicesIndex++] = b.verticesIndex + 0;
+        //    b.indices[b.indicesIndex++] = b.verticesIndex + 1;
 
-            // line: pos - end
-            b.vertices[b.verticesIndex++] = new(pos, color);
-            b.vertices[b.verticesIndex++] = new(pos + Dir * lineLength, color);
-        }
+        //    // line: pos - end
+        //    b.vertices[b.verticesIndex++] = new(pos, color);
+        //    b.vertices[b.verticesIndex++] = new(pos + Dir * lineLength, color);
+        //}
     }
 }

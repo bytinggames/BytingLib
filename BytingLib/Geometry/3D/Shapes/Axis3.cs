@@ -41,24 +41,24 @@ namespace BytingLib
             return new BoundingBox(Pos - boundingSize, Pos + boundingSize);
         }
 
-        public void Render(PrimitiveBatcherOld batcher, Color color)
-        {
-            var b = batcher.LineBatcher;
+        //public void Render(PrimitiveBatcherOld batcher, Color color)
+        //{
+        //    var b = batcher.LineBatcher;
 
-            // draw two lines originating from the origin
-            b.EnsureAdditionalArrayCapacity(3, 4);
+        //    // draw two lines originating from the origin
+        //    b.EnsureAdditionalArrayCapacity(3, 4);
 
-            // indices
-            // 0 - 1 1 - 2
-            b.indices[b.indicesIndex++] = b.verticesIndex + 0;
-            b.indices[b.indicesIndex++] = b.verticesIndex + 1;
-            b.indices[b.indicesIndex++] = b.verticesIndex + 1;
-            b.indices[b.indicesIndex++] = b.verticesIndex + 2;
+        //    // indices
+        //    // 0 - 1 1 - 2
+        //    b.indices[b.indicesIndex++] = b.verticesIndex + 0;
+        //    b.indices[b.indicesIndex++] = b.verticesIndex + 1;
+        //    b.indices[b.indicesIndex++] = b.verticesIndex + 1;
+        //    b.indices[b.indicesIndex++] = b.verticesIndex + 2;
 
-            // line: start - pos - end
-            b.vertices[b.verticesIndex++] = new(pos - Dir * 1000f, color);
-            b.vertices[b.verticesIndex++] = new(pos, color);
-            b.vertices[b.verticesIndex++] = new(pos + Dir * 1000f, color);
-        }
+        //    // line: start - pos - end
+        //    b.vertices[b.verticesIndex++] = new(pos - Dir * 1000f, color);
+        //    b.vertices[b.verticesIndex++] = new(pos, color);
+        //    b.vertices[b.verticesIndex++] = new(pos + Dir * 1000f, color);
+        //}
     }
 }

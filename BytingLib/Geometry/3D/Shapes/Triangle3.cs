@@ -118,22 +118,22 @@ namespace BytingLib
             return HashCode.Combine(Vertices);
         }
 
-        public void Render(PrimitiveBatcherOld batcher, Color color)
-        {
-            var b = batcher.TriBatcher;
+        //public void Render(PrimitiveBatcherOld batcher, Color color)
+        //{
+        //    var b = batcher.TriBatcher;
 
-            b.EnsureAdditionalArrayCapacity(3, 3);
+        //    b.EnsureAdditionalArrayCapacity(3, 3);
 
-            for (int i = 0; i < 3; i++)
-                b.indices[b.indicesIndex++] = b.verticesIndex + i;
+        //    for (int i = 0; i < 3; i++)
+        //        b.indices[b.indicesIndex++] = b.verticesIndex + i;
 
-            Vector3 normal = N;
-            for (int i = 0; i < 3; i++)
-            {
-                b.vertices[b.verticesIndex].Position = Vertices[i];
-                b.vertices[b.verticesIndex].Color = color;
-                b.vertices[b.verticesIndex++].Normal = normal;
-            }
-        }
+        //    Vector3 normal = N;
+        //    for (int i = 0; i < 3; i++)
+        //    {
+        //        b.vertices[b.verticesIndex].Position = Vertices[i];
+        //        b.vertices[b.verticesIndex].Color = color;
+        //        b.vertices[b.verticesIndex++].Normal = normal;
+        //    }
+        //}
     }
 }

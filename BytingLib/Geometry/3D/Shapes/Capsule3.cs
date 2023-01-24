@@ -121,11 +121,11 @@ namespace BytingLib
             return box;
         }
 
-        public void Render(PrimitiveBatcherOld batcher, Color color)
-        {
-            Sphere0.Render(batcher, color);
-            Sphere1.Render(batcher, color);
-            AxisRadius.Render(batcher, color, 0, sphereDistance.Length());
-        }
+        //public void Render(PrimitiveBatcherOld batcher, Color color)
+        //{
+        //    Sphere0.Render(batcher, color);
+        //    Sphere1.Render(batcher, color);
+        //    AxisRadius.Render(batcher, color, 0, sphereDistance.Length());
+        //}
     }
 }

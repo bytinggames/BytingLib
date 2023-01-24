@@ -30,10 +30,7 @@ namespace BytingLib
             vertexDeclaration = declaration;
         }
 
-        public VertexDeclaration VertexDeclaration
-        {
-            get { return VertexDeclaration; }
-        }
+        public VertexDeclaration VertexDeclaration => vertexDeclaration;
 
         public override int GetHashCode()
         {

@@ -29,42 +29,42 @@ namespace BytingLib
             return new BoundingBox(Pos - r, Pos + r);
         }
 
-        public void Render(PrimitiveBatcherOld batcher, Color color)
-        {
-            var b = batcher.TriBatcher;
+        //public void Render(PrimitiveBatcherOld batcher, Color color)
+        //{
+        //    var b = batcher.TriBatcher;
 
-            var v = Icosahedron.VerticesSub;
-            var ind = Icosahedron.IndicesSub;
+        //    var v = Icosahedron.VerticesSub;
+        //    var ind = Icosahedron.IndicesSub;
 
-            b.EnsureAdditionalArrayCapacity(v.Length, ind.Length * 3);
+        //    b.EnsureAdditionalArrayCapacity(v.Length, ind.Length * 3);
 
-            for (int i = 0; i < ind.Length; i++)
-            {
-                b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][0];
-                b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][1];
-                b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][2];
-            }
-            for (int i = 0; i < v.Length; i++)
-                b.vertices[b.verticesIndex++] = new VertexPositionColorNormal(pos + v[i] * Radius, color, v[i]);
-        }
+        //    for (int i = 0; i < ind.Length; i++)
+        //    {
+        //        b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][0];
+        //        b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][1];
+        //        b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][2];
+        //    }
+        //    for (int i = 0; i < v.Length; i++)
+        //        b.vertices[b.verticesIndex++] = new VertexPositionColorNormal(pos + v[i] * Radius, color, v[i]);
+        //}
 
-        public void RenderSimple(PrimitiveBatcherOld batcher, Color color)
-        {
-            var b = batcher.TriBatcher;
+        //public void RenderSimple(PrimitiveBatcherOld batcher, Color color)
+        //{
+        //    var b = batcher.TriBatcher;
 
-            var v = Icosahedron.Vertices;
-            var ind = Icosahedron.Indices;
+        //    var v = Icosahedron.Vertices;
+        //    var ind = Icosahedron.Indices;
 
-            b.EnsureAdditionalArrayCapacity(v.Length, ind.Length * 3);
+        //    b.EnsureAdditionalArrayCapacity(v.Length, ind.Length * 3);
 
-            for (int i = 0; i < ind.Length; i++)
-            {
-                b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][0];
-                b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][1];
-                b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][2];
-            }
-            for (int i = 0; i < v.Length; i++)
-                b.vertices[b.verticesIndex++] = new VertexPositionColorNormal(pos + v[i] * Radius, color, v[i]);
-        }
+        //    for (int i = 0; i < ind.Length; i++)
+        //    {
+        //        b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][0];
+        //        b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][1];
+        //        b.indices[b.indicesIndex++] = b.verticesIndex + ind[i][2];
+        //    }
+        //    for (int i = 0; i < v.Length; i++)
+        //        b.vertices[b.verticesIndex++] = new VertexPositionColorNormal(pos + v[i] * Radius, color, v[i]);
+        //}
     }
 }

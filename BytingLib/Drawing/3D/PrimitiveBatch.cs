@@ -2,17 +2,32 @@
 
 namespace BytingLib
 {
-    public class PrimitiveBatch : IDisposable
+    public class PrimitiveBatch : IBufferBatch, IDisposable
     {
-        private List<IRenderBuffer> buffers = new();
         private DynamicVertexBuffer? InstanceBuffer;
         private readonly GraphicsDevice gDevice;
+        private readonly string positionNormalTechnique;
+        private readonly string positionTechnique;
         private readonly int growBuffersBy;
 
-        public BufferWrapper<Line3> Lines { get; }
-        public BufferWrapper<Triangle3> Triangles { get; }
+        public InstancesLine Lines { get; } = new();
+        public InstancesTriangle Triangles { get; } = new();
 
-        DynamicVertexBuffer GetInstanceBuffer(int capacity)
+        List<(IInstances<VertexInstanceTransformColor> Instances, VertexIndexBuffer Buffer)> lineInstances = new();
+        List<(IInstances<VertexInstanceTransformColor> Instances, VertexIndexBuffer Buffer)> triInstances = new();
+
+        public PrimitiveBatch(GraphicsDevice gDevice, string positionNormalTechnique, string positionTechnique, int growBuffersBy = 64)
+        {
+            this.gDevice = gDevice;
+            this.positionNormalTechnique = positionNormalTechnique;
+            this.positionTechnique = positionTechnique;
+            this.growBuffersBy = growBuffersBy;
+
+            lineInstances.Add((Lines, VertexIndexBuffer.GetLine(gDevice)));
+            triInstances.Add((Triangles, VertexIndexBuffer.GetTriangle(gDevice)));
+        }
+
+        protected DynamicVertexBuffer GetInstanceBuffer(int capacity)
         {
             if (InstanceBuffer != null && InstanceBuffer.VertexCount >= capacity)
                 return InstanceBuffer;
@@ -23,21 +38,7 @@ namespace BytingLib
             return InstanceBuffer;
         }
 
-        public PrimitiveBatch(GraphicsDevice GraphicsDevice, int growBuffersBy = 64)
-        {
-            gDevice = GraphicsDevice;
-            this.growBuffersBy = growBuffersBy;
-            Lines = new(() => AddBuffer(new LineBuffer(gDevice)), CanAdd);
-            Triangles = new(() => AddBuffer(new TriangleBuffer(gDevice)), CanAdd);
-        }
-
-        private bool CanAdd() => begun;
-
-        private T AddBuffer<T>(T buffer) where T : IRenderBuffer
-        {
-            buffers.Add(buffer);
-            return buffer;
-        }
+        public bool CanAdd() => begun;
 
         bool begun = false;
 
@@ -48,32 +49,28 @@ namespace BytingLib
             begun = true;
         }
 
-        public void End(Effect effect)
-        {
-            InnerEnd((instanceBuffer, b) => b.Draw(instanceBuffer, effect));
-        }
-
         public void End(IShader shader)
-        {
-            InnerEnd((instanceBuffer, b) => b.Draw(instanceBuffer, shader));
-        }
-
-        private void InnerEnd(Action<DynamicVertexBuffer, IRenderBuffer> renderAction)
         {
             if (!begun)
                 throw new BytingException("Begin() has not yet been called.");
 
             try
             {
-                if (buffers.Count == 0)
-                    return;
+                DrawCustom();
 
-                var instanceBuffer = GetInstanceBuffer(buffers.Max(f => f.Count));
-
-                for (int i = 0; i < buffers.Count; i++)
+                shader.Effect.CurrentTechnique = shader.Effect.Techniques[positionNormalTechnique];
+                foreach (var instancesAndBuffer in triInstances)
                 {
-                    renderAction(instanceBuffer, buffers[i]);
+                    InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
+                        GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
                 }
+                shader.Effect.CurrentTechnique = shader.Effect.Techniques[positionTechnique];
+                foreach (var instancesAndBuffer in lineInstances)
+                {
+                    InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
+                        GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
+                }
+
             }
             finally
             {
@@ -81,13 +78,13 @@ namespace BytingLib
             }
         }
 
+        protected virtual void DrawCustom()
+        {
+        }
+
         public void Dispose()
         {
             InstanceBuffer?.Dispose();
-            for (int i = 0; i < buffers.Count; i++)
-            {
-                buffers[i].Dispose();
-            }
         }
     }
 }

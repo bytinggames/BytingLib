@@ -30,36 +30,36 @@ namespace BytingLib
             throw new NotImplementedException();
         }
 
-        public void Render(PrimitiveBatcherOld batcher, Color color)
-        {
-            Render(batcher, color, 1000f);
-        }
+        //public void Render(PrimitiveBatcherOld batcher, Color color)
+        //{
+        //    Render(batcher, color, 1000f);
+        //}
 
-        public void Render(PrimitiveBatcherOld batcher, Color color, float size)
-        {
-            var b = batcher.TriBatcher;
+        //public void Render(PrimitiveBatcherOld batcher, Color color, float size)
+        //{
+        //    var b = batcher.TriBatcher;
 
-            b.EnsureAdditionalArrayCapacity(4, 6);
+        //    b.EnsureAdditionalArrayCapacity(4, 6);
 
-            // indices
-            // 3 - 2
-            // | / |
-            // 0 - 1
-            b.indices[b.indicesIndex++] = b.verticesIndex + 0;
-            b.indices[b.indicesIndex++] = b.verticesIndex + 2;
-            b.indices[b.indicesIndex++] = b.verticesIndex + 1;
-            b.indices[b.indicesIndex++] = b.verticesIndex + 0;
-            b.indices[b.indicesIndex++] = b.verticesIndex + 3;
-            b.indices[b.indicesIndex++] = b.verticesIndex + 2;
+        //    // indices
+        //    // 3 - 2
+        //    // | / |
+        //    // 0 - 1
+        //    b.indices[b.indicesIndex++] = b.verticesIndex + 0;
+        //    b.indices[b.indicesIndex++] = b.verticesIndex + 2;
+        //    b.indices[b.indicesIndex++] = b.verticesIndex + 1;
+        //    b.indices[b.indicesIndex++] = b.verticesIndex + 0;
+        //    b.indices[b.indicesIndex++] = b.verticesIndex + 3;
+        //    b.indices[b.indicesIndex++] = b.verticesIndex + 2;
 
-            Vector3 X = Vector3.Normalize(Vector3.Cross(Normal, Vector3Extension.GetNonParallelVector(Normal))) * size / 2f;
-            Vector3 Y = Vector3.Normalize(Vector3.Cross(Normal, X)) * size / 2f;
+        //    Vector3 X = Vector3.Normalize(Vector3.Cross(Normal, Vector3Extension.GetNonParallelVector(Normal))) * size / 2f;
+        //    Vector3 Y = Vector3.Normalize(Vector3.Cross(Normal, X)) * size / 2f;
 
-            b.vertices[b.verticesIndex++] = new(pos - X - Y, color, Normal);
-            b.vertices[b.verticesIndex++] = new(pos + X - Y, color, Normal);
-            b.vertices[b.verticesIndex++] = new(pos + X + Y, color, Normal);
-            b.vertices[b.verticesIndex++] = new(pos - X + Y, color, Normal);
+        //    b.vertices[b.verticesIndex++] = new(pos - X - Y, color, Normal);
+        //    b.vertices[b.verticesIndex++] = new(pos + X - Y, color, Normal);
+        //    b.vertices[b.verticesIndex++] = new(pos + X + Y, color, Normal);
+        //    b.vertices[b.verticesIndex++] = new(pos - X + Y, color, Normal);
 
-        }
+        //}
     }
 }

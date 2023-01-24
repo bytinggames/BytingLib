@@ -14,7 +14,7 @@ namespace BytingLib
             Transform = transform;
         }
 
-        public static readonly VertexDeclaration vertexDeclaration;
+        private static readonly VertexDeclaration vertexDeclaration;
         static VertexInstanceTransform()
         {
             VertexElement[] elements = new VertexElement[] {
@@ -27,10 +27,7 @@ namespace BytingLib
             vertexDeclaration = declaration;
         }
 
-        public VertexDeclaration VertexDeclaration
-        {
-            get { return VertexDeclaration; }
-        }
+        public VertexDeclaration VertexDeclaration => vertexDeclaration;
 
         public override int GetHashCode()
         {
