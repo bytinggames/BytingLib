@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.IO;
-using System.Net.NetworkInformation;
-using System.Text.RegularExpressions;
-
-namespace BuildTemplates
+﻿namespace BuildTemplates
 {
     public class ContentTemplate
     {

@@ -1,6 +1,4 @@
-﻿using BytingLib;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Linq;
 
 namespace BytingLib.Test.Components.StuffTest

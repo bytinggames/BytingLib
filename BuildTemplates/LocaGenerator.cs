@@ -1,6 +1,4 @@
 ﻿using BytingLib;
-using Microsoft.Xna.Framework.Input;
-using System.Xml;
 
 namespace BuildTemplates
 {

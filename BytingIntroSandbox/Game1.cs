@@ -1,17 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using BytingLib;
+﻿using BytingLib;
 using BytingLib.Intro;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Runtime.InteropServices;
-using System.IO;
 
 namespace BytingIntroSandbox
 {
+#pragma warning disable CS0612 // Type or member is obsolete
     public class Game1 : _BaseGame
+#pragma warning restore CS0612 // Type or member is obsolete
     {
-        const bool forWebsite = true;
+        static readonly bool forWebsite = true;
         const int forWebsiteScale = 4; // 4 to convert to svg
 
         protected readonly GameSpeed updateSpeed, drawSpeed;
@@ -39,7 +39,9 @@ namespace BytingIntroSandbox
 
         protected override void MyInitialize()
         {
+#pragma warning disable CS0612 // Type or member is obsolete
             gameStuff = _BaseGameFactory.CreateDefaultGame(this, graphics, "input", out keys, out mouse, out gamePad, out windowManager, false); disposables.Add(gameStuff);
+#pragma warning restore CS0612 // Type or member is obsolete
 
             intro = new BytingIntro(mouse, keys);
 

@@ -1,5 +1,4 @@
 ﻿using BytingLib.Test.Input;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;

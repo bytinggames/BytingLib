@@ -1,11 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.Xna.Framework.Input;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BytingLib.Test.Input
 {
