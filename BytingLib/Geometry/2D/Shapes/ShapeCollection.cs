@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     /// <summary>
     /// only changes to the position are applied to children of this collection. -> the children move with the parent

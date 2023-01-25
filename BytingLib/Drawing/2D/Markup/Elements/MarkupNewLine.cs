@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace BytingLib.Markup
+﻿namespace BytingLib.Markup
 {
     public class MarkupNewLine : ILeaf
     {

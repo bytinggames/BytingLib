@@ -1,9 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class PrimitiveLineStrip
     {

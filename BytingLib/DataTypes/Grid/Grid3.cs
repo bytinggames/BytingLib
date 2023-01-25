@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class Grid3<T> where T : IBoundingBox
     {

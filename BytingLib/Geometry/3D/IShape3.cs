@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public interface IShape3 : IBoundingBox, ICloneable
     {

@@ -1,7 +1,4 @@
-﻿
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using static BytingLib.Markup.MarkupSettings;
+﻿using static BytingLib.Markup.MarkupSettings;
 
 namespace BytingLib
 {

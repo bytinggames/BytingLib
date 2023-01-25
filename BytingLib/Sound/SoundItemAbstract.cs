@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public abstract class SoundItemAbstract
     {

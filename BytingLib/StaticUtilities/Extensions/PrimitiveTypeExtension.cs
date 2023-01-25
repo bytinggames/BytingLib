@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-
-namespace BytingLib.StaticUtilities.Extensions
+﻿namespace BytingLib.StaticUtilities.Extensions
 {
     public static class PrimitiveTypeExtension
     {

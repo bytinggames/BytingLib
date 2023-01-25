@@ -1,9 +1,5 @@
-﻿
-#pragma warning disable CS8629 // Nullable value type may be null.
+﻿#pragma warning disable CS8629 // Nullable value type may be null.
 
-
-using Microsoft.Xna.Framework;
-using static BytingLib.Markup.MarkupSettings;
 
 namespace BytingLib
 {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class SceneGrid2<T> : Scene, IEntityContainer<T> where T : IBoundingRect
     {

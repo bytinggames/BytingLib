@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public static class IContentCollectorExtension
     {

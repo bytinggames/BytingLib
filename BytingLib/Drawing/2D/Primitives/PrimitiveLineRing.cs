@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class PrimitiveLineRing
     {

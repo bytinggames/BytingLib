@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace BytingLib.Markup
+﻿namespace BytingLib.Markup
 {
     public class MarkupSettings : ICloneable
     {

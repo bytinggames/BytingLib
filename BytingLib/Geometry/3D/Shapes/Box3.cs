@@ -1,9 +1,4 @@
-﻿
-using BytingLib.DataTypes;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class Box3 : IShape3
     {

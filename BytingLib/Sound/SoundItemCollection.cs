@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework.Audio;
-using System;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     //public class SoundItemCollection : SoundItemAbstract
     //{

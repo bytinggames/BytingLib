@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace BytingLib
 {

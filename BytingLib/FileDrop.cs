@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class FileDrop : IDisposable
     {

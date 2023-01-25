@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class SimpleArrayList<T> : ISimpleArrayList
     {

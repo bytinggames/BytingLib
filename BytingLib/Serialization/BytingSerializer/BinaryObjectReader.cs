@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using System.Collections;
+﻿using System.Collections;
 
 namespace BytingLib.Serialization
 {

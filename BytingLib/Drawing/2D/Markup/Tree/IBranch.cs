@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace BytingLib.Markup
+﻿namespace BytingLib.Markup
 {
     /// <summary>Elements that contain other elements. May modify the draw settings.</summary>
     public interface IBranch : INode

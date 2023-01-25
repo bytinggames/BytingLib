@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public interface IShape3Collection : IShape3
     {

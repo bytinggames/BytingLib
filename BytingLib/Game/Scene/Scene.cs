@@ -1,8 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Linq;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class Scene : StuffDisposable, IUpdate, IDrawBatch
     {

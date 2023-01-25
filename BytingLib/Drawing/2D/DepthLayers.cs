@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace BytingLib
 {

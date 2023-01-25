@@ -1,8 +1,4 @@
-﻿
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class Line3 : IShape3
     {

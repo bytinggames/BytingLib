@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections;
+﻿using System.Collections;
 
 namespace BytingLib.Serialization
 {

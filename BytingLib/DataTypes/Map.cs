@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BytingLib.DataTypes
+﻿namespace BytingLib.DataTypes
 {
     // source: https://stackoverflow.com/questions/10966331/two-way-bidirectional-dictionary-in-c
     public class Map<T1, T2> where T1 : notnull where T2 : notnull

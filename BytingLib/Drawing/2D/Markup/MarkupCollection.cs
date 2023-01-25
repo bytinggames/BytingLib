@@ -1,6 +1,4 @@
 ﻿using BytingLib.Creation;
-using System;
-using System.Collections.Generic;
 
 namespace BytingLib.Markup
 {

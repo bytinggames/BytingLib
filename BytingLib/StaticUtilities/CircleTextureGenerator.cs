@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     /// <summary>
     /// This can probably be replaced by a rendering method that renders a circle polygon onto a texture.

@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     [Obsolete]
     public abstract class _BaseGamePrototype<Ingame> : _BaseGame where Ingame : class, IStuffDisposable

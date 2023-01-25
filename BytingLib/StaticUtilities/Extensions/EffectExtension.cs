@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public static class EffectExtension
     {

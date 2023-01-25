@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BytingLib.Creation
+﻿namespace BytingLib.Creation
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class CreatorShortcutAttribute : Attribute

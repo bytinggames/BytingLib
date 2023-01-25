@@ -1,5 +1,4 @@
 ﻿using BytingLib.Creation;
-using Microsoft.Xna.Framework;
 
 namespace BytingLib.Markup
 {

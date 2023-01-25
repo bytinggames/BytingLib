@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace BytingLib.Markup
+﻿namespace BytingLib.Markup
 {
     /// <summary>Elements that are rendered.</summary>
     public interface ILeaf : INode

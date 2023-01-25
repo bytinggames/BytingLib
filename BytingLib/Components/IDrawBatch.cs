@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     /// <summary>Used for rendering whole sprite batches using SpriteBatch.Begin() and SpriteBatch.End()</summary>
     public interface IDrawBatch
