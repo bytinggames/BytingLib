@@ -37,13 +37,13 @@ namespace BytingLib
                 Path.Combine("..", "..", "..", "Content"));
             contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
 #else
-            //hotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod");
-            //contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
+            hotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod");
+            contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
 #endif
 
 
 #if WINDOWS
-		bool realFullscreen = false;
+            bool realFullscreen = false;
 #else
 		bool realFullscreen = true;
 #endif
