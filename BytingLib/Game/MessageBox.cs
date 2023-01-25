@@ -17,6 +17,19 @@ namespace BytingLib
         public MessageBox(string text, string fontAssetName)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
+            int lineLength = 0;
+            for (int i = 0; i < text.Length; i++, lineLength++)
+            {
+                if (text[i] == '\n')
+                    lineLength = 0;
+                else if (lineLength >= 200)
+                {
+                    text = text.Remove(i) + "\n        " + text.Substring(i);
+                    lineLength = 0;
+                }
+            }
+
+
             Content.RootDirectory = "Content";
 
             graphics = new GraphicsDeviceManager(this);

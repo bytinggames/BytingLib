@@ -164,7 +164,7 @@ namespace BytingLib
             }
             catch (Exception e)
             {
-                ShowPopup("HotReloadContent Error: " + e.Message);
+                ShowPopup("HotReloadContent Error: " + e.ToString());
             }
 
             return true;
@@ -173,30 +173,37 @@ namespace BytingLib
         private static bool CheckOutput(StringBuilder stdOutput, Action<string> showPopup)
         {
             var str = stdOutput.ToString();
-            string success = " succeeded, ";
-            int successCountEnd = str.IndexOf(success);
-            int successCountStart = str.LastIndexOf(' ', successCountEnd - 1, successCountEnd - 1) + 1;
-            string successCountStr = str.Substring(successCountStart, successCountEnd - successCountStart);
-            int successCount;
-            if (!int.TryParse(successCountStr, out successCount))
+            try
             {
-                showPopup("couldn't parse " + str);
+                string success = " succeeded, ";
+                int successCountEnd = str.IndexOf(success);
+                int successCountStart = str.LastIndexOf(' ', successCountEnd - 1, successCountEnd - 1) + 1;
+                string successCountStr = str.Substring(successCountStart, successCountEnd - successCountStart);
+                int successCount;
+                if (!int.TryParse(successCountStr, out successCount))
+                {
+                    showPopup("couldn't parse " + str);
+                }
+
+                int indexStart = str.IndexOf(success) + success.Length;
+                int indexEnd = str.IndexOf(" failed.Time elapsed");
+                string failedNumberStr = str.Substring(indexStart, indexEnd - indexStart);
+                int failedNumber = int.Parse(failedNumberStr);
+
+                string errorStr = ": error ";
+                int errorIndex = str.IndexOf(errorStr) + 2;
+
+                if (failedNumber > 0)
+                {
+                    showPopup(str.Substring(errorIndex));
+                    return false;
+                }
+                return successCount > 0;
             }
-
-            int indexStart = str.IndexOf(success) + success.Length;
-            int indexEnd = str.IndexOf(" failed.Time elapsed");
-            string failedNumberStr = str.Substring(indexStart, indexEnd - indexStart);
-            int failedNumber = int.Parse(failedNumberStr);
-
-            string errorStr = ": error ";
-            int errorIndex = str.IndexOf(errorStr) + 2;
-
-            if (failedNumber > 0)
+            catch (Exception e)
             {
-                showPopup(str.Substring(errorIndex));
-                return false;
+                throw new BytingException("Error in ContentBuilder.CheckOutput(). Build output is: \n" + str, e); 
             }
-            return successCount > 0;
         }
     }
 }
