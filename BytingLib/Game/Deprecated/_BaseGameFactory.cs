@@ -17,6 +17,7 @@ namespace BytingLib
             Func<MouseState> getMouseState;
 
             windowManager = new WindowManager(true, game.Window, graphics);
+            WindowManager _windowManager = windowManager;
             var mouseSource = new MouseWithoutOutOfWindowClicks(Mouse.GetState, windowManager);
 
             if (mouseWithActivationClick)
@@ -27,7 +28,7 @@ namespace BytingLib
                 getMouseState = mouseFiltered.GetState;
             }
 
-            stuff.Add(inputSource = new StructSource<FullInput>(() => new FullInput(getMouseState(), Keyboard.GetState(), GamePad.GetState(0), new MetaInputState(game.IsActivatedThisUpdate))));
+            stuff.Add(inputSource = new StructSource<FullInput>(() => new FullInput(getMouseState(), Keyboard.GetState(), GamePad.GetState(0), new MetaInputState(game.IsActivatedThisUpdate), _windowManager.GetResolution())));
             KeyInput _keys = new KeyInput(() => inputSource.Current.KeyState);
             stuff.Add(keys = _keys);
 #if DEBUG

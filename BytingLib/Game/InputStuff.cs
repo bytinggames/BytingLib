@@ -15,6 +15,8 @@ namespace BytingLib
         public GamePadInput GamePad { get; }
         public KeyInput KeysDev { get; }
         public Random Rand { get; private set; } // is directly initialized with CreateInputRecorder
+        public Int2 Resolution => inputSource.Current.WindowResolution;
+        public Int2 GetResolution() => inputSource.Current.WindowResolution;
         private int randSeed;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -35,7 +37,11 @@ namespace BytingLib
             }
 
             stuff.Add(inputSource = new StructSource<FullInput>(() =>
-            new FullInput(getMouseState(), Keyboard.GetState(), Microsoft.Xna.Framework.Input.GamePad.GetState(0), new MetaInputState(game.IsActivatedThisFrame()))));
+                new FullInput(getMouseState(),
+                Keyboard.GetState(), 
+                Microsoft.Xna.Framework.Input.GamePad.GetState(0), 
+                new MetaInputState(game.IsActivatedThisFrame()),
+                windowManager.GetResolution())));
 
             stuff.Add(Keys = new KeyInput(() => inputSource.Current.KeyState));
 #if DEBUG
