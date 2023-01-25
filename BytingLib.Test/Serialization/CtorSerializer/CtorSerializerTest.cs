@@ -17,7 +17,7 @@ namespace BytingLib.Test.CtorSerialization
     abstract class Coin : Entity
     {
         public Vector2 pos;
-        public string name;
+        public string name = "default";
     }
 
     class SomeRef
