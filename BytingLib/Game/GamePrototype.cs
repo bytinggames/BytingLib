@@ -1,18 +1,17 @@
 ﻿using BytingLib.Creation;
 using BytingLib.Markup;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 namespace BytingLib
 {
     public abstract class GamePrototype : GameBase
     {
         protected readonly GameSpeed updateSpeed, drawSpeed;
-        protected readonly KeyInput keys;
-        protected readonly MouseInput mouse;
         protected readonly Creator creator;
 
-        public GamePrototype(GameWrapper g) : base(g)
+        protected readonly InputStuff input;
+
+        public GamePrototype(GameWrapper g, bool mouseWithActivationClick = false) : base(g)
         {
             updateSpeed = new GameSpeed(g.TargetElapsedTime);
             drawSpeed = new GameSpeed(g.TargetElapsedTime);
@@ -23,8 +22,7 @@ namespace BytingLib
             };
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, null, typeof(MarkupShortcutAttribute), converters);
 
-            keys = new KeyInput(Keyboard.GetState);
-            mouse = new MouseInput(Mouse.GetState, g.IsActivatedThisFrame);
+            input = new InputStuff(mouseWithActivationClick, windowManager, g);
 
             InitWindowAndGraphics();
         }
@@ -38,26 +36,79 @@ namespace BytingLib
             windowManager.MaximizeWindow();
         }
 
-        public override void UpdateActive(GameTime gameTime)
+        public sealed override void UpdateActive(GameTime gameTime)
+        {
+            input.UpdateKeysDev();
+
+            int iterations = GetIterations();
+
+            for (int i = 0; i < iterations; i++)
+                UpdateSingleIteration(gameTime);
+        }
+
+        bool pauseUpdate;
+        private int GetIterations()
+        {
+            int iterations = 1;
+            if (!pauseUpdate && input.KeysDev.Alt.Down)
+            {
+                iterations *= 10;
+                if (input.KeysDev.Control.Down)
+                    iterations *= 10;
+            }
+            else
+            {
+                if (input.KeysDev.Control.Down)
+                {
+                    pauseUpdate = true;
+
+                    if (input.KeysDev.Alt.Pressed)
+                        iterations = 1; // display next frame
+                    else
+                        iterations = 0;
+                }
+                else
+                {
+                    pauseUpdate = false;
+                }
+            }
+            return iterations;
+        }
+
+        private void UpdateSingleIteration(GameTime gameTime)
         {
             updateSpeed.OnRefresh(gameTime);
 
-            keys.Update();
-            mouse.Update();
+            input.Update();
 
-            if (keys.F11.Pressed)
+            if (input.Keys.F11.Pressed)
                 windowManager.ToggleFullscreen();
-            if (keys.Tab.Pressed)
+            if (input.Keys.Tab.Pressed)
                 windowManager.SwapScreen();
+
+            UpdateIteration(gameTime);
         }
 
-        public override void DrawActive(GameTime gameTime)
+
+        public sealed override void DrawActive(GameTime gameTime)
         {
             drawSpeed.OnRefresh(gameTime);
+
+            DrawIteration(gameTime);
         }
+
+        protected abstract void UpdateIteration(GameTime gameTime);
+        protected abstract void DrawIteration(GameTime gameTime);
 
         public override void DrawInactiveOnce()
         {
+        }
+
+        public override void Dispose()
+        {
+            input.Dispose();
+
+            base.Dispose();
         }
     }
 }

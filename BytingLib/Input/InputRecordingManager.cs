@@ -3,7 +3,7 @@ namespace BytingLib
 {
     public class InputRecordingManager<T> : IDisposable where T : struct
     {
-        private readonly IStuff parent;
+        private readonly IStuffDisposable parent;
         private readonly StructSource<T> inputSource;
         private readonly CreateInputRecorder createInputRecorder;
         private readonly PlayInput playInput;
@@ -12,7 +12,7 @@ namespace BytingLib
         private bool playing = false;
 
 
-        public InputRecordingManager(IStuff parent, StructSource<T> inputSource, CreateInputRecorder createInputRecorder, PlayInput playInput)
+        public InputRecordingManager(IStuffDisposable parent, StructSource<T> inputSource, CreateInputRecorder createInputRecorder, PlayInput playInput)
         {
             this.parent = parent;
             this.inputSource = inputSource;
