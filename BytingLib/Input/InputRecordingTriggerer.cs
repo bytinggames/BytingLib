@@ -19,7 +19,7 @@
         {
             if (keys.F5.Pressed)
             {
-                if (keys.Control.Down)
+                if (keys.Shift.Down)
                     inputRecordingManager.ToggleRecording(GetNewRecordingFile());
                 else
                 {
