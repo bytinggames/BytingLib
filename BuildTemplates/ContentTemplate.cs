@@ -105,12 +105,12 @@ namespace BuildTemplates
                 }
             }
 
-            public string PrintMGCB(string contentDirectory)
+            public string PrintMGCB(string contentDirectory, string[] referencedDlls)
             {
                 if (!string.IsNullOrEmpty(contentDirectory))
                     contentDirectory += "/";
 
-                string references = "";
+                string references = string.Join("\n", referencedDlls.Select(f => "/reference:" + f));
                 string assets = "";
 
 
@@ -286,7 +286,7 @@ namespace BuildTemplates
             }
         }
 
-        public static (string output, string mgcbOutput, string locaCode) Create(string contentPath, string nameSpace)
+        public static (string output, string mgcbOutput, string locaCode) Create(string contentPath, string nameSpace, string[] referencedDlls)
         {
             if (!contentPath.EndsWith("/") && !contentPath.EndsWith("\\"))
                 contentPath += "/";
@@ -298,7 +298,7 @@ namespace BuildTemplates
 
             string output = root.Print("", Folder.tab);
 
-            string mgcbOutput = root.PrintMGCB("");
+            string mgcbOutput = root.PrintMGCB("", referencedDlls);
 
             string locaCode = LocaGenerator.Generate(nameSpace, locaFiles.ToArray());
 

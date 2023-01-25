@@ -12,7 +12,7 @@ namespace BuildTemplates.Test
         [TestMethod]
         public void TestBuild()
         {
-            (string output, string mgcbOutput, string locaCode) = ContentTemplate.Create(contentPath, "BytingLibGame");
+            (string output, string mgcbOutput, string locaCode) = ContentTemplate.Create(contentPath, "BytingLibGame", new string[0]);
             Assert.IsNotNull(output);
             Assert.IsNotNull(mgcbOutput);
             Assert.IsNotNull(locaCode);

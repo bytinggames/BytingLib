@@ -12,10 +12,16 @@ namespace BuildTemplates
         public static void Main(string[] args)
         {
             string nameSpace = args.Length == 0 ? "NAMESPACE" : args[0];
+            string[] referencedDlls = new string[0];
+
+            if (args.Length > 1)
+            {
+                referencedDlls = args[1].Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            }
 
             var projectPath = Environment.CurrentDirectory;
             string contentPath = Path.Combine(projectPath, "Content");
-            (string code, string mgcbOutput, string locaCode) = ContentTemplate.Create(contentPath + "/", nameSpace);
+            (string code, string mgcbOutput, string locaCode) = ContentTemplate.Create(contentPath + "/", nameSpace, referencedDlls);
 
             string mgcbFile = Path.Combine(contentPath, "Content.Generated.mgcb");
             File.WriteAllText(mgcbFile, mgcbOutput);

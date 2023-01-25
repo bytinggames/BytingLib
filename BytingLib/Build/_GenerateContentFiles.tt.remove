@@ -7,6 +7,7 @@
 
 <#
 	const string NAME = "[TODO: set project name here, example: MyCoolGame]";
+	const string DLLS = @"..\..\..\BytingLib\BytingPipeline\bin\Debug\net6.0\BytingPipeline.dll";
 	string csprojName = NAME + ".csproj";
 
 	Stopwatch sw = new Stopwatch();
@@ -57,7 +58,7 @@
     var p = new ProcessStartInfo(path);
     p.CreateNoWindow = true;
     p.WindowStyle = ProcessWindowStyle.Hidden;
-	p.Arguments = NAME;
+	p.Arguments = NAME + " " + "\"" + DLLS + "\"";
     var process = Process.Start(p);
 	process.WaitForExit();
 	

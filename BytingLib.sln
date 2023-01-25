@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildTemplates", "BuildTemp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildTemplates.Test", "BuildTemplates.Test\BuildTemplates.Test.csproj", "{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BytingPipeline", "BytingPipeline\BytingPipeline.csproj", "{73E6F993-17C9-422A-BB32-C7C9303064C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08DAC7B4-2E1A-4448-9C36-289BDAECFCA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73E6F993-17C9-422A-BB32-C7C9303064C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73E6F993-17C9-422A-BB32-C7C9303064C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73E6F993-17C9-422A-BB32-C7C9303064C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73E6F993-17C9-422A-BB32-C7C9303064C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
