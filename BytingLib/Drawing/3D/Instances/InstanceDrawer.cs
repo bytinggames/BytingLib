@@ -96,14 +96,14 @@ namespace BytingLib
 
             shader.ApplyParameters();
             gDevice.SetVertexBuffers(
-                new VertexBufferBinding(vertexBuffer),
+                new VertexBufferBinding(vertexBuffer, vertexOffset),
                 new VertexBufferBinding(instanceBuffer, 0, 1)
                 );
             gDevice.Indices = indexBuffer;
             foreach (var pass in shader.Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                gDevice.DrawInstancedPrimitives(primitiveType, vertexOffset, indexOffset, primitiveCount, instances.Count);
+                gDevice.DrawInstancedPrimitives(primitiveType, 0, indexOffset, primitiveCount, instances.Count);
             }
         }
     }
