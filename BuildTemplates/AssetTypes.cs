@@ -5,6 +5,7 @@ namespace BuildTemplates
     {
         public static IReadOnlyDictionary<string, (string VarName, string[] Extensions)> Extensions { get; } = new Dictionary<string, (string, string[])>()
         {
+            // { "<Class Name>", ("<Extension for Variable Name in ContentLoader>", new[] { "<file extension 1>", "<file extension 2>" }) },
             { "Texture2D", ("Tex", new[] { "png", "jpeg", "jpg" }) },
             { "SpriteFont", ("Font", new[] { "spritefont" } )},
             { "SoundEffect", ("Sfx", new[] { "wav", "mp3", "ogg" } )},
