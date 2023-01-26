@@ -9,6 +9,7 @@
         public void ReloadLoadedAsset<T>(AssetHolder<T> assetHolder);
         public void SubscribeToOnLoad<T>(string assetName, Action<T> onLoadAction);
         public bool UnsubscribeToOnLoad<T>(string assetName, Action<T> onLoadAction);
+        /// <summary>Don't forget to unsubscribe.</summary>
         public void SubscribeToOnLoad(string assetName, Action onLoadAction);
         public bool UnsubscribeToOnLoad(string assetName, Action onLoadAction);
         public void TryTriggerOnLoad<T>(string assetName, T asset);

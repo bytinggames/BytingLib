@@ -193,19 +193,6 @@ namespace BytingLib
                 }
 
                 ReloadIfLoadedFromType(assetType, file.AssetName, deleted);
-
-
-                if (onReload.TryGetValue(file.AssetName, out List<Action>? actions))
-                {
-                    if (actions != null)
-                    {
-                        var copy = new List<Action>(actions);
-                        for (int i = 0; i < copy.Count; i++)
-                        {
-                            copy[i]?.Invoke();
-                        }
-                    }
-                }
             }
 
 
@@ -245,29 +232,6 @@ namespace BytingLib
                 assetHolder.Replace(newlyLoadedAsset);
                 content.TryTriggerOnLoad(assetName, newlyLoadedAsset!);
                 assetHolder.TryTriggerOnLoad();
-            }
-        }
-
-        Dictionary<string, List<Action>> onReload = new Dictionary<string, List<Action>>(); // TODO: remove this, cause redundant, cause already in ContentCollector?
-
-        /// <summary>Don't forget to unsubscribe.</summary>
-        internal void SubscribeToReload(string assetName, Action actionOnReload)
-        {
-            assetName = assetName.Replace('\\', '/');
-            List<Action>? actions;
-            if (!onReload.TryGetValue(assetName, out actions))
-            {
-                actions = new List<Action>();
-                onReload.Add(assetName, actions);
-            }
-            actions.Add(actionOnReload);
-        }
-        internal void UnsubscribeToReload(string assetName, Action actionOnReload)
-        {
-            assetName = assetName.Replace('\\', '/');
-            if (onReload.TryGetValue(assetName, out List<Action>? actions))
-            {
-                actions.Remove(actionOnReload);
             }
         }
     }
