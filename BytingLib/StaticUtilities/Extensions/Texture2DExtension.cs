@@ -300,7 +300,7 @@
                 tex.SaveAsJpeg(f, tex.Width, tex.Height);
         }
 
-        // TODO: this method needs to be tested for cases, where some edges can't be trimmed
+        /// <summary>ONUSE: this method needs to be tested for cases, where some edges can't be trimmed</summary>
         public static Texture2D GetTrimmed(this Texture2D tex)
         {
             int widthIn = tex.Width;

@@ -886,8 +886,8 @@ namespace BytingLib
             // parallel?
             if (Vector3.Cross(line1.Dir, line2.Dir) == Vector3.Zero)
             {
-                // ONUSE: make correct collision check
-                return new CollisionResult3();
+                throw new NotImplementedException("ONUSE: make correct collision check");
+                //return new CollisionResult3();
             }
 
             Vector3 normal = Vector3.Cross(line1.Dir, dir);
@@ -896,7 +896,8 @@ namespace BytingLib
             {
                 // line1 has same dir (or negative) as dir -> dart-like
                 // make ray check instead
-                return new CollisionResult3(); // ONUSE: make ray check instead
+                throw new NotImplementedException("ONUSE: make ray check here");
+                return new CollisionResult3();
             }
             normal.Normalize();
             Plane3 plane1 = new Plane3(line1.Pos, normal);

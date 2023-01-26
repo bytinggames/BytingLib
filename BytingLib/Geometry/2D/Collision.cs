@@ -411,8 +411,8 @@ namespace BytingLib
             return cr;
         }
 
-
-        public static bool ColVectorTextureShape(Vector2 vec, TextureShape sprite) //ONUSE: test
+        /// <summary>ONUSE: test</summary>
+        public static bool ColVectorTextureShape(Vector2 vec, TextureShape sprite)
         {
             Rect rect = sprite.GetBoundingRect();
 
@@ -570,7 +570,8 @@ namespace BytingLib
         }
 
 
-        public static bool ColRectangleTextureShape(Rect rect, TextureShape sprite) // ONUSE: fix precision error (bottom of rectangle is 1 px smaller than given)
+        /// <summary>ONUSE: fix precision error (bottom of rectangle is 1 px smaller than given)</summary>
+        public static bool ColRectangleTextureShape(Rect rect, TextureShape sprite)
         {
             Rect rect2 = sprite.GetBoundingRect();
 

@@ -17,7 +17,7 @@
             get => pos;
             set
             {
-                // TODO: it would be better to make it more like a scene graph. That means, that the child shapes positions are only locally
+                // LATER: it would be better to make it more like a scene graph. That means, that the child shapes positions are only locally
                 // but... would it be as performant?
                 Vector3 move = value - pos;
                 for (int i = 0; i < Shapes.Count; i++)
