@@ -231,7 +231,7 @@ namespace BytingLib
             cr = shape.DistanceTo(capsule.Spheres[0], dir);
 
             // calculate distance to top sphere
-            cr.ApplyUnion(shape.DistanceTo(capsule.Spheres[1], dir));
+            cr.MinResult(shape.DistanceTo(capsule.Spheres[1], dir));
 
             return cr;
         }
@@ -267,7 +267,7 @@ namespace BytingLib
             foreach (var shape in collection.ShapesEnumerable)
             {
                 var cr = GetDistance(shape, obj, dir);
-                crTotal.ApplyUnion(cr);
+                crTotal.MinResult(cr);
             }
             return crTotal;
         }
@@ -613,7 +613,7 @@ namespace BytingLib
                 {
                     int j = (i + 1) % 3;
                     CollisionResult3 cr2 = DistSphereLine(sphere, Line3.FromTwoPoints(tri[i], tri[j]), dir);
-                    if (cr.ApplyUnion(cr2))
+                    if (cr.MinResult(cr2))
                     {
                         if (cr.ColTriangleIndex == 2)
                             cr.ColTriangleIndex = 3 + i;

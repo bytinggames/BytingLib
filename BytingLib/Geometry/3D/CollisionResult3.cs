@@ -67,7 +67,7 @@ ColTriangleIndex: {ColTriangleIndex}";
         }
 
         /// <summary>Applies the values of cr to this instance, that result in a larger collision shape.</summary>
-        public bool ApplyUnion(CollisionResult3 cr)
+        public bool MinResult(CollisionResult3 cr)
         {
             if (cr.DistanceReversed.HasValue &&
                 (!DistanceReversed.HasValue || cr.DistanceReversed > DistanceReversed))
@@ -86,7 +86,7 @@ ColTriangleIndex: {ColTriangleIndex}";
         }
 
         /// <summary>Applies the values of cr to this instance, that result in a larger collision shape.</summary>
-        public bool ApplyIntersection(CollisionResult3 cr)
+        public bool MaxResult(CollisionResult3 cr)
         {
             if (cr.DistanceReversed.HasValue &&
                 (!DistanceReversed.HasValue || cr.DistanceReversed < DistanceReversed))
@@ -144,7 +144,7 @@ ColTriangleIndex: {ColTriangleIndex}";
                 // or is a collision happening right now?
                 if (cr.DistanceReversed >= 0)
                 {
-                    return ApplyUnion(cr);
+                    return MinResult(cr);
                 }
             }
             return false;
