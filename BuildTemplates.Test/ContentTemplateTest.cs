@@ -1,12 +1,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 
 namespace BuildTemplates.Test
 {
     [TestClass]
     public class ContentTemplateTest
     {
-        // TODO: make independent of global path. include own content here inside the BuildTemplates.Test project (and namespaces below)
-        const string contentPath = @"D:\Documents\Visual Studio 2017\Projects\BytingLibGame\BytingLibGame\Content\";
+        readonly string contentPath = Path.Combine("..", "..", "..", "Content");
 
         [TestMethod]
         public void TestBuild()

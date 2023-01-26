@@ -1,0 +1,10 @@
+;en;de
+hello;Hello World!;Hallo Welt!
+menue;#
+	text;[2] 2D Scene\n\n[3] 3D Scene;[2] 2D Szene\n\n[3] 3D Szene
+ingame;[F11] Toggle fullscreen\n[Esc] Quit\n[Backspace] Back;[F11] Vollbild umschalten\n[Esc] Beenden\n[Backspace] Zurück
+	language;[L] change language to {0};[L] ändere Sprache zu {0}
+	restart;[R] restart level;[R] Level neustarten
+	player;[WASD] move\n[Left Click] shoot;[WASD] bewegen\n[Links Klick] schießen
+	threed;#
+		camera;[Left Click] Rotate Camera\n[Shift + Left Click] Move Camera\n[Alt + Left Click] or [Mouse Wheel] Zoom Camera;[Linksklick] Kamera drehen\n[Shift + Linksklick] Kamera bewegen\n[Alt + Linksklick] oder [Mausrad] Kamera zoomen
