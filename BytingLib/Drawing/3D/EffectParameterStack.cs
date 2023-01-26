@@ -56,7 +56,7 @@
                 valueStack.Push(val);
 
                 dirty = true;
-                d1 = new OnDispose(() => { valueStack.Pop(); dirty = true; }); // ToDo: not sure, if this is a good idea, cause of GC
+                d1 = new OnDispose(() => { valueStack.Pop(); dirty = true; });
             }
 
             if (useChain != null)
@@ -72,6 +72,37 @@
             }
 
             return d1;
+        }
+        public void Use(T val, Action actionWhile)
+        {
+            bool valChanged = false;
+            if (!valueStack.TryPeek(out T? peek) || !peek!.Equals(val))
+            {
+                valueStack.Push(val);
+
+                valChanged = true;
+                dirty = true;
+            }
+
+            if (useChain != null)
+            {
+                //IDisposable? d2 = useChain(val);
+                //if (d2 != null)
+                //{
+                //    if (d1 != null)
+                //        return new DisposableContainer(d1, d2);
+                //    else
+                //        return d2;
+                //}
+            }
+
+            actionWhile();
+
+            if (valChanged)
+            {
+                valueStack.Pop();
+                dirty = true;
+            }
         }
         public IDisposable? Use(Func<T, T> func)
         {

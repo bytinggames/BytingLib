@@ -1,6 +1,7 @@
 ﻿namespace BytingLib
 {
-    public class OnDispose : IDisposable
+    /// <summary>This is a struct for performance reasons (allocating many instances of this struct)</summary>
+    public struct OnDispose : IDisposable
     {
         private readonly Action onDisposeAction;
 
