@@ -2,7 +2,6 @@
 {
     public class CollisionResult3
     {
-        public bool Collision;
         public float? Distance;
         public float? DistanceReversed;
         public Vector3 AxisCol, AxisColReversed;
@@ -58,23 +57,19 @@
 
         public override string ToString()
         {
-            return "collision: " + Collision
-                 + "\ndistance: " + Distance
-                 + "\ndistanceReversed: " + DistanceReversed
-                 + "\naxisCol: " + AxisCol
-                 + "\naxisColReversed: " + AxisColReversed;
+            return 
+$@"Distance: {Distance}
+DistanceReversed: {DistanceReversed}
+AxisCol: {AxisCol}
+AxisColReversed: {AxisColReversed}
+ColPoint: {ColPoint}
+ColTriangleIndex: {ColTriangleIndex}";
         }
 
-        public void SetCollisionFromDist()
-        {
-            Collision = Math.Sign(Distance!.Value * DistanceReversed!.Value) == -1;
-        }
+        public bool? GetCollisionFromDist() => Distance == null || DistanceReversed == null ? null : Math.Sign(Distance!.Value * DistanceReversed!.Value) == -1;
 
         public bool MinResult(CollisionResult3 cr)
         {
-            if (cr.Collision)
-                Collision = true;
-
             if (!DistanceReversed.HasValue || (cr.DistanceReversed.HasValue && cr.DistanceReversed > DistanceReversed))
             {
                 DistanceReversed = cr.DistanceReversed;
@@ -93,9 +88,6 @@
 
         public void MaxResult(CollisionResult3 cr)
         {
-            if (cr.Collision)
-                Collision = true;
-
             if (!Distance.HasValue || (cr.Distance.HasValue && cr.Distance > Distance))
             {
                 CopyForwardValues(cr);
@@ -114,9 +106,6 @@
         /// <param name="cr"></param>
         public void MaxMinResult(CollisionResult3 cr)
         {
-            if (!cr.Collision)
-                Collision = false;
-
             if (!cr.Distance.HasValue)
             {
                 Distance = null;
@@ -142,9 +131,6 @@
 
         public void MinResultTakeNormalAsReversed(CollisionResult3 cr)
         {
-            if (cr.Collision)
-                Collision = true;
-
             if (cr.Distance.HasValue)
             {
                 if (!Distance.HasValue || cr.Distance.Value < Distance.Value)

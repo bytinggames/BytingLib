@@ -333,7 +333,7 @@ namespace BytingLib
             {
                 return new CollisionResult3()
                 {
-                    Collision = true,
+                    //Collision = true,
                     Distance = 0f,
                     AxisCol = rayDirectionToPlane <= 0 ? plane.Normal : -plane.Normal
                 };
@@ -662,8 +662,8 @@ namespace BytingLib
             cr.AxisCol = colNormal;
             cr.Distance = Vector3.Dot(cr.ColPoint.Value - axis1.Pos, dir);
 
-            if (cr.Distance == 0)
-                cr.Collision = true;
+            //if (cr.Distance == 0)
+            //    cr.Collision = true;
 
             return cr;
         }
@@ -935,8 +935,8 @@ namespace BytingLib
             if (Vector3.Dot(cr.AxisCol, dir) > 0) // axisCol must face to the reverse of dir
                 cr.AxisCol = -cr.AxisCol;
 
-            if (cr.Distance == 0)
-                cr.Collision = true;
+            //if (cr.Distance == 0)
+            //    cr.Collision = true;
 
             return cr;
         }
