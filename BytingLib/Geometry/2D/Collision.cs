@@ -426,7 +426,7 @@ namespace BytingLib
         }
 
 
-        public static bool ColVectorTextureShape(Vector2 vec, TextureShape sprite) //TODO: test
+        public static bool ColVectorTextureShape(Vector2 vec, TextureShape sprite) //ONUSE: test
         {
             Rect rect = sprite.GetBoundingRect();
 
@@ -486,9 +486,58 @@ namespace BytingLib
             return new CollisionResult();
         }
 
-        public static CollisionResult DistRectangleRectangle(Rect rect1, Rect rect2, Vector2 dir) //TODO: improve (not hard)
+        public static CollisionResult DistRectangleRectangle(Rect rect1, Rect rect2, Vector2 dir)
         {
-            return DistPolygonPolygon(rect1.ToPolygon(), rect2.ToPolygon(), dir);
+            CollisionResult cr = new();
+
+            // get distances on both axes forward and backward
+            float[] distX = new float[] { (rect2.Left - rect1.Right) / dir.X, (rect2.Right - rect1.Left) / dir.X };
+            float[] distY = new float[] { (rect2.Top - rect1.Bottom) / dir.Y, (rect2.Bottom - rect1.Top) / dir.Y };
+
+            // move smaller number to index 0
+            if (distX[0] > distX[1])
+                CodeHelper.Swap(ref distX[0], ref distX[1]);
+            if (distY[0] > distY[1])
+                CodeHelper.Swap(ref distY[0], ref distY[1]);
+
+            // check if no collision happens
+            if (distX[1] < distY[0]
+                || distY[1] < distX[0])
+                return cr;
+
+            cr.Collision = true;
+
+            // forward
+            if (distX[0] < distY[0])
+            {
+                // y-axis-collision
+                cr.AxisCol = new Vector2(0, dir.Y > 0 ? -1 : 1);
+                cr.Distance = distY[0];
+            }
+            else
+            {
+                // x-axis-collision
+                cr.AxisCol = new Vector2(dir.X > 0 ? -1 : 1, 0);
+                cr.Distance = distX[0];
+            }
+
+            // reverse
+            if (distX[1] > distY[1])
+            {
+                // y-axis-collision
+                cr.AxisColReversed = new Vector2(0, dir.Y > 0 ? 1 : -1);
+                cr.DistanceReversed = distY[1];
+            }
+            else
+            {
+                // x-axis-collision
+                cr.AxisColReversed = new Vector2(dir.X > 0 ? 1 : -1, 0);
+                cr.DistanceReversed = distX[1];
+            }
+
+            cr.SetCollisionFromDistance();
+
+            return cr;
         }
 
 
