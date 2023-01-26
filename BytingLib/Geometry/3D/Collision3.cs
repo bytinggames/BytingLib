@@ -585,7 +585,7 @@ namespace BytingLib
 
         public static CollisionResult3 DistSphereTriangle(Sphere3 sphere, Triangle3 tri, Vector3 dir)
         {
-            // TODO: optimization: for triangles that only have one face (-> most)
+            // LATER: optimization: for triangles that only have one face (-> most)
             //if (Vector3.Dot(dir, -tri.N) > 0f)
             //    return new CollisionResult3();
 
@@ -1238,7 +1238,7 @@ namespace BytingLib
 
         public static CollisionResult3 DistTriangleAxisRadius(Triangle3 tri, AxisRadius3 axisRadius3, Vector3 dir)
         {
-            // TODO: LATER (although probably introduce a new triangle that has only one face)
+            // LATER: (although probably introduce a new triangle that has only one face)
             //// stop if dir faces toward the backface
             //if (Vector3.Dot(dir, tri.N) > 0)
             //    return new CollisionResult3();
