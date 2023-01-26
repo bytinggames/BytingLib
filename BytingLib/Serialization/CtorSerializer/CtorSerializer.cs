@@ -57,9 +57,15 @@ namespace BytingLib.Serialization
                 foreach (var item in dict)
                 {
                     temp.WriteObject(item.Value, item.Value.GetType());
-                    bw.Write((int)(temp.BaseStream.Position - tempPos)); // object length
+
+                    int objectLength = (int)(temp.BaseStream.Position - tempPos);
+                    bw.Write(objectLength);
+
+                    // copy object from temp buffer to bw
+                    temp.BaseStream.Position = tempPos;
+                    temp.BaseStream.CopyTo(bw.BaseStream, objectLength);
+
                     tempPos = temp.BaseStream.Position;
-                    bw.WriteObject(item.Value, item.Value.GetType()); // TODO: copy from temp buffer instead?
                 }
             }
         }
