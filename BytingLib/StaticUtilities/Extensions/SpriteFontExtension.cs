@@ -48,21 +48,15 @@ namespace BytingLib
 
             if (roundPositionTo != 0)
             {
-                if (_rotation == 0)
-                {
-                    Vector2 drawPos = pos - origin * scale;
+                Vector2 shift = origin * scale;
+                Vector2 drawPos = pos - shift;
 
-                    if (roundPositionTo == 1f)
-                    {
-                        drawPos.Round();
-                    }
-                    else
-                    {
-                        drawPos = (drawPos / roundPositionTo).GetRound() * roundPositionTo;
-                    }
+                if (roundPositionTo == 1f)
+                    drawPos.Round();
+                else
+                    drawPos = (drawPos / roundPositionTo).GetRound() * roundPositionTo;
 
-                    pos = drawPos + origin * scale;
-                }
+                pos = drawPos + shift;
             }
 
             if (underline != null)

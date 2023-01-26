@@ -416,25 +416,17 @@
 
             Vector2 pos = _anchor.pos;
 
-            if (roundPositionTo != 0) // TODO: improve this correction, by calculating the anchor by yourself (the actual position that is drawn to)
+            if (roundPositionTo != 0)
             {
-                if (_rotation == 0)
-                {
-                    Vector2 shift = _anchor.origin * size * (_scale ?? Vector2.One);
+                Vector2 shift = _anchor.origin * size * (_scale ?? Vector2.One);
+                Vector2 drawPos = _anchor.pos - shift;
 
-                    Vector2 drawPos = _anchor.pos - shift;
+                if (roundPositionTo == 1f)
+                    drawPos = drawPos.RoundVectorCustom();
+                else
+                    drawPos = (drawPos / roundPositionTo).RoundVectorCustom() * roundPositionTo;
 
-                    if (roundPositionTo == 1f)
-                    {
-                        drawPos = drawPos.RoundVectorCustom();
-                    }
-                    else
-                    {
-                        drawPos = (drawPos / roundPositionTo).RoundVectorCustom() * roundPositionTo;
-                    }
-
-                    pos = drawPos + shift;
-                }
+                pos = drawPos + shift;
             }
 
 
