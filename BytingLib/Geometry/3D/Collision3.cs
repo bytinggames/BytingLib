@@ -231,7 +231,7 @@ namespace BytingLib
             cr = shape.DistanceTo(capsule.Spheres[0], dir);
 
             // calculate distance to top sphere
-            cr.MinResult(shape.DistanceTo(capsule.Spheres[1], dir));
+            cr.ApplyUnion(shape.DistanceTo(capsule.Spheres[1], dir));
 
             return cr;
         }
@@ -267,7 +267,7 @@ namespace BytingLib
             foreach (var shape in collection.ShapesEnumerable)
             {
                 var cr = GetDistance(shape, obj, dir);
-                crTotal.MinResult(cr);
+                crTotal.ApplyUnion(cr);
             }
             return crTotal;
         }
@@ -613,7 +613,7 @@ namespace BytingLib
                 {
                     int j = (i + 1) % 3;
                     CollisionResult3 cr2 = DistSphereLine(sphere, Line3.FromTwoPoints(tri[i], tri[j]), dir);
-                    if (cr.MinResult(cr2))
+                    if (cr.ApplyUnion(cr2))
                     {
                         if (cr.ColTriangleIndex == 2)
                             cr.ColTriangleIndex = 3 + i;
@@ -884,11 +884,10 @@ namespace BytingLib
         public static CollisionResult3 DistLineLine(Line3 line1, Line3 line2, Vector3 dir)
         {
             // parallel?
-            if (Vector3.Cross(line1.Dir, line2.Dir).Length() == 0)
+            if (Vector3.Cross(line1.Dir, line2.Dir) == Vector3.Zero)
             {
-                // TODO
+                // ONUSE: make correct collision check
                 return new CollisionResult3();
-                throw new NotImplementedException();
             }
 
             Vector3 normal = Vector3.Cross(line1.Dir, dir);
@@ -897,7 +896,7 @@ namespace BytingLib
             {
                 // line1 has same dir (or negative) as dir -> dart-like
                 // make ray check instead
-                return new CollisionResult3(); // TODO: make ray check instead
+                return new CollisionResult3(); // ONUSE: make ray check instead
             }
             normal.Normalize();
             Plane3 plane1 = new Plane3(line1.Pos, normal);
@@ -1214,7 +1213,7 @@ namespace BytingLib
                     CollisionResult3 cr1 = DistLineLine(new Line3(tri1[i], tri1[i2] - tri1[i]),
                         new Line3(tri2[j], tri2[j2] - tri2[j]), dir);
 
-                    cr.MinResultTakeNormalAsReversed(cr1);
+                    cr.ApplyUnionTakeNormalAsReversed(cr1);
                 }
             }
 
@@ -1222,7 +1221,7 @@ namespace BytingLib
             for (int i = 0; i < 3; i++)
             {
                 CollisionResult3 cr1 = DistVectorTriangle(tri1[i], tri2, dir);
-                cr.MinResultTakeNormalAsReversed(cr1);
+                cr.ApplyUnionTakeNormalAsReversed(cr1);
             }
 
 
@@ -1230,7 +1229,7 @@ namespace BytingLib
             for (int i = 0; i < 3; i++)
             {
                 CollisionResult3 cr1 = DistVectorTriangle(tri2[i], tri1, -dir).GetAxisInvert(); // invert dir, cause we check the other way around
-                cr.MinResultTakeNormalAsReversed(cr1);
+                cr.ApplyUnionTakeNormalAsReversed(cr1);
             }
 
             return cr;

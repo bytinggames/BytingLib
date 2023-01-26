@@ -66,16 +66,17 @@ ColPoint: {ColPoint}
 ColTriangleIndex: {ColTriangleIndex}";
         }
 
-        public bool MinResult(CollisionResult3 cr)
+        /// <summary>Applies the values of cr to this instance, that result in a larger collision shape.</summary>
+        public bool ApplyUnion(CollisionResult3 cr)
         {
-            if (!DistanceReversed.HasValue || (cr.DistanceReversed.HasValue && cr.DistanceReversed > DistanceReversed))
+            if (cr.DistanceReversed.HasValue &&
+                (!DistanceReversed.HasValue || cr.DistanceReversed > DistanceReversed))
             {
-                DistanceReversed = cr.DistanceReversed;
-                AxisColReversed = cr.AxisColReversed;
+                CopyBackwardValues(cr);
             }
 
-            // TODO: check if this if line is correct. It differs from MaxResult()
-            if ((!Distance.HasValue && cr.Distance.HasValue) || (cr.Distance.HasValue && cr.Distance < Distance))
+            if (cr.Distance.HasValue &&
+                (!Distance.HasValue || cr.Distance < Distance))
             {
                 CopyForwardValues(cr);
 
@@ -84,50 +85,27 @@ ColTriangleIndex: {ColTriangleIndex}";
             return false;
         }
 
-        public void MaxResult(CollisionResult3 cr)
+        /// <summary>Applies the values of cr to this instance, that result in a larger collision shape.</summary>
+        public bool ApplyIntersection(CollisionResult3 cr)
         {
-            if (!Distance.HasValue || (cr.Distance.HasValue && cr.Distance > Distance))
+            if (cr.DistanceReversed.HasValue &&
+                (!DistanceReversed.HasValue || cr.DistanceReversed < DistanceReversed))
+            {
+                CopyBackwardValues(cr);
+            }
+
+            if (cr.Distance.HasValue &&
+                (!Distance.HasValue || cr.Distance > Distance))
             {
                 CopyForwardValues(cr);
-            }
 
-            if (!DistanceReversed.HasValue || (cr.DistanceReversed.HasValue && cr.DistanceReversed > DistanceReversed))
-            {
-                DistanceReversed = cr.DistanceReversed;
-                AxisColReversed = cr.AxisColReversed;
+                return true;
             }
+            return false;
         }
 
-        /// <summary>
-        /// just for testing first (ray test)
-        /// </summary>
-        /// <param name="cr"></param>
-        public void MaxMinResult(CollisionResult3 cr)
-        {
-            if (!cr.Distance.HasValue)
-            {
-                Distance = null;
-                AxisCol = Vector3.Zero;
-            }
-            else if (!Distance.HasValue || (cr.Distance.HasValue && cr.Distance > Distance))
-            {
-                CopyForwardValues(cr);
-            }
-
-            if (!cr.DistanceReversed.HasValue)
-            {
-                DistanceReversed = null;
-                AxisColReversed = Vector3.Zero;
-            }
-            else if (!DistanceReversed.HasValue || (cr.DistanceReversed.HasValue && cr.DistanceReversed < DistanceReversed))
-            {
-                DistanceReversed = cr.DistanceReversed;
-                AxisColReversed = cr.AxisColReversed;
-            }
-        }
-
-
-        public void MinResultTakeNormalAsReversed(CollisionResult3 cr)
+        /// <summary>Used for triangle distance checking</summary>
+        internal void ApplyUnionTakeNormalAsReversed(CollisionResult3 cr)
         {
             if (cr.Distance.HasValue)
             {
@@ -152,6 +130,12 @@ ColTriangleIndex: {ColTriangleIndex}";
             ColTriangleIndex = cr.ColTriangleIndex;
         }
 
+        private void CopyBackwardValues(CollisionResult3 cr)
+        {
+            DistanceReversed = cr.DistanceReversed;
+            AxisColReversed = cr.AxisColReversed;
+        }
+
         public bool MinResultIfCollisionInPresentOrFuture(CollisionResult3 cr)
         {
             if (cr.DistanceReversed.HasValue)
@@ -160,17 +144,11 @@ ColTriangleIndex: {ColTriangleIndex}";
                 // or is a collision happening right now?
                 if (cr.DistanceReversed >= 0)
                 {
-                    return MinResult(cr);
+                    return ApplyUnion(cr);
                 }
             }
             return false;
         }
 
-        public bool IsDistanceBetween0And1()
-        {
-            if (!Distance.HasValue)
-                return false;
-            return Distance.Value >= 0f && Distance.Value <= 1f;
-        }
     }
 }
