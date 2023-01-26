@@ -2,7 +2,7 @@
 
 namespace BytingLib
 {
-    // TODO: check if this class is coded beautifully
+    /// <summary>ONUSE: check if this class is coded beautifully. Or change it to your needs.</summary>
     public class SoundItem : SoundItemAbstract
     {
         public Ref<SoundEffect> Sfx { get; }

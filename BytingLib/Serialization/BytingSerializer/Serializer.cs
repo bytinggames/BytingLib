@@ -38,7 +38,7 @@ namespace BytingLib.Serialization
                     {
                         List<List<PropInfoAndID>> levels = typeIDs.TypeSerializers[t].PropertyLevels;
 
-                        bw.Write(levels.Count); // TODO layer count
+                        bw.Write(levels.Count);
 
                         for (int i = levels.Count - 1; i >= 0; i--)
                         {
