@@ -81,6 +81,18 @@
             spriteBatch.Draw(GetPixel(spriteBatch), pos, null, color, angle, new Vector2(0, 0.5f), new Vector2(size.Length(), thickness), SpriteEffects.None, depth);
         }
 
+        public static void DrawLineRounded(this SpriteBatch spriteBatch, Vector2 pos1, Vector2 pos2, Color color, float thickness = 1f)
+            => DrawLineRounded(spriteBatch, pos1, pos2, color, spriteBatch.DefaultDepth, thickness);
+        public static void DrawLineRounded(this SpriteBatch spriteBatch, Vector2 pos1, Vector2 pos2, Color color, float depth, float thickness = 1f)
+        {
+            Vector2 dist = pos2 - pos1;
+            float dirAngle = MathF.Atan2(dist.Y, dist.X);
+            float radius = thickness / 2f;
+            spriteBatch.DrawCone(pos1, radius, dirAngle + MathHelper.PiOver2, MathHelper.Pi, color, color, depth);
+            spriteBatch.DrawCone(pos2, radius, dirAngle - MathHelper.PiOver2, MathHelper.Pi, color, color, depth);
+            DrawLine(spriteBatch, pos1, pos2, color, thickness);
+        }
+
         public static Texture2D GetPixel(this SpriteBatch spriteBatch)
         {
             return GetExtended(spriteBatch).PixelTex;
