@@ -1,22 +1,23 @@
-﻿namespace BytingLib
+﻿using BytingLib.Geometry;
+
+namespace BytingLib
 {
-    public class CollisionResult
+    public class CollisionResult : AnyCollisionResult
     {
-        public bool Collision { get; set; } // TODO: probably remove this variable, cause it's redundant cause of distance and distance reversed
-        public float? Distance { get; set; }
-        public float? DistanceReversed { get; set; }
-        public Vector2 AxisCol { get; set; }
-        public Vector2 AxisColReversed { get; set; }
-        public int ColCornerPoly { get; set; }
-        public int ColCornerIndex { get; set; }
+        public Vector2 AxisCol;
+        public Vector2 AxisColReversed;
+        public int ColCornerPoly;
+        public int ColCornerIndex;
 
         public override string ToString()
         {
-            return "collision: " + Collision
-                 + "\ndistance: " + Distance
-                 + "\ndistanceReversed: " + DistanceReversed
-                 + "\naxisCol: " + AxisCol
-                 + "\naxisColReversed: " + AxisColReversed;
+            return
+$@"Distance: {Distance}
+DistanceReversed: {DistanceReversed}
+AxisCol: {AxisCol}
+AxisColReversed: {AxisColReversed}
+ColCornerPoly: {ColCornerPoly}
+ColCornerIndex: {ColCornerIndex}";
         }
 
         public void AxisInvert()
@@ -31,17 +32,9 @@
             return this;
         }
 
-        public void SetCollisionFromDistance()
-        {
-            Collision = Math.Sign(Distance!.Value * DistanceReversed!.Value) == -1;
-        }
-
         /// <summary>Combines the collision result into this one.</summary>
         public void Add(CollisionResult cr)
         {
-            if (cr.Collision)
-                Collision = true;
-
             if (cr.DistanceReversed.HasValue
                 && (!DistanceReversed.HasValue || cr.DistanceReversed > DistanceReversed))
             {

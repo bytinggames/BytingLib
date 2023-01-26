@@ -1,9 +1,9 @@
-﻿namespace BytingLib
+﻿using BytingLib.Geometry;
+
+namespace BytingLib
 {
-    public class CollisionResult3
+    public class CollisionResult3 : AnyCollisionResult
     {
-        public float? Distance;
-        public float? DistanceReversed;
         public Vector3 AxisCol, AxisColReversed;
         /// <summary>
         /// is calculated by letting one shape move towards another shape, that does not move.
@@ -65,8 +65,6 @@ AxisColReversed: {AxisColReversed}
 ColPoint: {ColPoint}
 ColTriangleIndex: {ColTriangleIndex}";
         }
-
-        public bool? GetCollisionFromDist() => Distance == null || DistanceReversed == null ? null : Math.Sign(Distance!.Value * DistanceReversed!.Value) == -1;
 
         public bool MinResult(CollisionResult3 cr)
         {

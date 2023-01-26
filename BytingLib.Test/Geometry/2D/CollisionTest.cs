@@ -30,7 +30,6 @@ namespace BytingLib.Test.Geometry._2D
 
                     Assert.AreEqual(crPolygonsCalculation.AxisCol, crRectCalculation.AxisCol);
                     Assert.AreEqual(crPolygonsCalculation.AxisColReversed, crRectCalculation.AxisColReversed);
-                    Assert.AreEqual(crPolygonsCalculation.Collision, crRectCalculation.Collision);
                     Assert.AreEqual(crPolygonsCalculation.Distance, crRectCalculation.Distance);
                     Assert.AreEqual(crPolygonsCalculation.DistanceReversed, crRectCalculation.DistanceReversed);
                 }
