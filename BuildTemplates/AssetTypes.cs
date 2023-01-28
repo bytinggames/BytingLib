@@ -13,7 +13,17 @@ namespace BuildTemplates
             { "string", ("Txt", new[] { "json", "ini", "config", "txt" } )},
             { "Model", ("Model", new[] { "fbx" }) },
             { "MyModel", ("Model", new[] { "myfbx" }) },
+            { "ModelGL", ("ModelGL", new[] { "gltf" }) },
+            { "byte[]", ("Bytes", new[] { "bin" }) },
             { "Animation", ("Ani", new[] { "ani" }) }
+
+            // when adding new asset types, also update:
+            // ContentTemplate.cs File() constructor
+            // maybe updateContentTemplate.cs PrintMGCB()
+            // DirectorySupervisor.cs FileStamp.AssetName
+            // HotReloadContent.cs GetFiles() Get("..."); + maybe dependencies
+            // ContentManagerRaw.cs Load<T>()
+            // ExtensionToAssetType.cs Convert()
         };
 
         public static string? Convert(string extension)

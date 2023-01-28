@@ -81,7 +81,10 @@
             }
         }
 
-        private static string GetTechniqueName(VertexDeclaration vertexDeclaration)
+        /// <summary>
+        /// TODO: improve
+        /// </summary>
+        public static string GetTechniqueName(VertexDeclaration vertexDeclaration)
         {
             string techniqueName;
             switch (vertexDeclaration.VertexStride)
@@ -169,6 +172,31 @@
         {
             foreach (var p in parameters)
                 p.Dispose();
+        }
+
+
+
+
+        /// <summary>only for testing currently</summary>
+        public void Draw(VertexBuffer vertexBuffer, IndexBuffer indexBuffer)
+        {
+            var e = effect.Value;
+
+            gDevice.SetVertexBuffer(vertexBuffer);
+            gDevice.Indices = indexBuffer;
+
+            string techniqueName = GetTechniqueName(vertexBuffer.VertexDeclaration);
+
+            using (UseTechnique(techniqueName))
+            {
+                ApplyParameters();
+                foreach (var pass in e.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    gDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
+                        0, 0, indexBuffer.IndexCount / 3);
+                }
+            }
         }
     }
 }

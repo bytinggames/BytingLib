@@ -65,7 +65,7 @@ namespace BytingLib.Test.ContentTest
             game.RunOneFrame(); // must be called to initialize the game
 
             ContentManagerRaw rawContent = new ContentManagerRaw(game.Services, "Content");
-            collector = new ContentCollector(rawContent);
+            collector = new ContentCollector(rawContent, game.GraphicsDevice);
             hotReloadContent = new HotReloadContent(game.Services, collector, "ContentHot");
         }
 

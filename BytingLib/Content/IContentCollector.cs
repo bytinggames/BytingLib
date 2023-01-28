@@ -1,8 +1,12 @@
 ﻿namespace BytingLib
 {
-    public interface IContentCollector : IDisposable
+    public interface IContentCollectorUse
     {
         Ref<T> Use<T>(string assetName);
+    }
+
+    public interface IContentCollector : IContentCollectorUse, IDisposable
+    {
         Ref<string> UseString(string assetNameWithExtension);
         Ref<byte[]> UseBytes(string assetNameWithExtension);
         AssetHolder<T>? GetAssetHolder<T>(string assetName);

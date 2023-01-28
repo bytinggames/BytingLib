@@ -24,5 +24,13 @@ namespace BytingLib
             actionWhile();
             setVariable(store);
         }
+
+        public static OnDispose ChangeVarTemporarily<T>(T getVariable, Action<T> setVariable, T tempValue)
+        {
+            T store = getVariable;
+            setVariable(tempValue);
+
+            return new OnDispose(() => setVariable(store));
+        }
     }
 }

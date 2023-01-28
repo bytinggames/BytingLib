@@ -2,6 +2,7 @@
 
 namespace BytingLib
 {
+
     /// <summary>
     /// Shouldn't be used to load content directly. Use <see cref="ContentCollector"/> as a wrapper instead.
     /// </summary>
@@ -13,18 +14,31 @@ namespace BytingLib
         {
         }
 
+
         /// <summary>Foces the asset to be loaded from disc.</summary>
         /// <exception cref="ContentLoadException"/>
-        public override T Load<T>(string assetName)
+        public override T Load<T>(string assetName) => Load<T>(assetName, null);
+
+        /// <summary>Foces the asset to be loaded from disc.</summary>
+        /// <exception cref="ContentLoadException"/>
+        public T Load<T>(string assetName, ExtendedLoadParameter? extendedLoad)
         {
             T asset;
             if (typeof(T) == typeof(AnimationData))
                 asset = LoadAnimationData<T>(assetName);
             else if (typeof(T) == typeof(string))
                 asset = (T)(object)LoadText(assetName);
+            else if (typeof(T) == typeof(ModelGL))
+            {
+                if (extendedLoad == null)
+                    throw new BytingException("Couldn't load ModelGL. Use Load(assetName, contentCollector) instead.");
+                asset = (T)(object)LoadModelGL(assetName, extendedLoad.Value);
+            }
+            else if (typeof(T) == typeof(byte[]))
+                asset = (T)(object)LoadByteArray(assetName);
             else
                 asset = ReadAsset<T>(assetName, null);
-            
+
             LoadedAssets.TryAdd(assetName, asset);
             return asset;
         }
@@ -46,6 +60,25 @@ namespace BytingLib
                 throw new ContentLoadException("file " + filePath + " does not exist");
 
             return File.ReadAllText(filePath);
+        }
+
+        private byte[] LoadByteArray(string assetNameWithExtension)
+        {
+            string filePath = Path.Combine(RootDirectory, assetNameWithExtension.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(filePath))
+                throw new ContentLoadException("file " + filePath + " does not exist");
+
+            return File.ReadAllBytes(filePath);
+        }
+
+        private ModelGL LoadModelGL(string assetName, ExtendedLoadParameter extendedLoad)
+        {
+            string filePath = Path.Combine(RootDirectory, assetName.Replace('/', Path.DirectorySeparatorChar)) + ".gltf";
+            if (!File.Exists(filePath))
+                throw new ContentLoadException("file " + filePath + " does not exist");
+
+            //throw new NotImplementedException();
+            return new ModelGL(filePath, RootDirectory, extendedLoad.GraphicsDevice, extendedLoad.ContentCollector);
         }
 
         /// <summary>Forces the asset to be unloaded from RAM.</summary>

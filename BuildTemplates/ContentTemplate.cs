@@ -56,7 +56,10 @@
 
                 foreach (var file in files)
                 {
-                    assets += endl + tab + file.Print(contentDirectory);
+                    string? print = file.Print(contentDirectory);
+                    if (print == null)
+                        continue;
+                    assets += endl + tab + print;
                 }
 
                 string output = $@"public class {className}
@@ -149,16 +152,19 @@
                 {
                     customPrint = $"public Animation {ToVariableName(name)}Ani => disposables.Use(collector.UseAnimation(\"{{0}}{name}\"));";
                 }
-                else
-                if (extension == "txt")
+                else if (extension == "txt")
                 {
-                    customPrint = $"public Ref<string> {ToVariableName(name)}Txt => disposables.Use(collector.Use<string>(\"{{0}}{_name}\"));";
+                    customPrint = $"public Ref<string> {ToVariableName(name)}Txt => disposables.Use(collector.Use<string>(\"{{0}}{fullName}\"));";
+                }
+                else if (extension == "bin")
+                {
+                    customPrint = $"public Ref<byte[]> {ToVariableName(name)}Bytes => disposables.Use(collector.Use<byte[]>(\"{{0}}{fullName}\"));";
                 }
                 else
                     assetType = AssetTypes.Convert(extension)!;
             }
 
-            public string Print(string contentDirectory)
+            public string? Print(string contentDirectory)
             {
                 if (customPrint != null)
                     return string.Format(customPrint, contentDirectory);
@@ -170,7 +176,7 @@
                         return $"public Ref<{assetType}> {ToVariableName(name)}{VarName} => disposables.Use(collector.Use<{assetType}>(\"{contentDirectory + name}\"));";
                     }
                     else
-                        return "";
+                        return null;
                 }
             }
 
@@ -259,15 +265,12 @@
 /processor:MyModelProcessor";
                         break;
 
-                        // copy
-                    case "ani":
+                    // copy
+                    default:
                         return $@"
 #begin {contentDirectory}{fullName}
 /copy:{contentDirectory}{fullName}
 ";
-
-                    default:
-                        return "# couldn't generate mgcb code for file " + fullName;
                 }
 
 

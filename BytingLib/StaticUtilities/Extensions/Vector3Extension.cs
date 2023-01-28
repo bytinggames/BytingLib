@@ -116,5 +116,10 @@
         }
 
         public static float Average(this Vector3 v) => (v.X + v.Y + v.Z) / 3f;
+
+        public static Vector3 FromArray(float[] arr)
+        {
+            return new Vector3(arr[0], arr[1], arr[2]);
+        }
     }
 }

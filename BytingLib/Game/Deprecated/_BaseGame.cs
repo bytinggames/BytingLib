@@ -62,7 +62,7 @@
 
             ContentManagerRawPipe _rawContent = new ContentManagerRawPipe(new ContentManagerRaw(Services, "Content")); disposables.Add(_rawContent);
             rawContent = _rawContent;
-            contentCollector = new ContentCollector(rawContent); disposables.Add(contentCollector);
+            contentCollector = new ContentCollector(rawContent, GraphicsDevice); disposables.Add(contentCollector);
 
 #if DEBUG
             hotReloadContent = new HotReloadContent(Services, contentCollector, Path.Combine("..", "..", "..", "Content"));

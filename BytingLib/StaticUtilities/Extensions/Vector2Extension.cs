@@ -99,5 +99,10 @@
         {
             return new Vector2(MathF.Sqrt(v.X), MathF.Sqrt(v.Y));
         }
+
+        public static Vector2 FromArray(float[] arr)
+        {
+            return new Vector2(arr[0], arr[1]);
+        }
     }
 }

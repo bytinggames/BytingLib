@@ -31,7 +31,6 @@
             }
         }
 
-
         public static Matrix CreateMatrixRotationFromTo(Vector3 from, Vector3 to)
         {
             if (from == to)
@@ -42,6 +41,12 @@
             float angle = MathF.Acos(dot);
             Vector3 axis = Vector3.Normalize(Vector3.Cross(from, to));
             return Matrix.CreateFromAxisAngle(axis, angle);
+        }
+
+        public static Matrix GetInverseTransposeWithoutTranslation(this Matrix m)
+        {
+            m.Translation = Vector3.Zero;
+            return Matrix.Transpose(Matrix.Invert(m));
         }
     }
 }

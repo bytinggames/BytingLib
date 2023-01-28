@@ -6,8 +6,9 @@
         private readonly string relativeAssetPath = "";
         private readonly Dictionary<string, object> loadedAssets = new(); // dictionary of AssetHolder<T>, but unknown T
         private readonly Dictionary<string, Dictionary<object, Action<object>>> onLoad = new();
+        private readonly ExtendedLoadParameter extendedLoad;
 
-        public ContentCollector(IContentManagerRaw content)
+        public ContentCollector(IContentManagerRaw content, GraphicsDevice gDevice)
         {
             this.contentRaw = content;
 
@@ -16,6 +17,8 @@
                 if (!relativeAssetPath.EndsWith("/"))
                     relativeAssetPath += "/";
             }
+
+            extendedLoad = new(this, gDevice);
         }
 
         private string ToTotalAssetName(string assetName)
@@ -31,7 +34,7 @@
             object? assetHolder;
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
             {
-                assetHolder = new AssetHolder<T>(contentRaw.Load<T>(assetName)!, assetName, Unuse);
+                assetHolder = new AssetHolder<T>(contentRaw.Load<T>(assetName, extendedLoad), assetName, Unuse);
                 loadedAssets.Add(assetName, assetHolder);
 
                 if (onLoad.ContainsKey(assetName))
@@ -151,7 +154,7 @@
             if (assetHolder is null) throw new ArgumentNullException(nameof(assetHolder));
 
             contentRaw.UnloadAsset(assetHolder.AssetName);
-            T asset = contentRaw.Load<T>(assetHolder.AssetName);
+            T asset = contentRaw.Load<T>(assetHolder.AssetName, extendedLoad);
 
             assetHolder.Replace(asset);
 

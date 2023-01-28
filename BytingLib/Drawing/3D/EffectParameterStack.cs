@@ -6,6 +6,8 @@
         public EffectParameterStack(Ref<Effect> effect, string parameter)
         {
             effectParameter = effect.Value.Parameters[parameter];
+            if (effectParameter == null)
+                throw new KeyNotFoundException("couldn't find parameter '" + parameter + "' in effect " + effect.Value.Name);
 
             effect.OnReload += RefreshEffect;
             this.effect = effect;

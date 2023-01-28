@@ -9,6 +9,7 @@ namespace BytingLib
 
         DirectorySupervisor dirSupervisor;
         IContentCollector content;
+        GraphicsDevice gDevice;
 
         string sourceContentDir;
 
@@ -48,6 +49,8 @@ namespace BytingLib
 
             TempContentRaw = new ContentManagerRaw(serviceProvider, contentBuilder.OutputPath);
 
+            gDevice = (serviceProvider.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService)!.GraphicsDevice;
+
             if (expectEmptyDir)
                 UpdateChanges();
         }
@@ -62,10 +65,12 @@ namespace BytingLib
             //GetFromFolder("Sounds", "*.ogg|*.wav");
             //GetFromFolder("Textures", "*.png|*.jpg|*.jpeg|*.ani");
             //GetFromFolder("", "*.txt|*.csv|*.json|*.xml|*.ini|*.config");
-            Get("*.fx|*.fxh|*.xnb|*.spritefont|*.fbx|*.ogg|*.wav|*.png|*.jpg|*.jpeg|*.ani|*.txt|*.csv|*.json|*.xml|*.ini|*.config");
+            Get("*.fx|*.fxh|*.xnb|*.spritefont|*.fbx|*.ogg|*.wav|*.png|*.jpg|*.jpeg|*.ani|*.txt|*.csv|*.json|*.xml|*.ini|*.config|*.gltf|*.bin");
             GetFile("Loca.loca");
 
+            dependencies.Clear();
             InitEffectDependencies(files);
+            InitGLTFDependencies(files);
 
             //void GetFromFolder(string folder, string searchPattern)
             //{
@@ -108,7 +113,6 @@ namespace BytingLib
 
         private void InitEffectDependencies(IEnumerable<string> allFiles)
         {
-            dependencies.Clear();
             // add effect dependencies (fx depend on fxh's)
             const string includeStr = "#include \"";
             foreach (var f in allFiles.Where(f => f.EndsWith(".fx") || f.EndsWith(".fxh")))
@@ -122,7 +126,31 @@ namespace BytingLib
                     i += includeStr.Length;
                     int i2 = shaderCode.IndexOf("\"", i);
                     string file = shaderCode.Substring(i, i2 - i);
-                    file = Path.Combine("Effects", file);
+                    file = Path.Combine(Path.GetDirectoryName(localFilePath)!, file);
+                    if (!dependencies.ContainsKey(file))
+                        dependencies.Add(file, new List<string>());
+                    dependencies[file].Add(localFilePath);
+
+                    i = i2 + 1;
+                }
+            }
+        }
+        private void InitGLTFDependencies(IEnumerable<string> allFiles)
+        {
+            // add effect dependencies (gltf depend on bin's)
+            const string findBin = "\"uri\" : \"";
+            foreach (var f in allFiles.Where(f => f.EndsWith(".gltf")))
+            {
+                string localFilePath = f.Substring(sourceContentDir.Length + 1);
+
+                string json = File.ReadAllText(f);
+                int i = 0;
+                while ((i = json.IndexOf(findBin, i)) != -1)
+                {
+                    i += findBin.Length;
+                    int i2 = json.IndexOf("\"", i);
+                    string file = json.Substring(i, i2 - i);
+                    file = Path.Combine(Path.GetDirectoryName(localFilePath)!, file);
                     if (!dependencies.ContainsKey(file))
                         dependencies.Add(file, new List<string>());
                     dependencies[file].Add(localFilePath);
@@ -140,6 +168,12 @@ namespace BytingLib
                 {
                     for (int j = 0; j < d.Count; j++)
                     {
+                        // if dependent files are already included, remove them so they aren't added two times, and so that the dependent file gets loaded after the dependency
+                        var matches = changes.Modified.FindAll(f => f.LocalPath == d[j]).ToArray();
+                        for (int k = 0; k < matches.Length; k++)
+                            changes.Modified.Remove(matches[k]);
+
+                        // add dependent file
                         changes.Modified.Add(new DirectorySupervisor.FileStamp(Path.Combine(sourceContentDir, d[j]), DateTime.Now, sourceContentDir));
                     }
                 }
@@ -226,7 +260,7 @@ namespace BytingLib
             }
             else
             {
-                T? newlyLoadedAsset = TempContentRaw.Load<T>(assetName);
+                T? newlyLoadedAsset = TempContentRaw.Load<T>(assetName, new(content, gDevice));
                 if (newlyLoadedAsset == null)
                     return;
                 assetHolder.Replace(newlyLoadedAsset);

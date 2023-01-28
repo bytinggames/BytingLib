@@ -14,8 +14,17 @@
             this.disposables = disposables.Where(f => f != null).ToList()!;
         }
 
-        public T Use<T>(T disposable) where T : IDisposable
+        public T Use<T>(T disposable) where T : notnull, IDisposable
         {
+            disposables.Add(disposable);
+            return disposable;
+        }
+
+        /// <summary>Same as Use, with the difference, that null can be passed as disposable. In this case this method does nothing.</summary>
+        public T? UseCheckNull<T>(T? disposable) where T : IDisposable
+        {
+            if (disposable == null)
+                return disposable;
             disposables.Add(disposable);
             return disposable;
         }

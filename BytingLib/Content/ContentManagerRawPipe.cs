@@ -29,20 +29,20 @@ namespace BytingLib
         }
 
         /// <exception cref="ContentLoadException"/>
-        public T Load<T>(string assetName)
+        public T Load<T>(string assetName, ExtendedLoadParameter? extendedLoad)
         {
             for (int i = 0; i < ContentManagers.Count - 1; i++)
             {
                 try
                 {
-                    return ContentManagers[i].Load<T>(assetName);
+                    return ContentManagers[i].Load<T>(assetName, extendedLoad);
                 }
                 catch (ContentLoadException)
                 {
                 }
             }
 
-            return ContentManagers.Last().Load<T>(assetName); // if this method throws an exception it is not catched, but passed to the calling function.
+            return ContentManagers.Last().Load<T>(assetName, extendedLoad); // if this method throws an exception it is not catched, but passed to the calling function.
         }
 
         public void UnloadAsset(string assetName)

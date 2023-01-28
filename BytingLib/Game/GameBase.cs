@@ -23,7 +23,7 @@
             disposables.Add(spriteBatch);
 
             contentRawPipe = Use(new ContentManagerRawPipe(new ContentManagerRaw(g.Services, "Content")));
-            contentCollector = new ContentCollector(contentRawPipe);
+            contentCollector = new ContentCollector(contentRawPipe, g.GraphicsDevice);
 
 #if DEBUG
             hotReloadContent = new HotReloadContent(g.Services,

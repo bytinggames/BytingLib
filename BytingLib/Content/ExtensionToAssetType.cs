@@ -22,6 +22,8 @@ namespace BytingLib
                 "fbx" => typeof(Model),
                 "ani" => typeof(AnimationData),
                 "csv" or "txt" or "ini" or "config" or "xml" or "json" => typeof(string),
+                "gltf" => typeof(ModelGL),
+                "bin" => typeof(byte[]),
                 _ => null,
             };
             return assetType;
