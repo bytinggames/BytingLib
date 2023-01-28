@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -124,7 +125,7 @@ namespace BytingLib
     class PbrMetallicRoughness
     {
         public Vector4? BaseColor;
-        public Ref<Texture2D> BaseColorTex;
+        public TextureGL BaseColorTexSampler;
         public float MetallicFactor;
         public float RoughnessFactor;
 
@@ -133,9 +134,24 @@ namespace BytingLib
             DisposableContainer toDispose = new();
             if (BaseColor != null)
                 toDispose.UseCheckNull(shader.Color.Use(BaseColor.Value));
-            if (BaseColorTex != null)
-                toDispose.UseCheckNull(shader.ColorTex.Use(BaseColorTex.Value));
+            if (BaseColorTexSampler != null)
+            {
+                toDispose.Use(shader.UseSampler(BaseColorTexSampler.SamplerState));
+                toDispose.UseCheckNull(shader.ColorTex.Use(BaseColorTexSampler.Texture.Value));
+            }
             return toDispose;
+        }
+    }
+
+    class TextureGL
+    {
+        public Ref<Texture2D> Texture;
+        public SamplerState SamplerState;
+
+        public TextureGL(Ref<Texture2D> texture, SamplerState samplerState)
+        {
+            Texture = texture;
+            SamplerState = samplerState;
         }
     }
 
@@ -290,6 +306,8 @@ namespace BytingLib
             Dictionary<int, Mesh> meshes = new();
             Dictionary<int, IndexBuffer> indexBuffers = new();
             Dictionary<string, VertexBuffer> vertexBuffers = new();
+            Dictionary<int, TextureGL> textures = new();
+            Dictionary<int, SamplerState> samplers = new();
 
             string json = File.ReadAllText(filePath);
             string gltfDir = Path.GetDirectoryName(filePath)!;
@@ -392,13 +410,10 @@ namespace BytingLib
                         if (baseColorTexture != null)
                         {
                             int texIndex = baseColorTexture["index"].GetValue<int>();
-                            var texture = texturesArr[texIndex];
-                            var sampler = samplersArr[texture["sampler"].GetValue<int>()];
-                            var image = imagesArr[texture["source"].GetValue<int>()];
-                            var imageUri = image["uri"].GetValue<string>();
+                            TextureGL textureSampler = GetTexture(texIndex);
 
                             metallicRoughness ??= new PbrMetallicRoughness();
-                            metallicRoughness.BaseColorTex = disposables.Use(contentCollector.Use<Texture2D>(UriToContentFile(imageUri, gltfDirRelativeToContent)));
+                            metallicRoughness.BaseColorTexSampler = textureSampler;
                         }
 
                         // get base color
@@ -408,6 +423,19 @@ namespace BytingLib
                             float[] c = baseColorFactor.AsArray().Select(f => f.GetValue<float>()).ToArray();
                             metallicRoughness ??= new PbrMetallicRoughness();
                             metallicRoughness.BaseColor = new Vector4(c[0], c[1], c[2], c[3]);
+                        }
+                    }
+
+                    var extras = materialNode["extras"];
+                    if (extras != null)
+                    {
+                        // get extra base color
+                        var baseColorFactor = extras["baseColorFactor"];
+                        if (baseColorFactor != null)
+                        {
+                            float[] c = baseColorFactor.AsArray().Select(f => f.GetValue<float>()).ToArray();
+                            metallicRoughness ??= new PbrMetallicRoughness();
+                            metallicRoughness.BaseColor = new Vector4(c[0], c[1], c[2], c.Length > 3 ? c[3] : 1f);
                         }
                     }
 
@@ -518,6 +546,60 @@ namespace BytingLib
                     return vertexBuffer;
                 }
 
+                TextureGL GetTexture(int key)
+                {
+                    TextureGL _texture;
+                    if (textures.TryGetValue(key, out _texture))
+                        return _texture;
+
+                    var texture = texturesArr[key];
+                    int samplerId = texture["sampler"].GetValue<int>();
+                    var sampler = GetSampler(samplerId);
+                    var image = imagesArr[texture["source"].GetValue<int>()];
+                    var imageUri = image["uri"].GetValue<string>();
+
+                    Ref<Texture2D> tex = disposables.Use(contentCollector.Use<Texture2D>(UriToContentFile(imageUri, gltfDirRelativeToContent)));
+
+                    _texture = new TextureGL(tex, sampler);
+                    textures.Add(key, _texture);
+                    return _texture;
+                }
+
+                SamplerState GetSampler(int key)
+                {
+                    SamplerState _sampler;
+                    if (samplers.TryGetValue(key, out _sampler))
+                        return _sampler;
+
+                    var sampler = samplersArr[key];
+                    int magFilter = sampler["magFilter"].GetValue<int>();
+                    int minFilter = sampler["minFilter"].GetValue<int>();
+                    TextureFilter textureFilter = GetTextureFilter(magFilter, minFilter);
+
+                    _sampler = new SamplerState()
+                    {
+                        Filter = textureFilter,
+                          
+                    };
+
+                    var wrap = sampler["wrapS"];
+                    if (wrap != null)
+                    {
+                        int wrapInt = wrap.GetValue<int>();
+                        _sampler.AddressU = GetAddressMode(wrapInt);
+                    }
+                    wrap = sampler["wrapT"];
+                    if (wrap != null)
+                    {
+                        int wrapInt = wrap.GetValue<int>();
+                        _sampler.AddressV = GetAddressMode(wrapInt);
+                    }
+
+
+                    samplers.Add(key, _sampler);
+                    return _sampler;
+
+                }
                 static int Convert8BitColorTo4Bit(ref byte[] bufferBytes)
                 {
                     int componentSize;
@@ -568,17 +650,81 @@ namespace BytingLib
 
                     return transform;
                 }
+                static TextureFilter GetTextureFilter(int magFilter, int minFilter)
+                {
+                    TextureFilter textureFilter;
+                    switch (magFilter)
+                    {
+                        case 9728: // NEAREST
+                            switch (minFilter)
+                            {
+                                case 9728: // NEAREST
+                                    textureFilter = TextureFilter.Point;
+                                    break;
+                                case 9984: // NEAREST_MIPMAP_NEAREST
+                                    textureFilter = TextureFilter.Point;
+                                    break;
+                                case 9985: // LINEAR_MIPMAP_NEAREST
+                                    textureFilter = TextureFilter.MinLinearMagPointMipPoint;
+                                    break;
+                                case 9987: // LINEAR_MIPMAP_LINEAR
+                                    textureFilter = TextureFilter.MinLinearMagPointMipLinear; ;
+                                    break;
+                                case 9986: // NEAREST_MIPMAP_LINEAR
+                                case 9729: // LINEAR
+                                default:
+                                    throw new NotImplementedException();
+                            }
+                            break;
+                        case 9729: // LINEAR
+                            switch (minFilter)
+                            {
+                                case 9729: // LINEAR
+                                    textureFilter = TextureFilter.Linear;
+                                    break;
+                                case 9986: // NEAREST_MIPMAP_LINEAR
+                                    textureFilter = TextureFilter.MinPointMagLinearMipLinear;
+                                    break;
+                                case 9987: // LINEAR_MIPMAP_LINEAR
+                                    textureFilter = TextureFilter.Linear;
+                                    break;
+                                case 9728: // NEAREST
+                                case 9984: // NEAREST_MIPMAP_NEAREST
+                                case 9985: // LINEAR_MIPMAP_NEAREST
+                                default:
+                                    throw new NotImplementedException();
+                            }
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+
+                    return textureFilter;
+                }
+                static TextureAddressMode GetAddressMode(int wrapInt)
+                {
+                    return wrapInt switch
+                    {
+                        33071 => TextureAddressMode.Clamp,
+                        33648 => TextureAddressMode.Mirror,
+                        10497 => TextureAddressMode.Wrap,
+                        _ => throw new NotImplementedException(),
+                    };
+                }
             }
 #nullable restore
         }
 
         private string UriToContentFile(string uri, string gltfDirRelativeToContent)
         {
-            return UriToContentFileWithExtension(Path.GetFileNameWithoutExtension(uri), gltfDirRelativeToContent);
+            string ext = Path.GetExtension(uri);
+            return UriToContentFileWithExtension(uri.Remove(uri.Length - ext.Length), gltfDirRelativeToContent);
         }
         private string UriToContentFileWithExtension(string uri, string gltfDirRelativeToContent)
         {
-            return Path.Combine(gltfDirRelativeToContent, uri).Replace('\\', '/');
+            string fullPath = Path.GetFullPath(Path.Combine(gltfDirRelativeToContent, uri));
+            fullPath = fullPath.Substring(Environment.CurrentDirectory.Length + 1);
+            return fullPath.Replace('\\', '/');
         }
 
         private byte[] GetBytesFromBuffer(JsonArray bufferViewsArr, JsonArray buffersArr, JsonNode? accessor, IContentCollectorUse contentCollector, string gltfDirRelativeToContent)
