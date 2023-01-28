@@ -21,20 +21,24 @@ namespace BytingLib
 
     class Node
     {
-        public Mesh Mesh;
+        public Mesh? Mesh;
         public Matrix Transform;
         public string? Name;
+        public List<Node> Children = new();
 
-        public Node(Mesh mesh, Matrix transform)
+        public Node(Matrix transform)
         {
-            Mesh = mesh;
             Transform = transform;
         }
 
         internal void Draw(IShaderGL shader)
         {
-            using (shader.World.Use(f => f * Transform))
-                Mesh.Draw(shader);
+            using (shader.World.Use(f => Transform * f))
+            {
+                Mesh?.Draw(shader);
+                for (int i = 0; i < Children.Count; i++)
+                    Children[i].Draw(shader);
+            }
         }
 
         public override string? ToString()
@@ -252,6 +256,8 @@ namespace BytingLib
                 "NORMAL" => VertexElementUsage.Normal,
                 "TEXCOORD_0" => VertexElementUsage.TextureCoordinate,
                 "COLOR_0" => VertexElementUsage.Color,
+                "JOINTS_0" => VertexElementUsage.BlendIndices,
+                "WEIGHTS_0" => VertexElementUsage.BlendWeight,
                 _ => throw new NotImplementedException(),
             };
         }
@@ -342,10 +348,29 @@ namespace BytingLib
 
                     var node = nodesArr[id];
                     Matrix transform = GetTransform(node);
-                    int meshId = node["mesh"].GetValue<int>();
                     string name = node["name"].GetValue<string>();
-                    _node = new Node(GetMesh(meshId), transform);
+
+                    _node = new Node(transform);
                     _node.Name = name;
+
+                    var mesh = node["mesh"];
+                    if (mesh != null)
+                    {
+                        int meshId = node["mesh"].GetValue<int>();
+                        _node.Mesh = GetMesh(meshId);
+                    }
+
+                    var children = node["children"];
+                    if (children != null)
+                    {
+                        var childrenArr = children.AsArray();
+                        for (int i = 0; i < childrenArr.Count; i++)
+                        {
+                            int childId = childrenArr[i].GetValue<int>();
+                            _node.Children.Add(GetNode(childId));
+                        }
+                    }
+
                     nodes.Add(id, _node);
                     return _node;
                 }
@@ -444,8 +469,13 @@ namespace BytingLib
                         var culling = extras["culling"];
                         if (culling != null)
                         {
-                            if (culling.GetValue<int>() == 1)
+                            int cull = culling.GetValue<int>();
+                            if (cull > 0)
                                 material.RasterizerState = RasterizerState.CullClockwise;
+                            else if (cull < 0)
+                                material.RasterizerState = RasterizerState.CullCounterClockwise;
+                            else
+                                material.RasterizerState = RasterizerState.CullNone;
                         }
                     }
 
