@@ -34,7 +34,7 @@ namespace BytingLib
         public Skin? Skin;
         public Matrix LocalTransform;
         public Matrix JointTransform = Matrix.Identity;
-        public Matrix GlobalTransform; // needs to be updated according to LocalTransform and all local transforms of the parents
+        public Matrix GlobalJointTransform; // needs to be updated according to LocalTransform and all local transforms of the parents
         public int GlobalTransformCalculationId;
         public string? Name;
         public List<Node> Children = new();
@@ -49,7 +49,7 @@ namespace BytingLib
         internal void Draw(IShaderGLSkinned shader)
         {
             using (shader.World.Use(f => LocalTransform * f))
-            using (Skin?.Use(shader))
+            using (Skin?.Use(shader, shader.World.GetValue()))
             {
                 Mesh?.Draw(shader);
                 for (int i = 0; i < Children.Count; i++)
@@ -64,11 +64,6 @@ namespace BytingLib
             return "Node " + Name;
         }
 
-        internal void ApplyTransform(Matrix matrix)
-        {
-            LocalTransform *= matrix;
-        }
-
         internal void CalculateGlobalTransform(int globalTransformCalculationId)
         {
             if (GlobalTransformCalculationId == globalTransformCalculationId)
@@ -76,12 +71,12 @@ namespace BytingLib
 
             if (Parent == null)
             {
-                GlobalTransform = LocalTransform * JointTransform;
+                GlobalJointTransform = JointTransform * LocalTransform;
             }
             else
             {
                 Parent.CalculateGlobalTransform(globalTransformCalculationId);
-                GlobalTransform = Parent.GlobalTransform * LocalTransform * JointTransform;
+                GlobalJointTransform = JointTransform * LocalTransform * Parent.GlobalJointTransform;
             }
             GlobalTransformCalculationId = globalTransformCalculationId;
         }
@@ -198,15 +193,12 @@ namespace BytingLib
         public readonly Matrix[] InverseBindMatrices;
         public readonly Node[] Joints;
 
-        private Matrix[] globalJointTransform;
         private Matrix[] jointMatrices;
 
         public Skin(Matrix[] inverseBindMatrices, Node[] joints)
         {
             InverseBindMatrices = inverseBindMatrices;
             Joints = joints;
-
-            j1T = Joints[1].LocalTransform;
 
             jointMatrices = new Matrix[joints.Length];
         }
@@ -224,27 +216,14 @@ namespace BytingLib
             for (int i = 0; i < matrices.Length; i++)
             {
                 matrices[i] = InverseBindMatrices[i]
-                    * Joints[i].JointTransform * Joints[i].LocalTransform
+                    * Joints[i].GlobalJointTransform
                     * globalTransformInverse;
-
-                //matrices[i] = Matrix.Identity;
             }
-            //matrices[5] = InverseBindMatrices[5] * Matrix.CreateRotationX(1f) * Joints[5].LocalTransform;
         }
 
-        float x = 0f;
-
-        Matrix j1T;
-
-        public IDisposable? Use(IShaderGLSkinned shader)
+        public IDisposable? Use(IShaderGLSkinned shader, Matrix globalTransform)
         {
-            x += 1f / 60f;
-            //InverseBindMatrices[InverseBindMatrices.Length - 1] = Matrix.Invert(Matrix.CreateRotationX(MathF.Cos(x)));
-            //InverseBindMatrices[InverseBindMatrices.Length - 2] = Matrix.Invert(Matrix.CreateRotationZ(MathF.Sin(x * 0.6f)));
-            Joints[1].JointTransform = Matrix.CreateRotationX(x);
-            //Joints[0].LocalTransform = Matrix.CreateRotationX(x);
-
-            ComputeJointMatrices(jointMatrices, Matrix.Identity /* TODO */);
+            ComputeJointMatrices(jointMatrices, globalTransform);
             return shader.JointMatrices.Use(jointMatrices);
         }
     }

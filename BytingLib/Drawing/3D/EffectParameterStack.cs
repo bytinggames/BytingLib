@@ -111,5 +111,10 @@
             T val = func(valueStack.Peek());
             return Use(val);
         }
+        public T? GetValue()
+        {
+            valueStack.TryPeek(out T? t);
+            return t;
+        }
     }
 }
