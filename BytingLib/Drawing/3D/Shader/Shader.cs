@@ -81,27 +81,18 @@
             }
         }
 
-        /// <summary>
-        /// TODO: improve
-        /// </summary>
         public static string GetTechniqueName(VertexDeclaration vertexDeclaration)
         {
-            string techniqueName;
-            switch (vertexDeclaration.VertexStride)
-            {
-                case 24:
-                    techniqueName = "RenderNormal";
-                    break;
-                case 28:
-                    techniqueName = "RenderColorNormal";
-                    break;
-                case 36:
-                    techniqueName = "RenderColorNormalTexture";
-                    break;
-                default: // 32
-                    techniqueName = "RenderNormalTexture";
-                    break;
-            }
+            string techniqueName = "Render";
+
+            var elements = vertexDeclaration.GetVertexElements();
+
+            if (elements.Any(f => f.VertexElementUsage == VertexElementUsage.Color))
+                techniqueName += "Color";
+            if (elements.Any(f => f.VertexElementUsage == VertexElementUsage.Normal))
+                techniqueName += "Normal";
+            if (elements.Any(f => f.VertexElementUsage == VertexElementUsage.TextureCoordinate))
+                techniqueName += "Texture";
 
             return techniqueName;
         }

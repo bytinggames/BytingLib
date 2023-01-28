@@ -74,9 +74,9 @@ namespace BytingLib
     {
         public VertexBuffer VertexBuffer;
         public IndexBuffer IndexBuffer;
-        public Material Material;
+        public Material? Material;
 
-        public Primitive(VertexBuffer vertexBuffer, IndexBuffer indexBuffer, Material material)
+        public Primitive(VertexBuffer vertexBuffer, IndexBuffer indexBuffer, Material? material)
         {
             VertexBuffer = vertexBuffer;
             IndexBuffer = indexBuffer;
@@ -89,7 +89,7 @@ namespace BytingLib
 
             using (shader.UseTechnique(techniqueName))
             {
-                using (Material.Use(shader))
+                using (Material?.Use(shader))
                     shader.Draw(VertexBuffer, IndexBuffer);
             }
         }
@@ -307,7 +307,7 @@ namespace BytingLib
             var bufferViewsArr = gltf["bufferViews"].AsArray();
             var buffersArr = gltf["buffers"].AsArray();
             var accessorsArr = gltf["accessors"].AsArray();
-            var materialsArr = gltf["materials"].AsArray();
+            var materialsArr = gltf["materials"]?.AsArray();
             var texturesArr = gltf["textures"]?.AsArray();
             var samplersArr = gltf["samplers"]?.AsArray();
             var imagesArr = gltf["images"]?.AsArray();
@@ -365,9 +365,14 @@ namespace BytingLib
                     int indicesAccessorIndex = primitiveNode["indices"].GetValue<int>();
                     IndexBuffer indexBuffer = GetIndexBuffer(indicesAccessorIndex);
 
-                    int materialId = primitiveNode["material"].GetValue<int>();
-
-                    return new Primitive(vertexBuffer, indexBuffer, GetMaterial(materialId));
+                    Material material = null;
+                    var mat = primitiveNode["material"];
+                    if (mat != null)
+                    {
+                        int materialId = mat.GetValue<int>();
+                        material = GetMaterial(materialId);
+                    }
+                    return new Primitive(vertexBuffer, indexBuffer, material);
                 }
 
                 Material GetMaterial(int id)
@@ -451,8 +456,6 @@ namespace BytingLib
                         string type = accessor["type"].GetValue<string>();
                         var usage = GetVertexElementUsageFromAttributeName(attribute.Key);
                         int componentTypeInt = accessor["componentType"].GetValue<int>();
-                        int componentSize = GetComponentSizeInBytes(componentTypeInt);
-                        int componentCount = GetNumberOfComponents(type);
                         Type componentType = GetComponentType(componentTypeInt);
 
                         VertexElement v = new(offset,
@@ -462,10 +465,21 @@ namespace BytingLib
 
                         vertexElementUsages[(int)usage]++;
 
-                        int elementSize = componentSize * componentCount;
-                        offset += elementSize;
+                        int componentSize = GetComponentSizeInBytes(componentTypeInt);
+                        int componentCount = GetNumberOfComponents(type);
 
                         byte[] bufferBytes = GetBytesFromBuffer(bufferViewsArr, buffersArr, accessor, contentCollector, gltfDirRelativeToContent);
+
+                        // when using color, the component size should be 1. 1 byte for each color channel.
+                        // if it is 2, convert it!
+                        if (usage == VertexElementUsage.Color
+                            && componentSize == 2)
+                        {
+                            componentSize = Convert8BitColorTo4Bit(ref bufferBytes);
+                        }
+
+                        int elementSize = componentSize * componentCount;
+                        offset += elementSize;
 
                         vertexParts.Add(new VertexPart(v, bufferBytes, elementSize));
                     }
@@ -504,6 +518,20 @@ namespace BytingLib
                     return vertexBuffer;
                 }
 
+                static int Convert8BitColorTo4Bit(ref byte[] bufferBytes)
+                {
+                    int componentSize;
+                    byte[] newBufferBytes = new byte[bufferBytes.Length / 2];
+                    componentSize = 1;
+
+                    for (int i = 0; i < newBufferBytes.Length; i++)
+                    {
+                        newBufferBytes[i] = (byte)(BitConverter.ToUInt16(bufferBytes, i * 2) / (byte.MaxValue + 1));
+                    }
+
+                    bufferBytes = newBufferBytes;
+                    return componentSize;
+                }
 
                 static Matrix GetTransform(JsonNode node)
                 {
