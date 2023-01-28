@@ -93,6 +93,9 @@
                 techniqueName += "Normal";
             if (elements.Any(f => f.VertexElementUsage == VertexElementUsage.TextureCoordinate))
                 techniqueName += "Texture";
+            if (elements.Any(f => f.VertexElementUsage == VertexElementUsage.BlendIndices)
+                && elements.Any(f => f.VertexElementUsage == VertexElementUsage.BlendWeight))
+                techniqueName += "Skinned";
 
             return techniqueName;
         }

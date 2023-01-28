@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
 
 namespace BytingLib
@@ -12,28 +13,43 @@ namespace BytingLib
     {
         EffectParameterStack<Vector4> Color { get; }
     }
-
+    public interface IShaderGLSkinned : IShaderGL
+    {
+        EffectParameterStack<Matrix[]> JointMatrices { get; }
+    }
 
     public interface IDrawShaderGL
     {
         void Draw(IShaderGL shader);
     }
 
+    public interface IDrawShaderGLSkinned
+    {
+        void Draw(IShaderGLSkinned shaderSkinned);
+    }
+
     class Node
     {
         public Mesh? Mesh;
-        public Matrix Transform;
+        public Skin? Skin;
+        public Matrix LocalTransform;
+        public Matrix JointTransform = Matrix.Identity;
+        public Matrix GlobalTransform; // needs to be updated according to LocalTransform and all local transforms of the parents
+        public int GlobalTransformCalculationId;
         public string? Name;
         public List<Node> Children = new();
+        public Node? Parent;
 
-        public Node(Matrix transform)
+        public Node(Matrix transform, Node? parent)
         {
-            Transform = transform;
+            LocalTransform = transform;
+            Parent = parent;
         }
 
-        internal void Draw(IShaderGL shader)
+        internal void Draw(IShaderGLSkinned shader)
         {
-            using (shader.World.Use(f => Transform * f))
+            using (shader.World.Use(f => LocalTransform * f))
+            using (Skin?.Use(shader))
             {
                 Mesh?.Draw(shader);
                 for (int i = 0; i < Children.Count; i++)
@@ -50,7 +66,24 @@ namespace BytingLib
 
         internal void ApplyTransform(Matrix matrix)
         {
-            Transform *= matrix;
+            LocalTransform *= matrix;
+        }
+
+        internal void CalculateGlobalTransform(int globalTransformCalculationId)
+        {
+            if (GlobalTransformCalculationId == globalTransformCalculationId)
+                return;
+
+            if (Parent == null)
+            {
+                GlobalTransform = LocalTransform * JointTransform;
+            }
+            else
+            {
+                Parent.CalculateGlobalTransform(globalTransformCalculationId);
+                GlobalTransform = Parent.GlobalTransform * LocalTransform * JointTransform;
+            }
+            GlobalTransformCalculationId = globalTransformCalculationId;
         }
     }
 
@@ -158,7 +191,118 @@ namespace BytingLib
         }
     }
 
-    public class ModelGL : IDrawShaderGL, IDisposable
+    class Skin
+    {
+        static int globalTransformCalculationId;
+
+        public readonly Matrix[] InverseBindMatrices;
+        public readonly Node[] Joints;
+
+        private Matrix[] globalJointTransform;
+        private Matrix[] jointMatrices;
+
+        public Skin(Matrix[] inverseBindMatrices, Node[] joints)
+        {
+            InverseBindMatrices = inverseBindMatrices;
+            Joints = joints;
+
+            j1T = Joints[1].LocalTransform;
+
+            jointMatrices = new Matrix[joints.Length];
+        }
+
+        // TODO: pass this array to the vertex shader as a uniform
+        public void ComputeJointMatrices(Matrix[] matrices, Matrix globalTransform)
+        {
+            globalTransformCalculationId++;
+            for (int i = 0; i < Joints.Length; i++)
+            {
+                Joints[i].CalculateGlobalTransform(globalTransformCalculationId);
+            }
+
+            Matrix globalTransformInverse = Matrix.Invert(globalTransform);
+            for (int i = 0; i < matrices.Length; i++)
+            {
+                matrices[i] = InverseBindMatrices[i]
+                    * Joints[i].JointTransform * Joints[i].LocalTransform
+                    * globalTransformInverse;
+
+                //matrices[i] = Matrix.Identity;
+            }
+            //matrices[5] = InverseBindMatrices[5] * Matrix.CreateRotationX(1f) * Joints[5].LocalTransform;
+        }
+
+        float x = 0f;
+
+        Matrix j1T;
+
+        public IDisposable? Use(IShaderGLSkinned shader)
+        {
+            x += 1f / 60f;
+            //InverseBindMatrices[InverseBindMatrices.Length - 1] = Matrix.Invert(Matrix.CreateRotationX(MathF.Cos(x)));
+            //InverseBindMatrices[InverseBindMatrices.Length - 2] = Matrix.Invert(Matrix.CreateRotationZ(MathF.Sin(x * 0.6f)));
+            Joints[1].JointTransform = Matrix.CreateRotationX(x);
+            //Joints[0].LocalTransform = Matrix.CreateRotationX(x);
+
+            ComputeJointMatrices(jointMatrices, Matrix.Identity /* TODO */);
+            return shader.JointMatrices.Use(jointMatrices);
+        }
+    }
+
+    //class Animation
+    //{
+    //    Channel[] channels;
+    //    Sampler[] samplers;
+    //    public string Name;
+
+    //    class Channel
+    //    {
+    //        enum TargetPath
+    //        {
+    //            Translation,
+    //            Rotation,
+    //            Scale,
+    //            Weights
+    //        }
+
+    //        Sampler sampler;
+    //        Node TargetNode;
+    //        TargetPath TargetPath;
+    //    }
+
+    //    class Sampler
+    //    {
+    //        enum Interpolation
+    //        {
+    //            Linear,
+    //            Step,
+    //            CubicSpline
+    //        }
+    //        KeyFrames input; // refers to an accessor with floats, which are the times of the key frames of the animation
+    //        Output output; // refers to an accessor that contains the values for the animated property at the respective key frames
+    //        Interpolation Interpolation;
+
+    //    }
+    //}
+
+    //class KeyFrames
+    //{
+    //    float[] frames; // in seconds
+    //}
+
+    class SkinOld
+    {
+        public int InverseBindMatrices;
+        public int[] Joints;
+
+        public SkinOld(int inverseBindMatrices, int[] joints)
+        {
+            InverseBindMatrices = inverseBindMatrices;
+            Joints = joints;
+        }
+    }
+
+    public class ModelGL : IDrawShaderGLSkinned, IDisposable
     {
         List<Node> nodes = new();
 
@@ -313,6 +457,8 @@ namespace BytingLib
             Dictionary<string, VertexBuffer> vertexBuffers = new();
             Dictionary<int, TextureGL> textures = new();
             Dictionary<int, SamplerState> samplers = new();
+            Dictionary<int, Skin> skins = new();
+            Dictionary<int, Animation> animations = new();
 
             string json = File.ReadAllText(filePath);
             string gltfDir = Path.GetDirectoryName(filePath)!;
@@ -334,30 +480,44 @@ namespace BytingLib
             var texturesArr = gltf["textures"]?.AsArray();
             var samplersArr = gltf["samplers"]?.AsArray();
             var imagesArr = gltf["images"]?.AsArray();
+            var skinsArr = gltf["skins"]?.AsArray();
+
             foreach (var n in sceneNodesArr)
             {
                 int nodeId = n.GetValue<int>();
 
-                this.nodes.Add(GetNode(nodeId));
+                this.nodes.Add(GetNode(nodeId, null));
 
-                Node GetNode(int id)
+                Node GetNode(int id, Node? parent)
                 {
                     Node _node;
                     if (nodes.TryGetValue(id, out _node))
+                    {
+                        // if the node has no parent yet, give him one. Family first!
+                        if (_node.Parent == null)
+                            _node.Parent = parent;
                         return _node;
+                    }
 
                     var node = nodesArr[id];
                     Matrix transform = GetTransform(node);
                     string name = node["name"].GetValue<string>();
 
-                    _node = new Node(transform);
+                    _node = new Node(transform, parent);
                     _node.Name = name;
 
                     var mesh = node["mesh"];
                     if (mesh != null)
                     {
-                        int meshId = node["mesh"].GetValue<int>();
+                        int meshId = mesh.GetValue<int>();
                         _node.Mesh = GetMesh(meshId);
+
+                        var skin = node["skin"];
+                        if (skin != null)
+                        {
+                            int skinId = skin.GetValue<int>();
+                            _node.Skin = GetSkin(skinId);
+                        }
                     }
 
                     var children = node["children"];
@@ -367,7 +527,7 @@ namespace BytingLib
                         for (int i = 0; i < childrenArr.Count; i++)
                         {
                             int childId = childrenArr[i].GetValue<int>();
-                            _node.Children.Add(GetNode(childId));
+                            _node.Children.Add(GetNode(childId, _node));
                         }
                     }
 
@@ -635,8 +795,35 @@ namespace BytingLib
 
                     samplers.Add(key, _sampler);
                     return _sampler;
-
                 }
+                Skin GetSkin(int key)
+                {
+                    Skin _skin;
+                    if (skins.TryGetValue(key, out _skin))
+                        return _skin;
+
+                    var skin = skinsArr[key];
+
+                    int inverseBindMatricesId = skin["inverseBindMatrices"].GetValue<int>();
+                    int[] joints = skin["joints"].AsArray().Select(f => f.GetValue<int>()).ToArray();
+
+
+                    Node[] jointNodes = new Node[joints.Length];
+                    for (int i = 0; i < joints.Length; i++)
+                    {
+                        jointNodes[i] = GetNode(joints[i], null);
+                    }
+
+                    var inverseBindAccessor = accessorsArr[inverseBindMatricesId];
+                    byte[] inverseBindAccessorData = GetBytesFromBuffer(bufferViewsArr, buffersArr, inverseBindAccessor, contentCollector, gltfDirRelativeToContent);
+                    Matrix[] inverseBindAccessorMatrices = ByteArrayToMatrixArray(inverseBindAccessorData);
+
+                    _skin = new Skin(inverseBindAccessorMatrices, jointNodes);
+
+                    skins.Add(key, _skin);
+                    return _skin;
+                }
+
                 static int Convert8BitColorTo4Bit(ref byte[] bufferBytes)
                 {
                     int componentSize;
@@ -752,6 +939,14 @@ namespace BytingLib
 #nullable restore
         }
 
+        private Matrix[] ByteArrayToMatrixArray(byte[] inverseBindAccessorData)
+        {
+            Matrix[] m = new Matrix[inverseBindAccessorData.Length / 4 / 16];
+            IntPtr mPtr = Marshal.UnsafeAddrOfPinnedArrayElement(m, 0);
+            Marshal.Copy(inverseBindAccessorData, 0, mPtr, inverseBindAccessorData.Length);
+            return m;
+        }
+
         private string UriToContentFile(string uri, string gltfDirRelativeToContent)
         {
             string ext = Path.GetExtension(uri);
@@ -786,7 +981,7 @@ namespace BytingLib
             return bufferBytes;
         }
 
-        public void Draw(IShaderGL shader)
+        public void Draw(IShaderGLSkinned shader)
         {
             for (int i = 0; i < nodes.Count; i++)
                 nodes[i].Draw(shader);

@@ -44,7 +44,7 @@
             {
                 if (valueStack.TryPeek(out lastAppliedValue))
                     effectParameter.SetValueObject(lastAppliedValue!);
-                else
+                else if (typeof(T).IsValueType)
                     effectParameter.SetValueObject(default(T)!);
             }
             dirty = false;
