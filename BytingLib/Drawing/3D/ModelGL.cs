@@ -101,17 +101,16 @@ namespace BytingLib
     {
         public string? Name;
         public PbrMetallicRoughness? PbrMetallicRoughness;
-
-        public Material(PbrMetallicRoughness? pbrMetallicRoughness)
-        {
-            PbrMetallicRoughness = pbrMetallicRoughness;
-        }
+        public RasterizerState? RasterizerState;
 
         public IDisposable? Use(IShaderGL shader)
         {
+            DisposableContainer disposables = new();
             if (PbrMetallicRoughness != null)
-                return PbrMetallicRoughness.Use(shader);
-            return null;
+                disposables.Use(PbrMetallicRoughness.Use(shader));
+            if (RasterizerState != null)
+                disposables.Use(shader.UseRasterizer(RasterizerState));
+            return disposables;
         }
 
         public override string? ToString()
@@ -400,20 +399,24 @@ namespace BytingLib
                         return material;
 
 
-                    // get texture
+                    material = new Material();
+
+                    // get name
                     var materialNode = materialsArr[id];
+                    material.Name = materialNode["name"].GetValue<string>();
+
                     var pbrMetallicRoughness = materialNode["pbrMetallicRoughness"];
-                    PbrMetallicRoughness metallicRoughness = null;
                     if (pbrMetallicRoughness != null)
                     {
+                        // get texture
                         var baseColorTexture = pbrMetallicRoughness["baseColorTexture"];
                         if (baseColorTexture != null)
                         {
                             int texIndex = baseColorTexture["index"].GetValue<int>();
                             TextureGL textureSampler = GetTexture(texIndex);
 
-                            metallicRoughness ??= new PbrMetallicRoughness();
-                            metallicRoughness.BaseColorTexSampler = textureSampler;
+                            material.PbrMetallicRoughness ??= new PbrMetallicRoughness();
+                            material.PbrMetallicRoughness.BaseColorTexSampler = textureSampler;
                         }
 
                         // get base color
@@ -421,8 +424,8 @@ namespace BytingLib
                         if (baseColorFactor != null)
                         {
                             float[] c = baseColorFactor.AsArray().Select(f => f.GetValue<float>()).ToArray();
-                            metallicRoughness ??= new PbrMetallicRoughness();
-                            metallicRoughness.BaseColor = new Vector4(c[0], c[1], c[2], c[3]);
+                            material.PbrMetallicRoughness ??= new PbrMetallicRoughness();
+                            material.PbrMetallicRoughness.BaseColor = new Vector4(c[0], c[1], c[2], c[3]);
                         }
                     }
 
@@ -434,13 +437,17 @@ namespace BytingLib
                         if (baseColorFactor != null)
                         {
                             float[] c = baseColorFactor.AsArray().Select(f => f.GetValue<float>()).ToArray();
-                            metallicRoughness ??= new PbrMetallicRoughness();
-                            metallicRoughness.BaseColor = new Vector4(c[0], c[1], c[2], c.Length > 3 ? c[3] : 1f);
+                            material.PbrMetallicRoughness ??= new PbrMetallicRoughness();
+                            material.PbrMetallicRoughness.BaseColor = new Vector4(c[0], c[1], c[2], c.Length > 3 ? c[3] : 1f);
+                        }
+
+                        var culling = extras["culling"];
+                        if (culling != null)
+                        {
+                            if (culling.GetValue<int>() == 1)
+                                material.RasterizerState = RasterizerState.CullClockwise;
                         }
                     }
-
-                    material = new Material(metallicRoughness);
-                    material.Name = materialNode["name"].GetValue<string>();
 
                     materials.Add(id, material);
                     return material;
