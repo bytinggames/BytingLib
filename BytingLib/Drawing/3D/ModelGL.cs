@@ -156,7 +156,7 @@ namespace BytingLib
     class PbrMetallicRoughness
     {
         public Vector4? BaseColor;
-        public TextureGL BaseColorTexSampler;
+        public TextureGL? BaseColorTexSampler;
         public float MetallicFactor;
         public float RoughnessFactor;
 
@@ -469,7 +469,7 @@ namespace BytingLib
 
                 this.nodes.Add(GetNode(nodeId, null));
 
-                Node GetNode(int id, Node? parent)
+                Node GetNode(int id, Node parent)
                 {
                     Node _node;
                     if (nodes.TryGetValue(id, out _node))
