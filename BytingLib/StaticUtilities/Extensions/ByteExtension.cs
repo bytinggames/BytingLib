@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using System.Runtime.InteropServices;
+
+namespace BytingLib
 {
     public static class ByteExtension
     {
@@ -30,5 +32,14 @@
                 result[i] = (byte)(arr1[i] + arr2[i]);
             }
         }
+
+        public static T[] ByteArrayToStructArray<T>(byte[] inverseBindAccessorData, int sizeOfStruct) where T : struct
+        {
+            T[] m = new T[inverseBindAccessorData.Length / sizeOfStruct];
+            IntPtr mPtr = Marshal.UnsafeAddrOfPinnedArrayElement(m, 0);
+            Marshal.Copy(inverseBindAccessorData, 0, mPtr, inverseBindAccessorData.Length);
+            return m;
+        }
+
     }
 }

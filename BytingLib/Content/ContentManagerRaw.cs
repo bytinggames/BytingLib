@@ -78,7 +78,6 @@ namespace BytingLib
             if (!File.Exists(filePath))
                 throw new ContentLoadException("file " + filePath + " does not exist");
 
-            //throw new NotImplementedException();
             return new ModelGL(filePath, RootDirectory, extendedLoad.GraphicsDevice, extendedLoad.ContentCollector);
         }
 

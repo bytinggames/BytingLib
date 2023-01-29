@@ -336,12 +336,31 @@ namespace BytingLib
         }
     }
 
+    public class JointTransform
+    {
+        public Quaternion Rotation = Quaternion.Identity;
+        public Vector3 Translation = Vector3.Zero;
+        public Vector3 Scale = Vector3.One;
+        public bool Dirty = true;
+
+        public Matrix GetTransform()
+        {
+            Matrix m = Matrix.CreateFromQuaternion(Rotation);
+            m.M11 *= Scale.X;
+            m.M22 *= Scale.Y;
+            m.M33 *= Scale.Z;
+            m.Translation = Translation;
+            return m;
+        }
+    }
+
     public class NodeGL
     {
         MeshGL? mesh;
         SkinGL? skin;
         Matrix LocalTransform;
-        Matrix JointTransform = Matrix.Identity;
+        //Matrix initialTransform;
+        JointTransform? jointTransform;
         public Matrix GlobalJointTransform; // needs to be updated according to LocalTransform and all local transforms of the parents
         int GlobalTransformCalculationId;
         public readonly string? Name;
@@ -355,6 +374,7 @@ namespace BytingLib
                 Parent = parent;
 
             LocalTransform = GetTransform(n);
+            //initialTransform = LocalTransform;
 
             Name = n["name"]?.GetValue<string>();
 
@@ -412,14 +432,18 @@ namespace BytingLib
             return transform;
         }
 
-        internal void Draw(IShaderGLSkinned shader)
+        public void Draw(IShaderGLSkinned shader) => Draw(shader, Matrix.Identity);
+
+        private void Draw(IShaderGLSkinned shader, Matrix GlobalNodeTransform)
         {
-            using (shader.World.Use(f => LocalTransform * f))
-            using (skin?.Use(shader, shader.World.GetValue()))
+            GlobalNodeTransform = LocalTransform * GlobalNodeTransform;
+            using (skin?.Use(shader, GlobalNodeTransform))
             {
-                mesh?.Draw(shader);
+                using (shader.World.Use(f => GlobalNodeTransform * f))
+                    mesh?.Draw(shader);
+
                 for (int i = 0; i < Children.Count; i++)
-                    Children[i].Draw(shader);
+                    Children[i].Draw(shader, GlobalNodeTransform);
             }
         }
 
@@ -429,14 +453,20 @@ namespace BytingLib
             if (GlobalTransformCalculationId == globalTransformCalculationId)
                 return;
 
+            if (jointTransform != null && jointTransform.Dirty)
+            {
+                LocalTransform = jointTransform.GetTransform();
+                jointTransform.Dirty = false;
+            }
+
             if (Parent == null)
             {
-                GlobalJointTransform = JointTransform * LocalTransform;
+                GlobalJointTransform = LocalTransform;
             }
             else
             {
                 Parent.CalculateGlobalTransform(globalTransformCalculationId);
-                GlobalJointTransform = JointTransform * LocalTransform * Parent.GlobalJointTransform;
+                GlobalJointTransform = LocalTransform * Parent.GlobalJointTransform;
             }
             GlobalTransformCalculationId = globalTransformCalculationId;
         }
@@ -457,14 +487,30 @@ namespace BytingLib
 
         public void SetRotation(Quaternion rotation)
         {
-            // TODO: only set rotation
-            JointTransform = Matrix.CreateFromQuaternion(rotation);
+            jointTransform ??= new JointTransform();
+            jointTransform.Rotation = rotation;
+            jointTransform.Dirty = true;
+        }
+
+        public void SetTranslation(Vector3 translation)
+        {
+            jointTransform ??= new JointTransform();
+            jointTransform.Translation = translation;
+            jointTransform.Dirty = true;
+        }
+
+        public void SetScale(Vector3 scale)
+        {
+            jointTransform ??= new JointTransform();
+            jointTransform.Scale = scale;
+            jointTransform.Dirty = true;
         }
 
         internal void SetParentIfNotHavingOne(NodeGL? parent)
         {
             Parent ??= parent;
         }
+
 
         // FOR LATER MAYBE:
         //Lazy<Mesh?> mesh;
@@ -867,8 +913,9 @@ namespace BytingLib
         public AnimationGL(ModelGL model, JsonNode n)
         {
             Name = n["name"]?.GetValue<string>();
-            //samplers = n["samplers"]!.AsArray().Select(f => new Sampler(f!)).ToArray();
-            //channels = n["channels"]!.AsArray().Select(f => new Channel(f!)).ToArray();
+            var samplersArr = n["samplers"]!.AsArray();
+            //samplers = n["samplers"]!.AsArray().Select(f => new Sampler(model, f!)).ToArray();
+            channels = n["channels"]!.AsArray().Select(f => new Channel(model, f!, samplersArr)).ToArray();
         }
 
         public class Channel
@@ -883,7 +930,31 @@ namespace BytingLib
 
             public Sampler sampler;
             public NodeGL TargetNode;
-            public TargetPath _TargetPath;
+            public TargetPath targetPath;
+
+            public Channel(ModelGL model, JsonNode n, JsonArray samplersArr)
+            {
+                var target = n["target"]!;
+                var targetNodeIndex = target["node"]!.GetValue<int>();
+                var path = target["path"]!.GetValue<string>();
+
+                TargetNode = model.Nodes!.Get(targetNodeIndex);
+
+                targetPath = path switch
+                {
+                    "rotation" => TargetPath.Rotation,
+                    "translation" => TargetPath.Translation,
+                    "scale" => TargetPath.Scale,
+                    _ => throw new NotImplementedException(),
+                };
+
+                sampler = new Sampler(model, samplersArr[n["sampler"]!.GetValue<int>()]!, targetPath);
+            }
+
+            public void Apply(float second)
+            {
+                sampler.Apply(TargetNode, second);
+            }
         }
 
         public class Sampler
@@ -894,32 +965,161 @@ namespace BytingLib
                 Step,
                 CubicSpline
             }
-            public KeyFrames keyFrames; // refers to an accessor with floats, which are the times of the key frames of the animation
-            public SamplerOutput output; // refers to an accessor that contains the values for the animated property at the respective key frames
+            public KeyFrames KeyFrames; // refers to an accessor with floats, which are the times of the key frames of the animation
+            public SamplerOutput Output; // refers to an accessor that contains the values for the animated property at the respective key frames
             public Interpolation interpolation;
 
-            //public Sampler(JsonNode n, Dictionary<int, Accessor> accessors)
-            //{
-            //    int input = n["input"]!.GetValue<int>();
-            //    int output = n["output"]!.GetValue<int>();
+            public Sampler(ModelGL model, JsonNode n, Channel.TargetPath targetPath)
+            {
+                int input = n["input"]!.GetValue<int>();
+                int output = n["output"]!.GetValue<int>();
 
-            //    var interpolationStr = n["interpolation"]?.GetValue<string>();
-            //    interpolation = interpolationStr == "STEP" ? Interpolation.Step
-            //        : interpolationStr == "CUBICSPLINE" ? Interpolation.CubicSpline
-            //        : Interpolation.Linear;
+                byte[] bytes = model.GetBytesFromBuffer(input);
+                KeyFrames = new KeyFrames(bytes);
+
+                bytes = model.GetBytesFromBuffer(output);
+                switch (targetPath)
+                {
+                    case Channel.TargetPath.Translation:
+                        Output = new SamplerOutputTranslation(bytes);
+                        break;
+                    case Channel.TargetPath.Rotation:
+                        Output = new SamplerOutputRotation(bytes);
+                        break;
+                    case Channel.TargetPath.Scale:
+                        Output = new SamplerOutputScale(bytes);
+                        break;
+                    case Channel.TargetPath.Weights:
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                var interpolationStr = n["interpolation"]?.GetValue<string>();
+                interpolation = interpolationStr == "STEP" ? Interpolation.Step
+                    : interpolationStr == "CUBICSPLINE" ? Interpolation.CubicSpline
+                    : Interpolation.Linear;
+            }
+
+            internal void Apply(NodeGL targetNode, float second)
+            {
+                var frames = KeyFrames.seconds;
+                int frame = 0;
+                second = second % frames[^1];
+
+                while (frame < frames.Length
+                    && second > frames[frame])
+                {
+                    frame++;
+                }
+                if (frame == frames.Length)
+                    frame = 0;
+                // animationSecond is <= frames[frame]
+                // interpolate between frame - 1 and frame
 
 
-            //}
+                if (second == frames[frame])
+                {
+                    // no interpolation needed
+                    Output.Apply(targetNode, frame);
+                }
+                else
+                {
+                    int previousFrame = (frame + frames.Length - 1) % KeyFrames.seconds.Length; // does the same as setting previousFrame = frame - 1 with the addition of modulo
+                    int nextFrame = frame;
+                    float previousFrameSecond = frames[previousFrame];
+                    float nextFrameSecond = frames[nextFrame];
+                    float lerpAmount = (second - previousFrameSecond) / (nextFrameSecond - previousFrameSecond); // [0,1]
+
+                    Output.Apply(targetNode, previousFrame, nextFrame, lerpAmount);
+                }
+            }
         }
     }
     public class KeyFrames
     {
         public float[] seconds; // in seconds
+
+        public KeyFrames(byte[] bytes)
+        {
+            seconds = ByteExtension.ByteArrayToStructArray<float>(bytes, sizeof(float));
+        }
     }
 
-    public class SamplerOutput
+    public abstract class SamplerOutput
     {
-        public Quaternion[] values; // TODO: support Vector3[] too
+        public abstract void Apply(NodeGL targetNode, int index);
+        public abstract void Apply(NodeGL targetNode, int index1, int index2, float lerp);
+    }
+
+    abstract class SamplerOutputQuaternion : SamplerOutput
+    {
+        protected Quaternion[] rotations;
+
+        public SamplerOutputQuaternion(byte[] bytes)
+        {
+            rotations = ByteExtension.ByteArrayToStructArray<Quaternion>(bytes, 4 * 4);
+        }
+    }
+
+    abstract class SamplerOutputVector3 : SamplerOutput
+    {
+        protected Vector3[] vectors;
+
+        public SamplerOutputVector3(byte[] bytes)
+        {
+            vectors = ByteExtension.ByteArrayToStructArray<Vector3>(bytes, 3 * 4);
+        }
+    }
+
+    class SamplerOutputRotation : SamplerOutputQuaternion
+    {
+        public SamplerOutputRotation(byte[] bytes) : base(bytes)
+        { }
+
+        public override void Apply(NodeGL targetNode, int index)
+        {
+            targetNode.SetRotation(rotations[index]);
+        }
+
+        public override void Apply(NodeGL targetNode, int index1, int index2, float lerp)
+        {
+            Quaternion q = Quaternion.Lerp(rotations[index1], rotations[index2], lerp);
+            targetNode.SetRotation(q);
+        }
+    }
+
+    class SamplerOutputTranslation : SamplerOutputVector3
+    {
+        public SamplerOutputTranslation(byte[] bytes) : base(bytes)
+        { }
+
+        public override void Apply(NodeGL targetNode, int index)
+        {
+            targetNode.SetTranslation(vectors[index]);
+        }
+
+        public override void Apply(NodeGL targetNode, int index1, int index2, float lerp)
+        {
+            Vector3 q = Vector3.Lerp(vectors[index1], vectors[index2], lerp);
+            targetNode.SetTranslation(q);
+        }
+    }
+
+    class SamplerOutputScale : SamplerOutputVector3
+    {
+        public SamplerOutputScale(byte[] bytes) : base(bytes)
+        { }
+
+        public override void Apply(NodeGL targetNode, int index)
+        {
+            targetNode.SetScale(vectors[index]);
+        }
+
+        public override void Apply(NodeGL targetNode, int index1, int index2, float lerp)
+        {
+            Vector3 q = Vector3.Lerp(vectors[index1], vectors[index2], lerp);
+            targetNode.SetScale(q);
+        }
     }
 
 
@@ -1041,14 +1241,8 @@ namespace BytingLib
             return componentSize;
         }
 
-
-        internal static Matrix[] ByteArrayToMatrixArray(byte[] inverseBindAccessorData)
-        {
-            Matrix[] m = new Matrix[inverseBindAccessorData.Length / 4 / 16];
-            IntPtr mPtr = Marshal.UnsafeAddrOfPinnedArrayElement(m, 0);
-            Marshal.Copy(inverseBindAccessorData, 0, mPtr, inverseBindAccessorData.Length);
-            return m;
-        }
+        internal static Matrix[] ByteArrayToMatrixArray(byte[] bytes)
+            => ByteExtension.ByteArrayToStructArray<Matrix>(bytes, 4 * 16);
 
     }
 
