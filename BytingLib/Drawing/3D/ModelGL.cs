@@ -969,6 +969,10 @@ namespace BytingLib
             public SamplerOutput Output; // refers to an accessor that contains the values for the animated property at the respective key frames
             public Interpolation interpolation;
 
+            float AnimationDuration => KeyFrames.seconds[^1] - AnimationStartSecond + TransitionSecondsBetweenLastAndFirstFrame;
+            public float AnimationStartSecond;
+            public float TransitionSecondsBetweenLastAndFirstFrame = 0f;
+
             public Sampler(ModelGL model, JsonNode n, Channel.TargetPath targetPath)
             {
                 int input = n["input"]!.GetValue<int>();
@@ -998,39 +1002,65 @@ namespace BytingLib
                 interpolation = interpolationStr == "STEP" ? Interpolation.Step
                     : interpolationStr == "CUBICSPLINE" ? Interpolation.CubicSpline
                     : Interpolation.Linear;
+
+                if (KeyFrames.seconds.Length > 0)
+                    AnimationStartSecond = KeyFrames.seconds[0];
             }
 
             internal void Apply(NodeGL targetNode, float second)
             {
                 var frames = KeyFrames.seconds;
                 int frame = 0;
-                second = second % frames[^1];
+                second = second % AnimationDuration;
+                second += AnimationStartSecond;
 
                 while (frame < frames.Length
-                    && second > frames[frame])
+                    && second >= frames[frame])
                 {
                     frame++;
                 }
-                if (frame == frames.Length)
-                    frame = 0;
-                // animationSecond is <= frames[frame]
+                frame--;
+                // animationSecond is >= frames[frame]
                 // interpolate between frame - 1 and frame
 
 
-                if (second == frames[frame])
+                if (frame < 0)
+                {
+                    // before start, just use the first frame
+                    Output.Apply(targetNode, 0);
+                }
+                else if (second == frames[frame])
                 {
                     // no interpolation needed
                     Output.Apply(targetNode, frame);
                 }
                 else
                 {
-                    int previousFrame = (frame + frames.Length - 1) % KeyFrames.seconds.Length; // does the same as setting previousFrame = frame - 1 with the addition of modulo
-                    int nextFrame = frame;
-                    float previousFrameSecond = frames[previousFrame];
-                    float nextFrameSecond = frames[nextFrame];
+                    int frame0 = frame;
+                    int frame1 = frame + 1;
+
+                    float previousFrameSecond = frames[frame0];
+
+                    float nextFrameSecond;
+                    if (frame1 < frames.Length)
+                    {
+                        nextFrameSecond = frames[frame1];
+                    }
+                    else
+                    {
+                        if (TransitionSecondsBetweenLastAndFirstFrame == 0)
+                        {
+                            // no interpolation needed, just use the last frame
+                            Output.Apply(targetNode, frame0); // frame0 = frames.Length - 1 in this case
+                            return;
+                        }
+                        frame1 = 0;
+                        nextFrameSecond = frames[frame0] + TransitionSecondsBetweenLastAndFirstFrame;
+                    }
+
                     float lerpAmount = (second - previousFrameSecond) / (nextFrameSecond - previousFrameSecond); // [0,1]
 
-                    Output.Apply(targetNode, previousFrame, nextFrame, lerpAmount);
+                    Output.Apply(targetNode, frame0, frame1, lerpAmount);
                 }
             }
         }
