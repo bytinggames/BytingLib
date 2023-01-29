@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using System;
+
+namespace BytingLib
 {
     public static class EffectExtension
     {
@@ -68,7 +70,7 @@
                                         throw new NotImplementedException();
                                 }
                             }
-                            else
+                            else // Warning: it seems not possible to get the values of a matrix3x3 array...?
                                 p2.SetValue(p.GetValueMatrixArray(p.Elements.Count));
                         }
                         break;

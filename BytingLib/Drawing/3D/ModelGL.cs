@@ -200,11 +200,10 @@ namespace BytingLib
             InverseBindMatrices = inverseBindMatrices;
             Joints = joints;
 
-            jointMatrices = new Matrix[joints.Length];
+            jointMatrices = new Matrix[joints.Length * 2];
         }
 
-        // TODO: pass this array to the vertex shader as a uniform
-        public void ComputeJointMatrices(Matrix[] matrices, Matrix globalTransform)
+        public void ComputeJointMatrices(Matrix globalTransform)
         {
             globalTransformCalculationId++;
             for (int i = 0; i < Joints.Length; i++)
@@ -213,17 +212,20 @@ namespace BytingLib
             }
 
             Matrix globalTransformInverse = Matrix.Invert(globalTransform);
-            for (int i = 0; i < matrices.Length; i++)
+            for (int i = 0; i < Joints.Length; i++)
             {
-                matrices[i] = InverseBindMatrices[i]
+                jointMatrices[i] = InverseBindMatrices[i]
                     * Joints[i].GlobalJointTransform
                     * globalTransformInverse;
+
+                // inverse transpose matrices
+                jointMatrices[i + Joints.Length] = jointMatrices[i].GetInverseTranspose3x3();
             }
         }
 
         public IDisposable? Use(IShaderGLSkinned shader, Matrix globalTransform)
         {
-            ComputeJointMatrices(jointMatrices, globalTransform);
+            ComputeJointMatrices(globalTransform);
             return shader.JointMatrices.Use(jointMatrices);
         }
     }
