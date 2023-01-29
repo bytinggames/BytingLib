@@ -19,5 +19,22 @@
                     0, 0, indexBuffer.IndexCount / 3);
             }
         }
+
+        /// <summary>only for testing currently</summary>
+        public static void Draw(this IShader shader, VertexBuffer vertexBuffer)
+        {
+            var e = shader.Effect;
+            var gDevice = vertexBuffer.GraphicsDevice;
+
+            gDevice.SetVertexBuffer(vertexBuffer);
+
+            shader.ApplyParameters();
+            foreach (var pass in e.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                gDevice.DrawPrimitives(PrimitiveType.TriangleList,
+                    0, 0);
+            }
+        }
     }
 }
