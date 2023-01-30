@@ -87,8 +87,11 @@ namespace BytingLib
             GlobalNodeTransform = LocalTransform * GlobalNodeTransform;
             using (skin?.Use(shader, GlobalNodeTransform))
             {
-                using (shader.World.Use(f => GlobalNodeTransform * f))
-                    mesh?.Draw(shader);
+                if (mesh != null)
+                {
+                    using (shader.World.Use(f => GlobalNodeTransform * f))
+                        mesh.Draw(shader);
+                }
 
                 for (int i = 0; i < Children.Count; i++)
                     Children[i].Draw(shader, GlobalNodeTransform);
