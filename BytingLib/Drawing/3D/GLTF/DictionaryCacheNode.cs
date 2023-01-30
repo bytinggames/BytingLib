@@ -3,7 +3,7 @@ using BytingLib.DataTypes;
 
 namespace BytingLib
 {
-    public class DictionaryCacheNode : DictionaryCache<NodeGL>
+    public class DictionaryCacheNode : JsonDictionaryCache<NodeGL>
     {
         private Func<JsonNode, NodeGL?, NodeGL> loadFromContainerAlternative;
 
