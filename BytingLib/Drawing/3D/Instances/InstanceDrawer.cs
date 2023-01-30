@@ -50,7 +50,7 @@ namespace BytingLib
             DrawBuffers(shader, instances, instanceBuffer, meshPart.VertexBuffer, meshPart.IndexBuffer, meshPart.VertexOffset, meshPart.StartIndex, meshPart.PrimitiveCount, PrimitiveType.TriangleList);
         }
 
-        public static void DrawMesh(IShaderTexWorld shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, ModelMesh mesh)
+        public static void DrawMesh(IShaderColorTexWorld shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, ModelMesh mesh)
         {
             DrawBegin(instances, instanceBuffer, shader.Effect);
 
@@ -59,7 +59,7 @@ namespace BytingLib
             DrawEnd(instances);
         }
 
-        public static void DrawModel(IShaderTexWorld shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, Model model)
+        public static void DrawModel(IShaderColorTexWorld shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, Model model)
         {
             DrawBegin(instances, instanceBuffer, shader.Effect);
 
@@ -72,7 +72,7 @@ namespace BytingLib
         }
 
 
-        private static void DrawInstancesInner(IShaderTexWorld shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, ModelMesh mesh)
+        private static void DrawInstancesInner(IShaderColorTexWorld shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, ModelMesh mesh)
         {
             using (shader.World.Use(mesh.ParentBone.Transform))
             {

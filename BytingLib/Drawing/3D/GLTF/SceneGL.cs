@@ -16,7 +16,7 @@ namespace BytingLib
             }
         }
 
-        internal void Draw(IShaderGLSkinned shader)
+        internal void Draw(IShaderDefault shader)
         {
             for (int i = 0; i < nodes.Count; i++)
                 nodes[i].Draw(shader);

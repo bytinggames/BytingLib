@@ -215,14 +215,14 @@ namespace BytingLib
             return contentCollector.Use<Texture2D>(ContentHelper.UriToContentFile(imageUri, gltfDirRelativeToContent));
         }
 
-        public void Draw(IShaderGLSkinned shader)
+        public void Draw(IShaderDefault shader)
         {
-            Scenes!.Get(SceneIndex).Draw(shader);
+            Scenes?.Get(SceneIndex)?.Draw(shader);
         }
 
         public NodeGL? FindNode(string name)
         {
-            return Scenes?.Get(SceneIndex).FindNode(name);
+            return Scenes?.Get(SceneIndex)?.FindNode(name);
         }
     }
 }

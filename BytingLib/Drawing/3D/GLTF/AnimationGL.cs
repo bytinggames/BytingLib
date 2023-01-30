@@ -8,7 +8,7 @@ namespace BytingLib
         public override string ToString() => "Animation: " + Name;
 
         public Channel[] channels;
-        public Sampler[] samplers;
+        //public Sampler[] samplers;
 
         public AnimationGL(ModelGL model, JsonNode n)
         {
@@ -38,7 +38,7 @@ namespace BytingLib
                 var targetNodeIndex = target["node"]!.GetValue<int>();
                 var path = target["path"]!.GetValue<string>();
 
-                TargetNode = model.Nodes!.Get(targetNodeIndex);
+                TargetNode = model.Nodes!.Get(targetNodeIndex)!;
 
                 targetPath = path switch
                 {
@@ -69,6 +69,7 @@ namespace BytingLib
             public SamplerOutput Output; // refers to an accessor that contains the values for the animated property at the respective key frames
             public Interpolation interpolation;
 
+            // TODO: move inside KeyFrames
             float AnimationDuration => KeyFrames.seconds[^1] - AnimationStartSecond + TransitionSecondsBetweenLastAndFirstFrame;
             public float AnimationStartSecond;
             public float TransitionSecondsBetweenLastAndFirstFrame = 0f;
@@ -79,7 +80,7 @@ namespace BytingLib
                 int output = n["output"]!.GetValue<int>();
 
                 byte[] bytes = model.GetBytesFromBuffer(input);
-                KeyFrames = new KeyFrames(bytes);
+                KeyFrames = new KeyFrames(bytes); // TODO: use cached keyFrames
 
                 bytes = model.GetBytesFromBuffer(output);
                 switch (targetPath)

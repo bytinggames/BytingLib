@@ -80,9 +80,9 @@ namespace BytingLib
             return transform;
         }
 
-        public void Draw(IShaderGLSkinned shader) => Draw(shader, Matrix.Identity);
+        public void Draw(IShaderDefault shader) => Draw(shader, Matrix.Identity);
 
-        private void Draw(IShaderGLSkinned shader, Matrix GlobalNodeTransform)
+        private void Draw(IShaderDefault shader, Matrix GlobalNodeTransform)
         {
             GlobalNodeTransform = LocalTransform * GlobalNodeTransform;
             using (skin?.Use(shader, GlobalNodeTransform))

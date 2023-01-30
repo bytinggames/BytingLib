@@ -23,7 +23,7 @@ namespace BytingLib
             }
         }
 
-        public void Draw(IShaderGLSkinned shader)
+        public void Draw(IShaderDefault shader)
         {
             for (int i = 0; i < Primitives.Count; i++)
             {

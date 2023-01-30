@@ -1,6 +1,7 @@
 ﻿namespace BytingLib
 {
-    public interface IShaderGLSkinned : IShaderGL
+
+    public interface IShaderSkinned : IShader
     {
         EffectParameterStack<Matrix[]> JointMatrices { get; }
     }

@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    public abstract class Shader : IShaderTexWorld, IDisposable
+    public abstract class Shader : IShaderWorld, IShaderColorTex, IDisposable
     {
         /// <summary>To change the current technique, use UseTechnique()</summary>
         protected readonly Ref<Effect> effect;

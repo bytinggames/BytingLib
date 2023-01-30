@@ -30,7 +30,7 @@ namespace BytingLib
             }
         }
 
-        public void Draw(IShaderGLSkinned shader)
+        public void Draw(IShaderDefault shader)
         {
             string techniqueName = Shader.GetTechniqueName(VertexBuffer.VertexDeclaration);
 

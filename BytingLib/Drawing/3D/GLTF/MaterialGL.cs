@@ -17,14 +17,28 @@ namespace BytingLib
             JsonNode? t;
             if ((t = n["pbrMetallicRoughness"]) != null)
             {
+                PbrMetallicRoughness = new PbrMetallicRoughness();
+                // get Metallic
+                var metallicFactor = t["metallicFactor"];
+                if (metallicFactor != null)
+                {
+                    PbrMetallicRoughness.MetallicFactor = metallicFactor.GetValue<float>();
+                }
+
+                // get Roughness
+                var roughnessFactor = t["roughnessFactor"];
+                if (roughnessFactor != null)
+                {
+                    PbrMetallicRoughness.RoughnessFactor = roughnessFactor.GetValue<float>();
+                }
+
                 // get texture
                 var baseColorTexture = t["baseColorTexture"];
                 if (baseColorTexture != null)
                 {
                     int texIndex = baseColorTexture["index"]!.GetValue<int>();
-                    TextureGL textureSampler = model.Textures!.Get(texIndex);
+                    TextureGL textureSampler = model.Textures!.Get(texIndex)!;
 
-                    PbrMetallicRoughness ??= new PbrMetallicRoughness();
                     PbrMetallicRoughness.BaseColorTexture = textureSampler;
                 }
 
@@ -33,7 +47,6 @@ namespace BytingLib
                 if (baseColorFactor != null)
                 {
                     float[] c = baseColorFactor.AsArray().Select(f => f!.GetValue<float>()).ToArray();
-                    PbrMetallicRoughness ??= new PbrMetallicRoughness();
                     PbrMetallicRoughness.BaseColor = new Vector4(c[0], c[1], c[2], c[3]);
                 }
             }
@@ -64,7 +77,7 @@ namespace BytingLib
             }
         }
 
-        internal IDisposable Use(IShaderGLSkinned shader)
+        internal IDisposable Use(IShaderDefault shader)
         {
             DisposableContainer disposables = new();
             if (PbrMetallicRoughness != null)

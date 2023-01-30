@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    public interface IShaderGL : IShaderTexWorld
+    public interface IShaderColor : IShader
     {
         EffectParameterStack<Vector4> Color { get; }
     }
