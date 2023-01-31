@@ -1,20 +1,39 @@
-﻿namespace BytingLib
+﻿using Microsoft.Xna.Framework.Input;
+
+namespace BytingLib
 {
     public class GameWrapper : Game
     {
         private IGameBase? game;
         public readonly GraphicsDeviceManager Graphics;
         private readonly Func<GameWrapper, IGameBase> createMyGame;
+        private readonly int? msaaSamples;
         private bool previousUpdateWasActive = true;
         private bool previousDrawWasActive = true;
 
-        public GameWrapper(Func<GameWrapper, IGameBase> createMyGame)
+        /// <summary>more than 16 msaaSamples is not recommended (made everything a bit pale on my system)</summary>
+        public GameWrapper(Func<GameWrapper, IGameBase> createMyGame, int? msaaSamples)
         {
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
+            if (msaaSamples != null)
+            {
+                Graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
+                Graphics.GraphicsProfile = GraphicsProfile.HiDef;
+                Graphics.PreferMultiSampling = true;
+            }
+
+
             this.createMyGame = createMyGame;
+            this.msaaSamples = msaaSamples;
+        }
+
+        void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
+        {
+            if (msaaSamples != null)
+                e.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = msaaSamples.Value;
         }
 
         protected override void Initialize()
