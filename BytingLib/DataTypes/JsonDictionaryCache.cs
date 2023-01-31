@@ -14,6 +14,8 @@ namespace BytingLib.DataTypes
             this.loadFromContainer = loadFromContainer;
         }
 
+        public int Count => container.Count;
+
         public TValue? Get(int index)
         {
             if (dict.TryGetValue(index, out TValue? value))

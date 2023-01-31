@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 using BytingLib.DataTypes;
 
 namespace BytingLib
@@ -17,6 +16,7 @@ namespace BytingLib
         public readonly JsonDictionaryCache<ImageGL>? Images;
         public readonly JsonDictionaryCache<SkinGL>? Skins;
         public readonly JsonDictionaryCache<AnimationGL>? Animations;
+        internal readonly DictionaryCacheChannelTargets ChannelTargets;
 
         private readonly Dictionary<string, VertexBuffer> vertexBuffers = new();
         private readonly Dictionary<int, IndexBuffer> indexBuffers = new();
@@ -33,6 +33,7 @@ namespace BytingLib
         {
             this.gDevice = gDevice;
             this.contentCollector = contentCollector;
+            ChannelTargets = new DictionaryCacheChannelTargets(this);
 
             string json = File.ReadAllText(filePath);
             string gltfDir = Path.GetDirectoryName(filePath)!;

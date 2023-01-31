@@ -8,7 +8,7 @@ namespace BytingLib
         SkinGL? skin;
         Matrix LocalTransform;
         //Matrix initialTransform;
-        JointTransform? jointTransform;
+        public JointTransform? JointTransform;
         public Matrix GlobalJointTransform; // needs to be updated according to LocalTransform and all local transforms of the parents
         int GlobalTransformCalculationId;
         public readonly string? Name;
@@ -104,10 +104,10 @@ namespace BytingLib
             if (GlobalTransformCalculationId == globalTransformCalculationId)
                 return;
 
-            if (jointTransform != null && jointTransform.Dirty)
+            if (JointTransform != null && JointTransform.Dirty)
             {
-                LocalTransform = jointTransform.GetTransform();
-                jointTransform.Dirty = false;
+                LocalTransform = JointTransform.GetTransform();
+                JointTransform.Dirty = false;
             }
 
             if (Parent == null)
@@ -136,49 +136,14 @@ namespace BytingLib
             return null;
         }
 
-        public void SetRotation(Quaternion rotation)
-        {
-            jointTransform ??= new JointTransform();
-            jointTransform.Rotation = rotation;
-            jointTransform.Dirty = true;
-        }
-
-        public void SetTranslation(Vector3 translation)
-        {
-            jointTransform ??= new JointTransform();
-            jointTransform.Translation = translation;
-            jointTransform.Dirty = true;
-        }
-
-        public void SetScale(Vector3 scale)
-        {
-            jointTransform ??= new JointTransform();
-            jointTransform.Scale = scale;
-            jointTransform.Dirty = true;
-        }
-
         internal void SetParentIfNotHavingOne(NodeGL? parent)
         {
             Parent ??= parent;
         }
 
-
-        // FOR LATER MAYBE:
-        //Lazy<Mesh?> mesh;
-        //Lazy<Skin?> skin;
-
-        //public Node(model model, JsonNode n)
-        //{
-        //    skin = new(() =>
-        //    {
-        //        JsonNode? t;
-        //        return (t = n["skin"]) == null ? null : model.Skins?.Get(t.GetValue<int>());
-        //    });
-        //    mesh = new(() =>
-        //    {
-        //        JsonNode? t;
-        //        return (t = n["mesh"]) == null ? null : model.Meshes?.Get(t.GetValue<int>());
-        //    });
-        //}
+        internal void InitializeForAnimation()
+        {
+            JointTransform ??= new JointTransform(LocalTransform);
+        }
     }
 }
