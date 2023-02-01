@@ -209,6 +209,7 @@ namespace BytingLib
         {
             public NodeGL Node;
             public AnimationBlend? CurrentAnimationBlend;
+            public int CurrentAnimationBlendInterpolationStep;
 
             public ChannelTarget(ModelGL model, int nodeIndex)
             {
