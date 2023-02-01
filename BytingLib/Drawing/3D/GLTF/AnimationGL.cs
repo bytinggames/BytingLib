@@ -203,7 +203,7 @@ namespace BytingLib
             // TODO: move inside KeyFrames. Wait... this should be placed at a higher level!
             float AnimationDuration => KeyFrames.seconds[^1] - AnimationStartSecond + TransitionSecondsBetweenLastAndFirstFrame;
             public float AnimationStartSecond;
-            public float TransitionSecondsBetweenLastAndFirstFrame = 0.5f;
+            public float TransitionSecondsBetweenLastAndFirstFrame = 0f;
             public bool ReverseAnimationOnWrap = false;
 
             public Sampler(ModelGL model, JsonNode n, SamplerOutput<T> samplerOutput)
@@ -217,7 +217,7 @@ namespace BytingLib
                 bytes = model.GetBytesFromBuffer(output);
 
                 Output = samplerOutput;
-                Output.Initialize(bytes);
+                Output.Initialize(bytes, KeyFrames.seconds.Length);
 
                 var interpolationStr = n["interpolation"]?.GetValue<string>();
                 interpolation = interpolationStr == "STEP" ? SamplerFramesInterpolation.Step

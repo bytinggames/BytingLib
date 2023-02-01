@@ -103,7 +103,8 @@
             return componentSize;
         }
 
+        const int MatrixStructSize = 16 * 4;
         internal static Matrix[] ByteArrayToMatrixArray(byte[] bytes)
-            => ByteExtension.ByteArrayToStructArray<Matrix>(bytes, 4 * 16);
+            => ByteExtension.ByteArrayToStructArray<Matrix>(bytes, MatrixStructSize);
     }
 }

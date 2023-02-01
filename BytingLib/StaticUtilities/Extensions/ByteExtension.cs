@@ -33,13 +33,27 @@ namespace BytingLib
             }
         }
 
-        public static T[] ByteArrayToStructArray<T>(byte[] inverseBindAccessorData, int sizeOfStruct) where T : struct
+        public static T[] ByteArrayToStructArray<T>(byte[] bytes, int structSize) where T : struct
         {
-            T[] m = new T[inverseBindAccessorData.Length / sizeOfStruct];
-            IntPtr mPtr = Marshal.UnsafeAddrOfPinnedArrayElement(m, 0);
-            Marshal.Copy(inverseBindAccessorData, 0, mPtr, inverseBindAccessorData.Length);
-            return m;
+            T[] t = new T[bytes.Length / structSize];
+            IntPtr mPtr = Marshal.UnsafeAddrOfPinnedArrayElement(t, 0);
+            Marshal.Copy(bytes, 0, mPtr, bytes.Length);
+            return t;
         }
 
+        public static T[] ByteArrayToStructArray<T>(byte[] bytes) where T : struct
+            => ByteArrayToStructArray<T>(bytes, Marshal.SizeOf<T>());
+
+        public static T ByteArrayToStruct<T>(byte[] bytes, int dataOffset, int structSize) where T : struct
+        {
+            var pData = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+            IntPtr addr = pData.AddrOfPinnedObject();
+            addr = IntPtr.Add(addr, dataOffset);
+            var result = Marshal.PtrToStructure<T>(addr);
+            pData.Free();
+            return result;
+        }
+        public static T ByteArrayToStruct<T>(byte[] bytes, int dataOffset) where T : struct
+            => ByteArrayToStruct<T>(bytes, dataOffset, Marshal.SizeOf<T>());
     }
 }

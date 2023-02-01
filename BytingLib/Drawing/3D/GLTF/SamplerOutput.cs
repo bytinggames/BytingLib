@@ -11,11 +11,11 @@
         }
 
         public abstract T Interpolate(T value0, T value1, float interpolationAmount, SamplerFramesInterpolation interpolation);
-        internal void Initialize(byte[] bytes)
+        internal void Initialize(byte[] bytes, int keyFrameCount)
         {
-            values = BytesToValues(bytes);
+            values = BytesToValues(bytes, keyFrameCount);
         }
 
-        protected abstract T[] BytesToValues(byte[] bytes);
+        protected abstract T[] BytesToValues(byte[] bytes, int keyFrameCount);
     }
 }
