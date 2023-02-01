@@ -56,7 +56,11 @@ namespace BytingLib
                 return;
 
             drawnUpdate = true;
-            transitioner.ApplyBlend(BlendStart, BlendContinue);
+
+            if (transitioner.TransitionCount == 0)
+                transitioner.OldestValue.Animation.UpdateAnimationTime(CurrentSecond - transitioner.OldestValue.StartTimeStamp);
+            else
+                transitioner.ApplyBlend(BlendStart, BlendContinue);
         }
 
         private void BlendStart(AnimationInstance from)

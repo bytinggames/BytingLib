@@ -4,13 +4,15 @@ namespace BytingLib
     /// <summary>Used for transitioning between animations f.ex.</summary>
     public class LayeredTransitioner<TValue>
     {
-        TValue oldestValue;
+        public TValue OldestValue { get; private set; }
         List<Transition<TValue>> transitions = new();
 
         public LayeredTransitioner(TValue startValue)
         {
-            oldestValue = startValue;
+            OldestValue = startValue;
         }
+
+        public int TransitionCount => transitions.Count;
 
         public void TransitTo(TValue value, float transitionDurationSeconds)
         {
@@ -26,7 +28,7 @@ namespace BytingLib
 
                 if (transitions[i].HasTransitionFinished())
                 {
-                    oldestValue = transitions[i].GetEndValue();
+                    OldestValue = transitions[i].GetEndValue();
                     transitions.RemoveRange(0, i + 1);
                     break; // no need to continue further, the older transitions have been deleted
                 }
@@ -35,7 +37,7 @@ namespace BytingLib
 
         public void ApplyBlend(Action<TValue> blendBase, Action<TValue, float> interpolate)
         {
-            blendBase(oldestValue);
+            blendBase(OldestValue);
             for (int i = 0; i < transitions.Count; i++)
             {
                 interpolate(transitions[i].GetEndValue(), transitions[i].CurrentBlendAmount);
@@ -44,7 +46,7 @@ namespace BytingLib
 
         public IEnumerable<TValue> GetAllValues()
         {
-            yield return oldestValue;
+            yield return OldestValue;
             for (int i = 0; i < transitions.Count; i++)
             {
                 yield return transitions[i].GetEndValue();

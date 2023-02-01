@@ -62,17 +62,23 @@ namespace BytingLib
             return channel;
         }
 
+        /// <summary>Used, when no transition happens</summary>
+        public void UpdateAnimationTime(float second)
+        {
+            float samplerSecond = SecondToSamplerSecond(second);
+
+            for (int i = 0; i < channels.Length; i++)
+                channels[i].Apply(samplerSecond, AnimationEndSecondIncludingTransitionToBegin);
+        }
+
         public void BlendStart(float second)
         {
             model.AnimationBlend.Begin();
 
-            float samplerSecond = SecondToSamplerSecond(second);
-
             for (int i = 0; i < channels.Length; i++)
-            {
-                model.AnimationBlend.AddChannel(channels[i]); // TODO: I think I can remove that list, by having the interpolationStep counter
-                channels[i].Apply(samplerSecond, AnimationEndSecondIncludingTransitionToBegin);
-            }
+                model.AnimationBlend.AddChannelfNotAlready(channels[i]);
+
+            UpdateAnimationTime(second);
         }
 
         public void BlendAdd(float second, float interpolationAmount)
@@ -85,7 +91,7 @@ namespace BytingLib
             model.AnimationBlend.BeginAnimationBlend();
             for (int i = 0; i < channels.Length; i++)
             {
-                if (model.AnimationBlend.AddChannel(channels[i]))
+                if (model.AnimationBlend.AddChannelfNotAlready(channels[i]))
                 {
                     // new blend, so start blending from default
                     channels[i].ApplyDefault();

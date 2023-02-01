@@ -17,7 +17,7 @@
             interpolationStep = 0;
         }
 
-        internal bool AddChannel(AnimationGL.Channel channel)
+        internal bool AddChannelfNotAlready(AnimationGL.Channel channel)
         {
             if (channels == null)
                 throw new BytingException("Call Begin() first before calling AddChannel()");
