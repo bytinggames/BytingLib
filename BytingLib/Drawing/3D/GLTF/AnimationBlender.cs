@@ -14,8 +14,15 @@ namespace BytingLib
         public AnimationBlender(GameSpeed drawSpeed, AnimationGL startAnimation, float defaultTransitionDurationInSeconds)
         {
             transitioner = new(new AnimationInstance(startAnimation, CurrentSecond));
+            transitioner.OnTransitionDone += Transitioner_OnTransitionDone;
             this.drawSpeed = drawSpeed;
             DefaultTransitionDurationInSeconds = defaultTransitionDurationInSeconds;
+        }
+
+        private void Transitioner_OnTransitionDone(AnimationInstance animationInstance)
+        {
+            // clean up (f.ex. for the case, when this animation scaled some nodes, and the next animation doesn't modify scale at all)
+            animationInstance.Animation.ApplyDefault();
         }
 
         public void TransitTo(AnimationInstance animationInstance)

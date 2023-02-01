@@ -124,6 +124,11 @@ namespace BytingLib
             return second;
         }
 
+        public void ApplyDefault()
+        {
+            channels.ForEvery(f => f.ApplyDefault());
+        }
+
         abstract class Channel<T> : Channel
         {
             protected Sampler<T> samplerT;

@@ -6,6 +6,7 @@ namespace BytingLib
     {
         public TValue OldestValue { get; private set; }
         List<Transition<TValue>> transitions = new();
+        public event Action<TValue>? OnTransitionDone;
 
         public LayeredTransitioner(TValue startValue)
         {
@@ -16,7 +17,18 @@ namespace BytingLib
 
         public void TransitTo(TValue value, float transitionDurationSeconds)
         {
-            transitions.Add(new Transition<TValue>(value, transitionDurationSeconds));
+            if (transitionDurationSeconds <= 0)
+            {
+                OnTransitionDone?.Invoke(OldestValue);
+                OldestValue = value;
+                while (transitions.Count > 0)
+                {
+                    OnTransitionDone?.Invoke(transitions[0].GetEndValue());
+                    transitions.RemoveAt(0);
+                }
+            }
+            else
+                transitions.Add(new Transition<TValue>(value, transitionDurationSeconds));
         }
 
         public void Update(float elapsedSeconds)
@@ -28,8 +40,16 @@ namespace BytingLib
 
                 if (transitions[i].HasTransitionFinished())
                 {
+                    OnTransitionDone?.Invoke(OldestValue);
                     OldestValue = transitions[i].GetEndValue();
-                    transitions.RemoveRange(0, i + 1);
+
+                    int keepCount = transitions.Count - i;
+                    while (transitions.Count > keepCount) // skip all older transitions
+                    {
+                        OnTransitionDone?.Invoke(transitions[0].GetEndValue());
+                        transitions.RemoveAt(0);
+                    }
+                    transitions.RemoveAt(0); // remove the transition that was set to the OldestValue
                     break; // no need to continue further, the older transitions have been deleted
                 }
             }
