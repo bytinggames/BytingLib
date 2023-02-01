@@ -18,6 +18,8 @@ namespace BytingLib
         public Int2 GetResolution() => inputSource.Current.WindowResolution;
         private int randSeed;
 
+        public Action? OnPlayInput;
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -40,7 +42,7 @@ namespace BytingLib
                 Keyboard.GetState(), 
                 Microsoft.Xna.Framework.Input.GamePad.GetState(0), 
                 new MetaInputState(game.IsActivatedThisFrame()),
-                windowManager.GetResolution())));
+                windowManager.Resolution)));
 
             stuff.Add(Keys = new KeyInput(() => inputSource.Current.KeyState));
 #if DEBUG
@@ -100,6 +102,8 @@ namespace BytingLib
 
         private void PlayInput(StructSource<FullInput> inputSource, string path, Action onFinish)
         {
+            OnPlayInput?.Invoke();
+
             FileStream fs = File.OpenRead(path);
 
             MetaData metaData;

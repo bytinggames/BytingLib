@@ -5,12 +5,12 @@ namespace BytingLib
     public class MouseWithoutOutOfWindowClicks
     {
         private readonly Func<MouseState> getState;
-        private readonly IGetResolution getResolution;
+        private readonly IResolution getResolution;
 
         private bool blockLeftButton = false;
         private MouseState previousMouseState;
 
-        public MouseWithoutOutOfWindowClicks(Func<MouseState> getState, IGetResolution getResolution)
+        public MouseWithoutOutOfWindowClicks(Func<MouseState> getState, IResolution getResolution)
         {
             this.getState = getState;
             this.getResolution = getResolution;
@@ -28,7 +28,7 @@ namespace BytingLib
             else if (state.LeftButton == ButtonState.Pressed
                 && previousMouseState.LeftButton == ButtonState.Released) // only prevent mouse click if clicked this frame
             {
-                Int2 res = getResolution.GetResolution();
+                Int2 res = getResolution.Resolution;
 
                 Point pos = state.Position;
                 if (pos.X < 0

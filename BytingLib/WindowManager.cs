@@ -6,7 +6,7 @@ namespace BytingLib
     /// <summary>
     /// Provides the ability to toggle fullscreen and move window to another screen.
     /// </summary>
-    public class WindowManager : IGetResolution
+    public class WindowManager : IResolution
     {
         private readonly bool realFullscreen;
         public GameWindow Window { get; }
@@ -35,10 +35,12 @@ namespace BytingLib
 
             window.ClientSizeChanged += Window_ClientSizeChanged;
         }
+        
+        public Int2 Resolution => new Int2(GetViewportWidth(), GetViewportHeight());
 
         private void Window_ClientSizeChanged(object? sender, EventArgs e)
         {
-            OnResolutionChanged?.Invoke(GetResolution());
+            OnResolutionChanged?.Invoke(Resolution);
         }
 
         public void ToggleFullscreen()
@@ -138,10 +140,6 @@ namespace BytingLib
             return GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
         }
 
-        public Int2 GetResolution()
-        {
-            return new Int2(GetViewportWidth(), GetViewportHeight());
-        }
 
         /// <summary>Only supported on Windows</summary>
         public void MaximizeWindow()
