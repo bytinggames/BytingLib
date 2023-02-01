@@ -7,8 +7,6 @@ namespace BytingLib
         TValue oldestValue;
         List<Transition<TValue>> transitions = new();
 
-        float currentSecond = 0f;
-
         public LayeredTransitioner(TValue startValue)
         {
             oldestValue = startValue;
