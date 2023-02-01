@@ -5,6 +5,8 @@ namespace BytingLib
     public class AnimationGL
     {
         public readonly string? Name;
+        private readonly ModelGL model;
+
         public override string ToString() => "Animation: " + Name;
 
         public Channel[] channels;
@@ -25,6 +27,7 @@ namespace BytingLib
 
         public AnimationGL(ModelGL model, JsonNode n)
         {
+            this.model = model;
             Name = n["name"]?.GetValue<string>();
             var samplersArr = n["samplers"]!.AsArray();
             channels = n["channels"]!.AsArray().Select(c => GetChannel(c!, model, samplersArr)).ToArray();
@@ -59,36 +62,37 @@ namespace BytingLib
             return channel;
         }
 
-        public AnimationBlend BlendStart(float second)
+        public void BlendStart(float second)
         {
-            AnimationBlend blend = new AnimationBlend();
+            model.AnimationBlend.Begin();
 
             float samplerSecond = SecondToSamplerSecond(second);
 
             for (int i = 0; i < channels.Length; i++)
             {
-                blend.AddChannel(channels[i]); // TODO: I think I can remove that list, by having the interpolationStep counter
+                model.AnimationBlend.AddChannel(channels[i]); // TODO: I think I can remove that list, by having the interpolationStep counter
                 channels[i].Apply(samplerSecond, AnimationEndSecondIncludingTransitionToBegin);
             }
-
-            return blend;
         }
 
-        public void BlendAdd(AnimationBlend blend, float second, float interpolationAmount)
+        public void BlendAdd(float second, float interpolationAmount)
         {
+            if (model.AnimationBlend == null)
+                throw new Exception("You first need to call BlendStart()");
+
             float samplerSecond = SecondToSamplerSecond(second);
 
-            blend.BeginAddAnimationBlend();
+            model.AnimationBlend.BeginAnimationBlend();
             for (int i = 0; i < channels.Length; i++)
             {
-                if (blend.AddChannel(channels[i]))
+                if (model.AnimationBlend.AddChannel(channels[i]))
                 {
                     // new blend, so start blending from default
                     channels[i].ApplyDefault();
                 }
                 channels[i].BlendTo(samplerSecond, interpolationAmount, AnimationEndSecondIncludingTransitionToBegin);
             }
-            blend.EndAddAnimationBlend(interpolationAmount);
+            model.AnimationBlend.EndAnimationBlend(interpolationAmount);
         }
 
         private float SecondToSamplerSecond(float second)
@@ -208,8 +212,8 @@ namespace BytingLib
         public class ChannelTarget
         {
             public NodeGL Node;
-            public AnimationBlend? CurrentAnimationBlend;
-            public int CurrentAnimationBlendInterpolationStep;
+            internal int AnimationBlendId;
+            public int AnimationBlendStep;
 
             public ChannelTarget(ModelGL model, int nodeIndex)
             {
@@ -265,7 +269,7 @@ namespace BytingLib
                 int input = n["input"]!.GetValue<int>();
                 int output = n["output"]!.GetValue<int>();
 
-                KeyFrames = model.KeyFrames.Get(input)!;
+                KeyFrames = model.KeyFrames!.Get(input)!;
 
                 byte[] bytes = model.GetBytesFromBuffer(output);
                 Output = samplerOutput;

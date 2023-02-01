@@ -40,5 +40,11 @@
                 Arr[Count++] = elements[i];
             }
         }
+
+        public T this[int i]
+        {
+            get { return Arr[i]; }
+            set { Arr[i] = value; }
+        }
     }
 }

@@ -1,43 +1,61 @@
 ﻿namespace BytingLib
 {
-    public class AnimationBlend
+    internal class AnimationBlend
     {
-        internal AnimationBlend()
-        { }
-
-        public int interpolationStep = 0;
+        public int animationId = 0;
+        public int interpolationStep;
         int channelCountOnBlendBegin;
-        List<AnimationGL.Channel> channels = new();
+        SimpleArrayList<AnimationGL.Channel>? channels;
 
-        public bool AddChannel(AnimationGL.Channel channel)
+        internal void Begin()
         {
-            bool newChannel = channel.Target.CurrentAnimationBlend != this;
+            if (channels == null)
+                channels = new();
+            else
+                channels.Clear();
+            animationId++;
+            interpolationStep = 0;
+        }
+
+        internal bool AddChannel(AnimationGL.Channel channel)
+        {
+            if (channels == null)
+                throw new BytingException("Call Begin() first before calling AddChannel()");
+
+            bool newChannel = channel.Target.AnimationBlendId != animationId;
 
             if (newChannel)
             {
                 channels.Add(channel);
-                channel.Target.CurrentAnimationBlend = this;
+                channel.Target.AnimationBlendId = animationId;
             }
 
-            channel.Target.CurrentAnimationBlendInterpolationStep = interpolationStep;
+            channel.Target.AnimationBlendStep = interpolationStep;
 
             return newChannel;
         }
 
-        internal void BeginAddAnimationBlend()
+        internal void BeginAnimationBlend()
         {
+            if (channels == null)
+                throw new BytingException("Call Begin() first before calling BeginAnimationBlend()");
+
             interpolationStep++;
             channelCountOnBlendBegin = channels.Count;
         }
-        internal void EndAddAnimationBlend(float interpolationAmount)
+        internal void EndAnimationBlend(float interpolationAmount)
         {
+            if (channels == null)
+                throw new BytingException("Call Begin() and BeginAnimationBlend() first before calling EndAnimationBlend()");
+
+
             for (int i = 0; i < channelCountOnBlendBegin; i++) // only check old channels
             {
-                if (channels[i].Target.CurrentAnimationBlendInterpolationStep < interpolationStep)
+                if (channels[i].Target.AnimationBlendStep < interpolationStep)
                 {
                     // do interpolation to default
                     channels[i].BlendToDefault(interpolationAmount);
-                    channels[i].Target.CurrentAnimationBlendInterpolationStep = interpolationStep;
+                    channels[i].Target.AnimationBlendStep = interpolationStep;
                 }
             }
         }

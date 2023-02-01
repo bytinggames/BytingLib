@@ -18,7 +18,7 @@ namespace BytingLib
         public readonly JsonDictionaryCache<SkinGL>? Skins;
         public readonly JsonDictionaryCache<AnimationGL>? Animations;
         internal readonly DictionaryCacheChannelTargets ChannelTargets;
-        internal readonly DictionaryCacheKeyFrames KeyFrames;
+        internal readonly DictionaryCacheKeyFrames? KeyFrames;
 
         private readonly Dictionary<string, VertexBuffer> vertexBuffers = new();
         private readonly Dictionary<int, IndexBuffer> indexBuffers = new();
@@ -30,6 +30,9 @@ namespace BytingLib
         private readonly IContentCollectorUse contentCollector;
         private readonly string gltfDirRelativeToContent;
         private readonly GraphicsDevice gDevice;
+
+        internal readonly AnimationBlend AnimationBlend = new();
+
 
         public ModelGL(string filePath, string contentRootDirectory, GraphicsDevice gDevice, IContentCollectorUse contentCollector)
         {
@@ -209,7 +212,7 @@ namespace BytingLib
 
             if (Images != null)
             {
-                Images.ForEach(f => f.Dispose());
+                Images.ForEachLoaded(f => f.Dispose());
                 Images.Clear();
             }
         }

@@ -14,7 +14,8 @@ namespace BytingLib.DataTypes
             this.loadFromContainer = loadFromContainer;
         }
 
-        public int Count => container.Count;
+        /// <summary>Including unloaded values.</summary>
+        public int TotalCount => container.Count;
 
         public TValue? Get(int index)
         {
@@ -29,7 +30,7 @@ namespace BytingLib.DataTypes
             return val;
         }
 
-        public void ForEach(Action<TValue> action)
+        public void ForEachLoaded(Action<TValue> action)
         {
             foreach (var val in dict.Values)
             {
