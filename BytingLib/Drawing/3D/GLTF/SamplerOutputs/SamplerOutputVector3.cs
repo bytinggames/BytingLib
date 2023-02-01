@@ -9,12 +9,12 @@ namespace BytingLib
         {
             switch (interpolation)
             {
+                case SamplerFramesInterpolation.CubicSpline:
                 case SamplerFramesInterpolation.Linear:
                     Vector3.Lerp(ref value0, ref value1, interpolationAmount, out Vector3 result);
                     return result;
                 case SamplerFramesInterpolation.Step:
                     return value0;
-                case SamplerFramesInterpolation.CubicSpline:
                 default:
                     throw new NotImplementedException();
             }

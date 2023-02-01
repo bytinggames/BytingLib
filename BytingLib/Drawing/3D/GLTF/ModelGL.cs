@@ -3,6 +3,7 @@ using BytingLib.DataTypes;
 
 namespace BytingLib
 {
+
     public class ModelGL : IDisposable
     {
         public readonly int SceneIndex;
@@ -17,6 +18,7 @@ namespace BytingLib
         public readonly JsonDictionaryCache<SkinGL>? Skins;
         public readonly JsonDictionaryCache<AnimationGL>? Animations;
         internal readonly DictionaryCacheChannelTargets ChannelTargets;
+        internal readonly DictionaryCacheKeyFrames KeyFrames;
 
         private readonly Dictionary<string, VertexBuffer> vertexBuffers = new();
         private readonly Dictionary<int, IndexBuffer> indexBuffers = new();
@@ -69,7 +71,8 @@ namespace BytingLib
                 Skins = new(n.AsArray(), n => new(this, n));
             if ((n = root["animations"]) != null)
                 Animations = new(n.AsArray(), n => new(this, n));
-
+            if ((n = root["accessors"]) != null)
+                KeyFrames = new(this);
 
             accessorsArr = root["accessors"]?.AsArray();
             bufferViewsArr = root["bufferViews"]?.AsArray();

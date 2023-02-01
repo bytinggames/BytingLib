@@ -211,11 +211,9 @@ namespace BytingLib
                 int input = n["input"]!.GetValue<int>();
                 int output = n["output"]!.GetValue<int>();
 
-                byte[] bytes = model.GetBytesFromBuffer(input);
-                KeyFrames = new KeyFrames(bytes); // TODO: use cached keyFrames
+                KeyFrames = model.KeyFrames.Get(input)!;
 
-                bytes = model.GetBytesFromBuffer(output);
-
+                byte[] bytes = model.GetBytesFromBuffer(output);
                 Output = samplerOutput;
                 Output.Initialize(bytes, KeyFrames.seconds.Length);
 
