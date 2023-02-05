@@ -7,11 +7,17 @@ namespace BytingLib
     {
         public override Vector3 Interpolate(Vector3 value0, Vector3 value1, float interpolationAmount, SamplerFramesInterpolation interpolation)
         {
+            Vector3 result;
             switch (interpolation)
             {
                 case SamplerFramesInterpolation.CubicSpline:
+                //TODO: do real spline
+
+                interpolationAmount = Curves.EaseInOutCubic(interpolationAmount);
+                    Vector3.Lerp(ref value0, ref value1, interpolationAmount, out result);
+                    return result;
                 case SamplerFramesInterpolation.Linear:
-                    Vector3.Lerp(ref value0, ref value1, interpolationAmount, out Vector3 result);
+                    Vector3.Lerp(ref value0, ref value1, interpolationAmount, out result);
                     return result;
                 case SamplerFramesInterpolation.Step:
                     return value0;

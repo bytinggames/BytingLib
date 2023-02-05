@@ -11,9 +11,11 @@ namespace BytingLib
             switch (interpolation)
             {
                 case SamplerFramesInterpolation.Linear:
-                    Quaternion.Lerp(ref value0, ref value1, interpolationAmount, out result);
+                    Quaternion.Slerp(ref value0, ref value1, interpolationAmount, out result);
                     return result;
                 case SamplerFramesInterpolation.CubicSpline:
+                    //TODO: do real spline
+                    interpolationAmount = Curves.EaseInOutCubic(interpolationAmount);
                     Quaternion.Slerp(ref value0, ref value1, interpolationAmount, out result);
                     return result;
                 case SamplerFramesInterpolation.Step:
