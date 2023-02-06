@@ -34,9 +34,9 @@ namespace BytingLib
         {
             string techniqueName = Shader.GetTechniqueName(VertexBuffer.VertexDeclaration);
 
-            using (shader.UseTechnique(techniqueName))
+            using (Material?.Use(shader, ref techniqueName))
             {
-                using (Material?.Use(shader))
+                using (shader.UseTechnique(techniqueName))
                 {
                     if (IndexBuffer == null)
                         shader.Draw(VertexBuffer);

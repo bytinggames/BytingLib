@@ -9,12 +9,19 @@ namespace BytingLib
 
         public PbrMetallicRoughness? PbrMetallicRoughness;
         public RasterizerState? RasterizerState;
+        public TextureGL? NormalTexture;
+        public TextureGL? ORMTexture;
+        public Vector3? EmissiveFactor;
+        public TextureGL? EmissiveTexture;
 
         public MaterialGL(ModelGL model, JsonNode n)
         {
             Name = n["name"]?.GetValue<string>();
 
             JsonNode? t;
+
+            #region Metallic Roughness
+
             if ((t = n["pbrMetallicRoughness"]) != null)
             {
                 PbrMetallicRoughness = new PbrMetallicRoughness();
@@ -51,6 +58,42 @@ namespace BytingLib
                 }
             }
 
+            #endregion
+
+            #region Emissive
+
+            if ((t = n["emissiveFactor"]) != null)
+                EmissiveFactor = t.AsArray().GetVector3();
+
+            if ((t = n["emissiveTexture"]) != null)
+            {
+                int texIndex = t["index"]!.GetValue<int>();
+                EmissiveTexture = model.Textures!.Get(texIndex)!;
+            }
+
+            #endregion
+
+            #region ORM
+
+            if ((t = n["occlusionTexture"]) != null)
+            {
+                int texIndex = t["index"]!.GetValue<int>();
+                ORMTexture = model.Textures!.Get(texIndex)!;
+            }
+
+            #endregion
+
+            #region Normal
+
+            if ((t = n["normalTexture"]) != null)
+            {
+                int texIndex = t["index"]!.GetValue<int>();
+                NormalTexture = model.Textures!.Get(texIndex)!;
+            }
+
+            #endregion
+
+
             var extras = n["extras"];
             if (extras != null)
             {
@@ -77,13 +120,44 @@ namespace BytingLib
             }
         }
 
-        internal IDisposable Use(IShaderDefault shader)
+        internal IDisposable Use(IShaderDefault shader, ref string techniqueName)
         {
             DisposableContainer disposables = new();
             if (PbrMetallicRoughness != null)
                 disposables.Use(PbrMetallicRoughness.Use(shader));
             if (RasterizerState != null)
                 disposables.Use(shader.UseRasterizer(RasterizerState));
+
+            if (NormalTexture != null)
+            {
+                techniqueName += "NMap";
+
+                disposables.Use(shader.UseSampler(NormalTexture.Sampler.SamplerState, 1));
+                disposables.UseCheckNull(shader.NormalTex.Use(NormalTexture.Image.Tex2D.Value));
+            }
+
+            if (ORMTexture != null)
+            {
+                techniqueName += "ORM";
+
+                disposables.Use(shader.UseSampler(ORMTexture.Sampler.SamplerState, 2));
+                disposables.UseCheckNull(shader.ORMTex.Use(ORMTexture.Image.Tex2D.Value));
+            }
+
+            if (EmissiveFactor != null)
+            {
+                techniqueName += "Emissive";
+
+                disposables.UseCheckNull(shader.EmissiveFactor.Use(EmissiveFactor.Value));
+                if (EmissiveTexture != null)
+                {
+                    disposables.Use(shader.UseSampler(EmissiveTexture.Sampler.SamplerState, 3));
+                    disposables.UseCheckNull(shader.EmissiveTex.Use(EmissiveTexture.Image.Tex2D.Value));
+                }
+                else
+                    throw new NotImplementedException();
+            }
+
             return disposables;
         }
     }
