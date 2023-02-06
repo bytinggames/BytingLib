@@ -2,16 +2,18 @@
 
 namespace BytingLib.DataTypes
 {
-    public class JsonDictionaryCache<TValue> where TValue : class
+    public class JsonArrayCache<TValue> where TValue : class
     {
-        protected Dictionary<int, TValue> dict = new();
+        protected TValue?[] dict;
         protected readonly JsonArray container;
         protected Func<JsonNode, TValue> loadFromContainer;
 
-        public JsonDictionaryCache(JsonArray container, Func<JsonNode, TValue> loadFromContainer)
+        public JsonArrayCache(JsonArray container, Func<JsonNode, TValue> loadFromContainer)
         {
             this.container = container;
             this.loadFromContainer = loadFromContainer;
+
+            dict = new TValue?[container.Count];
         }
 
         /// <summary>Including unloaded values.</summary>
@@ -19,28 +21,33 @@ namespace BytingLib.DataTypes
 
         public TValue? Get(int index)
         {
-            if (dict.TryGetValue(index, out TValue? value))
-                return value;
-
             if (index < 0
-                || container.Count <= index)
+                || index >= container.Count)
                 return null;
+
+            if (dict[index] != null)
+                return dict[index];
+
             var val = loadFromContainer(container[index]!);
-            dict.Add(index, val);
+            dict[index] = val;
             return val;
         }
 
         public void ForEachLoaded(Action<TValue> action)
         {
-            foreach (var val in dict.Values)
+            for (int i = 0; i < dict.Length; i++)
             {
-                action(val);
+                if (dict[i] != null)
+                    action(dict[i]!);
             }
         }
 
         public void Clear()
         {
-            dict.Clear();
+            for (int i = 0; i < dict.Length; i++)
+            {
+                dict[i] = null;
+            }
         }
     }
 }

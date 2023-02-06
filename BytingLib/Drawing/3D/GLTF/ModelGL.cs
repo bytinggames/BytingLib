@@ -8,15 +8,15 @@ namespace BytingLib
     {
         public readonly int SceneIndex;
 
-        public readonly JsonDictionaryCache<SceneGL>? Scenes;
-        public readonly DictionaryCacheNode? Nodes;
-        public readonly JsonDictionaryCache<MeshGL>? Meshes;
-        public readonly JsonDictionaryCache<MaterialGL>? Materials;
-        public readonly JsonDictionaryCache<TextureGL>? Textures;
-        public readonly JsonDictionaryCache<SamplerGL>? Samplers;
-        public readonly JsonDictionaryCache<ImageGL>? Images;
-        public readonly JsonDictionaryCache<SkinGL>? Skins;
-        public readonly JsonDictionaryCache<AnimationGL>? Animations;
+        public readonly JsonArrayCache<SceneGL>? Scenes;
+        public readonly ArrayCacheNode? Nodes;
+        public readonly JsonArrayCache<MeshGL>? Meshes;
+        public readonly JsonArrayCache<MaterialGL>? Materials;
+        public readonly JsonArrayCache<TextureGL>? Textures;
+        public readonly JsonArrayCache<SamplerGL>? Samplers;
+        public readonly JsonArrayCache<ImageGL>? Images;
+        public readonly JsonArrayCache<SkinGL>? Skins;
+        public readonly JsonArrayCache<AnimationGL>? Animations;
         internal readonly DictionaryCacheChannelTargets ChannelTargets;
         internal readonly DictionaryCacheKeyFrames? KeyFrames;
 
