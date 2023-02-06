@@ -13,11 +13,11 @@ namespace BytingLib
         public Channel[] channels;
 
         public float AnimationStartSecond, AnimationEndSecond;
-        public float TransitionSecondsBetweenLastAndFirstFrame = 0f;
+        public float TransitionSecondsBetweenLastAndFirstFrame = 0f; // TODO: probably pass this value by paramter, instead of storing it in this raw animation representation
         public float AnimationDuration => AnimationEndSecond - AnimationStartSecond + TransitionSecondsBetweenLastAndFirstFrame;
         public float AnimationEndSecondIncludingTransitionToBegin => AnimationEndSecond + TransitionSecondsBetweenLastAndFirstFrame;
-        public WrapMode Wrap = WrapMode.Repeat;
-        public bool Looped { get; set; } = true;
+        public WrapMode Wrap = WrapMode.Repeat; // TODO: probably pass this value by paramter, instead of storing it in this raw animation representation
+        public bool Looped { get; set; } = true; // TODO: probably pass this value by paramter, instead of storing it in this raw animation representation
 
         public enum WrapMode
         {

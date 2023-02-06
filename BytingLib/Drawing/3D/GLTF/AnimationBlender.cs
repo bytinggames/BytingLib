@@ -7,22 +7,24 @@ namespace BytingLib
 
         private LayeredTransitioner<AnimationInstance> transitioner;
         private readonly GameSpeed drawSpeed;
+        private readonly Ref<ModelGL> model;
         private bool drawnUpdate = false;
 
         public float DefaultTransitionDurationInSeconds { get; set;  }
 
-        public AnimationBlender(GameSpeed drawSpeed, AnimationGL startAnimation, float defaultTransitionDurationInSeconds)
+        public AnimationBlender(GameSpeed drawSpeed, int startAnimation, float defaultTransitionDurationInSeconds, Ref<ModelGL> model)
         {
             transitioner = new(new AnimationInstance(startAnimation, CurrentSecond));
             transitioner.OnTransitionDone += Transitioner_OnTransitionDone;
             this.drawSpeed = drawSpeed;
             DefaultTransitionDurationInSeconds = defaultTransitionDurationInSeconds;
+            this.model = model;
         }
 
         private void Transitioner_OnTransitionDone(AnimationInstance animationInstance)
         {
             // clean up (f.ex. for the case, when this animation scaled some nodes, and the next animation doesn't modify scale at all)
-            animationInstance.Animation.ApplyDefault();
+            GetAnimation(animationInstance.Animation)?.ApplyDefault();
         }
 
         public void TransitTo(AnimationInstance animationInstance)
@@ -37,12 +39,12 @@ namespace BytingLib
             transitioner.TransitTo(animationInstance, transitionDurationInSeconds);
         }
 
-        public void TransitTo(AnimationGL animation)
+        public void TransitTo(int animation)
         {
             transitioner.TransitTo(new AnimationInstance(animation, CurrentSecond), DefaultTransitionDurationInSeconds);
         }
 
-        public void TransitTo(AnimationGL animation, float transitionDurationInSeconds)
+        public void TransitTo(int animation, float transitionDurationInSeconds)
         {
             transitioner.TransitTo(new AnimationInstance(animation, CurrentSecond), transitionDurationInSeconds);
         }
@@ -65,19 +67,24 @@ namespace BytingLib
             drawnUpdate = true;
 
             if (transitioner.TransitionCount == 0)
-                transitioner.OldestValue.Animation.UpdateAnimationTime(CurrentSecond - transitioner.OldestValue.StartTimeStamp);
+                GetAnimation(transitioner.OldestValue.Animation)?.UpdateAnimationTime(CurrentSecond - transitioner.OldestValue.StartTimeStamp);
             else
                 transitioner.ApplyBlend(BlendStart, BlendContinue);
         }
 
         private void BlendStart(AnimationInstance from)
         {
-            from.Animation.BlendStart(CurrentSecond - from.StartTimeStamp);
+            GetAnimation(from.Animation)?.BlendStart(CurrentSecond - from.StartTimeStamp);
         }
 
         private void BlendContinue(AnimationInstance to, float interpolationAmount)
         {
-            to.Animation.BlendAdd(CurrentSecond - to.StartTimeStamp, interpolationAmount);
+            GetAnimation(to.Animation)?.BlendAdd(CurrentSecond - to.StartTimeStamp, interpolationAmount);
+        }
+
+        AnimationGL? GetAnimation(int index)
+        {
+            return model.Value.Animations?.Get(index);
         }
     }
 }

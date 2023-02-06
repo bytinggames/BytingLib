@@ -2,10 +2,10 @@
 {
     public class AnimationInstance
     {
-        public AnimationGL Animation { get; set; }
+        public int Animation { get; set; }
         public float StartTimeStamp { get; set; }
 
-        public AnimationInstance(AnimationGL animation, float timeStamp)
+        public AnimationInstance(int animation, float timeStamp)
         {
             Animation = animation;
             StartTimeStamp = timeStamp;
