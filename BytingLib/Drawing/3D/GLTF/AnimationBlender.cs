@@ -57,7 +57,7 @@ namespace BytingLib
             drawnUpdate = false;
         }
 
-        public void Draw()
+        public void ApplyBlend()
         {
             if (drawnUpdate)
                 return;

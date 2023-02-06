@@ -33,6 +33,8 @@ namespace BytingLib
 
         internal readonly AnimationBlend AnimationBlend = new();
 
+        private Dictionary<string, int>? AnimationNameToIndex;
+        private JsonArray? animationsJsonArray;
 
         public ModelGL(string filePath, string contentRootDirectory, GraphicsDevice gDevice, IContentCollectorUse contentCollector)
         {
@@ -73,7 +75,10 @@ namespace BytingLib
             if ((n = root["skins"]) != null)
                 Skins = new(n.AsArray(), n => new(this, n));
             if ((n = root["animations"]) != null)
-                Animations = new(n.AsArray(), n => new(this, n));
+            {
+                animationsJsonArray = n.AsArray();
+                Animations = new(animationsJsonArray, n => new(this, n));
+            }
             if ((n = root["accessors"]) != null)
                 KeyFrames = new(this);
 
@@ -230,6 +235,35 @@ namespace BytingLib
         public NodeGL? FindNode(string name)
         {
             return Scenes?.Get(SceneIndex)?.FindNode(name);
+        }
+
+        public int? GetAnimationIndex(string name)
+        {
+            if (animationsJsonArray == null) // no animations in json?
+                return null;
+
+            if (AnimationNameToIndex == null)
+            {
+                InitAnimationNameToIndex();
+            }
+            int index;
+            if (AnimationNameToIndex!.TryGetValue(name, out index))
+                return index;
+            return -1;
+        }
+
+        private void InitAnimationNameToIndex()
+        {
+            if (animationsJsonArray == null) // no animations in json?
+                return;
+
+            AnimationNameToIndex = new();
+
+            for (int i = 0; i < animationsJsonArray!.Count; i++)
+            {
+                string name = animationsJsonArray[i]!["name"]!.GetValue<string>();
+                AnimationNameToIndex.Add(name, i);
+            }
         }
     }
 }
