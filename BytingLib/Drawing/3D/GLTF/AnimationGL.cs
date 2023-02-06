@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using BytingLibGame.IngameSpline;
+using System.Text.Json.Nodes;
 
 namespace BytingLib
 {
@@ -16,6 +17,7 @@ namespace BytingLib
         public float AnimationDuration => AnimationEndSecond - AnimationStartSecond + TransitionSecondsBetweenLastAndFirstFrame;
         public float AnimationEndSecondIncludingTransitionToBegin => AnimationEndSecond + TransitionSecondsBetweenLastAndFirstFrame;
         public WrapMode Wrap = WrapMode.Repeat;
+        public bool Looped { get; set; } = true;
 
         public enum WrapMode
         {
@@ -68,7 +70,7 @@ namespace BytingLib
             float samplerSecond = SecondToSamplerSecond(second);
 
             for (int i = 0; i < channels.Length; i++)
-                channels[i].Apply(samplerSecond, AnimationEndSecondIncludingTransitionToBegin);
+                channels[i].Apply(samplerSecond, AnimationEndSecondIncludingTransitionToBegin, Looped);
         }
 
         public void BlendStart(float second)
@@ -96,7 +98,7 @@ namespace BytingLib
                     // new blend, so start blending from default
                     channels[i].ApplyDefault();
                 }
-                channels[i].BlendTo(samplerSecond, interpolationAmount, AnimationEndSecondIncludingTransitionToBegin);
+                channels[i].BlendTo(samplerSecond, interpolationAmount, AnimationEndSecondIncludingTransitionToBegin, Looped);
             }
             model.AnimationBlend.EndAnimationBlend(interpolationAmount);
         }
@@ -144,13 +146,13 @@ namespace BytingLib
 
             protected void AddBlend(T val, float interpolationAmount)
             {
-                val = samplerT.Output.Interpolate(GetNodeValue(), val, interpolationAmount, samplerT.interpolation);
+                val = samplerT.Output.InterpolateLinear(GetNodeValue(), val, interpolationAmount);
                 Apply(val);
             }
 
-            internal override void Apply(float samplerSecond, float? endSecondForInterpolationToStart)
+            internal override void Apply(float samplerSecond, float? endSecondForInterpolationToStart, bool looped)
             {
-                Apply(samplerT.GetValue(samplerSecond, endSecondForInterpolationToStart));
+                Apply(samplerT.GetValue(samplerSecond, endSecondForInterpolationToStart, looped));
             }
 
             internal override void ApplyDefault()
@@ -158,9 +160,9 @@ namespace BytingLib
                 Apply(GetDefaultValue());
             }
 
-            internal override void BlendTo(float second, float interpolationAmount, float? endSecondForInterpolationToStart)
+            internal override void BlendTo(float second, float interpolationAmount, float? endSecondForInterpolationToStart, bool looped)
             {
-                var val = samplerT.GetValue(second, endSecondForInterpolationToStart);
+                var val = samplerT.GetValue(second, endSecondForInterpolationToStart, looped);
                 AddBlend(val, interpolationAmount);
             }
 
@@ -258,9 +260,9 @@ namespace BytingLib
                 Target = model.ChannelTargets!.Get(targetNodeIndex, path);
             }
 
-            internal abstract void Apply(float samplerSecond, float? endSecondForInterpolationToStart);
+            internal abstract void Apply(float samplerSecond, float? endSecondForInterpolationToStart, bool looped);
             internal abstract void ApplyDefault();
-            internal abstract void BlendTo(float samplerSecond, float interpolationAmount, float? endSecondForInterpolationToStart);
+            internal abstract void BlendTo(float samplerSecond, float interpolationAmount, float? endSecondForInterpolationToStart, bool looped);
             internal abstract void BlendToDefault(float interpolationAmount);
         }
 
@@ -292,7 +294,7 @@ namespace BytingLib
                     : SamplerFramesInterpolation.Linear;
             }
 
-            internal T GetValue(float samplerSecond, float? endSecondForInterpolationToStart)
+            internal T GetValue(float samplerSecond, float? endSecondForInterpolationToStart, bool looped)
             {
                 float[] frames = KeyFrames.seconds;
                 int frame = 0;
@@ -311,7 +313,8 @@ namespace BytingLib
                     // before start, just use the first frame
                     return Output.GetValue(0);
                 }
-                else if (samplerSecond == frames[frame])
+                else if (samplerSecond == frames[frame]
+                    || interpolation == SamplerFramesInterpolation.Step)
                 {
                     // no interpolation needed
                     return Output.GetValue(frame);
@@ -341,7 +344,20 @@ namespace BytingLib
 
                     float lerpAmount = (samplerSecond - previousFrameSecond) / (nextFrameSecond - previousFrameSecond); // [0,1]
 
-                    return Output.GetValue(frame0, frame1, lerpAmount, interpolation);
+
+                    switch (interpolation)
+                    {
+                        case SamplerFramesInterpolation.Linear:
+                            return Output.GetValueLinear(frame0, frame1, lerpAmount);
+
+                        case SamplerFramesInterpolation.CubicSpline:
+                            int[] frames4 = CatmullRomSpline.GetIndices(frame0 + lerpAmount, frames.Length, looped);
+                            return Output.GetValueCubicSpline(frames4, lerpAmount);
+
+                        default:
+                            throw new NotImplementedException();
+                    }
+
                 }
             }
         }

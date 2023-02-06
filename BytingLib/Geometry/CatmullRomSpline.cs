@@ -3,83 +3,98 @@ using System.Collections.Generic;
 
 namespace BytingLibGame.IngameSpline
 {
-    public abstract class CatmullRomSpline<T> where T : struct
+    public static class CatmullRomSpline
     {
-        public CatmullRomSpline(List<T> points)
+        public static int[] GetIndices(float t)
         {
-            this.Points = points;
-        }
-
-        public List<T> Points { get; set; }
-
-        public T? Sample(float t)
-        {
-            if (Points == null || Points.Count < 4)
-                return null;
-
-            if (t < 0)
-                t = 0;
-            else if (t > Points.Count - 1)
-                t = Points.Count - 1;
-
             int tInt = (int)MathF.Floor(t);
 
+            int[] indices = new int[4];
+            for (int i = 0; i < indices.Length; i++)
+            {
+                indices[i] = tInt - 1 + i;
+            }
+
+            return indices;
+        }
+
+        public static int[] GetIndices(float t, int pointCount, bool looped)
+        {
+            int[] indices = GetIndices(t);
+
+            for (int i = 0; i < 4; i++)
+            {
+                if (looped)
+                {
+                    indices[i] = (indices[i] + pointCount) % pointCount;
+                }
+                else
+                {
+                    if (indices[i] < 0)
+                        indices[i] = 0;
+                    if (indices[i] >= pointCount)
+                        indices[i] = pointCount - 1;
+                }
+            }
+
+            return indices;
+        }
+
+        public static float[] GetWeights(float t)
+        {
+            int tInt = (int)MathF.Floor(t);
             t = t - tInt;
-            if (t == 0f)
-                return Points[tInt];
-
-            int p0, p1, p2, p3;
-            p0 = tInt - 1;
-            p1 = p0 + 1;
-            p2 = p1 + 1;
-            p3 = p2 + 1;
-
             float tt = t * t;
             float ttt = tt * t;
 
-            float q0 = 0.5f * (-ttt + 2f * tt - t);
-            float q1 = 0.5f * (3f * ttt - 5f * tt + 2f);
-            float q2 = 0.5f * (-3f * ttt + 4f * tt + t);
-            float q3 = 0.5f * (ttt - tt);
+            float[] weights = new float[4];
+            weights[0] = 0.5f * (-ttt + 2f * tt - t);
+            weights[1] = 0.5f * (3f * ttt - 5f * tt + 2f);
+            weights[2] = 0.5f * (-3f * ttt + 4f * tt + t);
+            weights[3] = 0.5f * (ttt - tt);
 
-            return GetWeighted(p0, p1, p2, p3, q0, q1, q2, q3);
+            return weights;
         }
 
-        protected abstract T GetWeighted(int p0, int p1, int p2, int p3, float q0, float q1, float q2, float q3);
+        public static Vector2 Sample(IList<Vector2> points, float t, bool looped)
+        {
+            int[] indices = GetIndices(t, points.Count, looped);
+            float[] weights = GetWeights(t);
+
+            Vector2 result = Vector2.Zero;
+            for (int i = 0; i < 4; i++)
+                result += points[indices[i]] * weights[i];
+            return result;
+        }
+        public static Vector3 Sample(IList<Vector3> points, float t, bool looped)
+        {
+            int[] indices = GetIndices(t, points.Count, looped);
+            float[] weights = GetWeights(t);
+
+            Vector3 result = Vector3.Zero;
+            for (int i = 0; i < 4; i++)
+                result += points[indices[i]] * weights[i];
+            return result;
+        }
+        public static float Sample(IList<float> points, float t, bool looped)
+        {
+            int[] indices = GetIndices(t, points.Count, looped);
+            float[] weights = GetWeights(t);
+
+            float result = 0f;
+            for (int i = 0; i < 4; i++)
+                result += points[indices[i]] * weights[i];
+            return result;
+        }
+        public static Quaternion Sample(IList<Quaternion> points, float t, bool looped)
+        {
+            int[] indices = GetIndices(t, points.Count, looped);
+            float[] weights = GetWeights(t);
+
+            Quaternion result = new Quaternion();
+            for (int i = 0; i < 4; i++)
+                result += points[indices[i]] * weights[i];
+            return result;
+        }
     }
-
-    public class CatmullRomSpline1 : CatmullRomSpline<float>
-    {
-        public CatmullRomSpline1(List<float> points) : base(points)
-        {
-        }
-
-        protected override float GetWeighted(int p0, int p1, int p2, int p3, float q0, float q1, float q2, float q3)
-        {
-            return Points[p0] * q0 + Points[p1] * q1 + Points[p2] * q2 + Points[p3] * q3;
-        }
-    }
-    public class CatmullRomSpline2 : CatmullRomSpline<Vector2>
-    {
-        public CatmullRomSpline2(List<Vector2> points) : base(points)
-        {
-        }
-
-        protected override Vector2 GetWeighted(int p0, int p1, int p2, int p3, float q0, float q1, float q2, float q3)
-        {
-            return Points[p0] * q0 + Points[p1] * q1 + Points[p2] * q2 + Points[p3] * q3;
-        }
-    }
-    public class CatmullRomSpline3 : CatmullRomSpline<Vector3>
-    {
-        public CatmullRomSpline3(List<Vector3> points) : base(points)
-        {
-        }
-
-        protected override Vector3 GetWeighted(int p0, int p1, int p2, int p3, float q0, float q1, float q2, float q3)
-        {
-            return Points[p0] * q0 + Points[p1] * q1 + Points[p2] * q2 + Points[p3] * q3;
-        }
-    }
-
 }

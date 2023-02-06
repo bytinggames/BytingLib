@@ -1,16 +1,24 @@
-﻿namespace BytingLib
+﻿using BytingLibGame.IngameSpline;
+
+namespace BytingLib
 {
     public abstract class SamplerOutput<T>
     {
         protected T[]? values;
 
         public virtual T GetValue(int frame) => values![frame];
-        public virtual T GetValue(int frame0, int frame1, float interpolationAmount, SamplerFramesInterpolation interpolation)
+        public virtual T GetValueLinear(int frame0, int frame1, float interpolationAmount)
         {
-            return Interpolate(values![frame0], values[frame1], interpolationAmount, interpolation);
+            return InterpolateLinear(values![frame0], values[frame1], interpolationAmount);
+        }
+        public virtual T GetValueCubicSpline(int[] frames, float interpolationAmount)
+        {
+            float[] weights = CatmullRomSpline.GetWeights(interpolationAmount);
+            return InterpolateCubicSpline(frames!.Select(f => values![f]).ToArray(), weights);
         }
 
-        public abstract T Interpolate(T value0, T value1, float interpolationAmount, SamplerFramesInterpolation interpolation);
+        public abstract T InterpolateLinear(T value0, T value1, float interpolationAmount);
+        public abstract T InterpolateCubicSpline(T[] values4, float[] weights);
         internal void Initialize(byte[] bytes, int keyFrameCount)
         {
             values = BytesToValues(bytes, keyFrameCount);

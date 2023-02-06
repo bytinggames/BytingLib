@@ -5,25 +5,21 @@ namespace BytingLib
 {
     public class SamplerOutputVector3 : SamplerOutput<Vector3>
     {
-        public override Vector3 Interpolate(Vector3 value0, Vector3 value1, float interpolationAmount, SamplerFramesInterpolation interpolation)
+        public override Vector3 InterpolateLinear(Vector3 value0, Vector3 value1, float interpolationAmount)
         {
             Vector3 result;
-            switch (interpolation)
-            {
-                case SamplerFramesInterpolation.CubicSpline:
-                //TODO: do real spline
+            Vector3.Lerp(ref value0, ref value1, interpolationAmount, out result);
+            return result;
+        }
 
-                interpolationAmount = Curves.EaseInOutCubic(interpolationAmount);
-                    Vector3.Lerp(ref value0, ref value1, interpolationAmount, out result);
-                    return result;
-                case SamplerFramesInterpolation.Linear:
-                    Vector3.Lerp(ref value0, ref value1, interpolationAmount, out result);
-                    return result;
-                case SamplerFramesInterpolation.Step:
-                    return value0;
-                default:
-                    throw new NotImplementedException();
+        public override Vector3 InterpolateCubicSpline(Vector3[] values4, float[] weights)
+        {
+            Vector3 result = Vector3.Zero;
+            for (int i = 0; i < 4; i++)
+            {
+                result += values4[i] * weights[i];
             }
+            return result;
         }
 
         protected override Vector3[] BytesToValues(byte[] bytes, int keyFrameCount)

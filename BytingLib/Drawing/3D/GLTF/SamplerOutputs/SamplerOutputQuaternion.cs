@@ -1,28 +1,26 @@
-﻿using System.Diagnostics;
+﻿using BytingLibGame.IngameSpline;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace BytingLib
 {
     public class SamplerOutputQuaternion : SamplerOutput<Quaternion>
     {
-        public override Quaternion Interpolate(Quaternion value0, Quaternion value1, float interpolationAmount, SamplerFramesInterpolation interpolation)
+        public override Quaternion InterpolateLinear(Quaternion value0, Quaternion value1, float interpolationAmount)
         {
             Quaternion result;
-            switch (interpolation)
+            Quaternion.Slerp(ref value0, ref value1, interpolationAmount, out result);
+            return result;
+        }
+
+        public override Quaternion InterpolateCubicSpline(Quaternion[] values4, float[] weights)
+        {
+            Quaternion result = new Quaternion();
+            for (int i = 0; i < 4; i++)
             {
-                case SamplerFramesInterpolation.Linear:
-                    Quaternion.Slerp(ref value0, ref value1, interpolationAmount, out result);
-                    return result;
-                case SamplerFramesInterpolation.CubicSpline:
-                    //TODO: do real spline
-                    interpolationAmount = Curves.EaseInOutCubic(interpolationAmount);
-                    Quaternion.Slerp(ref value0, ref value1, interpolationAmount, out result);
-                    return result;
-                case SamplerFramesInterpolation.Step:
-                    return value0;
-                default:
-                    throw new NotImplementedException();
+                result += values4[i] * weights[i];
             }
+            return result;
         }
 
         protected override Quaternion[] BytesToValues(byte[] bytes, int keyFrameCount)
