@@ -36,6 +36,8 @@ namespace BytingLib
         private Dictionary<string, int>? AnimationNameToIndex;
         private JsonArray? animationsJsonArray;
 
+        public SamplerGL? DefaultSampler { get; internal set; }
+
         public ModelGL(string filePath, string contentRootDirectory, GraphicsDevice gDevice, IContentCollectorUse contentCollector)
         {
             this.gDevice = gDevice;
@@ -191,13 +193,15 @@ namespace BytingLib
 
         public byte[] GetBytesFromBuffer(int accessorIndex)
         {
-#nullable disable
-            var bufferView = bufferViewsArr[accessorsArr[accessorIndex]["bufferView"].GetValue<int>()];
-            int bufferByteLength = bufferView["byteLength"].GetValue<int>();
-            int bufferByteOffset = bufferView["byteOffset"].GetValue<int>();
-            var buffer = buffersArr[bufferView["buffer"].GetValue<int>()];
-            var bufferUri = buffer["uri"].GetValue<string>();
-#nullable restore
+            var bufferView = bufferViewsArr![accessorsArr![accessorIndex]!["bufferView"]!.GetValue<int>()];
+            int bufferByteLength = bufferView!["byteLength"]!.GetValue<int>();
+            var buffer = buffersArr![bufferView["buffer"]!.GetValue<int>()];
+            var bufferUri = buffer!["uri"]!.GetValue<string>();
+
+            int bufferByteOffset = 0;
+            JsonNode? n = bufferView["byteOffset"];
+            if (n != null)
+                bufferByteOffset = n.GetValue<int>();
 
             Ref<byte[]> wholeBuffer = disposables.Use(contentCollector.Use<byte[]>(ContentHelper.UriToContentFileWithExtension(bufferUri, gltfDirRelativeToContent)));
             byte[] bufferBytes = new byte[bufferByteLength];

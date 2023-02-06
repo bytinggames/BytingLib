@@ -57,6 +57,7 @@
                 "COLOR_0" => VertexElementUsage.Color,
                 "JOINTS_0" => VertexElementUsage.BlendIndices,
                 "WEIGHTS_0" => VertexElementUsage.BlendWeight,
+                "TANGENT" => VertexElementUsage.Tangent,
                 _ => throw new NotImplementedException(),
             };
         }

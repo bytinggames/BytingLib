@@ -9,8 +9,17 @@ namespace BytingLib
 
         public TextureGL(ModelGL model, JsonNode n)
         {
-            int samplerId = n["sampler"]!.GetValue<int>();
-            Sampler = model.Samplers!.Get(samplerId)!;
+            JsonNode? samplerNode = n["sampler"];
+            if (samplerNode != null)
+            {
+                int samplerId = n["sampler"]!.GetValue<int>();
+                Sampler = model.Samplers!.Get(samplerId)!;
+            }
+            else
+            {
+                model.DefaultSampler ??= new SamplerGL(SamplerState.LinearWrap);
+                Sampler = model.DefaultSampler;
+            }
             int sourceId = n["source"]!.GetValue<int>();
             Image = model.Images!.Get(sourceId)!;
         }

@@ -31,6 +31,12 @@ namespace BytingLib
                 SamplerState.AddressV = GetAddressMode(wrapInt);
             }
         }
+
+        public SamplerGL(SamplerState samplerState)
+        {
+            SamplerState = samplerState;
+        }
+
         static TextureFilter GetTextureFilter(int? magFilter, int? minFilter)
         {
             TextureFilter textureFilter;
