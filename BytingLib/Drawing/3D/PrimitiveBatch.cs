@@ -60,6 +60,8 @@
                 {
                     foreach (var instancesAndBuffer in triInstances)
                     {
+                        if (instancesAndBuffer.Instances.Count == 0)
+                            continue;
                         InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
                             GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
                     }
@@ -68,6 +70,8 @@
                 {
                     foreach (var instancesAndBuffer in lineInstances)
                     {
+                        if (instancesAndBuffer.Instances.Count == 0)
+                            continue;
                         InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
                             GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
                     }
