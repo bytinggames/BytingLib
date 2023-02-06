@@ -10,9 +10,9 @@ namespace BytingLib
         public TextureGL(ModelGL model, JsonNode n)
         {
             int samplerId = n["sampler"]!.GetValue<int>();
-            Sampler = model.Samplers!.Get(samplerId);
+            Sampler = model.Samplers!.Get(samplerId)!;
             int sourceId = n["source"]!.GetValue<int>();
-            Image = model.Images!.Get(sourceId);
+            Image = model.Images!.Get(sourceId)!;
         }
     }
 }
