@@ -2,9 +2,10 @@
 {
     public class JointTransform
     {
-        public readonly Quaternion RotationDefault;
-        public readonly Vector3 TranslationDefault;
-        public readonly Vector3 ScaleDefault;
+        public Quaternion RotationDefault { get; }
+        public Vector3 TranslationDefault { get; }
+        public Vector3 ScaleDefault { get; }
+        public bool Dirty { get; set; }
 
         private Quaternion rotation;
         private Vector3 translation;
@@ -12,13 +13,15 @@
 
         public JointTransform(Matrix defaultTransform)
         {
-            defaultTransform.Decompose(out ScaleDefault, out RotationDefault, out TranslationDefault);
+            defaultTransform.Decompose(out var s, out var r, out var t);
+            ScaleDefault = s;
+            RotationDefault = r;
+            TranslationDefault = t;
+
             rotation = RotationDefault;
             scale = ScaleDefault;
             translation = TranslationDefault;
         }
-
-        public bool Dirty { get; set; }
 
         public Quaternion Rotation
         {

@@ -3,7 +3,7 @@
     internal class DictionaryCacheChannelTargets
     {
         private readonly ModelGL model;
-        Dictionary<uint, AnimationGL.ChannelTarget> dictionary = new();
+        private readonly Dictionary<uint, AnimationGL.ChannelTarget> dictionary = new();
 
         public DictionaryCacheChannelTargets(ModelGL model)
         {

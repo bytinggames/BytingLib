@@ -4,8 +4,8 @@ namespace BytingLib
 {
     public class TextureGL
     {
-        public ImageGL Image;
-        public SamplerGL Sampler;
+        public ImageGL Image { get; }
+        public SamplerGL Sampler { get; }
 
         public TextureGL(ModelGL model, JsonNode n)
         {

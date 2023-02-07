@@ -4,9 +4,9 @@ namespace BytingLib
 {
     public class PrimitiveGL
     {
-        public VertexBuffer VertexBuffer;
-        public IndexBuffer? IndexBuffer;
-        public MaterialGL? Material;
+        public VertexBuffer VertexBuffer { get; }
+        public IndexBuffer? IndexBuffer { get; }
+        public MaterialGL? Material { get; }
 
         public PrimitiveGL(ModelGL model, JsonNode n)
         {

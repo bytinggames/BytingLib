@@ -4,15 +4,14 @@ namespace BytingLib
 {
     public class MaterialGL
     {
-        public readonly string? Name;
-        public override string ToString() => "Material: " + Name;
+        public string? Name { get; set; }
 
-        public PbrMetallicRoughness? PbrMetallicRoughness;
-        public RasterizerState? RasterizerState;
-        public TextureGL? NormalTexture;
-        public TextureGL? ORMTexture;
-        public Vector3? EmissiveFactor;
-        public TextureGL? EmissiveTexture;
+        public PbrMetallicRoughness? PbrMetallicRoughness { get; set; }
+        public RasterizerState? RasterizerState { get; set; }
+        public TextureGL? NormalTexture { get; set; }
+        public TextureGL? ORMTexture { get; set; }
+        public Vector3? EmissiveFactor { get; set; }
+        public TextureGL? EmissiveTexture { get; set; }
 
         public MaterialGL(ModelGL model, JsonNode n)
         {
@@ -121,5 +120,7 @@ namespace BytingLib
                 }
             }
         }
+
+        public override string ToString() => "Material: " + Name;
     }
 }

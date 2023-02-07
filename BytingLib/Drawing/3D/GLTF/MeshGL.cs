@@ -4,9 +4,8 @@ namespace BytingLib
 {
     public class MeshGL
     {
-        public readonly string? Name;
-        public override string ToString() => "Mesh: " + Name;
-        List<PrimitiveGL> Primitives = new();
+        public string? Name { get; set; }
+        public List<PrimitiveGL> Primitives { get; } = new();
 
         public MeshGL(ModelGL model, JsonNode n)
         {
@@ -22,6 +21,8 @@ namespace BytingLib
                 }
             }
         }
+
+        public override string ToString() => "Mesh: " + Name;
 
         public void Draw(IShaderGL shader)
         {

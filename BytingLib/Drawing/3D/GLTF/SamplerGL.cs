@@ -4,7 +4,7 @@ namespace BytingLib
 {
     public class SamplerGL
     {
-        public SamplerState SamplerState;
+        public SamplerState SamplerState { get; }
 
         public SamplerGL(JsonNode n)
         {

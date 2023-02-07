@@ -6,35 +6,33 @@ namespace BytingLib
 
     public class ModelGL : IDisposable
     {
-        public readonly int SceneIndex;
+        public int SceneIndex { get; }
 
-        public readonly JsonArrayCache<SceneGL>? Scenes;
-        public readonly ArrayCacheNode? Nodes;
-        public readonly JsonArrayCache<MeshGL>? Meshes;
-        public readonly JsonArrayCache<MaterialGL>? Materials;
-        public readonly JsonArrayCache<TextureGL>? Textures;
-        public readonly JsonArrayCache<SamplerGL>? Samplers;
-        public readonly JsonArrayCache<ImageGL>? Images;
-        public readonly JsonArrayCache<SkinGL>? Skins;
-        public readonly JsonArrayCache<AnimationGL>? Animations;
-        internal readonly DictionaryCacheChannelTargets ChannelTargets;
-        internal readonly DictionaryCacheKeyFrames? KeyFrames;
+        public JsonArrayCache<SceneGL>? Scenes { get; }
+        public ArrayCacheNode? Nodes { get; }
+        public JsonArrayCache<MeshGL>? Meshes { get; }
+        public JsonArrayCache<MaterialGL>? Materials { get; }
+        public JsonArrayCache<TextureGL>? Textures { get; }
+        public JsonArrayCache<SamplerGL>? Samplers { get; }
+        public JsonArrayCache<ImageGL>? Images { get; }
+        public JsonArrayCache<SkinGL>? Skins { get; }
+        public JsonArrayCache<AnimationGL>? Animations { get; }
+        internal DictionaryCacheChannelTargets ChannelTargets { get; }
+        internal DictionaryCacheKeyFrames? KeyFrames { get; }
+
+        internal AnimationBlend AnimationBlend { get; } = new();
 
         private readonly Dictionary<string, VertexBuffer> vertexBuffers = new();
         private readonly Dictionary<int, IndexBuffer> indexBuffers = new();
-
         private readonly JsonArray? accessorsArr, bufferViewsArr, buffersArr;
-
         private readonly DisposableContainer disposables = new();
-
         private readonly IContentCollectorUse contentCollector;
         private readonly string gltfDirRelativeToContent;
         private readonly GraphicsDevice gDevice;
 
-        internal readonly AnimationBlend AnimationBlend = new();
 
         private Dictionary<string, int>? AnimationNameToIndex;
-        private JsonArray? animationsJsonArray;
+        private readonly JsonArray? animationsJsonArray;
 
         public SamplerGL? DefaultSampler { get; internal set; }
 

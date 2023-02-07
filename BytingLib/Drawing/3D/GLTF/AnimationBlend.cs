@@ -2,10 +2,10 @@
 {
     internal class AnimationBlend
     {
-        public int animationId = 0;
-        public int interpolationStep;
-        int channelCountOnBlendBegin;
-        SimpleArrayList<AnimationGL.Channel>? channels;
+        private int animationId = 0;
+        private int interpolationStep;
+        private int channelCountOnBlendBegin;
+        private SimpleArrayList<AnimationGL.Channel>? channels;
 
         internal void Begin()
         {

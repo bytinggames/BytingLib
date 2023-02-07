@@ -3,7 +3,7 @@
     class DictionaryCacheKeyFrames
     {
         private readonly ModelGL model;
-        Dictionary<int, KeyFrames> keyFrames = new();
+        private readonly Dictionary<int, KeyFrames> keyFrames = new();
 
         public DictionaryCacheKeyFrames(ModelGL model)
         {

@@ -4,15 +4,13 @@ namespace BytingLib
 {
     public class SkinGL
     {
-        static int globalTransformCalculationId;
+        private static int globalTransformCalculationId;
 
-        public readonly Matrix[] InverseBindMatrices;
-        public readonly NodeGL[] Joints;
+        public Matrix[] InverseBindMatrices { get; }
+        public NodeGL[] Joints { get; }
+        public string? Name { get; set; }
 
         private Matrix[] jointMatrices;
-
-        public readonly string? Name;
-        public override string ToString() => "Skin: " + Name;
 
         public SkinGL(ModelGL model, JsonNode n)
         {
@@ -35,6 +33,8 @@ namespace BytingLib
 
             jointMatrices = new Matrix[Joints.Length * 2];
         }
+
+        public override string ToString() => "Skin: " + Name;
 
         public void ComputeJointMatrices(Matrix globalTransform)
         {

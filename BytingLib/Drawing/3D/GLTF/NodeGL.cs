@@ -4,16 +4,16 @@ namespace BytingLib
 {
     public class NodeGL
     {
-        MeshGL? mesh;
-        SkinGL? skin;
-        Matrix LocalTransform;
-        //Matrix initialTransform;
-        public JointTransform? JointTransform;
-        public Matrix GlobalJointTransform; // needs to be updated according to LocalTransform and all local transforms of the parents
-        int GlobalTransformCalculationId;
-        public readonly string? Name;
-        public override string ToString() => "Node: " + Name;
-        public readonly List<NodeGL> Children = new();
+        private readonly MeshGL? mesh;
+        private readonly SkinGL? skin;
+        private Matrix localTransform;
+
+        private int globalTransformCalculationId;
+
+        public JointTransform? JointTransform { get; private set; }
+        public Matrix GlobalJointTransform { get; private set; } // needs to be updated according to LocalTransform and all local transforms of the parents
+        public string? Name { get; set; }
+        public List<NodeGL> Children { get; } = new();
         public NodeGL? Parent { get; private set; }
 
         public NodeGL(ModelGL model, JsonNode n, NodeGL? parent)
@@ -21,7 +21,7 @@ namespace BytingLib
             if (Parent == null)
                 Parent = parent;
 
-            LocalTransform = GetTransform(n);
+            localTransform = GetTransform(n);
             //initialTransform = LocalTransform;
 
             Name = n["name"]?.GetValue<string>();
@@ -43,6 +43,8 @@ namespace BytingLib
                 }
             }
         }
+
+        public override string ToString() => "Node: " + Name;
 
         static Matrix GetTransform(JsonNode n)
         {
@@ -84,7 +86,7 @@ namespace BytingLib
 
         private void Draw(IShaderGL shader, Matrix GlobalNodeTransform)
         {
-            GlobalNodeTransform = LocalTransform * GlobalNodeTransform;
+            GlobalNodeTransform = localTransform * GlobalNodeTransform;
             using (skin?.Use(shader, GlobalNodeTransform))
             {
                 if (mesh != null)
@@ -101,25 +103,25 @@ namespace BytingLib
 
         internal void CalculateGlobalTransform(int globalTransformCalculationId)
         {
-            if (GlobalTransformCalculationId == globalTransformCalculationId)
+            if (this.globalTransformCalculationId == globalTransformCalculationId)
                 return;
 
             if (JointTransform != null && JointTransform.Dirty)
             {
-                LocalTransform = JointTransform.GetTransform();
+                localTransform = JointTransform.GetTransform();
                 JointTransform.Dirty = false;
             }
 
             if (Parent == null)
             {
-                GlobalJointTransform = LocalTransform;
+                GlobalJointTransform = localTransform;
             }
             else
             {
                 Parent.CalculateGlobalTransform(globalTransformCalculationId);
-                GlobalJointTransform = LocalTransform * Parent.GlobalJointTransform;
+                GlobalJointTransform = localTransform * Parent.GlobalJointTransform;
             }
-            GlobalTransformCalculationId = globalTransformCalculationId;
+            this.globalTransformCalculationId = globalTransformCalculationId;
         }
 
         public NodeGL? FindNode(string name)
@@ -143,7 +145,7 @@ namespace BytingLib
 
         internal void InitializeForAnimation()
         {
-            JointTransform ??= new JointTransform(LocalTransform);
+            JointTransform ??= new JointTransform(localTransform);
         }
     }
 }

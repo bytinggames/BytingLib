@@ -5,19 +5,18 @@ namespace BytingLib
 {
     public class AnimationGL
     {
-        public readonly string? Name;
         private readonly ModelGL model;
+        private readonly Channel[] channels;
 
-        public override string ToString() => "Animation: " + Name;
-
-        public Channel[] channels;
-
-        public float AnimationStartSecond, AnimationEndSecond;
-        public float TransitionSecondsBetweenLastAndFirstFrame = 0f; // TODO: probably pass this value by paramter, instead of storing it in this raw animation representation
+        public string? Name { get; }
+        public float AnimationStartSecond { get; set; }
+        public float AnimationEndSecond { get; set; }
+        public float TransitionSecondsBetweenLastAndFirstFrame { get; set; } = 0f; // TODO: probably pass this value by paramter, instead of storing it in this raw animation representation
+        public WrapMode Wrap { get; set; } = WrapMode.Repeat; // TODO: probably pass this value by paramter, instead of storing it in this raw animation representation
+        public bool Looped { get; set; } = true; // TODO: probably pass this value by paramter, instead of storing it in this raw animation representation
+        
         public float AnimationDuration => AnimationEndSecond - AnimationStartSecond + TransitionSecondsBetweenLastAndFirstFrame;
         public float AnimationEndSecondIncludingTransitionToBegin => AnimationEndSecond + TransitionSecondsBetweenLastAndFirstFrame;
-        public WrapMode Wrap = WrapMode.Repeat; // TODO: probably pass this value by paramter, instead of storing it in this raw animation representation
-        public bool Looped { get; set; } = true; // TODO: probably pass this value by paramter, instead of storing it in this raw animation representation
 
         public enum WrapMode
         {
@@ -25,7 +24,6 @@ namespace BytingLib
             Clamp,
             Mirror
         }
-
 
         public AnimationGL(ModelGL model, JsonNode n)
         {
@@ -39,16 +37,18 @@ namespace BytingLib
             float endSecond = float.MinValue;
             for (int i = 0; i < channels.Length; i++)
             {
-                float second = channels[i].sampler.KeyFrames.seconds[0];
+                float second = channels[i].Sampler.KeyFrames.Seconds[0];
                 if (startSecond > second)
                     startSecond = second;
-                second = channels[i].sampler.KeyFrames.seconds[^1];
+                second = channels[i].Sampler.KeyFrames.Seconds[^1];
                 if (endSecond < second)
                     endSecond = second;
             }
             AnimationStartSecond = startSecond;
             AnimationEndSecond = endSecond;
         }
+
+        public override string ToString() => "Animation: " + Name;
 
         private static Channel GetChannel(JsonNode channelNode, ModelGL model, JsonArray samplersArr)
         {
@@ -224,9 +224,9 @@ namespace BytingLib
 
         public class ChannelTarget
         {
-            public NodeGL Node;
-            internal int AnimationBlendId;
-            public int AnimationBlendStep;
+            public NodeGL Node { get; }
+            internal int AnimationBlendId { get; set; }
+            public int AnimationBlendStep { get; set; }
 
             public ChannelTarget(ModelGL model, int nodeIndex)
             {
@@ -246,13 +246,13 @@ namespace BytingLib
                 Weights
             }
 
-            public ISampler sampler;
-            public readonly ChannelTarget Target;
+            public ISampler Sampler { get; }
+            public ChannelTarget Target { get; }
 
 
             public Channel(ModelGL model, JsonNode n, ISampler sampler)
             {
-                this.sampler = sampler;
+                Sampler = sampler;
 
                 var target = n["target"]!;
                 var targetNodeIndex = target["node"]!.GetValue<int>();
@@ -274,8 +274,8 @@ namespace BytingLib
         public class Sampler<T> : ISampler
         {
             public KeyFrames KeyFrames { get; } // refers to an accessor with floats, which are the times of the key frames of the animation
-            public SamplerOutput<T> Output; // refers to an accessor that contains the values for the animated property at the respective key frames
-            public SamplerFramesInterpolation interpolation;
+            public SamplerOutput<T> Output { get; } // refers to an accessor that contains the values for the animated property at the respective key frames
+            public SamplerFramesInterpolation Interpolation { get; }
 
             public Sampler(ModelGL model, JsonNode n, SamplerOutput<T> samplerOutput)
             {
@@ -286,17 +286,17 @@ namespace BytingLib
 
                 byte[] bytes = model.GetBytesFromBuffer(output);
                 Output = samplerOutput;
-                Output.Initialize(bytes, KeyFrames.seconds.Length);
+                Output.Initialize(bytes, KeyFrames.Seconds.Length);
 
                 var interpolationStr = n["interpolation"]?.GetValue<string>();
-                interpolation = interpolationStr == "STEP" ? SamplerFramesInterpolation.Step
+                Interpolation = interpolationStr == "STEP" ? SamplerFramesInterpolation.Step
                     : interpolationStr == "CUBICSPLINE" ? SamplerFramesInterpolation.CubicSpline
                     : SamplerFramesInterpolation.Linear;
             }
 
             internal T GetValue(float samplerSecond, float? endSecondForInterpolationToStart, bool looped)
             {
-                float[] frames = KeyFrames.seconds;
+                float[] frames = KeyFrames.Seconds;
                 int frame = 0;
                 // TODO: make more efficient search
                 while (frame < frames.Length
@@ -314,7 +314,7 @@ namespace BytingLib
                     return Output.GetValue(0);
                 }
                 else if (samplerSecond == frames[frame]
-                    || interpolation == SamplerFramesInterpolation.Step)
+                    || Interpolation == SamplerFramesInterpolation.Step)
                 {
                     // no interpolation needed
                     return Output.GetValue(frame);
@@ -345,7 +345,7 @@ namespace BytingLib
                     float lerpAmount = (samplerSecond - previousFrameSecond) / (nextFrameSecond - previousFrameSecond); // [0,1]
 
 
-                    switch (interpolation)
+                    switch (Interpolation)
                     {
                         case SamplerFramesInterpolation.Linear:
                             return Output.GetValueLinear(frame0, frame1, lerpAmount);

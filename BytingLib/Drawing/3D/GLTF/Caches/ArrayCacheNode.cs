@@ -5,7 +5,7 @@ namespace BytingLib
 {
     public class ArrayCacheNode : JsonArrayCache<NodeGL>
     {
-        private Func<JsonNode, NodeGL?, NodeGL> loadFromContainerAlternative;
+        private readonly Func<JsonNode, NodeGL?, NodeGL> loadFromContainerAlternative;
 
         public ArrayCacheNode(JsonArray container, Func<JsonNode, NodeGL?, NodeGL> loadFromContainer)
             :base(container, n => loadFromContainer(n, null))

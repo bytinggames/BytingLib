@@ -2,11 +2,11 @@
 {
     public class KeyFrames
     {
-        public float[] seconds; // in seconds
+        public float[] Seconds { get; set; } // in seconds
 
         public KeyFrames(byte[] bytes)
         {
-            seconds = ByteExtension.ByteArrayToStructArray<float>(bytes, sizeof(float));
+            Seconds = ByteExtension.ByteArrayToStructArray<float>(bytes, sizeof(float));
         }
     }
 }

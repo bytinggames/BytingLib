@@ -4,7 +4,7 @@ namespace BytingLib
 {
     public class SceneGL
     {
-        List<NodeGL> nodes = new();
+        private readonly List<NodeGL> nodes = new();
 
         public SceneGL(ModelGL model, JsonNode n)
         {
@@ -12,7 +12,7 @@ namespace BytingLib
             for (int i = 0; i < nodesArr.Count; i++)
             {
                 int nodeId = nodesArr[i]!.GetValue<int>();
-                nodes.Add(model.Nodes!.Get(nodeId));
+                nodes.Add(model.Nodes!.Get(nodeId)!);
             }
         }
 

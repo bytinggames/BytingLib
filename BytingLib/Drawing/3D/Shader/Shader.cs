@@ -10,8 +10,6 @@
 
         protected List<IEffectParameterStack> parameters = new();
 
-        protected void Add(IEffectParameterStack parameter) => parameters.Add(parameter);
-
         public Shader(Ref<Effect> effect)
         {
             this.effect = effect;
@@ -19,6 +17,7 @@
             currentTechnique = effect.Value.CurrentTechnique.Name;
         }
 
+        protected void AddParam(IEffectParameterStack parameter) => parameters.Add(parameter);
 
         public Effect Effect => effect.Value;
 

@@ -4,7 +4,7 @@ namespace BytingLib
 {
     public class ImageGL : IDisposable
     {
-        public Ref<Texture2D> Tex2D;
+        public Ref<Texture2D> Tex2D { get; set; }
 
         public ImageGL(ModelGL model, JsonNode n)
         {

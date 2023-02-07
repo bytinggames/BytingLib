@@ -2,9 +2,9 @@
 {
     public class PbrMetallicRoughness
     {
-        public Vector4? BaseColor;
-        public TextureGL? BaseColorTexture;
-        public float? MetallicFactor;
-        public float? RoughnessFactor;
+        public Vector4? BaseColor { get; set; }
+        public TextureGL? BaseColorTexture { get; set; }
+        public float? MetallicFactor { get; set; }
+        public float? RoughnessFactor { get; set; }
     }
 }

@@ -3,14 +3,13 @@ namespace BytingLib
 {
     public class AnimationBlender 
     {
-        public float CurrentSecond { get; private set; } = 0f;
-
-        private LayeredTransitioner<AnimationInstance> transitioner;
         private readonly GameSpeed drawSpeed;
         private readonly Ref<ModelGL> model;
+        private LayeredTransitioner<AnimationInstance> transitioner;
         private bool drawnUpdate = false;
 
-        public float DefaultTransitionDurationInSeconds { get; set;  }
+        public float CurrentSecond { get; private set; } = 0f;
+        public float DefaultTransitionDurationInSeconds { get; set; }
 
         public AnimationBlender(GameSpeed drawSpeed, int startAnimation, float defaultTransitionDurationInSeconds, Ref<ModelGL> model)
         {
