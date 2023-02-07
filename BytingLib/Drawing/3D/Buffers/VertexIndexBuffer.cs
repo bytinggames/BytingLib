@@ -122,5 +122,32 @@
             }
             return box;
         }
+
+        static VertexIndexBuffer? sphere;
+        public static VertexIndexBuffer GetSphere(GraphicsDevice gDevice)
+        {
+            if (sphere == null)
+            {
+                var v = Icosahedron.VerticesSub;
+                var ind = Icosahedron.IndicesSub;
+
+                VertexPositionNormal[] vertices = new VertexPositionNormal[v.Length];
+                short[] indices = new short[ind.Length * 3];
+                int indicesIndex = 0;
+                short verticesIndex = 0;
+
+                for (int i = 0; i < ind.Length; i++)
+                {
+                    indices[indicesIndex++] = (short)(verticesIndex + ind[i][0]);
+                    indices[indicesIndex++] = (short)(verticesIndex + ind[i][1]);
+                    indices[indicesIndex++] = (short)(verticesIndex + ind[i][2]);
+                }
+                for (int i = 0; i < v.Length; i++)
+                    vertices[verticesIndex++] = new VertexPositionNormal(v[i], v[i]);
+
+                sphere = Create(gDevice, vertices, indices, PrimitiveType.TriangleList);
+            }
+            return sphere;
+        }
     }
 }

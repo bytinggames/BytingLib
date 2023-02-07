@@ -9,6 +9,7 @@
         public InstancesLine Lines { get; } = new();
         public InstancesTriangle Triangles { get; } = new();
         public InstancesBox Boxes { get; } = new();
+        public InstancesSphere Spheres { get; } = new();
 
         List<InstancesAndBuffer> instancesAndBuffers = new();
 
@@ -17,9 +18,10 @@
             this.gDevice = gDevice;
             this.growBuffersBy = growBuffersBy;
 
-            instancesAndBuffers.Add(new InstancesAndBuffer(Lines, VertexIndexBuffer.GetLine(gDevice)));
-            instancesAndBuffers.Add(new InstancesAndBuffer(Triangles, VertexIndexBuffer.GetTriangle(gDevice)));
-            instancesAndBuffers.Add(new InstancesAndBuffer(Boxes, VertexIndexBuffer.GetBox(gDevice)));
+            instancesAndBuffers.Add(new(Lines, VertexIndexBuffer.GetLine(gDevice)));
+            instancesAndBuffers.Add(new(Triangles, VertexIndexBuffer.GetTriangle(gDevice)));
+            instancesAndBuffers.Add(new(Boxes, VertexIndexBuffer.GetBox(gDevice)));
+            instancesAndBuffers.Add(new(Spheres, VertexIndexBuffer.GetSphere(gDevice)));
         }
 
         protected DynamicVertexBuffer GetInstanceBuffer(int capacity)
