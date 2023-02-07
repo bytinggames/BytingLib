@@ -79,21 +79,5 @@
             else // v lies nearest to Pos2
                 return v - Pos2;
         }
-
-        //public void Render(PrimitiveBatcherOld batcher, Color color)
-        //{
-        //    var b = batcher.LineBatcher;
-
-        //    b.EnsureAdditionalArrayCapacity(2, 2);
-
-        //    // indices
-        //    // 0 - 1
-        //    b.indices[b.indicesIndex++] = b.verticesIndex + 0;
-        //    b.indices[b.indicesIndex++] = b.verticesIndex + 1;
-
-        //    // line: start - end
-        //    b.vertices[b.verticesIndex++] = new(Pos, color);
-        //    b.vertices[b.verticesIndex++] = new(Pos2, color);
-        //}
     }
 }

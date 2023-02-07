@@ -4,7 +4,7 @@
     {
         public void Draw(Matrix transform, Color color)
         {
-            Add(new(Matrix.Transpose(transform), color));
+            AddTransposed(new(Matrix.Transpose(transform), color));
         }
     }
 }

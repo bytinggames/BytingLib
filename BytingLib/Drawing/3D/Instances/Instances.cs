@@ -5,7 +5,7 @@
         SimpleArrayList<InstanceVertex> instances = new();
 
         /// <summary>Warning: don't forget to transpose the transform matrix</summary>
-        public void Add(InstanceVertex instance)
+        public void AddTransposed(InstanceVertex instance)
         {
             instances.Add(instance);
         }

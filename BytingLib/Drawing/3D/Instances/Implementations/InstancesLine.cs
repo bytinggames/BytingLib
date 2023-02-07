@@ -4,7 +4,7 @@
     {
         public void Draw(Line3 line, Color color)
         {
-            Add(new(ToRenderTransform(line), color));
+            AddTransposed(new(ToRenderTransform(line), color));
         }
 
         private static Matrix ToRenderTransform(Line3 line)

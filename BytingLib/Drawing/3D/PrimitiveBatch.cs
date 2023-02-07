@@ -4,25 +4,22 @@
     {
         private DynamicVertexBuffer? InstanceBuffer;
         private readonly GraphicsDevice gDevice;
-        private readonly string positionNormalTechnique;
-        private readonly string positionTechnique;
         private readonly int growBuffersBy;
 
         public InstancesLine Lines { get; } = new();
         public InstancesTriangle Triangles { get; } = new();
+        public InstancesBox Boxes { get; } = new();
 
-        List<(IInstances<VertexInstanceTransformColor> Instances, VertexIndexBuffer Buffer)> lineInstances = new();
-        List<(IInstances<VertexInstanceTransformColor> Instances, VertexIndexBuffer Buffer)> triInstances = new();
+        List<InstancesAndBuffer> instancesAndBuffers = new();
 
-        public PrimitiveBatch(GraphicsDevice gDevice, string positionNormalTechnique, string positionTechnique, int growBuffersBy = 64)
+        public PrimitiveBatch(GraphicsDevice gDevice, int growBuffersBy = 64)
         {
             this.gDevice = gDevice;
-            this.positionNormalTechnique = positionNormalTechnique;
-            this.positionTechnique = positionTechnique;
             this.growBuffersBy = growBuffersBy;
 
-            lineInstances.Add((Lines, VertexIndexBuffer.GetLine(gDevice)));
-            triInstances.Add((Triangles, VertexIndexBuffer.GetTriangle(gDevice)));
+            instancesAndBuffers.Add(new InstancesAndBuffer(Lines, VertexIndexBuffer.GetLine(gDevice)));
+            instancesAndBuffers.Add(new InstancesAndBuffer(Triangles, VertexIndexBuffer.GetTriangle(gDevice)));
+            instancesAndBuffers.Add(new InstancesAndBuffer(Boxes, VertexIndexBuffer.GetBox(gDevice)));
         }
 
         protected DynamicVertexBuffer GetInstanceBuffer(int capacity)
@@ -56,19 +53,12 @@
             {
                 DrawCustom();
 
-                foreach (var instancesAndBuffer in triInstances)
+                foreach (var f in instancesAndBuffers)
                 {
-                    if (instancesAndBuffer.Instances.Count == 0)
+                    if (f.Instances.Count == 0)
                         continue;
-                    InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
-                        GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
-                }
-                foreach (var instancesAndBuffer in lineInstances)
-                {
-                    if (instancesAndBuffer.Instances.Count == 0)
-                        continue;
-                    InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
-                        GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
+                    InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, f.Instances,
+                        GetInstanceBuffer(f.Instances.Count), f.Buffer);
                 }
             }
             finally
@@ -84,6 +74,20 @@
         public void Dispose()
         {
             InstanceBuffer?.Dispose();
+        }
+
+
+
+        class InstancesAndBuffer
+        {
+            public IInstances<VertexInstanceTransformColor> Instances { get; }
+            public VertexIndexBuffer Buffer { get; }
+
+            public InstancesAndBuffer(IInstances<VertexInstanceTransformColor> instances, VertexIndexBuffer buffer)
+            {
+                Instances = instances;
+                Buffer = buffer;
+            }
         }
     }
 }

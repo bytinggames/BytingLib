@@ -4,7 +4,7 @@
     {
         public void Draw(Triangle3 triangle, Color color)
         {
-            Add(new(ToRenderTransform(triangle), color));
+            AddTransposed(new(ToRenderTransform(triangle), color));
         }
 
         private static Matrix ToRenderTransform(Triangle3 tri)
