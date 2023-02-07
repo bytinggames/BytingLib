@@ -10,12 +10,15 @@
         public InstancesTriangle Triangles { get; } = new();
         public InstancesBox Boxes { get; } = new();
         public InstancesSphere Spheres { get; } = new();
+        public InstancesOpenCylinder OpenCylinders { get; }
+        public InstancesCylinder Cylinders { get; } = new();
 
         List<InstancesAndBuffer> instancesAndBuffers = new();
 
         public PrimitiveBatch(GraphicsDevice gDevice, int growBuffersBy = 64, float infinity = 1000f)
         {
             Lines = new(infinity);
+            OpenCylinders = new(infinity);
 
             this.gDevice = gDevice;
             this.growBuffersBy = growBuffersBy;
@@ -24,6 +27,8 @@
             instancesAndBuffers.Add(new(Triangles, VertexIndexBuffer.GetTriangle(gDevice)));
             instancesAndBuffers.Add(new(Boxes, VertexIndexBuffer.GetBox(gDevice)));
             instancesAndBuffers.Add(new(Spheres, VertexIndexBuffer.GetSphere(gDevice)));
+            instancesAndBuffers.Add(new(OpenCylinders, VertexIndexBuffer.GetOpenCylinder(gDevice)));
+            instancesAndBuffers.Add(new(Cylinders, VertexIndexBuffer.GetCylinder(gDevice)));
         }
 
         protected DynamicVertexBuffer GetInstanceBuffer(int capacity)

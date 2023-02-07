@@ -2,7 +2,7 @@
 {
     public class InstancesLine : Instances<VertexInstanceTransformColor>
     {
-        float infinity = 1000f;
+        float infinity;
 
         public InstancesLine(float infinity)
         {
