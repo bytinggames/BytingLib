@@ -216,5 +216,22 @@ namespace BytingLib
             return color;
         }
 
+        public static void LinearToSrgb(float[] color)
+        {
+            for (int i = 0; i < color.Length; i++)
+            {
+                color[i] = (color[i] <= 0.0031308f) ? 12.92f * color[i] : (1f + 0.055f) * MathF.Pow(color[i], 1f / 2.4f) - 0.055f;
+            }
+        }
+
+        /// <summary>Needs to be tested</summary>
+        public static void SrgbToLinear(float[] color)
+        {
+            for (int i = 0; i < color.Length; i++)
+            {
+                color[i] = (color[i] > 0.04045f) ? MathF.Pow((color[i] + 0.055f) / (1f + 0.055f), 2.4f) : color[i] / 12.92f;
+            }
+        }
+
     }
 }

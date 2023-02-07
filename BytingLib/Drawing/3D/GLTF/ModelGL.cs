@@ -128,7 +128,7 @@ namespace BytingLib
                 if (usage == VertexElementUsage.Color
                     && componentSize == 2)
                 {
-                    componentSize = BufferHelper.Convert8BitColorTo4Bit(ref bufferBytes);
+                    componentSize = BufferHelper.Convert16BitColorChannelTo8Bit(ref bufferBytes);
                 }
 
                 int elementSize = componentSize * componentCount;

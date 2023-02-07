@@ -54,6 +54,7 @@ namespace BytingLib
                 if (baseColorFactor != null)
                 {
                     float[] c = baseColorFactor.AsArray().Select(f => f!.GetValue<float>()).ToArray();
+                    ColorExtension.LinearToSrgb(c);
                     PbrMetallicRoughness.BaseColor = new Vector4(c[0], c[1], c[2], c[3]);
                 }
             }
@@ -102,6 +103,7 @@ namespace BytingLib
                 if (baseColorFactor != null)
                 {
                     float[] c = baseColorFactor.AsArray().Select(f => f!.GetValue<float>()).ToArray();
+                    ColorExtension.LinearToSrgb(c);
                     PbrMetallicRoughness ??= new PbrMetallicRoughness();
                     PbrMetallicRoughness.BaseColor = new Vector4(c[0], c[1], c[2], c.Length > 3 ? c[3] : 1f);
                 }

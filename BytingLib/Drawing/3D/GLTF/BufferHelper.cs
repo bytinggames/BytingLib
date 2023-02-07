@@ -89,7 +89,7 @@
             };
         }
 
-        internal static int Convert8BitColorTo4Bit(ref byte[] bufferBytes)
+        internal static int Convert16BitColorChannelTo8Bit(ref byte[] bufferBytes)
         {
             int componentSize;
             byte[] newBufferBytes = new byte[bufferBytes.Length / 2];
@@ -97,7 +97,7 @@
 
             for (int i = 0; i < newBufferBytes.Length; i++)
             {
-                newBufferBytes[i] = (byte)(BitConverter.ToUInt16(bufferBytes, i * 2) / (byte.MaxValue + 1));
+                newBufferBytes[i] = bufferBytes[i * 2 + 1]; // ushort to byte
             }
 
             bufferBytes = newBufferBytes;
