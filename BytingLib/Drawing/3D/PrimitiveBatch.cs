@@ -6,15 +6,17 @@
         private readonly GraphicsDevice gDevice;
         private readonly int growBuffersBy;
 
-        public InstancesLine Lines { get; } = new();
+        public InstancesLine Lines { get; }
         public InstancesTriangle Triangles { get; } = new();
         public InstancesBox Boxes { get; } = new();
         public InstancesSphere Spheres { get; } = new();
 
         List<InstancesAndBuffer> instancesAndBuffers = new();
 
-        public PrimitiveBatch(GraphicsDevice gDevice, int growBuffersBy = 64)
+        public PrimitiveBatch(GraphicsDevice gDevice, int growBuffersBy = 64, float infinity = 1000f)
         {
+            Lines = new(infinity);
+
             this.gDevice = gDevice;
             this.growBuffersBy = growBuffersBy;
 
