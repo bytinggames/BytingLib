@@ -116,12 +116,5 @@
             box.Max += new Vector3(Radius);
             return box;
         }
-
-        //public void Render(PrimitiveBatcherOld batcher, Color color)
-        //{
-        //    Sphere0.Render(batcher, color);
-        //    Sphere1.Render(batcher, color);
-        //    AxisRadius.Render(batcher, color, 0, sphereDistance.Length());
-        //}
     }
 }

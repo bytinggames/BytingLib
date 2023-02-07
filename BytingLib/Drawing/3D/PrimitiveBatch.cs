@@ -112,6 +112,7 @@
             }
         }
 
+        // don't make public, cause this method is slower than directly drawing with the Instances* properties
         private void Draw(IShape3 shape, Color color)
         {
             switch (shape)
