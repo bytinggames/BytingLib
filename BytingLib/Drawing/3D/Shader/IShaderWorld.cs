@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    public interface IShaderWorld
+    public interface IShaderWorld : IShader
     {
         EffectParameterStack<Matrix> World { get; }
     }

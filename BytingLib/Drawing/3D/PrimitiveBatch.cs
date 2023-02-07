@@ -56,25 +56,19 @@
             {
                 DrawCustom();
 
-                using (shader.UseTechnique(positionNormalTechnique))
+                foreach (var instancesAndBuffer in triInstances)
                 {
-                    foreach (var instancesAndBuffer in triInstances)
-                    {
-                        if (instancesAndBuffer.Instances.Count == 0)
-                            continue;
-                        InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
-                            GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
-                    }
+                    if (instancesAndBuffer.Instances.Count == 0)
+                        continue;
+                    InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
+                        GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
                 }
-                using (shader.UseTechnique(positionTechnique))
+                foreach (var instancesAndBuffer in lineInstances)
                 {
-                    foreach (var instancesAndBuffer in lineInstances)
-                    {
-                        if (instancesAndBuffer.Instances.Count == 0)
-                            continue;
-                        InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
-                            GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
-                    }
+                    if (instancesAndBuffer.Instances.Count == 0)
+                        continue;
+                    InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, instancesAndBuffer.Instances,
+                        GetInstanceBuffer(instancesAndBuffer.Instances.Count), instancesAndBuffer.Buffer);
                 }
             }
             finally

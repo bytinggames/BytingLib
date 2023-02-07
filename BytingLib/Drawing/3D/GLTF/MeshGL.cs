@@ -6,7 +6,7 @@ namespace BytingLib
     {
         public readonly string? Name;
         public override string ToString() => "Mesh: " + Name;
-        List<Primitive> Primitives = new();
+        List<PrimitiveGL> Primitives = new();
 
         public MeshGL(ModelGL model, JsonNode n)
         {
@@ -18,12 +18,12 @@ namespace BytingLib
                 JsonArray primitivesArr = t.AsArray();
                 for (int i = 0; i < primitivesArr.Count; i++)
                 {
-                    Primitives.Add(new Primitive(model, primitivesArr[i]!));
+                    Primitives.Add(new PrimitiveGL(model, primitivesArr[i]!));
                 }
             }
         }
 
-        public void Draw(IShaderDefault shader)
+        public void Draw(IShaderGL shader)
         {
             for (int i = 0; i < Primitives.Count; i++)
             {

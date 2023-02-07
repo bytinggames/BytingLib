@@ -56,7 +56,7 @@ namespace BytingLib
             }
         }
 
-        internal IDisposable? Use(IShaderDefault shader, Matrix globalTransform)
+        internal IDisposable? Use(IShaderSkinned shader, Matrix globalTransform)
         {
             ComputeJointMatrices(globalTransform);
             return shader.JointMatrices.Use(jointMatrices);

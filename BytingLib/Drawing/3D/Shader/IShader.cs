@@ -4,7 +4,9 @@
     {
         Effect Effect { get; }
 
-        void ApplyParameters();
+        IDisposable Apply(params VertexBufferBinding[] vertexBufferBindings);
+        IDisposable Apply(VertexBuffer vertexBuffer);
+        IDisposable Apply(VertexDeclaration vertexDeclaration);
         IDisposable UseTechnique(string technique);
         IDisposable UseRasterizer(RasterizerState rasterizerState);
         IDisposable UseSampler(SamplerState samplerState, int index = 0);

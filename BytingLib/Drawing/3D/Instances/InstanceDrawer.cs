@@ -50,7 +50,8 @@ namespace BytingLib
             DrawBuffers(shader, instances, instanceBuffer, meshPart.VertexBuffer, meshPart.IndexBuffer, meshPart.VertexOffset, meshPart.StartIndex, meshPart.PrimitiveCount, PrimitiveType.TriangleList);
         }
 
-        public static void DrawMesh(IShaderColorTexWorld shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, ModelMesh mesh)
+        public static void DrawMesh<ShaderColorTex>(ShaderColorTex shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, ModelMesh mesh)
+            where ShaderColorTex : IShaderAlbedo, IShaderWorld
         {
             DrawBegin(instances, instanceBuffer, shader.Effect);
 
@@ -59,7 +60,8 @@ namespace BytingLib
             DrawEnd(instances);
         }
 
-        public static void DrawModel(IShaderColorTexWorld shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, Model model)
+        public static void DrawModel<ShaderColorTex>(ShaderColorTex shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, Model model)
+            where ShaderColorTex : IShaderAlbedo, IShaderWorld
         {
             DrawBegin(instances, instanceBuffer, shader.Effect);
 
@@ -72,13 +74,14 @@ namespace BytingLib
         }
 
 
-        private static void DrawInstancesInner(IShaderColorTexWorld shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, ModelMesh mesh)
+        private static void DrawInstancesInner<ShaderColorTex>(ShaderColorTex shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, ModelMesh mesh)
+            where ShaderColorTex : IShaderAlbedo, IShaderWorld
         {
             using (shader.World.Use(mesh.ParentBone.Transform))
             {
                 foreach (var part in mesh.MeshParts)
                 {
-                    using (shader.ColorTex.Use(((BasicEffect)part.Effect).Texture))
+                    using (shader.AlbedoTex.Use(((BasicEffect)part.Effect).Texture))
                     {
                         DrawInstancesInner(shader, instances, instanceBuffer, part.VertexBuffer, part.IndexBuffer, part.VertexOffset,
                             part.StartIndex, part.PrimitiveCount, PrimitiveType.TriangleList);
@@ -93,16 +96,16 @@ namespace BytingLib
         {
             var gDevice = instanceBuffer.GraphicsDevice;
 
-            shader.ApplyParameters();
-            gDevice.SetVertexBuffers(
-                new VertexBufferBinding(vertexBuffer, vertexOffset),
-                new VertexBufferBinding(instanceBuffer, 0, 1)
-                );
             gDevice.Indices = indexBuffer;
-            foreach (var pass in shader.Effect.CurrentTechnique.Passes)
+            using (shader.Apply(
+                new VertexBufferBinding(vertexBuffer, vertexOffset),
+                new VertexBufferBinding(instanceBuffer, 0, 1)))
             {
-                pass.Apply();
-                gDevice.DrawInstancedPrimitives(primitiveType, 0, indexOffset, primitiveCount, instances.Count);
+                foreach (var pass in shader.Effect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    gDevice.DrawInstancedPrimitives(primitiveType, 0, indexOffset, primitiveCount, instances.Count);
+                }
             }
         }
     }

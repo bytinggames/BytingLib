@@ -119,46 +119,5 @@ namespace BytingLib
                 }
             }
         }
-
-        internal IDisposable Use(IShaderDefault shader, ref string techniqueName)
-        {
-            DisposableContainer disposables = new();
-            if (PbrMetallicRoughness != null)
-                disposables.Use(PbrMetallicRoughness.Use(shader));
-            if (RasterizerState != null)
-                disposables.Use(shader.UseRasterizer(RasterizerState));
-
-            if (NormalTexture != null)
-            {
-                techniqueName += "NMap";
-
-                disposables.Use(shader.UseSampler(NormalTexture.Sampler.SamplerState, 1));
-                disposables.UseCheckNull(shader.NormalTex.Use(NormalTexture.Image.Tex2D.Value));
-            }
-
-            if (ORMTexture != null)
-            {
-                techniqueName += "ORM";
-
-                disposables.Use(shader.UseSampler(ORMTexture.Sampler.SamplerState, 2));
-                disposables.UseCheckNull(shader.ORMTex.Use(ORMTexture.Image.Tex2D.Value));
-            }
-
-            if (EmissiveFactor != null)
-            {
-                techniqueName += "Emissive";
-
-                disposables.UseCheckNull(shader.EmissiveFactor.Use(EmissiveFactor.Value));
-                if (EmissiveTexture != null)
-                {
-                    disposables.Use(shader.UseSampler(EmissiveTexture.Sampler.SamplerState, 3));
-                    disposables.UseCheckNull(shader.EmissiveTex.Use(EmissiveTexture.Image.Tex2D.Value));
-                }
-                else
-                    throw new NotImplementedException();
-            }
-
-            return disposables;
-        }
     }
 }

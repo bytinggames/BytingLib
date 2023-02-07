@@ -3,6 +3,13 @@
 
     public class EffectParameterStack<T> : IEffectParameterStack
     {
+        private readonly Stack<T> valueStack = new();
+        private EffectParameter effectParameter;
+        private Func<T, IDisposable?>? useChain = null;
+        private readonly Ref<Effect> effect;
+        private T? lastAppliedValue = default;
+        bool dirty;
+
         public EffectParameterStack(Ref<Effect> effect, string parameter)
         {
             effectParameter = effect.Value.Parameters[parameter];
@@ -13,28 +20,26 @@
             this.effect = effect;
         }
 
-        public void Dispose()
-        {
-            effect.OnReload -= RefreshEffect;
-        }
-
-        public void RefreshEffect(Ref<Effect> effect)
-        {
-            effectParameter = effect.Value.Parameters[effectParameter.Name];
-        }
-
         public EffectParameterStack(Ref<Effect> effect, string parameter, Func<T, IDisposable?> useChain)
             : this(effect, parameter)
         {
             this.useChain = useChain;
         }
 
-        private readonly Stack<T> valueStack = new();
-        private EffectParameter effectParameter;
-        private readonly Func<T, IDisposable?>? useChain = null;
-        private readonly Ref<Effect> effect;
-        private T? lastAppliedValue = default;
-        bool dirty;
+        public void Dispose()
+        {
+            effect.OnReload -= RefreshEffect;
+        }
+
+        public void SetUseChain(Func<T, IDisposable?> useChain)
+        {
+            this.useChain = useChain;
+        }
+
+        public void RefreshEffect(Ref<Effect> effect)
+        {
+            effectParameter = effect.Value.Parameters[effectParameter.Name];
+        }
 
         public void Apply()
         {

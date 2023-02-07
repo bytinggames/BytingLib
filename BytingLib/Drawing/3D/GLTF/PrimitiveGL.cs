@@ -2,13 +2,13 @@
 
 namespace BytingLib
 {
-    public class Primitive
+    public class PrimitiveGL
     {
         public VertexBuffer VertexBuffer;
         public IndexBuffer? IndexBuffer;
         public MaterialGL? Material;
 
-        public Primitive(ModelGL model, JsonNode n)
+        public PrimitiveGL(ModelGL model, JsonNode n)
         {
             var attributesObj = n["attributes"]!.AsObject();
 
@@ -30,19 +30,14 @@ namespace BytingLib
             }
         }
 
-        public void Draw(IShaderDefault shader)
+        public void Draw(IShaderGL shader)
         {
-            string techniqueName = Shader.GetTechniqueName(VertexBuffer.VertexDeclaration);
-
-            using (Material?.Use(shader, ref techniqueName))
+            using (Material == null ? null : shader.UseMaterial(Material))
             {
-                using (shader.UseTechnique(techniqueName))
-                {
-                    if (IndexBuffer == null)
-                        shader.Draw(VertexBuffer);
-                    else
-                        shader.Draw(VertexBuffer, IndexBuffer);
-                }
+                if (IndexBuffer == null)
+                    shader.Draw(VertexBuffer);
+                else
+                    shader.Draw(VertexBuffer, IndexBuffer);
             }
         }
     }
