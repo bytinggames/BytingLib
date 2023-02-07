@@ -107,22 +107,5 @@
 
             return box;
         }
-
-        //public void Render(PrimitiveBatcherOld batcher, Color color)
-        //{
-        //    if (ShapesEnabled == null)
-        //    {
-        //        for (int i = 0; i < Shapes.Count; i++)
-        //            Shapes[i].Render(batcher, color);
-        //    }
-        //    else
-        //    {
-        //        for (int i = 0; i < Shapes.Count; i++)
-        //        {
-        //            if (ShapesEnabled.Count <= i || ShapesEnabled[i])
-        //                Shapes[i].Render(batcher, color);
-        //        }
-        //    }
-        //}
     }
 }

@@ -86,7 +86,52 @@
             InstanceBuffer?.Dispose();
         }
 
+        public void Draw(Capsule3 capsule, Color color)
+        {
+            Spheres.Draw(capsule.Sphere0, color);
+            Spheres.Draw(capsule.Sphere1, color);
+            OpenCylinders.Draw(capsule.AxisRadius, color, capsule.SphereDistance);
+        }
 
+        public void Draw(Shape3Collection shapeCollection, Color color)
+        {
+            if (shapeCollection.ShapesEnabled == null)
+            {
+                for (int i = 0; i < shapeCollection.Shapes.Count; i++)
+                {
+                    Draw(shapeCollection.Shapes[i], color);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < shapeCollection.Shapes.Count; i++)
+                {
+                    if (shapeCollection.ShapesEnabled.Count <= i || shapeCollection.ShapesEnabled[i])
+                        Draw(shapeCollection.Shapes[i], color);
+                }
+            }
+        }
+
+        private void Draw(IShape3 shape, Color color)
+        {
+            switch (shape)
+            {
+                case AABB3 f: Boxes.Draw(f, color); break;
+                case Axis3 f: Lines.Draw(f, color); break;
+                case AxisRadius3 f: OpenCylinders.Draw(f, color); break;
+                case Box3 f: Boxes.Draw(f, color); break;
+                case Capsule3 f: Draw(f, color); break;
+                case Cylinder3 f: Cylinders.Draw(f, color); break;
+                case Line3 f: Lines.Draw(f, color); break;
+                case Plane3 f: Triangles.Draw(f, color); break;
+                case Point3 f: Lines.Draw(f, color, 0.1f); break;
+                case Ray3 f: Lines.Draw(f, color); break;
+                case Shape3Collection f: Draw(f, color); break;
+                case Sphere3 f: Spheres.Draw(f, color); break;
+                case Triangle3 f: Triangles.Draw(f, color); break;
+                default: throw new NotImplementedException();
+            }
+        }
 
         class InstancesAndBuffer
         {
