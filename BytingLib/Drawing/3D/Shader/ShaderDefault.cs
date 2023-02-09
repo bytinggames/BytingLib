@@ -1,10 +1,10 @@
 ﻿namespace BytingLib
 {
-    public abstract class ShaderDefault : Shader, IShaderWorld, IShaderAlbedo
+    public abstract class ShaderDefault1 : Shader, IShaderWorld, IShaderAlbedo
     {
         protected Matrix view, projection;
 
-        public ShaderDefault(Ref<Effect> effect)
+        public ShaderDefault1(Ref<Effect> effect)
             : base(effect)
         { }
 
@@ -26,54 +26,54 @@
             draw();
         }
 
-        public void Draw(Model model)
-        {
-            var e = effect.Value;
+        //public void Draw(Model model)
+        //{
+        //    var e = effect.Value;
 
-            foreach (var mesh in model.Meshes)
-            {
-                using (World.Use(f => mesh.ParentBone.Transform * f))
-                {
-                    foreach (var part in mesh.MeshParts)
-                    {
-                        gDevice.Indices = part.IndexBuffer;
+        //    foreach (var mesh in model.Meshes)
+        //    {
+        //        using (World.Use(f => mesh.ParentBone.Transform * f))
+        //        {
+        //            foreach (var part in mesh.MeshParts)
+        //            {
+        //                gDevice.Indices = part.IndexBuffer;
 
-                        var basicEffect = (part.Effect as BasicEffect)!;
-                        var texture = basicEffect.Texture;
+        //                var basicEffect = (part.Effect as BasicEffect)!;
+        //                var texture = basicEffect.Texture;
 
-                        using (AlbedoTex.Use(texture))
-                        {
-                            using (Apply(part.VertexBuffer))
-                            {
-                                foreach (var pass in e.CurrentTechnique.Passes)
-                                {
-                                    pass.Apply();
-                                    gDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
-                                        part.VertexOffset, part.StartIndex, part.PrimitiveCount);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //                using (AlbedoTex.Use(texture))
+        //                {
+        //                    using (Apply(part.VertexBuffer))
+        //                    {
+        //                        foreach (var pass in e.CurrentTechnique.Passes)
+        //                        {
+        //                            pass.Apply();
+        //                            gDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
+        //                                part.VertexOffset, part.StartIndex, part.PrimitiveCount);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
-        public void DrawTriangles<V>(V[] vertices) where V : struct, IVertexType
-        {
-            if (vertices.Length == 0)
-                return;
+        //public void DrawTriangles<V>(V[] vertices) where V : struct, IVertexType
+        //{
+        //    if (vertices.Length == 0)
+        //        return;
 
-            var e = effect.Value;
+        //    var e = effect.Value;
 
-            using (Apply(vertices[0].VertexDeclaration))
-            {
-                foreach (var pass in e.CurrentTechnique.Passes)
-                {
-                    pass.Apply();
-                    gDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
-                }
-            }
-        }
+        //    using (Apply(vertices[0].VertexDeclaration))
+        //    {
+        //        foreach (var pass in e.CurrentTechnique.Passes)
+        //        {
+        //            pass.Apply();
+        //            gDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
+        //        }
+        //    }
+        //}
         /// <summary>only for testing currently</summary>
         public void Draw(VertexBuffer vertexBuffer, IndexBuffer indexBuffer)
         {
