@@ -85,23 +85,23 @@
                 }
             }
 
-            private void PrintMGCBRecursively(string contentDirectory, ref string assets)
+            private void PrintMGCBRecursively(string contentDirectory, ref string assets, CustomContent customContent)
             {
                 if (!string.IsNullOrEmpty(contentDirectory))
                     contentDirectory += "/";
 
                 foreach (var file in files)
                 {
-                    assets += file.PrintMGCB(contentDirectory);
+                    assets += file.PrintMGCB(contentDirectory, customContent);
                 }
 
                 foreach (var folder in folders)
                 {
-                    folder.Value.PrintMGCBRecursively(contentDirectory + folder.Value.name, ref assets);
+                    folder.Value.PrintMGCBRecursively(contentDirectory + folder.Value.name, ref assets, customContent);
                 }
             }
 
-            public string PrintMGCB(string contentDirectory, string[] referencedDlls)
+            public string PrintMGCB(string contentDirectory, string[] referencedDlls, CustomContent customContent)
             {
                 if (!string.IsNullOrEmpty(contentDirectory))
                     contentDirectory += "/";
@@ -113,7 +113,7 @@
                 //List<File> allFiles = new List<File>();
                 //GetFilesRecursively(allFiles);
 
-                PrintMGCBRecursively(contentDirectory, ref assets);
+                PrintMGCBRecursively(contentDirectory, ref assets, customContent);
 
                 string output = $@"
 #----------------------------- Global Properties ----------------------------#
@@ -190,15 +190,18 @@
 
 
 
-            public string PrintMGCB(string contentDirectory)
+            public string PrintMGCB(string contentDirectory, CustomContent customContent)
             {
-                string buildProcess;
-                switch (extension)
+                string buildProcess = "";
+                string command = "build";
+                if (!customContent.GetCustomCode(contentDirectory + fullName, ref buildProcess, ref command))
                 {
-                    case "png":
-                    case "jpg":
-                    case "jpeg":
-                        buildProcess = @"
+                    switch (extension)
+                    {
+                        case "png":
+                        case "jpg":
+                        case "jpeg":
+                            buildProcess = @"
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -208,39 +211,39 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color";
-                        break;
+                            break;
 
-                    case "wav":
-                        buildProcess = @"
+                        case "wav":
+                            buildProcess = @"
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best";
-                        break;
+                            break;
 
-                    case "ogg":
-                        buildProcess = @"
+                        case "ogg":
+                            buildProcess = @"
 /importer:OggImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best";
-                        break;
+                            break;
 
-                    case "spritefont":
-                        buildProcess = @"
+                        case "spritefont":
+                            buildProcess = @"
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed";
-                        break;
+                            break;
 
-                    case "fx":
-                        buildProcess = @"
+                        case "fx":
+                            buildProcess = @"
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto";
-                        break;
+                            break;
 
-                    case "fbx":
-                        buildProcess = @"
+                        case "fbx":
+                            buildProcess = @"
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -257,26 +260,27 @@
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=NoChange";
-                        break;
+                            break;
 
-                    case "myfbx":
-                        buildProcess = @"
+                        case "myfbx":
+                            buildProcess = @"
 /importer:FbxImporter
 /processor:MyModelProcessor";
-                        break;
+                            break;
 
-                    // copy
-                    default:
-                        return $@"
-#begin {contentDirectory}{fullName}
-/copy:{contentDirectory}{fullName}
-";
+                        // copy
+                        default:
+                            command = "copy";
+                            buildProcess = "";
+                            break;
+                    }
                 }
 
 
 
                 return $@"#begin {contentDirectory}{fullName}{buildProcess}
-/build:{contentDirectory}{fullName}
+/{command}:{contentDirectory}{fullName}
+
 ";
 
             }
@@ -294,7 +298,8 @@
 
             string output = root.Print("", Folder.tab);
 
-            string mgcbOutput = root.PrintMGCB("", referencedDlls);
+            CustomContent customContent = new(contentPath);
+            string mgcbOutput = root.PrintMGCB("", referencedDlls, customContent);
 
             string locaCode = LocaGenerator.Generate(nameSpace, locaFiles.ToArray());
 
