@@ -30,9 +30,9 @@ namespace BytingLib
             }
         }
 
-        public void Draw(IShaderGL shader)
+        public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial)
         {
-            using (Material == null ? null : shader.UseMaterial(Material))
+            using (Material == null ? null : shaderMaterial?.UseMaterial(Material))
             {
                 if (IndexBuffer == null)
                     shader.Draw(VertexBuffer);

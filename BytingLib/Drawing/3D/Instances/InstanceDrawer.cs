@@ -60,8 +60,7 @@ namespace BytingLib
             DrawEnd(instances);
         }
 
-        public static void DrawModel<ShaderColorTex>(ShaderColorTex shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, Model model)
-            where ShaderColorTex : IShaderAlbedo, IShaderWorld
+        public static void DrawModel(IShaderWorld shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, Model model)
         {
             DrawBegin(instances, instanceBuffer, shader.Effect);
 
@@ -74,14 +73,13 @@ namespace BytingLib
         }
 
 
-        private static void DrawInstancesInner<ShaderColorTex>(ShaderColorTex shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, ModelMesh mesh)
-            where ShaderColorTex : IShaderAlbedo, IShaderWorld
+        private static void DrawInstancesInner(IShaderWorld shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, ModelMesh mesh)
         {
             using (shader.World.Use(mesh.ParentBone.Transform))
             {
                 foreach (var part in mesh.MeshParts)
                 {
-                    using (shader.AlbedoTex.Use(((BasicEffect)part.Effect).Texture))
+                    using ((shader as IShaderAlbedo)?.AlbedoTex.Use(((BasicEffect)part.Effect).Texture)) // set texture, if shader supports setting albedo texture
                     {
                         DrawInstancesInner(shader, instances, instanceBuffer, part.VertexBuffer, part.IndexBuffer, part.VertexOffset,
                             part.StartIndex, part.PrimitiveCount, PrimitiveType.TriangleList);

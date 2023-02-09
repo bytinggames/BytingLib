@@ -229,9 +229,9 @@ namespace BytingLib
             return contentCollector.Use<Texture2D>(ContentHelper.UriToContentFile(imageUri, gltfDirRelativeToContent));
         }
 
-        public void Draw(IShaderGL shader)
+        public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin)
         {
-            Scenes?.Get(SceneIndex)?.Draw(shader);
+            Scenes?.Get(SceneIndex)?.Draw(shader, shaderMaterial, shaderSkin);
         }
 
         public NodeGL? FindNode(string name)

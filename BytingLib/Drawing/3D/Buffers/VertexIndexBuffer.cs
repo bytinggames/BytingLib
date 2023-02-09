@@ -31,7 +31,7 @@
             if (triangle == null)
             {
                 triangle = Create(gDevice, new VertexPositionNormal[]
-                    {  new(Vector3.Zero, Vector3.UnitZ), new(Vector3.UnitY, Vector3.UnitZ), new(Vector3.UnitX, Vector3.UnitZ) },
+                    {  new(Vector3.Zero, Vector3.UnitZ), new(Vector3.UnitX, Vector3.UnitZ), new(Vector3.UnitY, Vector3.UnitZ) },
                     new short[] { 0, 1, 2 },
                     PrimitiveType.TriangleList);
             }
@@ -71,11 +71,11 @@
                 for (int face = 0; face < faces; face++)
                 {
                     indices[indicesIndex++] = (short)(startIndex + 0);
-                    indices[indicesIndex++] = (short)(startIndex + 2);
                     indices[indicesIndex++] = (short)(startIndex + 1);
-                    indices[indicesIndex++] = (short)(startIndex + 0);
-                    indices[indicesIndex++] = (short)(startIndex + 3);
                     indices[indicesIndex++] = (short)(startIndex + 2);
+                    indices[indicesIndex++] = (short)(startIndex + 0);
+                    indices[indicesIndex++] = (short)(startIndex + 2);
+                    indices[indicesIndex++] = (short)(startIndex + 3);
                     startIndex += 4;
                 }
 
@@ -139,8 +139,8 @@
                 for (int i = 0; i < ind.Length; i++)
                 {
                     indices[indicesIndex++] = (short)(verticesIndex + ind[i][0]);
-                    indices[indicesIndex++] = (short)(verticesIndex + ind[i][1]);
                     indices[indicesIndex++] = (short)(verticesIndex + ind[i][2]);
+                    indices[indicesIndex++] = (short)(verticesIndex + ind[i][1]);
                 }
                 for (int i = 0; i < v.Length; i++)
                     vertices[verticesIndex++] = new VertexPositionNormal(v[i], v[i]);
@@ -175,17 +175,17 @@
                 for (int i = 0; i < FACES; i++)
                 {
                     indices[indicesIndex++] = (short)(startIndex + 0);
-                    indices[indicesIndex++] = (short)(startIndex + 3);
                     indices[indicesIndex++] = (short)(startIndex + 1);
-                    indices[indicesIndex++] = (short)(startIndex + 0);
-                    indices[indicesIndex++] = (short)(startIndex + 2);
                     indices[indicesIndex++] = (short)(startIndex + 3);
+                    indices[indicesIndex++] = (short)(startIndex + 0);
+                    indices[indicesIndex++] = (short)(startIndex + 3);
+                    indices[indicesIndex++] = (short)(startIndex + 2);
                     startIndex += 2;
                 }
                 // last two vertices are the first two. So let the last indices point to them
-                indices[indicesIndex - 5] = (short)(verticesIndex + 1);
-                indices[indicesIndex - 2] = (short)(verticesIndex + 0);
-                indices[indicesIndex - 1] = (short)(verticesIndex + 1);
+                indices[indicesIndex - 4] = (short)(verticesIndex + 1);
+                indices[indicesIndex - 1] = (short)(verticesIndex + 0);
+                indices[indicesIndex - 2] = (short)(verticesIndex + 1);
 
                 Vector3 xAxis = Vector3.UnitY;
                 Vector3 yAxis = Vector3.UnitZ;

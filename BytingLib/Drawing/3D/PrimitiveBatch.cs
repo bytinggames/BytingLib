@@ -54,14 +54,14 @@
             begun = true;
         }
 
-        public void End(IShader shader)
+        public void End(IShaderWorld shader)
         {
             if (!begun)
                 throw new BytingException("Begin() has not yet been called.");
 
             try
             {
-                DrawCustom();
+                DrawCustom(shader);
 
                 foreach (var f in instancesAndBuffers)
                 {
@@ -77,7 +77,7 @@
             }
         }
 
-        protected virtual void DrawCustom()
+        protected virtual void DrawCustom(IShaderWorld shader)
         {
         }
 

@@ -16,10 +16,10 @@ namespace BytingLib
             }
         }
 
-        internal void Draw(IShaderGL shader)
+        internal void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin)
         {
             for (int i = 0; i < nodes.Count; i++)
-                nodes[i].Draw(shader);
+                nodes[i].Draw(shader, shaderMaterial, shaderSkin);
         }
 
         internal NodeGL? FindNode(string name)

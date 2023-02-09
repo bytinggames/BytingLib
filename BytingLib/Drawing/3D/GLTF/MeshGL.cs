@@ -24,11 +24,11 @@ namespace BytingLib
 
         public override string ToString() => "Mesh: " + Name;
 
-        public void Draw(IShaderGL shader)
+        public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial)
         {
             for (int i = 0; i < Primitives.Count; i++)
             {
-                Primitives[i].Draw(shader);
+                Primitives[i].Draw(shader, shaderMaterial);
             }
         }
     }

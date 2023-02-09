@@ -1,14 +1,15 @@
 ﻿namespace BytingLib
 {
-    public abstract class Shader : IShaderWorld, IShaderAlbedo, IDisposable
+    public abstract class Shader : IShader, IDisposable
     {
         /// <summary>To change the current technique, use UseTechnique()</summary>
         protected readonly Ref<Effect> effect;
         protected readonly GraphicsDevice gDevice;
-        protected Matrix view, projection;
+        protected List<IEffectParameterStack> parameters = new();
         private string currentTechnique;
 
-        protected List<IEffectParameterStack> parameters = new();
+        protected abstract string TechniqueNonInstanced { get; }
+        protected abstract string TechniqueInstanced { get; }
 
         public Shader(Ref<Effect> effect)
         {
@@ -17,21 +18,35 @@
             currentTechnique = effect.Value.CurrentTechnique.Name;
         }
 
-        protected void AddParam(IEffectParameterStack parameter) => parameters.Add(parameter);
-
         public Effect Effect => effect.Value;
 
-        public abstract EffectParameterStack<Matrix> World { get; }
-        public abstract EffectParameterStack<Texture2D> AlbedoTex { get; }
+        public void Dispose()
+        {
+            foreach (var p in parameters)
+                p.Dispose();
+        }
+
+        protected void AddParam(IEffectParameterStack parameter) => parameters.Add(parameter);
 
         #region Apply
+
+        private void ApplyParameters()
+        {
+            // actually apply the current technique
+            effect.Value.CurrentTechnique = effect.Value.Techniques[currentTechnique];
+
+            for (int i = 0; i < parameters.Count; i++)
+            {
+                parameters[i].Apply();
+            }
+        }
 
         public IDisposable Apply(VertexBuffer vertexBuffer)
         {
             gDevice.SetVertexBuffer(vertexBuffer);
 
             DisposableContainer disposables = new();
-            disposables.Use(UseVertexDeclaration(vertexBuffer.VertexDeclaration));
+            disposables.UseCheckNull(UseVertexDeclaration(vertexBuffer.VertexDeclaration));
             disposables.UseCheckNull(ApplyParameters(false));
 
             return disposables;
@@ -42,7 +57,7 @@
             gDevice.SetVertexBuffers(vertexBufferBindings);
 
             DisposableContainer disposables = new();
-            disposables.Use(UseVertexDeclaration(vertexBufferBindings[0].VertexBuffer.VertexDeclaration));
+            disposables.UseCheckNull(UseVertexDeclaration(vertexBufferBindings[0].VertexBuffer.VertexDeclaration));
             disposables.UseCheckNull(ApplyParameters(vertexBufferBindings.Length > 1));
 
             return disposables;
@@ -52,7 +67,7 @@
         public IDisposable Apply(VertexDeclaration vertexDeclaration)
         {
             DisposableContainer disposables = new();
-            disposables.Use(UseVertexDeclaration(vertexDeclaration));
+            disposables.UseCheckNull(UseVertexDeclaration(vertexDeclaration));
             disposables.UseCheckNull(ApplyParameters(false));
 
             return disposables;
@@ -64,111 +79,23 @@
 
             if (instanced)
             {
-                disposables.UseCheckNull(UseTechnique("RenderInstanced"));
+                disposables.UseCheckNull(UseTechnique(TechniqueInstanced));
                 disposables.UseCheckNull(UseInstancedRender());
             }
             else
-                disposables.UseCheckNull(UseTechnique("Render"));
+                disposables.UseCheckNull(UseTechnique(TechniqueNonInstanced));
 
-            // actually apply the current technique
-            effect.Value.CurrentTechnique = effect.Value.Techniques[currentTechnique];
-
-            for (int i = 0; i < parameters.Count; i++)
-            {
-                parameters[i].Apply();
-            }
+            ApplyParameters();
 
             return disposables;
         }
 
         #endregion
 
-        #region Draw
-
-        public void DrawFull(Matrix view, Matrix projection, Action draw)
-        {
-            this.view = view;
-            this.projection = projection;
-
-            DrawFullChild(draw);
-        }
-
-        protected virtual void DrawFullChild(Action draw)
-        {
-            draw();
-        }
-
-        public void Draw(Model model)
-        {
-            var e = effect.Value;
-
-            foreach (var mesh in model.Meshes)
-            {
-                using (World.Use(f => mesh.ParentBone.Transform * f))
-                {
-                    foreach (var part in mesh.MeshParts)
-                    {
-                        gDevice.Indices = part.IndexBuffer;
-
-                        var basicEffect = (part.Effect as BasicEffect)!;
-                        var texture = basicEffect.Texture;
-
-                        using (AlbedoTex.Use(texture))
-                        {
-                            using (Apply(part.VertexBuffer))
-                            {
-                                foreach (var pass in e.CurrentTechnique.Passes)
-                                {
-                                    pass.Apply();
-                                    gDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
-                                        part.VertexOffset, part.StartIndex, part.PrimitiveCount);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        public void DrawTriangles<V>(V[] vertices) where V : struct, IVertexType
-        {
-            if (vertices.Length == 0)
-                return;
-
-            var e = effect.Value;
-
-            using (Apply(vertices[0].VertexDeclaration))
-            {
-                foreach (var pass in e.CurrentTechnique.Passes)
-                {
-                    pass.Apply();
-                    gDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
-                }
-            }
-        }
-        /// <summary>only for testing currently</summary>
-        public void Draw(VertexBuffer vertexBuffer, IndexBuffer indexBuffer)
-        {
-            var e = effect.Value;
-
-            gDevice.Indices = indexBuffer;
-            using (Apply(vertexBuffer))
-            {
-                foreach (var pass in e.CurrentTechnique.Passes)
-                {
-                    pass.Apply();
-                    gDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
-                        0, 0, indexBuffer.IndexCount / 3);
-                }
-            }
-        }
-
-        #endregion
-
         #region Use
 
-        public abstract IDisposable UseMaterial(MaterialGL material);
-        protected abstract IDisposable UseVertexDeclaration(VertexDeclaration vertexDeclaration);
+        public virtual IDisposable? UseMaterial(MaterialGL material) => null;
+        protected virtual IDisposable? UseVertexDeclaration(VertexDeclaration vertexDeclaration) => null;
         protected abstract IDisposable? UseInstancedRender();
 
         public IDisposable UseRasterizer(RasterizerState rasterizerState)
@@ -215,11 +142,5 @@
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            foreach (var p in parameters)
-                p.Dispose();
-        }
     }
 }

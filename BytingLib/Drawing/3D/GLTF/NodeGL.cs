@@ -82,21 +82,21 @@ namespace BytingLib
             return transform;
         }
 
-        public void Draw(IShaderGL shader) => Draw(shader, Matrix.Identity);
+        public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin) => Draw(shader, shaderMaterial, shaderSkin, Matrix.Identity);
 
-        private void Draw(IShaderGL shader, Matrix GlobalNodeTransform)
+        private void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Matrix GlobalNodeTransform)
         {
             GlobalNodeTransform = localTransform * GlobalNodeTransform;
-            using (skin?.Use(shader, GlobalNodeTransform))
+            using (shaderSkin == null ? null : skin?.Use(shaderSkin, GlobalNodeTransform))
             {
                 if (mesh != null)
                 {
                     using (shader.World.Use(f => GlobalNodeTransform * f))
-                        mesh.Draw(shader);
+                        mesh.Draw(shader, shaderMaterial);
                 }
 
                 for (int i = 0; i < Children.Count; i++)
-                    Children[i].Draw(shader, GlobalNodeTransform);
+                    Children[i].Draw(shader, shaderMaterial, shaderSkin, GlobalNodeTransform);
             }
         }
 
