@@ -55,7 +55,12 @@ namespace BytingLib
                 else
                     Window.IsBorderless = false;
 
-                Window.Position = windowRectBeforeFullscreen.Location;
+                // set position to last window position, or if that is outside of the current screen bounds, simply center the window on the current screen
+                Rectangle bounds = GraphicsAdapter.GetCurrentDisplayBounds();
+                if (bounds.Contains(windowRectBeforeFullscreen.Location))
+                    Window.Position = windowRectBeforeFullscreen.Location;
+                else
+                    Window.Position = bounds.Center - new Point(windowRectBeforeFullscreen.Width / 2, windowRectBeforeFullscreen.Height / 2);
 
                 graphics.ApplyChanges();
             }
@@ -114,14 +119,14 @@ namespace BytingLib
             if (keepFullscreen)
             {
 #if !WINDOWS
-        // somehow this is required on my linux laptop
+                // somehow this is required on my linux laptop
                 graphics.PreferredBackBufferWidth = 800;
                 graphics.PreferredBackBufferHeight = 600;
                 graphics.ApplyChanges();
 #endif
                 Window.Position = screenBounds.Location;
 #if !WINDOWS
-        // somehow this is required on my linux laptop
+                // somehow this is required on my linux laptop
                 graphics.PreferredBackBufferWidth = GetScreenWidth();
                 graphics.PreferredBackBufferHeight = GetScreenHeight();
                 graphics.ApplyChanges();
