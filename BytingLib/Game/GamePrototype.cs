@@ -10,6 +10,8 @@ namespace BytingLib
 
         protected readonly InputStuff input;
 
+        private readonly Screenshotter screenshotter;
+
         public GamePrototype(GameWrapper g, bool mouseWithActivationClick = false, bool contentModdingOnRelease = false) : base(g, contentModdingOnRelease)
         {
             updateSpeed = new GameSpeed(g.TargetElapsedTime);
@@ -22,6 +24,8 @@ namespace BytingLib
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, null, typeof(MarkupShortcutAttribute), converters);
 
             input = new InputStuff(mouseWithActivationClick, windowManager, g);
+
+            screenshotter = new Screenshotter(graphicsDevice);
 
             InitWindowAndGraphics();
         }
@@ -43,6 +47,11 @@ namespace BytingLib
 
             for (int i = 0; i < iterations; i++)
                 UpdateSingleIteration(gameTime);
+
+            if (input.Keys.F12.Pressed)
+            {
+                screenshotter.TakeScreenshot();
+            }
         }
 
         bool pauseUpdate;
@@ -88,7 +97,6 @@ namespace BytingLib
             UpdateIteration(gameTime);
         }
 
-
         public sealed override void DrawActive(GameTime gameTime)
         {
             drawSpeed.OnRefresh(gameTime);
@@ -105,6 +113,8 @@ namespace BytingLib
 
         public override void Dispose()
         {
+            screenshotter?.Dispose();
+
             input.Dispose();
 
             base.Dispose();
