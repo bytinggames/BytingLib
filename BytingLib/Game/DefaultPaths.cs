@@ -4,8 +4,9 @@ namespace BytingLib
 {
     public static class DefaultPaths
     {
-        public readonly static string GameAppDataDir;
-        public readonly static string InputRecordingsDir;
+        public static string GameAppDataDir { get; }
+        public static string InputRecordingsDir { get; }
+        public static string SaveStateDir { get; }
 
         static DefaultPaths()
         {
@@ -15,6 +16,8 @@ namespace BytingLib
                 throw new BytingException("couldn't read game name");
             GameAppDataDir = Path.Combine(appDataDir, gameName);
             InputRecordingsDir = Path.Combine(GameAppDataDir, "InputRecordings");
+            SaveStateDir = Path.Combine(DefaultPaths.GameAppDataDir, "saves");
+            Directory.CreateDirectory(SaveStateDir);
         }
     }
 }
