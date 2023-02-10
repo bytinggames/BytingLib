@@ -112,10 +112,24 @@ namespace BytingLib
             Rectangle screenBounds = GraphicsAdapter.GetDisplayBounds(screenIndex);
 
             if (keepFullscreen)
+            {
+#if !WINDOWS
+		// somehow this is required on my linux laptop
+                graphics.PreferredBackBufferWidth = 800;
+                graphics.PreferredBackBufferHeight = 600;
+                graphics.ApplyChanges();
+#endif
                 Window.Position = screenBounds.Location;
+#if !WINDOWS
+		// somehow this is required on my linux laptop
+                graphics.PreferredBackBufferWidth = GetScreenWidth();
+                graphics.PreferredBackBufferHeight = GetScreenHeight();
+                graphics.ApplyChanges();
+#endif
+            }
             else
                 Window.Position = screenBounds.Center - (Resolution / 2).ToPoint();
-
+		
             if (keepFullscreen)
                 graphics.ToggleFullScreen();
         }
