@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using System.Text.Json.Nodes;
 
 namespace BytingLib
@@ -38,8 +39,33 @@ namespace BytingLib
             else if (typeof(T) == typeof(byte[]))
                 asset = (T)(object)LoadByteArray(assetName);
             else
-                asset = ReadAsset<T>(assetName, null);
+            {
+                try
+                {
+                    asset = ReadAsset<T>(assetName, null);
+                }
+                catch (Exception)
+                {
+                    if (typeof(T) == typeof(Texture2D))
+                    {
+                        string filePath = Path.Combine(RootDirectory, (assetName + ".png").Replace('/', Path.DirectorySeparatorChar));
+                        if (!File.Exists(filePath))
+                        {
+                            //throw new ContentLoadException("file " + filePath + " does not exist");
 
+                            filePath = Path.Combine(RootDirectory, (assetName + ".jpg").Replace('/', Path.DirectorySeparatorChar));
+                            if (!File.Exists(filePath))
+                                throw new ContentLoadException("file " + filePath + " does not exist");
+                        }
+                        //return File.ReadAllText(filePath);
+                        IGraphicsDeviceService g = (ServiceProvider.GetService(typeof(IGraphicsDeviceService))! as IGraphicsDeviceService)!;
+                        var tex = Texture2D.FromFile(g.GraphicsDevice, filePath);
+                        asset = (T)Convert.ChangeType(tex, typeof(T));
+                    }
+                    else
+                        throw;
+                }
+            }
             LoadedAssets.TryAdd(assetName, asset);
             return asset;
         }
