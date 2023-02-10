@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BytingLibGame.IngameSpline
+namespace BytingLib
 {
     public static class CatmullRomSpline
     {

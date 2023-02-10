@@ -10,7 +10,7 @@ namespace BytingLib
 
         protected readonly InputStuff input;
 
-        public GamePrototype(GameWrapper g, bool mouseWithActivationClick = false) : base(g)
+        public GamePrototype(GameWrapper g, bool mouseWithActivationClick = false, bool contentModdingOnRelease = false) : base(g, contentModdingOnRelease)
         {
             updateSpeed = new GameSpeed(g.TargetElapsedTime);
             drawSpeed = new GameSpeed(g.TargetElapsedTime);

@@ -1,6 +1,4 @@
-﻿using BytingLibGame.IngameSpline;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public abstract class SamplerOutput<T>
     {

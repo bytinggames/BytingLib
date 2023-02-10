@@ -1,6 +1,4 @@
-﻿using BytingLib.Geometry;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class CollisionResult : AnyCollisionResult
     {

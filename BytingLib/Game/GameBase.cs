@@ -4,7 +4,7 @@
     {
         protected readonly GraphicsDevice graphicsDevice;
         protected readonly SpriteBatch spriteBatch;
-        protected readonly HotReloadContent hotReloadContent;
+        protected readonly HotReloadContent? hotReloadContent;
         protected readonly WindowManager windowManager;
         protected readonly ContentManagerRawPipe contentRawPipe;
         protected readonly IContentCollector contentCollector;
@@ -12,7 +12,7 @@
 
         protected readonly Action Exit;
 
-        public GameBase(GameWrapper g)
+        public GameBase(GameWrapper g, bool contentModdingOnRelease)
         {
             graphicsDevice = g.GraphicsDevice;
             graphics = g.Graphics;
@@ -31,8 +31,11 @@
                 Path.Combine("..", "..", "..", "Content"));
             contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
 #else
-            hotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod");
-            contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
+            if (contentModdingOnRelease)
+            {
+                hotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod");
+                contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
+            }
 #endif
 
 

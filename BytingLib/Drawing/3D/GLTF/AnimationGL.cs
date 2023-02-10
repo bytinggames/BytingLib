@@ -1,5 +1,4 @@
-﻿using BytingLibGame.IngameSpline;
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 
 namespace BytingLib
 {

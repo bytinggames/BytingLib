@@ -1,4 +1,4 @@
-﻿namespace BytingLib.Geometry
+﻿namespace BytingLib
 {
     public class AnyCollisionResult
     {

@@ -1,5 +1,4 @@
-﻿using BytingLibGame.IngameSpline;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace BytingLib
