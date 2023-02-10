@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BytingGames.MonoGame.Framework.DesktopGL" Version="3.8.1.5-develop" />
+    <PackageReference Include="BytingGames.MonoGame.Framework.DesktopGL" Version="3.8.1.6-develop" />
     <PackageReference Include="TextCopy" Version="6.1.0" />
   </ItemGroup>
 

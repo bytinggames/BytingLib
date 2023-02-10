@@ -37,6 +37,10 @@ namespace BytingLib
         {
             return new Vector2(X, Y);
         }
+        public Point ToPoint()
+        {
+            return new Point(X, Y);
+        }
 
         public bool SetInRect(int minX, int minY, int maxX, int maxY)
         {
@@ -96,6 +100,10 @@ namespace BytingLib
         public static Int2 operator *(Int2 v1, int i2)
         {
             return new Int2(v1.X * i2, v1.Y * i2);
+        }
+        public static Int2 operator /(Int2 v1, int i2)
+        {
+            return new Int2(v1.X / i2, v1.Y / i2);
         }
 
         public override int GetHashCode()

@@ -48,7 +48,7 @@ namespace BytingLib
 #if DEBUG
             KeysDev = new KeyInput(Keyboard.GetState);
 #else
-            keysDev = new KeyInput(() => default);
+            KeysDev = new KeyInput(() => default);
 #endif
             stuff.Add(Mouse = new MouseInput(() => inputSource.Current.MouseState, () => inputSource.Current.MetaState.IsActivatedThisUpdate));
             stuff.Add(GamePad = new GamePadInput(() => inputSource.Current.GamePadState));

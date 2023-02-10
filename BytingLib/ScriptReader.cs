@@ -80,6 +80,33 @@ namespace BytingLib
             return str;
         }
 
+        public virtual string ReadToStringOrEnd(string untilStr, out bool endReached)
+        {
+            int start = i;
+            char? c;
+            int indexInUntilStr = 0;
+            while ((c = ReadChar()) != null)
+            {
+                if (SkipIfLiteral(c.Value))
+                    continue;
+
+                if (c.Value == untilStr[indexInUntilStr])
+                {
+                    indexInUntilStr++;
+                    if (indexInUntilStr == untilStr.Length)
+                    {
+                        int end = i - untilStr.Length;
+                        endReached = false;
+                        return str.Substring(start, end - start);
+                    }
+                }
+                else
+                    indexInUntilStr = 0;
+            }
+            endReached = true;
+            return str.Substring(start);
+        }
+
         public string ReadUntilClosed(char open, char close, int openCounter = 1)
         {
             int start = i;

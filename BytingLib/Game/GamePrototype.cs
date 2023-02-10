@@ -80,9 +80,9 @@ namespace BytingLib
 
             input.Update();
 
-            if (input.KeysDev.F11.Pressed)
+            if (input.Keys.F11.Pressed)
                 windowManager.ToggleFullscreen();
-            if (input.KeysDev.Tab.Pressed)
+            if (input.Keys.Tab.Pressed)
                 windowManager.SwapScreen();
 
             UpdateIteration(gameTime);

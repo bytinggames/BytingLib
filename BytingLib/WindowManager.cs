@@ -12,7 +12,7 @@ namespace BytingLib
         public GameWindow Window { get; }
         private readonly GraphicsDeviceManager graphics;
 
-        private Int2 windowSizeBeforeFullscreen;
+        private Rectangle windowRectBeforeFullscreen;
 
         public event Action<Int2>? OnResolutionChanged;
 
@@ -47,29 +47,27 @@ namespace BytingLib
         {
             if (IsFullscreen())
             {
-                graphics.PreferredBackBufferWidth = windowSizeBeforeFullscreen.X;
-                graphics.PreferredBackBufferHeight = windowSizeBeforeFullscreen.Y;
+                graphics.PreferredBackBufferWidth = windowRectBeforeFullscreen.Width;
+                graphics.PreferredBackBufferHeight = windowRectBeforeFullscreen.Height;
 
                 if (realFullscreen)
                     graphics.ToggleFullScreen();
                 else
                     Window.IsBorderless = false;
 
-                Window.Position = new Point(
-                    (GetScreenWidth() - windowSizeBeforeFullscreen.X) / 2,
-                    (GetScreenHeight() - windowSizeBeforeFullscreen.Y) / 2);
+                Window.Position = windowRectBeforeFullscreen.Location;
+
                 graphics.ApplyChanges();
             }
             else
             {
-                windowSizeBeforeFullscreen = new Int2(
-                    GetViewportWidth(),
-                    GetViewportHeight());
+                windowRectBeforeFullscreen = Window.ClientBounds;
 
                 if (!realFullscreen)
                 {
+                    var bounds = GraphicsAdapter.GetCurrentDisplayBounds();
                     Window.IsBorderless = true;
-                    Window.Position = new Point(0, 0);
+                    Window.Position = new Point(bounds.X, bounds.Y);
                 }
 
                 graphics.PreferredBackBufferWidth = GetScreenWidth();
@@ -86,6 +84,9 @@ namespace BytingLib
                     graphics.ToggleFullScreen();
                 }
             }
+
+
+            OnResolutionChanged?.Invoke(Resolution);
         }
 
         private int GetViewportWidth()
@@ -100,17 +101,22 @@ namespace BytingLib
 
         public void SwapScreen()
         {
-            bool isFullScreen = realFullscreen && IsFullscreen();
+            bool keepFullscreen = realFullscreen && IsFullscreen();
 
-            if (isFullScreen)
+            if (keepFullscreen)
                 graphics.ToggleFullScreen();
 
-            if (Window.Position.X < GetScreenWidth())
-                MoveWindow(GetScreenWidth(), 0);
-            else
-                MoveWindow(-GetScreenWidth(), 0);
+            int screenIndex = GraphicsAdapter.GetCurrentDisplayIndex();
+            int screenCount = GraphicsAdapter.GetDisplayCount();
+            screenIndex = (screenIndex + 1) % screenCount;
+            Rectangle screenBounds = GraphicsAdapter.GetDisplayBounds(screenIndex);
 
-            if (isFullScreen)
+            if (keepFullscreen)
+                Window.Position = screenBounds.Location;
+            else
+                Window.Position = screenBounds.Center - (Resolution / 2).ToPoint();
+
+            if (keepFullscreen)
                 graphics.ToggleFullScreen();
         }
 
