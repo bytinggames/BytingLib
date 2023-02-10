@@ -42,7 +42,10 @@ namespace BuildTemplates
                 string pattern = customContent[i].Pattern;
                 if (IsMatch(localFilePath, pattern))
                 {
-                    buildProcess = "\n" + customContent[i].BuildCode;
+                    if (!string.IsNullOrWhiteSpace(customContent[i].BuildCode))
+                        buildProcess = "\n" + customContent[i].BuildCode;
+                    else
+                        buildProcess = "";
                     command = customContent[i].Command;
                     return true;
                 }
