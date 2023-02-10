@@ -11,9 +11,12 @@ namespace BytingLib
     public class ContentManagerRaw : ContentManager, IContentManagerRaw
     {
         private bool disposed;
+        private GraphicsDevice gDevice;
 
         public ContentManagerRaw(IServiceProvider serviceProvider, string rootDirectory) : base(serviceProvider, rootDirectory)
         {
+            IGraphicsDeviceService g = (ServiceProvider.GetService(typeof(IGraphicsDeviceService))! as IGraphicsDeviceService)!;
+            gDevice = g.GraphicsDevice;
         }
 
 
@@ -46,20 +49,19 @@ namespace BytingLib
                 }
                 catch (Exception)
                 {
+                    // this currently tries to load a png or jpg, if the xnb file was not found
+                    // could be improved though, so that this code immediately knows, wether to search for a png jpg or an xnb
                     if (typeof(T) == typeof(Texture2D))
                     {
-                        string filePath = Path.Combine(RootDirectory, (assetName + ".png").Replace('/', Path.DirectorySeparatorChar));
+                        string assetNameForwardSlash = assetName.Replace('/', Path.DirectorySeparatorChar);
+                        string filePath = Path.Combine(RootDirectory, assetNameForwardSlash + ".png");
                         if (!File.Exists(filePath))
                         {
-                            //throw new ContentLoadException("file " + filePath + " does not exist");
-
-                            filePath = Path.Combine(RootDirectory, (assetName + ".jpg").Replace('/', Path.DirectorySeparatorChar));
+                            filePath = Path.Combine(RootDirectory, assetNameForwardSlash + ".jpg");
                             if (!File.Exists(filePath))
-                                throw new ContentLoadException("file " + filePath + " does not exist");
+                                throw;
                         }
-                        //return File.ReadAllText(filePath);
-                        IGraphicsDeviceService g = (ServiceProvider.GetService(typeof(IGraphicsDeviceService))! as IGraphicsDeviceService)!;
-                        var tex = Texture2D.FromFile(g.GraphicsDevice, filePath);
+                        var tex = Texture2D.FromFile(gDevice, filePath);
                         asset = (T)Convert.ChangeType(tex, typeof(T));
                     }
                     else
