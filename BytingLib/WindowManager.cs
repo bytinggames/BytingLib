@@ -35,7 +35,7 @@ namespace BytingLib
 
             window.ClientSizeChanged += Window_ClientSizeChanged;
         }
-        
+
         public Int2 Resolution => new Int2(GetViewportWidth(), GetViewportHeight());
 
         private void Window_ClientSizeChanged(object? sender, EventArgs e)
@@ -114,14 +114,14 @@ namespace BytingLib
             if (keepFullscreen)
             {
 #if !WINDOWS
-		// somehow this is required on my linux laptop
+        // somehow this is required on my linux laptop
                 graphics.PreferredBackBufferWidth = 800;
                 graphics.PreferredBackBufferHeight = 600;
                 graphics.ApplyChanges();
 #endif
                 Window.Position = screenBounds.Location;
 #if !WINDOWS
-		// somehow this is required on my linux laptop
+        // somehow this is required on my linux laptop
                 graphics.PreferredBackBufferWidth = GetScreenWidth();
                 graphics.PreferredBackBufferHeight = GetScreenHeight();
                 graphics.ApplyChanges();
@@ -129,7 +129,7 @@ namespace BytingLib
             }
             else
                 Window.Position = screenBounds.Center - (Resolution / 2).ToPoint();
-		
+
             if (keepFullscreen)
                 graphics.ToggleFullScreen();
         }
