@@ -1,0 +1,24 @@
+@include "../../../BytingLib/Content/Content.Generated.custom"
+
+^Models\/.*\.(png|jpg|jpeg)$
+$if Release
+/copy:{0}
+$endif
+$if Debug
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:{0}
+$endif
+
+^Music\/.*_\.(ogg)$
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Low
+/build:{0}

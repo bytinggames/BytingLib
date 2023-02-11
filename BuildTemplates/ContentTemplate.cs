@@ -190,99 +190,15 @@
 
 
 
-            public string PrintMGCB(string contentDirectory, CustomContent customContent)
+            public string? PrintMGCB(string contentDirectory, CustomContent customContent)
             {
-                string buildProcess = "";
-                string command = "build";
-                if (!customContent.GetCustomCode(contentDirectory + fullName, ref buildProcess, ref command))
-                {
-                    switch (extension)
-                    {
-                        case "png":
-                        case "jpg":
-                        case "jpeg":
-                            buildProcess = @"
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color";
-                            break;
+                string? process = customContent.GetCustomCode(contentDirectory + fullName);
+                if (process == null)
+                    return null;
 
-                        case "wav":
-                            buildProcess = @"
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best";
-                            break;
-
-                        case "ogg":
-                            buildProcess = @"
-/importer:OggImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best";
-                            break;
-
-                        case "spritefont":
-                            buildProcess = @"
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed";
-                            break;
-
-                        case "fx":
-                            buildProcess = @"
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto";
-                            break;
-
-                        case "fbx":
-                            buildProcess = @"
-/importer:FbxImporter
-/processor:ModelProcessor
-/processorParam:ColorKeyColor=0,0,0,0
-/processorParam:ColorKeyEnabled=True
-/processorParam:DefaultEffect=BasicEffect
-/processorParam:GenerateMipmaps=False
-/processorParam:GenerateTangentFrames=False
-/processorParam:PremultiplyTextureAlpha=True
-/processorParam:PremultiplyVertexColors=True
-/processorParam:ResizeTexturesToPowerOfTwo=False
-/processorParam:RotationX=0
-/processorParam:RotationY=0
-/processorParam:RotationZ=0
-/processorParam:Scale=1
-/processorParam:SwapWindingOrder=False
-/processorParam:TextureFormat=NoChange";
-                            break;
-
-                        case "myfbx":
-                            buildProcess = @"
-/importer:FbxImporter
-/processor:MyModelProcessor";
-                            break;
-
-                        // copy
-                        default:
-                            command = "copy";
-                            buildProcess = "";
-                            break;
-                    }
-                }
-
-
-
-                return $@"#begin {contentDirectory}{fullName}{buildProcess}
-/{command}:{contentDirectory}{fullName}
+                return $@"#begin {contentDirectory}{fullName}{process}
 
 ";
-
             }
         }
 

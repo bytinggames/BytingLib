@@ -28,4 +28,10 @@
 	<PropertyGroup Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">
 		<ThisIsOSX>True</ThisIsOSX>
 	</PropertyGroup>
+
+
+	<!-- Customizing the Content Build Process -->
+	<PropertyGroup>
+		<MonoGameMGCBAdditionalArguments>/define:$(Configuration)</MonoGameMGCBAdditionalArguments>
+	</PropertyGroup>
 </Project>

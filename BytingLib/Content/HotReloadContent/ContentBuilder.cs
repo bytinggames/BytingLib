@@ -75,7 +75,12 @@ namespace BytingLib
             if (begin == -1)
                 begin = mainContent.Length;
 
-            header = mainContent.Remove(begin);
+#if DEBUG
+            header = "/define:Debug";
+#else
+            header = "/define:Release";
+#endif
+            header += mainContent.Remove(begin);
 
             for (int i = 0; i < mgcbContents.Length; i++)
             {
