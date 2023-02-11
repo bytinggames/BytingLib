@@ -2,14 +2,16 @@
 
 namespace BytingLib
 {
-    public static class DefaultPaths
+    public class DefaultPaths
     {
-        public static string GameAppDataDir { get; }
-        public static string InputRecordingsDir { get; }
-        public static string SaveStateDir { get; }
-        public static string ScreenshotsDir { get; }
+        public string GameAppDataDir { get; }
+        public string InputRecordingsDir { get; }
+        public string SaveStateDir { get; }
+        public string ScreenshotsDir { get; }
+        public string SettingsFile { get; }
+        public string SettingsDebugFile { get; }
 
-        static DefaultPaths()
+        public DefaultPaths()
         {
             string appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string? gameName = Assembly.GetEntryAssembly()?.GetName().Name;
@@ -21,6 +23,8 @@ namespace BytingLib
             Directory.CreateDirectory(SaveStateDir);
             ScreenshotsDir = Path.Combine(GameAppDataDir, "screenshots");
             Directory.CreateDirectory(ScreenshotsDir);
+            SettingsFile = Path.Combine(GameAppDataDir, "settings.yaml");
+            SettingsDebugFile = Path.Combine(GameAppDataDir, "settings.debug.yaml");
         }
 
         public static string GetCurrentDateTimeFilename()
@@ -28,7 +32,7 @@ namespace BytingLib
             return DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss_fff");
         }
 
-        internal static string GetNewScreenshotPng()
+        internal string GetNewScreenshotPng()
         {
             return Path.Combine(ScreenshotsDir, GetCurrentDateTimeFilename() + ".png");
         }

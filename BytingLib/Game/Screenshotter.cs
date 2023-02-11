@@ -4,10 +4,12 @@
     {
         private Texture2D? screenshotTex;
         private readonly GraphicsDevice gDevice;
+        private readonly DefaultPaths paths;
 
-        public Screenshotter(GraphicsDevice gDevice)
+        public Screenshotter(GraphicsDevice gDevice, DefaultPaths paths)
         {
             this.gDevice = gDevice;
+            this.paths = paths;
         }
 
         public void TakeScreenshot()
@@ -19,7 +21,7 @@
             if (screenshotTex == null || screenshotTex.Width != w || screenshotTex.Height != h)
                 screenshotTex = new Texture2D(gDevice, w, h, false, gDevice.PresentationParameters.BackBufferFormat);
             screenshotTex.SetData(backBuffer);
-            screenshotTex.SaveAsPng(DefaultPaths.GetNewScreenshotPng());
+            screenshotTex.SaveAsPng(paths.GetNewScreenshotPng());
         }
 
         public void Dispose()

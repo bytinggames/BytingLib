@@ -7,12 +7,15 @@ namespace BytingLib
     {
         protected readonly GameSpeed updateSpeed, drawSpeed;
         protected readonly Creator creator;
-
         protected readonly InputStuff input;
+        protected readonly DefaultPaths basePaths;
+        protected readonly SaveStateManager saveStateManager;
 
         private readonly Screenshotter screenshotter;
 
-        public GamePrototype(GameWrapper g, bool mouseWithActivationClick = false, bool contentModdingOnRelease = false) : base(g, contentModdingOnRelease)
+        public GamePrototype(GameWrapper g, DefaultPaths paths,
+            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false) 
+            : base(g, contentModdingOnRelease)
         {
             updateSpeed = new GameSpeed(g.TargetElapsedTime);
             drawSpeed = new GameSpeed(g.TargetElapsedTime);
@@ -23,9 +26,12 @@ namespace BytingLib
             };
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, null, typeof(MarkupShortcutAttribute), converters);
 
-            input = new InputStuff(mouseWithActivationClick, windowManager, g);
+            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths);
 
-            screenshotter = new Screenshotter(graphicsDevice);
+            basePaths = paths;
+            saveStateManager = new SaveStateManager(paths);
+
+            screenshotter = new Screenshotter(graphicsDevice, paths);
 
             InitWindowAndGraphics();
         }

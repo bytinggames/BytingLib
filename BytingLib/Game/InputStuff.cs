@@ -21,7 +21,7 @@ namespace BytingLib
         public Action? OnPlayInput;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game)
+        public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             stuff = new StuffDisposable(typeof(IUpdate));
@@ -54,7 +54,7 @@ namespace BytingLib
             stuff.Add(GamePad = new GamePadInput(() => inputSource.Current.GamePadState));
 
             stuff.Add(inputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));
-            stuff.Add(inputRecordingTriggerer = new(KeysDev, inputRecordingManager, DefaultPaths.InputRecordingsDir));
+            stuff.Add(inputRecordingTriggerer = new(KeysDev, inputRecordingManager, basePaths.InputRecordingsDir));
         }
 
         public void Update()

@@ -1,0 +1,66 @@
+﻿using Microsoft.Extensions.Configuration;
+
+namespace BytingLib
+{
+    public interface ISettingsManager
+    {
+        void UpdateCheckChanges();
+    }
+
+    public class SettingsManager<_Settings> : ISettingsManager where _Settings : new()
+    {
+        public _Settings Settings { get; private set; }
+
+        private readonly DirectorySupervisor dirSupervisor;
+        private readonly IConfigurationRoot configRoot;
+        private readonly DefaultPaths paths;
+
+        public SettingsManager(DefaultPaths paths)
+        {
+            this.paths = paths;
+
+            configRoot = new ConfigurationBuilder()
+                .AddYamlFile(paths.SettingsFile, true)
+#if DEBUG
+                .AddYamlFile(paths.SettingsDebugFile, true)
+#endif
+                .Build();
+
+            Settings = CreateSettings();
+
+            dirSupervisor = new DirectorySupervisor(paths.GameAppDataDir, GetSettingsFiles, false);
+        }
+
+        private _Settings CreateSettings() => configRoot.Get<_Settings>() ?? new();
+
+        private void ReloadConfig()
+        {
+            configRoot.Reload();
+            Settings = CreateSettings();
+        }
+
+        public void UpdateCheckChanges()
+        {
+            // only reload config in debug mode
+#if DEBUG
+            var changes = dirSupervisor.GetChanges();
+            if (changes.Any())
+            {
+                ReloadConfig();
+            }
+#endif
+        }
+
+        private string[] GetSettingsFiles()
+        {
+            List<string> files = new();
+            if (File.Exists(paths.SettingsFile))
+                files.Add(paths.SettingsFile);
+#if DEBUG
+            if (File.Exists(paths.SettingsDebugFile))
+                files.Add(paths.SettingsDebugFile);
+#endif
+            return files.ToArray();
+        }
+    }
+}
