@@ -1,10 +1,10 @@
 ﻿
 namespace BytingLib
 {
-    class DirectorySupervisor
+    public class DirectorySupervisor
     {
         private readonly string directory;
-        private readonly Func<string[]> getFiles;
+        private readonly Func<string[]>? getFiles;
 
         public class FileStamp
         {
@@ -39,9 +39,14 @@ namespace BytingLib
 
         public class Changes
         {
-            public List<FileStamp> Modified = new List<FileStamp>();
-            public List<FileStamp> Created = new List<FileStamp>();
-            public List<FileStamp> Deleted = new List<FileStamp>();
+            public List<FileStamp> Modified { get; } = new List<FileStamp>();
+            public List<FileStamp> Created { get; } = new List<FileStamp>();
+            public List<FileStamp> Deleted { get; } = new List<FileStamp>();
+
+            public bool Any()
+            {
+                return Modified.Count + Created.Count + Deleted.Count > 0;
+            }
 
             public IEnumerable<FileStamp> ModifiedOrCreated()
             {
@@ -73,7 +78,7 @@ namespace BytingLib
 
         const string searchPattern = "*";
 
-        public DirectorySupervisor(string directory, Func<string[]> getFiles, bool expectEmptyDirectory)
+        public DirectorySupervisor(string directory, Func<string[]>? getFiles, bool expectEmptyDirectory)
         {
             this.directory = directory;
             this.getFiles = getFiles;
