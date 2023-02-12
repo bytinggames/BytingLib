@@ -1,4 +1,4 @@
-@include "../../../BytingLib/Content/Content.Generated.custom"
+@include "../../../BytingLib/BytingLib/Content/Content.Generated.custom"
 
 ^Models\/.*\.(png|jpg|jpeg)$
 $if Release

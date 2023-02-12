@@ -1,8 +1,5 @@
 ^.*\..*$
 /copy:{0}
-/build:{0}
-/build:{0}
-/build:{0}
 
 ^.*\.(png|jpg|jpeg)$
 /importer:TextureImporter

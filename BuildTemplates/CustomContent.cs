@@ -47,7 +47,7 @@ namespace BuildTemplates
                     {
                         int endIndex = pattern.IndexOf('"', startsWith.Length);
                         string includeFile = pattern.Substring(startsWith.Length, endIndex - startsWith.Length);
-                        includeFile = Path.GetFullPath(Path.Combine(customFile, includeFile));
+                        includeFile = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(customFile)!, includeFile));
                         ReadFile(includeFile);
                     }
                     continue;
