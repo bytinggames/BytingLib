@@ -45,6 +45,7 @@
                 string folderConstruct = "";
                 string assets = "";
                 string classes = "";
+                string fieldInitialize = "";
 
 
                 foreach (var folder in folders)
@@ -56,10 +57,13 @@
 
                 foreach (var file in files)
                 {
-                    string? print = file.Print(contentDirectory);
+                    string? print = file.PrintDeclare(contentDirectory);
                     if (print == null)
                         continue;
                     assets += endl + tab + print;
+
+                    print = file.PrintInit(contentDirectory);
+                    fieldInitialize += endl + tab + tab + print;
                 }
 
                 string output = $@"public class {className}
@@ -69,7 +73,7 @@
 {tab}public {className}(IContentCollector collector, DisposableContainer disposables)
 {tab}{{
 {tab}{tab}this.collector = collector;
-{tab}{tab}this.disposables = disposables;{folderConstruct}
+{tab}{tab}this.disposables = disposables;{fieldInitialize}{folderConstruct}
 {tab}}}{assets}{classes}
 }}";
                 return output.Replace("\r\n", "\n") // make consistent among OSs
@@ -139,7 +143,8 @@
             private readonly string name;
             private readonly string extension;
             private readonly string? assetType;
-            private readonly string? customPrint;
+            private readonly string? customPrintDeclare;
+            private readonly string? customPrintInit;
 
             public File(string _name)
             {
@@ -150,30 +155,49 @@
 
                 if (extension == "ani")
                 {
-                    customPrint = $"public Animation {ToVariableName(name)}Ani => disposables.Use(collector.UseAnimation(\"{{0}}{name}\"));";
+                    customPrintDeclare = $"public Animation {ToVariableName(name)}Ani {{ get; }}";
+                    customPrintInit = $"{ToVariableName(name)}Ani = disposables.Use(collector.UseAnimation(\"{{0}}{name}\"));";
                 }
                 else if (extension == "txt")
                 {
-                    customPrint = $"public Ref<string> {ToVariableName(name)}Txt => disposables.Use(collector.Use<string>(\"{{0}}{fullName}\"));";
+                    customPrintDeclare = $"public Ref<string> {ToVariableName(name)}Txt {{ get; }}";
+                    customPrintInit = $"{ToVariableName(name)}Txt = disposables.Use(collector.Use<string>(\"{{0}}{fullName}\"));";
                 }
                 else if (extension == "bin")
                 {
-                    customPrint = $"public Ref<byte[]> {ToVariableName(name)}Bytes => disposables.Use(collector.Use<byte[]>(\"{{0}}{fullName}\"));";
+                    customPrintDeclare = $"public Ref<byte[]> {ToVariableName(name)}Bytes {{ get; }}";
+                    customPrintInit = $"{ToVariableName(name)}Bytes = disposables.Use(collector.Use<byte[]>(\"{{0}}{fullName}\"));";
                 }
                 else
                     assetType = AssetTypes.Convert(extension)!;
             }
 
-            public string? Print(string contentDirectory)
+            public string? PrintDeclare(string contentDirectory)
             {
-                if (customPrint != null)
-                    return string.Format(customPrint, contentDirectory);
+                if (customPrintDeclare != null)
+                    return customPrintDeclare;
                 else
                 {
                     if (assetType != null)
                     {
                         string VarName = AssetTypes.Extensions[assetType].VarName;
-                        return $"public Ref<{assetType}> {ToVariableName(name)}{VarName} => disposables.Use(collector.Use<{assetType}>(\"{contentDirectory + name}\"));";
+                        return $"public Ref<{assetType}> {ToVariableName(name)}{VarName} {{ get; }}";
+                    }
+                    else
+                        return null;
+                }
+            }
+
+            public string? PrintInit(string contentDirectory)
+            {
+                if (customPrintInit != null)
+                    return string.Format(customPrintInit, contentDirectory);
+                else
+                {
+                    if (assetType != null)
+                    {
+                        string VarName = AssetTypes.Extensions[assetType].VarName;
+                        return $"{ToVariableName(name)}{VarName} = disposables.Use(collector.Use<{assetType}>(\"{contentDirectory + name}\"));";
                     }
                     else
                         return null;
