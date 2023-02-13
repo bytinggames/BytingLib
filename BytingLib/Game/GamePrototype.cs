@@ -97,11 +97,13 @@ namespace BytingLib
 
             if (input.Keys.F11.Pressed)
                 windowManager.ToggleFullscreen();
-            if (input.Keys.Tab.Pressed)
+            if (ShouldSwapScreen())
                 windowManager.SwapScreen();
 
             UpdateIteration(gameTime);
         }
+
+        protected virtual bool ShouldSwapScreen() => input.Keys.Tab.Pressed;
 
         public sealed override void DrawActive(GameTime gameTime)
         {
