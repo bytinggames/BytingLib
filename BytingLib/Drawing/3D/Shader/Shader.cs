@@ -30,7 +30,7 @@
 
         #region Apply
 
-        private void ApplyParameters()
+        public void ApplyParameters()
         {
             // actually apply the current technique
             effect.Value.CurrentTechnique = effect.Value.Techniques[currentTechnique];
