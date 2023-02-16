@@ -10,6 +10,7 @@ namespace BytingLib
 
         public float CurrentSecond { get; private set; } = 0f;
         public float DefaultTransitionDurationInSeconds { get; set; }
+        public float AnimationSpeedFactor { get; set; } = 1f;
 
         public AnimationBlender(GameSpeed drawSpeed, int startAnimation, float defaultTransitionDurationInSeconds, Ref<ModelGL> model)
         {
@@ -50,7 +51,7 @@ namespace BytingLib
 
         public void Update()
         {
-            float deltaSeconds = drawSpeed.DeltaMS / 1000f;
+            float deltaSeconds = drawSpeed.DeltaMS / 1000f * AnimationSpeedFactor;
             CurrentSecond += deltaSeconds;
 
             transitioner.Update(deltaSeconds);
