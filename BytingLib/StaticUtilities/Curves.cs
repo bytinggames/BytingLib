@@ -30,6 +30,19 @@
             return 1f - MathF.Pow(1f - x, 3f);
         }
 
+        public static float EaseInSine(float x)
+        {
+            return 1f - MathF.Cos(x * MathF.PI / 2f);
+        }
+        public static float EaseInQuad(float x)
+        {
+            return x * x;
+        }
+        public static float EaseInCubic(float x)
+        {
+            return x * x * x;
+        }
+
         public static float Linear(float x) => x;
         public static float LinearReverse(float x) => 1f - x;
         public static float LinearSpike(float x)
