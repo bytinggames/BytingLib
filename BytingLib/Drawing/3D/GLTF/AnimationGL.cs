@@ -104,22 +104,27 @@ namespace BytingLib
 
         private float SecondToSamplerSecond(float second)
         {
-            switch (Wrap)
+            if (AnimationDuration > 0)
             {
-                case WrapMode.Repeat:
-                    second = second % AnimationDuration;
-                    break;
-                case WrapMode.Clamp:
-                    second = Math.Clamp(second, 0, AnimationDuration);
-                    break;
-                case WrapMode.Mirror:
-                    second = second % (AnimationDuration * 2);
-                    if (second > AnimationDuration)
-                        second = AnimationDuration * 2 - second;
-                    break;
-                default:
-                    throw new NotImplementedException();
+                switch (Wrap)
+                {
+                    case WrapMode.Repeat:
+                        second = second % AnimationDuration;
+                        break;
+                    case WrapMode.Clamp:
+                        second = Math.Clamp(second, 0, AnimationDuration);
+                        break;
+                    case WrapMode.Mirror:
+                        second = second % (AnimationDuration * 2);
+                        if (second > AnimationDuration)
+                            second = AnimationDuration * 2 - second;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
             }
+            else
+                second = 0f;
 
             second += AnimationStartSecond;
             return second;
