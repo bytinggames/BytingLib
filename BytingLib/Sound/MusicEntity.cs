@@ -20,5 +20,24 @@ namespace BytingLib
             musicInstance.Stop();
             musicInstance.Dispose();
         }
+
+        public void TogglePlayStop()
+        {
+            if (musicInstance.IsDisposed)
+                return;
+
+            switch (musicInstance.State)
+            {
+                case SoundState.Playing:
+                    musicInstance.Stop();
+                    break;
+                case SoundState.Paused:
+                case SoundState.Stopped:
+                    musicInstance.Play();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
     }
 }
