@@ -67,12 +67,12 @@ namespace BytingLib
             if (!pauseUpdate && input.KeysDev.Alt.Down)
             {
                 iterations *= 10;
-                if (input.KeysDev.Control.Down)
+                if (input.KeysDev.Apps.Down)
                     iterations *= 10;
             }
             else
             {
-                if (input.KeysDev.Control.Down)
+                if (input.KeysDev.Apps.Down)
                 {
                     pauseUpdate = true;
 
