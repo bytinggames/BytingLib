@@ -1,6 +1,5 @@
 ﻿namespace BytingLib
 {
-
     public class EffectParameterStack<T> : IEffectParameterStack
     {
         private readonly Stack<T> valueStack = new();
@@ -10,7 +9,7 @@
         private T? lastAppliedValue = default;
         bool dirty;
 
-        public EffectParameterStack(Ref<Effect> effect, string parameter)
+        public EffectParameterStack(Ref<Effect> effect, string parameter, T? _default)
         {
             effectParameter = effect.Value.Parameters[parameter];
             if (effectParameter == null)
@@ -18,12 +17,34 @@
 
             effect.OnReload += RefreshEffect;
             this.effect = effect;
+
+            if (_default != null)
+                valueStack.Push(_default);
+        }
+
+        public EffectParameterStack(Ref<Effect> effect, string parameter)
+            : this(effect, parameter, GetDefault())
+        {
         }
 
         public EffectParameterStack(Ref<Effect> effect, string parameter, Func<T, IDisposable?> useChain)
             : this(effect, parameter)
         {
             this.useChain = useChain;
+        }
+
+        public EffectParameterStack(Ref<Effect> effect, string parameter, Func<T, IDisposable?> useChain, T _default)
+            : this(effect, parameter, _default)
+        {
+            this.useChain = useChain;
+        }
+
+        private static T? GetDefault()
+        {
+            if (typeof(T) == typeof(Matrix))
+                return (T)(object)Matrix.Identity;
+            else
+                return default;
         }
 
         public void Dispose()
@@ -58,7 +79,7 @@
         public IDisposable? Use(T val)
         {
             IDisposable? d1 = null;
-            if (!valueStack.TryPeek(out T? peek) || !peek!.Equals(val))
+            if (!IsEqualToPeek(val))
             {
                 valueStack.Push(val);
 
@@ -80,10 +101,11 @@
 
             return d1;
         }
+
         public void Use(T val, Action actionWhile)
         {
             bool valChanged = false;
-            if (!valueStack.TryPeek(out T? peek) || !peek!.Equals(val))
+            if (!IsEqualToPeek(val))
             {
                 valueStack.Push(val);
 
@@ -111,11 +133,23 @@
                 dirty = true;
             }
         }
+
+        private bool IsEqualToPeek(T? val)
+        {
+            if (!valueStack.TryPeek(out T? peek))
+                return false;
+            if (peek == null)
+                return val == null;
+            else
+                return peek.Equals(val);
+        }
+
         public IDisposable? Use(Func<T, T> func)
         {
             T val = func(valueStack.Peek());
             return Use(val);
         }
+
         public T? GetValue()
         {
             valueStack.TryPeek(out T? t);
