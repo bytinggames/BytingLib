@@ -9,9 +9,11 @@ namespace BuildTemplates.Test
         readonly string contentPath = Path.Combine("..", "..", "..", "Content");
 
         [TestMethod]
-        public void TestBuild()
+        [DataRow(false)]
+        [DataRow(true)]
+        public void TestBuild(bool loadOnStartup)
         {
-            (string output, string mgcbOutput, string locaCode) = ContentTemplate.Create(contentPath, "BytingLibGame", new string[0]);
+            (string output, string mgcbOutput, string locaCode) = ContentTemplate.Create(contentPath, "BytingLibGame", new string[0], loadOnStartup);
             Assert.IsNotNull(output);
             Assert.IsNotNull(mgcbOutput);
             Assert.IsNotNull(locaCode);

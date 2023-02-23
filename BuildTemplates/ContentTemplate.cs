@@ -17,12 +17,12 @@
                 this.className = customClassName ?? ("_" + name);
             }
 
-            internal void Insert(string localPath)
+            internal void Insert(string localPath, bool loadOnStartup)
             {
                 int slashIndex = localPath.IndexOf('/');
                 if (slashIndex == -1)
                 {
-                    files.Add(new File(localPath));
+                    files.Add(new File(localPath, loadOnStartup));
                     return;
                 }
                 string nextDirectory = localPath.Remove(slashIndex);
@@ -30,7 +30,7 @@
 
                 if (!folders.TryGetValue(nextDirectory, out Folder? folder))
                     folders.Add(nextDirectory, folder = new Folder(nextDirectory));
-                folder.Insert(localPath);
+                folder.Insert(localPath, loadOnStartup);
             }
 
             const string endl = "\r\n";
@@ -63,7 +63,8 @@
                     assets += endl + tab + print;
 
                     print = file.PrintInit(contentDirectory);
-                    fieldInitialize += endl + tab + tab + print;
+                    if (!string.IsNullOrEmpty(print))
+                        fieldInitialize += endl + tab + tab + print;
                 }
 
                 string output = $@"public class {className}
@@ -140,48 +141,79 @@
         class File
         {
             private readonly string fullName;
+            private readonly bool loadOnStartup;
             private readonly string name;
             private readonly string extension;
             private readonly string? assetType;
             private readonly string? customPrintDeclare;
             private readonly string? customPrintInit;
 
-            public File(string _name)
+            public File(string _name, bool loadOnStartup)
             {
                 fullName = _name;
+                this.loadOnStartup = loadOnStartup;
                 name = _name;
                 extension = Path.GetExtension(name)[1..];
                 this.name = _name.Remove(_name.Length - extension.Length - 1);
 
+                string? declare = null;
+                string? init = null;
+                string? varName = null;
+
                 if (extension == "ani")
                 {
-                    customPrintDeclare = $"public Animation {ToVariableName(name)}Ani {{ get; }}";
-                    customPrintInit = $"{ToVariableName(name)}Ani = disposables.Use(collector.UseAnimation(\"{{0}}{name}\"));";
+                    varName = ToVariableName(name) + "Ani";
+                    declare = $"public Animation";
+                    init = $"disposables.Use(collector.UseAnimation(\"{{0}}{name}\"))";
                 }
                 else if (extension == "txt")
                 {
-                    customPrintDeclare = $"public Ref<string> {ToVariableName(name)}Txt {{ get; }}";
-                    customPrintInit = $"{ToVariableName(name)}Txt = disposables.Use(collector.Use<string>(\"{{0}}{fullName}\"));";
+                    varName = ToVariableName(name) + "Txt";
+                    declare = $"public Ref<string>";
+                    init = $"disposables.Use(collector.Use<string>(\"{{0}}{fullName}\"))";
                 }
                 else if (extension == "bin")
                 {
-                    customPrintDeclare = $"public Ref<byte[]> {ToVariableName(name)}Bytes {{ get; }}";
-                    customPrintInit = $"{ToVariableName(name)}Bytes = disposables.Use(collector.Use<byte[]>(\"{{0}}{fullName}\"));";
+                    varName = ToVariableName(name) + "Bytes";
+                    declare = $"public Ref<byte[]>";
+                    init = $"disposables.Use(collector.Use<byte[]>(\"{{0}}{fullName}\"))";
                 }
                 else
                     assetType = AssetTypes.Convert(extension)!;
+
+                if (declare != null)
+                {
+                    if (loadOnStartup)
+                    {
+                        customPrintDeclare = $"{declare} {varName} {{ get; }}";
+                        customPrintInit = $"{varName} = {init};";
+                    }
+                    else
+                    {
+                        customPrintDeclare = $"{declare} {varName} => {init};";
+                        customPrintInit = null;
+                    }
+                }
             }
 
             public string? PrintDeclare(string contentDirectory)
             {
                 if (customPrintDeclare != null)
-                    return customPrintDeclare;
+                {
+                    if (customPrintDeclare.Contains("{0}"))
+                        return string.Format(customPrintDeclare, contentDirectory);
+                    else
+                        return customPrintDeclare;
+                }
                 else
                 {
                     if (assetType != null)
                     {
                         string VarName = AssetTypes.Extensions[assetType].VarName;
-                        return $"public Ref<{assetType}> {ToVariableName(name)}{VarName} {{ get; }}";
+                        if (loadOnStartup)
+                            return $"public Ref<{assetType}> {ToVariableName(name)}{VarName} {{ get; }}";
+                        else
+                            return $"public Ref<{assetType}> {ToVariableName(name)}{VarName} => disposables.Use(collector.Use<{assetType}>(\"{contentDirectory + name}\"));";
                     }
                     else
                         return null;
@@ -192,6 +224,8 @@
             {
                 if (customPrintInit != null)
                     return string.Format(customPrintInit, contentDirectory);
+                else if (!loadOnStartup)
+                    return null;
                 else
                 {
                     if (assetType != null)
@@ -226,7 +260,7 @@
             }
         }
 
-        public static (string output, string mgcbOutput, string locaCode) Create(string contentPath, string nameSpace, string[] referencedDlls)
+        public static (string output, string mgcbOutput, string locaCode) Create(string contentPath, string nameSpace, string[] referencedDlls, bool loadOnStartup)
         {
             if (!contentPath.EndsWith("/") && !contentPath.EndsWith("\\"))
                 contentPath += "/";
@@ -234,7 +268,7 @@
             Folder root = new("Content", "ContentLoader");
 
             List<string> locaFiles = new();
-            LookIntoDirRecursive(contentPath, contentPath, root, ref locaFiles);
+            LookIntoDirRecursive(contentPath, contentPath, root, ref locaFiles, loadOnStartup);
 
             string output = root.Print("", Folder.tab);
 
@@ -246,7 +280,7 @@
             return (output, mgcbOutput, locaCode);
         }
 
-        private static void LookIntoDirRecursive(string contentPath, string currentPath, Folder root, ref List<string> locaFiles)
+        private static void LookIntoDirRecursive(string contentPath, string currentPath, Folder root, ref List<string> locaFiles, bool loadOnStartup)
         {
             var files = Directory.GetFiles(currentPath).OrderBy(f => f);
             foreach (var file in files)
@@ -263,7 +297,7 @@
                 string localAssetPath = file[contentPath.Length..];
                 localAssetPath = localAssetPath.Replace('\\', '/');
 
-                root.Insert(localAssetPath);
+                root.Insert(localAssetPath, loadOnStartup);
             }
 
             var dirs = Directory.GetDirectories(currentPath).OrderBy(f => f);
@@ -271,7 +305,7 @@
             {
                 string dirName = Path.GetFileName(dir);
                 if (dirName != "bin" && dirName != "obj")
-                    LookIntoDirRecursive(contentPath, dir, root, ref locaFiles);
+                    LookIntoDirRecursive(contentPath, dir, root, ref locaFiles, loadOnStartup);
             }
         }
     }
