@@ -1,5 +1,4 @@
-﻿
-namespace BytingLib
+﻿namespace BytingLib.Serialization
 {
     public class StructChannel<T> where T : struct
     {

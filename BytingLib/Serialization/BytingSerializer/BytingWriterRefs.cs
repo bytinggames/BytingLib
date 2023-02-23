@@ -1,5 +1,4 @@
-﻿
-namespace BytingLib.Serialization
+﻿namespace BytingLib.Serialization
 {
     /// <summary>
     /// not recommended to use for big complex files. only [int.MaxValue] different reference types allowed

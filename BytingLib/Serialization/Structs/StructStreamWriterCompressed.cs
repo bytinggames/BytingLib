@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace BytingLib
+namespace BytingLib.Serialization
 {
     public class StructStreamWriterCompressed<T> : StructStreamWriter<T> where T : struct
     {

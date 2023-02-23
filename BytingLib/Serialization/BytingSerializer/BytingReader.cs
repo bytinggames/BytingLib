@@ -1,5 +1,4 @@
-﻿
-namespace BytingLib.Serialization
+﻿namespace BytingLib.Serialization
 {
     public delegate object ReadObj(BytingReader br, Type type, List<object>? refs);
 

@@ -1,6 +1,4 @@
-﻿using BytingLib.Creation;
-
-namespace BytingLib.Markup
+﻿namespace BytingLib.Markup
 {
     public abstract class MarkupBlock : ILeaf
     {

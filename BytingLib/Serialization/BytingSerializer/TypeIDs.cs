@@ -1,5 +1,4 @@
-﻿
-namespace BytingLib.Serialization
+﻿namespace BytingLib.Serialization
 {
     public class TypeIDs
     {

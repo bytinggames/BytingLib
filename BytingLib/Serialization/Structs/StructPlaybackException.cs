@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace BytingLib
+namespace BytingLib.Serialization
 {
     [Serializable]
     internal class StructPlaybackException : Exception

@@ -1,6 +1,4 @@
-﻿using BytingLib.Creation;
-
-namespace BytingLib.Markup
+﻿namespace BytingLib.Markup
 {
     [MarkupShortcut("cursor")]
     public class MarkupCursor : MarkupBlock

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Nodes;
 
-namespace BytingLib.DataTypes
+namespace BytingLib
 {
     public class JsonArrayCache<TValue> where TValue : class
     {

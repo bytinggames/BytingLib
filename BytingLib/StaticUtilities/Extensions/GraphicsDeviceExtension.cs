@@ -1,4 +1,4 @@
-﻿namespace BytingLib.StaticUtilities.Extensions
+﻿namespace BytingLib
 {
     public static class GraphicsDeviceExtension
     {

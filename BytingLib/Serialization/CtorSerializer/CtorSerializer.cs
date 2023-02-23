@@ -1,5 +1,4 @@
-﻿using BytingLib.DataTypes;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace BytingLib.Serialization
 {

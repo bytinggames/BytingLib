@@ -22,7 +22,6 @@ namespace BytingLib.Intro
 
     class Tooth
     {
-
         [BytingProp(0)]
         public IList<Vector2> Vertices { get; set; }
         [BytingProp(1)]

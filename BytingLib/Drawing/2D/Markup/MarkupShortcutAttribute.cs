@@ -1,4 +1,4 @@
-﻿namespace BytingLib.Creation
+﻿namespace BytingLib.Markup
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class MarkupShortcutAttribute : CreatorShortcutAttribute

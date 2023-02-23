@@ -1,6 +1,4 @@
-﻿using BytingLib.Creation;
-
-namespace BytingLib.Markup
+﻿namespace BytingLib.Markup
 {
     [MarkupShortcut("span")]
     public class MarkupSpan : MarkupText

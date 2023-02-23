@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace BytingLib
+namespace BytingLib.Serialization
 {
     public abstract class StructStreamReader<T> : IEnumerator<T> where T : struct
     {

@@ -1,4 +1,5 @@
-﻿using BytingLib.Test.Input;
+﻿using BytingLib.Serialization;
+using BytingLib.Test.Input;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;

@@ -1,8 +1,7 @@
-﻿
-using System.Globalization;
+﻿using System.Globalization;
 using System.Reflection;
 
-namespace BytingLib.Creation
+namespace BytingLib
 {
     public class Creator
     {

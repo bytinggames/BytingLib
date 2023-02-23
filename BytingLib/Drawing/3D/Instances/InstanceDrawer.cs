@@ -1,6 +1,4 @@
-﻿using BytingLib.StaticUtilities.Extensions;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class InstanceDrawer<InstanceVertex> where InstanceVertex : struct, IVertexType
     {

@@ -1,5 +1,4 @@
-﻿
-namespace BytingLib
+﻿namespace BytingLib.Serialization
 {
     /// <summary>
     /// Removes flags if matching.

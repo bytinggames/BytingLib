@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using BytingLib.Serialization;
+using Microsoft.Xna.Framework.Input;
 
 namespace BytingLib
 {

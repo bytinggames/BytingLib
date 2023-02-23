@@ -1,6 +1,4 @@
-﻿using BytingLib.Creation;
-
-namespace BytingLib.Markup
+﻿namespace BytingLib.Markup
 {
     [MarkupShortcut("outline")]
     public class MarkupOutline : MarkupCollection

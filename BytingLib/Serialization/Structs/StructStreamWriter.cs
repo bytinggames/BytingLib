@@ -1,4 +1,4 @@
-﻿namespace BytingLib
+﻿namespace BytingLib.Serialization
 {
     public abstract class StructStreamWriter<T> : IStructStreamWriter<T> where T : struct
     {

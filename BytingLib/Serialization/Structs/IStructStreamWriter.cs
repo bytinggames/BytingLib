@@ -1,4 +1,4 @@
-﻿namespace BytingLib
+﻿namespace BytingLib.Serialization
 {
     public interface IStructStreamWriter<T> : IDisposable where T : struct
     {
