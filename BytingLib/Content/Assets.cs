@@ -15,9 +15,8 @@ namespace BytingLib
             this.soundSettings = soundSettings;
         }
 
-        protected SoundItem Load(Func<Ref<SoundEffect>> soundFunc)
+        protected SoundItem Load(Ref<SoundEffect> soundRef)
         {
-            Ref<SoundEffect> soundRef = soundFunc();
             disposables.Add(soundRef);
             SoundItem sound = new SoundItem(SoundBus, soundRef);
             if (soundSettings.Settings.TryGetValue(sound.Sfx.Value.Name, out var setting))
@@ -27,9 +26,8 @@ namespace BytingLib
             return sound;
         }
 
-        protected T Load<T>(Func<Ref<T>> loadFunc)
+        protected T Load<T>(Ref<T> reference)
         {
-            Ref<T> reference = loadFunc();
             disposables.Add(reference);
             return reference.Value;
         }

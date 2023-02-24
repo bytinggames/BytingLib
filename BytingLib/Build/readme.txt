@@ -29,3 +29,8 @@ also: add this to the csproj:
 		</ItemGroup>
 		<Move SourceFiles="@(SourceFilesPublish2)" DestinationFiles="@(SourceFilesPublish2 -&gt; Replace('.mgcb', '.mgcbcopy'))" />
 	</Target>
+
+
+also: add
+	<Import Project="../../BytingLib/BytingLib/Targets.targets" />
+to your csproj, if you haven't already
