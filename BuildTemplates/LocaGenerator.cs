@@ -50,15 +50,19 @@ namespace BuildTemplates
             public Folder(Folder? parent, string className)
             {
                 this.parent = parent;
-                this.className = className[0].ToString().ToUpper() + className.Substring(1);
+                string s = className[0].ToString();
+                if (s.ToUpperInvariant() == s.ToLowerInvariant()) // is upper case the same?
+                    this.className = "_" + className;
+                else
+                    this.className = className[0].ToString().ToUpper() + className.Substring(1);
 
                 if (parent == null)
                     codeLines.AddRange(new string[]{
                         "public static Dictionary<string, string> Dict;",
                         "public static Localization L;",
-                        $"static @{className}()",
+                        $"static @{this.className}()",
                         "{",
-                        TAB + $"L = new Localization(\"Content/{className}.loca\", \"en\");",
+                        TAB + $"L = new Localization(\"Content/{this.className}.loca\", \"en\");",
                         TAB + "Dict = L.GetDictionary();",
                         "}"
                     });
