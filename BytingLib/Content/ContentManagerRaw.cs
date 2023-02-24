@@ -42,71 +42,96 @@ namespace BytingLib
             else if (typeof(T) == typeof(byte[]))
                 asset = (T)(object)LoadByteArray(assetName);
             else
-            {
-                try
-                {
-                    asset = ReadAsset<T>(assetName, null);
-                }
-                catch (Exception)
-                {
-                    // this currently tries to load a png or jpg, if the xnb file was not found
-                    // could be improved though, so that this code immediately knows, wether to search for a png jpg or an xnb
-                    if (typeof(T) == typeof(Texture2D))
-                    {
-                        string assetNameForwardSlash = assetName.Replace('/', Path.DirectorySeparatorChar);
-                        string filePath = Path.Combine(RootDirectory, assetNameForwardSlash + ".png");
-                        if (!File.Exists(filePath))
-                        {
-                            filePath = Path.Combine(RootDirectory, assetNameForwardSlash + ".jpg");
-                            if (!File.Exists(filePath))
-                                throw;
-                        }
-                        var tex = Texture2D.FromFile(gDevice, filePath);
-                        asset = (T)Convert.ChangeType(tex, typeof(T));
-                    }
-                    else
-                        throw;
-                }
-            }
+                asset = LoadTexture<T>(assetName);
+
             LoadedAssets.TryAdd(assetName, asset);
             return asset;
+
         }
 
-        private T LoadAnimationData<T>(string assetName)
+        private T LoadTexture<T>(string assetName)
         {
-            string filePath = Path.Combine(RootDirectory, assetName.Replace('/',  Path.DirectorySeparatorChar));
-            if (!File.Exists(filePath))
-                throw new ContentLoadException("file " + filePath + " does not exist");
+            try
+            {
+                return ReadAsset<T>(assetName, null);
+            }
+            catch (Exception)
+            {
+                // this currently tries to load a png or jpg, if the xnb file was not found
+                // could be improved though, so that this code immediately knows, wether to search for a png jpg or an xnb
+                if (typeof(T) == typeof(Texture2D))
+                {
+                    bool notFound;
+                    string assetFile = Path.Combine(RootDirectory, assetName) + ".png";
+                    try
+                    {
+                        return Load(assetFile);
+                    }
+                    catch
+                    {
 
-            string json = File.ReadAllText(filePath);
+                        assetFile = Path.Combine(RootDirectory, assetName) + ".jpg";
+                        try
+                        {
+                            return Load(assetFile);
+                        }
+                        catch
+                        {
+                            notFound = true;
+                        }
+                    }
+
+                    if (notFound)
+                        throw;
+
+                    T Load(string assetFile)
+                    {
+                        using (Stream stream = TitleContainer.OpenStream(assetFile))
+                        {
+                            var tex = Texture2D.FromStream(gDevice, stream);
+                            return (T)Convert.ChangeType(tex, typeof(T));
+                        }
+                    }
+                }
+                else
+                    throw;
+            }
+            return default!; // just to silence the compiler
+        }
+
+        private T LoadAnimationData<T>(string assetNameWithExtension)
+        {
+            string json = File.ReadAllText(GetFullFilePath(assetNameWithExtension, ""));
             return (T)(object)AnimationData.FromJson(json);
         }
 
         private string LoadText(string assetNameWithExtension)
         {
-            string filePath = Path.Combine(RootDirectory, assetNameWithExtension.Replace('/', Path.DirectorySeparatorChar));
-            if (!File.Exists(filePath))
-                throw new ContentLoadException("file " + filePath + " does not exist");
-
-            return File.ReadAllText(filePath);
+            return File.ReadAllText(GetFullFilePath(assetNameWithExtension, ""));
         }
 
         private byte[] LoadByteArray(string assetNameWithExtension)
         {
-            string filePath = Path.Combine(RootDirectory, assetNameWithExtension.Replace('/', Path.DirectorySeparatorChar));
-            if (!File.Exists(filePath))
-                throw new ContentLoadException("file " + filePath + " does not exist");
-
-            return File.ReadAllBytes(filePath);
+            return File.ReadAllBytes(GetFullFilePath(assetNameWithExtension, ""));
         }
 
         private ModelGL LoadModelGL(string assetName, ExtendedLoadParameter extendedLoad)
         {
-            string filePath = Path.Combine(RootDirectory, assetName.Replace('/', Path.DirectorySeparatorChar)) + ".gltf";
-            if (!File.Exists(filePath))
-                throw new ContentLoadException("file " + filePath + " does not exist");
+            return new ModelGL(GetFullFilePath(assetName, ".gltf"), RootDirectory, extendedLoad.GraphicsDevice, extendedLoad.ContentCollector);
+        }
 
-            return new ModelGL(filePath, RootDirectory, extendedLoad.GraphicsDevice, extendedLoad.ContentCollector);
+        private FileStream OpenFile(string assetName, string extension)
+        {
+            return (FileStream)TitleContainer.OpenStream(Path.Combine(RootDirectory, assetName) + extension);
+        }
+
+        // TODO: remove this method and replace all usages by reading from the stream (currently this stream is closed and a new identical one is opened afterwards...)
+        private string GetFullFilePath(string assetName, string extension)
+        {
+            using (FileStream fs = OpenFile(assetName, extension))
+            {
+                return fs.Name;
+            }
         }
 
         /// <summary>Forces the asset to be unloaded from RAM.</summary>
