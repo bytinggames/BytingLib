@@ -37,9 +37,9 @@ namespace BytingLib
                 {
                     return ContentManagers[i].Load<T>(assetName, extendedLoad);
                 }
-                catch (ContentLoadException)
-                {
-                }
+                catch (ContentLoadException) { }
+                catch (DirectoryNotFoundException) { }
+                catch (FileNotFoundException) { }
             }
 
             return ContentManagers.Last().Load<T>(assetName, extendedLoad); // if this method throws an exception it is not catched, but passed to the calling function.

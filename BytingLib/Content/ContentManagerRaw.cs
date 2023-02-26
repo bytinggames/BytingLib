@@ -120,18 +120,9 @@ namespace BytingLib
             return new ModelGL(GetFullFilePath(assetName, ".gltf"), RootDirectory, extendedLoad.GraphicsDevice, extendedLoad.ContentCollector);
         }
 
-        private FileStream OpenFile(string assetName, string extension)
-        {
-            return (FileStream)TitleContainer.OpenStream(Path.Combine(RootDirectory, assetName) + extension);
-        }
-
-        // TODO: remove this method and replace all usages by reading from the stream (currently this stream is closed and a new identical one is opened afterwards...)
         private string GetFullFilePath(string assetName, string extension)
         {
-            using (FileStream fs = OpenFile(assetName, extension))
-            {
-                return fs.Name;
-            }
+            return Path.Combine(RootDirectory, assetName) + extension;
         }
 
         /// <summary>Forces the asset to be unloaded from RAM.</summary>
