@@ -33,7 +33,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>_GenerateContentFiles.tt.remove</DependentUpon>
     </None>
-    <None Update="UI\PanelStack.Generated.tt">
+    <None Update="UI\Panel\PanelStack.Generated.tt">
       <LastGenOutput>PanelStack.Generated.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
@@ -52,7 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="UI\PanelStack.Generated.cs">
+    <Compile Update="UI\Panel\PanelStack.Generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>PanelStack.Generated.tt</DependentUpon>

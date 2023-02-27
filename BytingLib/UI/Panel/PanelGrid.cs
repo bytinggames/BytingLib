@@ -9,7 +9,7 @@
         public bool ItemsStartLeft { get; set; } = true;
         public bool ItemsStartTop { get; set; } = true;
 
-        public PanelGrid(Sides padding, float gap, Vector2 anchor, Color? color, int columns)
+        public PanelGrid(Padding padding, float gap, Vector2 anchor, Color? color, int columns)
         {
             Padding = padding;
             Gap = gap;
@@ -18,7 +18,7 @@
             Columns = columns;
         }
 
-        public override void Draw(SpriteBatch spriteBatch, Rect parentRect)
+        public override void UpdateTree(Rect parentRect)
         {
             Vector2 pos = Anchor * parentRect.Size + parentRect.Pos;
 
@@ -32,8 +32,8 @@
             Vector2 contentSizePlusPadding = contentSize + GetPaddingSize();
 
             Rect rect = new Anchor(pos, Anchor).Rectangle(contentSizePlusPadding);
-            if (Color != null)
-                rect.Draw(spriteBatch, Color.Value);
+
+            absoluteRect = rect.CloneRect();
 
             if (Children.Count == 0)
                 return;
@@ -75,7 +75,7 @@
                 float width = c.Width >= 0 ? c.Width : -c.Width * fieldSize.X;
                 float height = c.Height >= 0 ? c.Height : -c.Height * fieldSize.Y;
                 Vector2 remainingSpace = fieldSize - new Vector2(width, height);
-                c.Draw(spriteBatch, new Rect(pos + remainingSpace * c.Anchor, new Vector2(width, height)));
+                c.UpdateTree(new Rect(pos + remainingSpace * c.Anchor, new Vector2(width, height)));
 
                 if (i % Columns < Columns - 1)
                 {
@@ -121,6 +121,12 @@
             }
 
             return max;
+        }
+
+        protected override void DrawSelf(SpriteBatch spriteBatch)
+        {
+            if (Color != null)
+                absoluteRect.Draw(spriteBatch, Color.Value);
         }
     }
 }

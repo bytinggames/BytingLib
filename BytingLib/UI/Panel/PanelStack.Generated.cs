@@ -4,7 +4,7 @@ namespace BytingLib.UI
 	public partial class PanelStack
 	{
 
-        private void DrawVertical(SpriteBatch spriteBatch, Vector2 pos, Vector2 contentSize, bool anyUnknownHeight, Rect rect)
+        private void UpdateTreeVertical(Vector2 pos, Vector2 contentSize, bool anyUnknownHeight, Rect rect)
         {
             float nullHeight = 0f;
             float maxWidthPercentage = Children.Max(f => -MathF.Min(0, f.Width));
@@ -22,7 +22,7 @@ namespace BytingLib.UI
                 float height = c.Height >= 0 ? c.Height : -c.Height * nullHeight;
                 float width = c.Width >= 0 ? c.Width : -c.Width * rect.Width / maxWidthPercentage;
                 float remainingWidth = rect.Width - width;
-                c.Draw(spriteBatch, new Rect(pos + new Vector2( remainingWidth * c.Anchor.X , 0f), new Vector2(width, height)));
+                c.UpdateTree(new Rect(pos + new Vector2( remainingWidth * c.Anchor.X , 0f), new Vector2(width, height)));
                 pos.Y += height + Gap;
             }
         }
@@ -52,7 +52,7 @@ namespace BytingLib.UI
             return new Vector2(width, height);
         }
 
-        private void DrawHorizontal(SpriteBatch spriteBatch, Vector2 pos, Vector2 contentSize, bool anyUnknownWidth, Rect rect)
+        private void UpdateTreeHorizontal(Vector2 pos, Vector2 contentSize, bool anyUnknownWidth, Rect rect)
         {
             float nullWidth = 0f;
             float maxHeightPercentage = Children.Max(f => -MathF.Min(0, f.Height));
@@ -70,7 +70,7 @@ namespace BytingLib.UI
                 float width = c.Width >= 0 ? c.Width : -c.Width * nullWidth;
                 float height = c.Height >= 0 ? c.Height : -c.Height * rect.Height / maxHeightPercentage;
                 float remainingHeight = rect.Height - height;
-                c.Draw(spriteBatch, new Rect(pos + new Vector2(0f , remainingHeight * c.Anchor.Y ), new Vector2(width, height)));
+                c.UpdateTree(new Rect(pos + new Vector2(0f , remainingHeight * c.Anchor.Y ), new Vector2(width, height)));
                 pos.X += width + Gap;
             }
         }

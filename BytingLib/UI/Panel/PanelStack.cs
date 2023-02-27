@@ -6,7 +6,7 @@
         public bool Vertical { get; set; }
         public float Gap { get; set; }
 
-        public PanelStack(bool vertical, Sides padding, float gap, Vector2 anchor, Color? color)
+        public PanelStack(bool vertical, Padding padding, float gap, Vector2 anchor, Color? color)
         {
             Vertical = vertical;
             Padding = padding;
@@ -15,7 +15,7 @@
             Color = color;
         }
 
-        public override void Draw(SpriteBatch spriteBatch, Rect parentRect)
+        public override void UpdateTree(Rect parentRect)
         {
             Vector2 pos = Anchor * parentRect.Size + parentRect.Pos;
             bool anyUnknownSize;
@@ -23,9 +23,7 @@
             Vector2 contentSizePlusPadding = contentSize + GetPaddingSize();
 
             Rect rect = new Anchor(pos, Anchor).Rectangle(contentSizePlusPadding);
-            if (Color != null)
-                rect.Draw(spriteBatch, Color.Value);
-
+            absoluteRect = rect.CloneRect();
 
             if (Children.Count == 0)
                 return;
@@ -35,9 +33,15 @@
             pos = rect.TopLeft;
 
             if (Vertical)
-                DrawVertical(spriteBatch, pos, contentSize, anyUnknownSize, rect);
+                UpdateTreeVertical(pos, contentSize, anyUnknownSize, rect);
             else
-                DrawHorizontal(spriteBatch, pos, contentSize, anyUnknownSize, rect);
+                UpdateTreeHorizontal(pos, contentSize, anyUnknownSize, rect);
+        }
+
+        protected override void DrawSelf(SpriteBatch spriteBatch)
+        {
+            if (Color != null)
+                absoluteRect.Draw(spriteBatch, Color.Value);
         }
     }
 }

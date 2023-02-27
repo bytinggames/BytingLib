@@ -3,10 +3,8 @@
     /// <summary>
     /// Keeps the aspect ratio and scales ui to fit the screen.
     /// </summary>
-    public class CanvasScale : Element, IDrawBatch
+    public class CanvasScale : Canvas, IDrawBatch
     {
-        private readonly Func<Rect> getRenderRect;
-
         private Rect defaultRect;
         public int DefaultResX => (int)defaultRect.Width;
         public int DefaultResY => (int)defaultRect.Height;
@@ -14,21 +12,32 @@
         public float MinAspectRatio { get; set; }
         public float MaxAspectRatio { get; set; }
         public CanvasScaling Scaling { get; set; } = CanvasScaling.Default;
-        public Color? ClearColor { get; set; }
 
-
-        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect)
+        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, MouseInput mouse)
+            : base(getRenderRect, mouse)
         {
             Width = defaultResX;
             Height = defaultResY;
             defaultRect = new Rect(0, 0, defaultResX, defaultResY);
-            this.getRenderRect = getRenderRect;
             float aspectRatio = (float)defaultResX / defaultResY;
             MinAspectRatio = aspectRatio;
             MaxAspectRatio = aspectRatio;
         }
 
-        protected virtual void SpriteBatchBegin(SpriteBatch spriteBatch, Rect renderRect, out float scaleCanvasRegion)
+        protected override ElementInput CreateElementInput(MouseInput mouse)
+        {
+            MouseTransformed mouseTransformed = new MouseTransformed(mouse.GetState, GetTransform);
+            MouseInput mouseNew = new MouseInput(mouseTransformed.GetState, () => mouse.IsActivatedThisFrame);
+
+            return new ElementInput(mouseNew, SetUpdateCatch);
+        }
+
+        private Matrix GetTransform()
+        {
+            return Transform;
+        }
+
+        protected virtual void UpdateTreeBegin(Rect renderRect, out float scaleCanvasRegion)
         {
             Vector2 scale2 = renderRect.Size / defaultRect.Size;
             float scale = MathF.Min(scale2.X, scale2.Y);
@@ -47,20 +56,16 @@
 
             Transform =
                 Matrix.CreateTranslation(new Vector3(-defaultRect.Size / 2f, 0f))
-                * Matrix.CreateScale(new Vector3(scale, scale, 0f))
+                * Matrix.CreateScale(new Vector3(scale, scale, 1f))
                 * Matrix.CreateTranslation(new Vector3(renderRect.Size / 2f, 0f));
 
-            spriteBatch.Begin(transformMatrix: Transform);
         }
 
-        public void DrawBatch(SpriteBatch spriteBatch)
+        public void UpdateTree()
         {
-            if (ClearColor != null)
-                spriteBatch.GraphicsDevice.Clear(ClearColor.Value);
-
             Rect renderRect = getRenderRect();
 
-            SpriteBatchBegin(spriteBatch, renderRect, out float scaleCanvasRegion);
+            UpdateTreeBegin(renderRect, out float scaleCanvasRegion);
 
             Rect rect = defaultRect.CloneRect();
 
@@ -92,17 +97,34 @@
             Width = rect.Width;
             Height = rect.Height;
 
+            absoluteRect = rect.CloneRect();
+
             for (int i = 0; i < Children.Count; i++)
             {
-                Children[i].Draw(spriteBatch, rect);
+                Children[i].UpdateTree(rect);
+            }
+        }
+        public void DrawBatch(SpriteBatch spriteBatch)
+        {
+            UpdateTree(); // TODO: only update tree when necessary
+
+            if (ClearColor != null)
+                spriteBatch.GraphicsDevice.Clear(ClearColor.Value);
+
+            spriteBatch.Begin(transformMatrix: Transform);
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].Draw(spriteBatch);
             }
 
             spriteBatch.End();
         }
 
-        public override void Draw(SpriteBatch spriteBatch, Rect parentRect)
+        protected override void UpdateSelf(ElementInput input)
         {
-            throw new BytingException("Call DrawBatch() instead");
+
+            UpdateTree(); // TODO: only update tree when necessary
         }
     }
 }

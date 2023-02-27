@@ -10,8 +10,6 @@ namespace BytingLib.UI
 	public partial class PanelStack
 	{
 <#
-	string output = "";
-
 	bool vertical = true;
 	do
 	{
@@ -24,7 +22,7 @@ namespace BytingLib.UI
 		string Y = vertical ? "Y" : "X";
 #>
 
-        private void Draw<#= vertical ? "Vertical" : "Horizontal" #>(SpriteBatch spriteBatch, Vector2 pos, Vector2 contentSize, bool anyUnknown<#=Height#>, Rect rect)
+        private void UpdateTree<#= vertical ? "Vertical" : "Horizontal" #>(Vector2 pos, Vector2 contentSize, bool anyUnknown<#=Height#>, Rect rect)
         {
             float null<#=Height#> = 0f;
             float max<#=Width#>Percentage = Children.Max(f => -MathF.Min(0, f.<#=Width#>));
@@ -42,7 +40,7 @@ namespace BytingLib.UI
                 float <#=height#> = c.<#=Height#> >= 0 ? c.<#=Height#> : -c.<#=Height#> * null<#=Height#>;
                 float <#=width#> = c.<#=Width#> >= 0 ? c.<#=Width#> : -c.<#=Width#> * rect.<#=Width#> / max<#=Width#>Percentage;
                 float remaining<#=Width#> = rect.<#=Width#> - <#=width#>;
-                c.Draw(spriteBatch, new Rect(pos + new Vector2(<#= vertical ? "" : "0f ," #> remaining<#=Width#> * c.Anchor.<#=X#> <#= vertical ? ", 0f" : "" #>), new Vector2(width, height)));
+                c.UpdateTree(new Rect(pos + new Vector2(<#= vertical ? "" : "0f ," #> remaining<#=Width#> * c.Anchor.<#=X#> <#= vertical ? ", 0f" : "" #>), new Vector2(width, height)));
                 pos.<#=Y#> += <#=height#> + Gap;
             }
         }
