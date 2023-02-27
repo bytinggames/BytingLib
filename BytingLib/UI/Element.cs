@@ -13,21 +13,21 @@
 
         public abstract void Draw(SpriteBatch spriteBatch, Rect parentRect);
 
-        public float GetWidth()
+        public float GetInnerWidth()
         {
             if (Width >= 0)
                 return Width - GetPaddingSize().X;
             if (Parent != null)
-                return -Width * Parent.GetWidth() - GetPaddingSize().X;
+                return -Width * Parent.GetInnerWidth() - GetPaddingSize().X;
             throw new BytingException("Width can't be null, when there is no parent");
         }
 
-        public float GetHeight()
+        public float GetInnerHeight()
         {
             if (Height >= 0)
                 return Height - GetPaddingSize().Y;
             if (Parent != null)
-                return -Height * Parent.GetHeight() - GetPaddingSize().Y;
+                return -Height * Parent.GetInnerHeight() - GetPaddingSize().Y;
             throw new BytingException("Height can't be null, when there is no parent");
         }
 

@@ -34,13 +34,13 @@ namespace BytingLib.UI
 
         private Vector2 GetContentSizeVertical(out bool anyUnknownHeight)
         {
-            float width = Children.Count == 0 ? 0 : Children.Max(f => f.GetWidth());
+            float width = Children.Count == 0 ? 0 : Children.Max(f => f.GetInnerWidth());
             float height;
 
             if (Children.Any(f => f.Height < 0))
             {
                 // take 100% height
-                height = GetHeight();
+                height = GetInnerHeight();
                 anyUnknownHeight = true;
             }
             else
@@ -82,13 +82,13 @@ namespace BytingLib.UI
 
         private Vector2 GetContentSizeHorizontal(out bool anyUnknownWidth)
         {
-            float height = Children.Count == 0 ? 0 : Children.Max(f => f.GetHeight());
+            float height = Children.Count == 0 ? 0 : Children.Max(f => f.GetInnerHeight());
             float width;
 
             if (Children.Any(f => f.Width < 0))
             {
                 // take 100% width
-                width = GetWidth();
+                width = GetInnerWidth();
                 anyUnknownWidth = true;
             }
             else

@@ -54,13 +54,13 @@ namespace BytingLib.UI
 
         private Vector2 GetContentSize<#=Vertical#>(out bool anyUnknown<#=Height#>)
         {
-            float <#=width#> = Children.Count == 0 ? 0 : Children.Max(f => f.Get<#=Width#>());
+            float <#=width#> = Children.Count == 0 ? 0 : Children.Max(f => f.GetInner<#=Width#>());
             float <#=height#>;
 
             if (Children.Any(f => f.<#=Height#> < 0))
             {
                 // take 100% <#=height#>
-                <#=height#> = Get<#=Height#>();
+                <#=height#> = GetInner<#=Height#>();
                 anyUnknown<#=Height#> = true;
             }
             else
