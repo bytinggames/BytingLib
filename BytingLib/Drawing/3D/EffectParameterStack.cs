@@ -19,7 +19,9 @@
             this.effect = effect;
 
             if (_default != null)
-                valueStack.Push(_default);
+            {
+                PushAndSetDirty(_default);
+            }
         }
 
         public EffectParameterStack(Ref<Effect> effect, string parameter)
@@ -81,10 +83,8 @@
             IDisposable? d1 = null;
             if (!IsEqualToPeek(val))
             {
-                valueStack.Push(val);
-
-                dirty = true;
-                d1 = new OnDispose(() => { valueStack.Pop(); dirty = true; });
+                PushAndSetDirty(val);
+                d1 = new OnDispose(PopAndSetDirty);
             }
 
             if (useChain != null)
@@ -107,10 +107,9 @@
             bool valChanged = false;
             if (!IsEqualToPeek(val))
             {
-                valueStack.Push(val);
+                PushAndSetDirty(val);
 
                 valChanged = true;
-                dirty = true;
             }
 
             if (useChain != null)
@@ -128,10 +127,7 @@
             actionWhile();
 
             if (valChanged)
-            {
-                valueStack.Pop();
-                dirty = true;
-            }
+                PopAndSetDirty();
         }
 
         private bool IsEqualToPeek(T? val)
@@ -154,6 +150,17 @@
         {
             valueStack.TryPeek(out T? t);
             return t;
+        }
+
+        private void PushAndSetDirty(T val)
+        {
+            valueStack.Push(val);
+            dirty = true;
+        }
+        private void PopAndSetDirty()
+        {
+            valueStack.Pop();
+            dirty = true;
         }
     }
 }
