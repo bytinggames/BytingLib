@@ -14,7 +14,15 @@ namespace BytingLib
 
         public DefaultPaths()
         {
+#if OSX
+            // if on OSX, set current directory to Resources path which is above Content directory. But NOT the directory that contains the application
+            Environment.CurrentDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "Resources"));
+            // if on OSX, store appdata stuff in Resources directory inside th .app bundle
+            string appDataDir = Path.Combine(Environment.CurrentDirectory, "AppData");
+            Directory.CreateDirectory(appDataDir);
+#else
             string appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+#endif
             string? gameName = Assembly.GetEntryAssembly()?.GetName().Name;
             if (gameName == null)
                 throw new BytingException("couldn't read game name");
