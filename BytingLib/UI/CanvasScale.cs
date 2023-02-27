@@ -6,7 +6,6 @@
     public class CanvasScale : Element, IDrawBatch
     {
         private readonly Func<Rect> getRenderRect;
-        private readonly Color? clearColor;
 
         private Rect defaultRect;
         public int DefaultResX => (int)defaultRect.Width;
@@ -14,23 +13,37 @@
         public Matrix Transform { get; private set; }
         public float MinAspectRatio { get; set; }
         public float MaxAspectRatio { get; set; }
+        public CanvasScaling Scaling { get; set; } = CanvasScaling.Default;
+        public Color? ClearColor { get; set; }
 
-        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, float? minAspectRatio = null, float? maxAspectRatio = null, Color? clearColor = null)
+
+        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect)
         {
             Width = defaultResX;
             Height = defaultResY;
             defaultRect = new Rect(0, 0, defaultResX, defaultResY);
             this.getRenderRect = getRenderRect;
             float aspectRatio = (float)defaultResX / defaultResY;
-            MinAspectRatio = minAspectRatio ?? aspectRatio;
-            MaxAspectRatio = maxAspectRatio ?? aspectRatio;
-            this.clearColor = clearColor;
+            MinAspectRatio = aspectRatio;
+            MaxAspectRatio = aspectRatio;
         }
 
-        protected virtual void SpriteBatchBegin(SpriteBatch spriteBatch, Rect renderRect)
+        protected virtual void SpriteBatchBegin(SpriteBatch spriteBatch, Rect renderRect, out float scaleCanvasRegion)
         {
             Vector2 scale2 = renderRect.Size / defaultRect.Size;
             float scale = MathF.Min(scale2.X, scale2.Y);
+            scaleCanvasRegion = 1f;
+            if (Scaling == CanvasScaling.PixelArt
+                || Scaling == CanvasScaling.PixelArtResponsiveCanvas)
+            {
+                if (scale > 1f)
+                {
+                    float newScale = MathF.Floor(scale);
+                    if (Scaling == CanvasScaling.PixelArtResponsiveCanvas)
+                        scaleCanvasRegion = scale / newScale;
+                    scale = newScale;
+                }
+            }
 
             Transform =
                 Matrix.CreateTranslation(new Vector3(-defaultRect.Size / 2f, 0f))
@@ -42,15 +55,14 @@
 
         public void DrawBatch(SpriteBatch spriteBatch)
         {
-            if (clearColor != null)
-                spriteBatch.GraphicsDevice.Clear(clearColor.Value);
+            if (ClearColor != null)
+                spriteBatch.GraphicsDevice.Clear(ClearColor.Value);
 
             Rect renderRect = getRenderRect();
 
-            SpriteBatchBegin(spriteBatch, renderRect);
+            SpriteBatchBegin(spriteBatch, renderRect, out float scaleCanvasRegion);
 
             Rect rect = defaultRect.CloneRect();
-            //Vector2 scale2 = renderRect.Size / defaultRect.Size;
 
             float renderAspectRatio = renderRect.Width / renderRect.Height;
             renderAspectRatio = Math.Clamp(renderAspectRatio, MinAspectRatio, MaxAspectRatio);
@@ -68,6 +80,13 @@
                 float newHeight = rect.Height * (1f / aspectRatioScale);
                 rect.Y -= (newHeight - rect.Height) / 2f;
                 rect.Height = newHeight;
+            }
+
+            if (scaleCanvasRegion != 1f)
+            {
+                Vector2 newSize = rect.Size * scaleCanvasRegion;
+                rect.Pos -= (newSize - rect.Size) / 2f;
+                rect.Size = newSize;
             }
 
             Width = rect.Width;
