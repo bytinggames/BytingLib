@@ -22,7 +22,7 @@ namespace BytingLib
 
             var converters = new Dictionary<Type, Func<string, object>>()
             {
-                { typeof(Color), str => ColorExtension.HexToColor(str) }
+                { typeof(Color), str => ColorExtension.FromHex(str) }
             };
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, null, typeof(MarkupShortcutAttribute), converters);
 

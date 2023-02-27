@@ -143,7 +143,7 @@ namespace BytingLib
         }
 
         static readonly CultureInfo hexToColorCultureInfo = new CultureInfo("en-GB");
-        public static Color HexToColor(string hex)
+        public static Color FromHex(string hex)
         {
             if (string.IsNullOrEmpty(hex)
                 || (hex.Length != 1 && hex.Length != 3 && hex.Length != 4 && hex.Length != 6 && hex.Length != 8))
@@ -165,7 +165,7 @@ namespace BytingLib
 
             return new Color(r, g, b, a);
         }
-        public static Color HexToColor(int hex)
+        public static Color FromHex(int hex)
         {
             int r = (hex & 0xff0000) >> 16;
             int g = (hex & 0x00ff00) >> 8;

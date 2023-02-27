@@ -13,20 +13,20 @@
         public MarkupOutline(Creator creator, string hexColor, string text)
             : base(creator, text)
         {
-            color = ColorExtension.HexToColor(hexColor);
+            color = ColorExtension.FromHex(hexColor);
             thickness = 1f;
         }
         public MarkupOutline(Creator creator, string hexColor, float thickness, string text)
             : base(creator, text)
         {
-            color = ColorExtension.HexToColor(hexColor);
+            color = ColorExtension.FromHex(hexColor);
             this.thickness = thickness;
         }
 
         public MarkupOutline(Creator creator, string hexColor, float thickness, int quality, string text)
             : base(creator, text)
         {
-            color = ColorExtension.HexToColor(hexColor);
+            color = ColorExtension.FromHex(hexColor);
             this.thickness = thickness;
             this.quality = quality;
         }

@@ -8,7 +8,7 @@
         public MarkupColor(Creator creator, string hexColor, string text)
             :base(creator, text)
         {
-            textColor = ColorExtension.HexToColor(hexColor);
+            textColor = ColorExtension.FromHex(hexColor);
         }
 
         public override string ToString()

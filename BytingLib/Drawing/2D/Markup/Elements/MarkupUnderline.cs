@@ -12,19 +12,19 @@
         public MarkupUnderline(Creator creator, string hexColor, string text)
             : base(creator, text)
         {
-            color = ColorExtension.HexToColor(hexColor);
+            color = ColorExtension.FromHex(hexColor);
             thickness = 1f;
         }
         public MarkupUnderline(Creator creator, string hexColor, float thickness, string text)
             : base(creator, text)
         {
-            color = ColorExtension.HexToColor(hexColor);
+            color = ColorExtension.FromHex(hexColor);
             this.thickness = thickness;
         }
         public MarkupUnderline(Creator creator, string hexColor, float thickness, float offset, string text)
             : base(creator, text)
         {
-            color = ColorExtension.HexToColor(hexColor);
+            color = ColorExtension.FromHex(hexColor);
             this.thickness = thickness;
             this.offset = offset;
         }
