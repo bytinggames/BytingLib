@@ -1,0 +1,80 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Runtime.InteropServices" #>
+<#@ output extension=".cs" #>
+
+namespace BytingLib.UI
+{
+	public partial class PanelStack
+	{
+<#
+	string output = "";
+
+	bool vertical = true;
+	do
+	{
+		string Vertical = vertical ? "Vertical" : "Horizontal";
+		string Height = vertical ? "Height" : "Width";
+		string Width = vertical ? "Width" : "Height";
+		string height = vertical ? "height" : "width";
+		string width = vertical ? "width" : "height";
+		string X = vertical ? "X" : "Y";
+		string Y = vertical ? "Y" : "X";
+#>
+
+        private void Draw<#= vertical ? "Vertical" : "Horizontal" #>(SpriteBatch spriteBatch, Vector2 pos, Vector2 contentSize, bool anyUnknown<#=Height#>, Rect rect)
+        {
+            float null<#=Height#> = 0f;
+            float max<#=Width#>Percentage = Children.Max(f => -MathF.Min(0, f.<#=Width#>));
+            if (anyUnknown<#=Height#>)
+            {
+                float auto<#=Height#>Sum = Children.Sum(f => -MathF.Min(0, f.<#=Height#>));
+                float fixed<#=Height#> = GetFixed<#=Height#>();
+                float remaining<#=Height#> = contentSize.<#=Y#> - fixed<#=Height#>;
+                null<#=Height#> = remaining<#=Height#> / auto<#=Height#>Sum;
+            }
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                var c = Children[i];
+                float <#=height#> = c.<#=Height#> >= 0 ? c.<#=Height#> : -c.<#=Height#> * null<#=Height#>;
+                float <#=width#> = c.<#=Width#> >= 0 ? c.<#=Width#> : -c.<#=Width#> * rect.<#=Width#> / max<#=Width#>Percentage;
+                float remaining<#=Width#> = rect.<#=Width#> - <#=width#>;
+                c.Draw(spriteBatch, new Rect(pos + new Vector2(<#= vertical ? "" : "0f ," #> remaining<#=Width#> * c.Anchor.<#=X#> <#= vertical ? ", 0f" : "" #>), new Vector2(width, height)));
+                pos.<#=Y#> += <#=height#> + Gap;
+            }
+        }
+
+        private float GetFixed<#=Height#>()
+        {
+            return Children.Sum(f => MathF.Max(0f, f.<#=Height#>)) + Gap * (Children.Count - 1);
+        }
+
+        private Vector2 GetContentSize<#=Vertical#>(out bool anyUnknown<#=Height#>)
+        {
+            float <#=width#> = Children.Count == 0 ? 0 : Children.Max(f => f.Get<#=Width#>());
+            float <#=height#>;
+
+            if (Children.Any(f => f.<#=Height#> < 0))
+            {
+                // take 100% <#=height#>
+                <#=height#> = Get<#=Height#>();
+                anyUnknown<#=Height#> = true;
+            }
+            else
+            {
+                <#=height#> = GetFixed<#=Height#>();
+                anyUnknown<#=Height#> = false;
+            }
+
+            return new Vector2(width, height);
+        }
+<#
+
+		vertical = !vertical;
+	} while (!vertical);
+#>
+	}
+}

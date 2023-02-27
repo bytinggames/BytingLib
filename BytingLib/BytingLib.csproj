@@ -33,6 +33,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>_GenerateContentFiles.tt.remove</DependentUpon>
     </None>
+    <None Update="UI\PanelStack.Generated.tt">
+      <LastGenOutput>PanelStack.Generated.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -45,6 +49,19 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.2" />
     <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.2.0" />
     <PackageReference Include="TextCopy" Version="6.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="UI\PanelStack.Generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PanelStack.Generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="UI\_GenerateContentFiles.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_GenerateContentFiles.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>
