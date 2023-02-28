@@ -99,34 +99,7 @@
             return myRect;
         }
 
-        //protected static Rect GetChildRect(Vector2 pos, Vector2 fieldSize, Element c)
-        //{
-        //    float width = c.Width >= 0 ? c.Width : -c.Width * fieldSize.X;
-        //    float height = c.Height >= 0 ? c.Height : -c.Height * fieldSize.Y;
-        //    Vector2 remainingSpace = fieldSize - new Vector2(width, height);
-        //    Rect r = new Rect(pos + remainingSpace * c.Anchor, new Vector2(width, height));
-        //    return r;
-        //}
-
-        public float GetInnerWidth()
-        {
-            if (Width >= 0)
-                return Width - GetPaddingSize().X;
-            if (Parent != null)
-                return -Width * Parent.GetInnerWidth() - GetPaddingSize().X;
-            throw new BytingException("Width can't be null, when there is no parent");
-        }
-
-        public float GetInnerHeight()
-        {
-            if (Height >= 0)
-                return Height - GetPaddingSize().Y;
-            if (Parent != null)
-                return -Height * Parent.GetInnerHeight() - GetPaddingSize().Y;
-            throw new BytingException("Height can't be null, when there is no parent");
-        }
-
-        public float GetWidthTopToBottom()
+        public virtual float GetWidthTopToBottom()
         {
             if (Width < 0)
                 return -1;
@@ -136,7 +109,7 @@
                 return 0f;
             return Children.Max(f => f.GetWidthTopToBottom()) + (Padding == null ? 0f : Padding.Width);
         }
-        public float GetHeightTopToBottom()
+        public virtual float GetHeightTopToBottom()
         {
             if (Height < 0)
                 return -1;

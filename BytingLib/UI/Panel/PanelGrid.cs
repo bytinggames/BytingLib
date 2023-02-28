@@ -21,15 +21,9 @@
         public override void UpdateTree(Rect parentRect)
         {
             Vector2 pos = Anchor * parentRect.Size + parentRect.Pos;
+            Vector2 fieldSize, contentSizePlusPadding;
 
-            Vector2 fieldSize = GetMaxChildSize();
-
-            int columnsTaken = Math.Min(Columns, Children.Count);
-            int rowsTaken = GetRowsTaken();
-            Vector2 contentSize = new Vector2(
-                columnsTaken * fieldSize.X + (columnsTaken - 1) * Gap,
-                rowsTaken * fieldSize.Y + (rowsTaken - 1) * Gap);
-            Vector2 contentSizePlusPadding = contentSize + GetPaddingSize();
+            GetSize(out fieldSize, out contentSizePlusPadding);
 
             Rect rect = new Anchor(pos, Anchor).Rectangle(contentSizePlusPadding);
 
@@ -91,6 +85,17 @@
             }
         }
 
+        private void GetSize(out Vector2 fieldSize, out Vector2 contentSizePlusPadding)
+        {
+            fieldSize = GetMaxChildSize();
+            int columnsTaken = Math.Min(Columns, Children.Count);
+            int rowsTaken = GetRowsTaken();
+            Vector2 contentSize = new Vector2(
+                columnsTaken * fieldSize.X + (columnsTaken - 1) * Gap,
+                rowsTaken * fieldSize.Y + (rowsTaken - 1) * Gap);
+            contentSizePlusPadding = contentSize + GetPaddingSize();
+        }
+
         private int GetRowsTaken()
         {
             return (int)MathF.Ceiling((float)Children.Count / Columns);
@@ -119,14 +124,25 @@
             }
 
             if (allWidthNegative)
-                max.X = (GetInnerWidth() - Gap * (Columns - 1)) / Columns;
+                max.X = (GetWidthTopToBottom() - Gap * (Columns - 1)) / Columns;
             if (allHeightNegative)
             {
                 int rowsTaken = GetRowsTaken();
-                max.Y = (GetInnerHeight() - Gap * (rowsTaken - 1)) / rowsTaken;
+                max.Y = (GetHeightTopToBottom() - Gap * (rowsTaken - 1)) / rowsTaken;
             }
 
             return max;
+        }
+
+        public override float GetHeightTopToBottom()
+        {
+            GetSize(out _, out Vector2 contentSizePlusPadding);
+            return contentSizePlusPadding.Y;
+        }
+        public override float GetWidthTopToBottom()
+        {
+            GetSize(out _, out Vector2 contentSizePlusPadding);
+            return contentSizePlusPadding.X;
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, Style style)
