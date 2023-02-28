@@ -3,13 +3,16 @@
     public class Button : Label
     {
         private readonly Action clickAction;
+        private readonly Animation animation;
         private bool hover;
         private bool down;
+        public Vector2 TextShiftOnDown { get; set; } = Vector2.One;
 
-        public Button(string text, Ref<SpriteFont> font /* TODO: probably should be in a style class */, Action clickAction)
+        public Button(string text, Ref<SpriteFont> font /* TODO: probably should be in a style class */, Action clickAction, Animation animation)
             : base(text, font)
         {
             this.clickAction = clickAction;
+            this.animation = animation;
         }
 
         protected override void UpdateSelf(ElementInput input)
@@ -43,12 +46,17 @@
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
-            if (hover)
-                absoluteRect.Draw(spriteBatch, Color.White * 0.5f);
+            int frameIndex = 0;
             if (down)
-                absoluteRect.Draw(spriteBatch, Color.White * 0.5f);
+                frameIndex = 2;
+            else if (hover)
+                frameIndex = 1;
+            animation.DrawSliced(spriteBatch, frameIndex, absoluteRect);
 
-            base.DrawSelf(spriteBatch);
+            Anchor textAnchor = absoluteRect.GetCenterAnchor();
+            if (down)
+                textAnchor.pos += TextShiftOnDown;
+            font.Value.Draw(spriteBatch, text, textAnchor, Color.Black);
         }
     }
 }

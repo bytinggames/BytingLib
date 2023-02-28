@@ -84,6 +84,21 @@ namespace BytingLib
             throw new Exception();
         }
 
+        /// <summary>
+        /// Clamps on &lt; 0 and wraps on &gt;= frame count
+        /// </summary>
+        public Rectangle? GetSourceRectangle(int frameIndex)
+        {
+            if (frames == null)
+                return null;
+
+            if (frameIndex < 0)
+                frameIndex = 0;
+            else
+                frameIndex %= frames.Count;
+            return frames.Values.Skip(frameIndex).First().rectangle;
+        }
+
         public Meta.FrameTag GetFrameTag(string animationTagName)
         {
             if (meta == null)
@@ -126,8 +141,9 @@ namespace BytingLib
 
         public class Meta
         {
-            public List<FrameTag>? frameTags { get; set; }
+            public FrameTag[]? frameTags { get; set; }
             public Dictionary<string, FrameTag>? frameTagsDictionary { get; private set; }
+            public Slice[]? slices { get; set; }
 
             internal void InitializeFrameTagsDictionary()
             {
@@ -138,16 +154,28 @@ namespace BytingLib
                 }
             }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
             public class FrameTag
             {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
                 public string name { get; set; }
                 public int from { get; set; }
                 public int to { get; set; }
                 public string direction { get; set; }
                 public int TotalDuration { get; set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
             }
+
+            public class Slice
+            {
+                public string name { get; set; }
+                public Key[] keys { get; set; }
+
+                public class Key
+                {
+                    public int frame { get; set; }
+                    public _Rect bounds { get; set; }
+                }
+            }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         }
 
 

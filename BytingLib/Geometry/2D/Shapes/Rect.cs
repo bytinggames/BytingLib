@@ -24,19 +24,15 @@
         {
             Initialize(rect.pos, rect.Size);
         }
-        public Rect(Vector2 pos, Vector2 size, Vector2 originNormalized, bool round = false)
+        public Rect(Vector2 pos, Vector2 size, Vector2 originNormalized)
         {
             pos -= size * originNormalized;
-            if (round)
-                pos = pos.GetRound();
             Initialize(pos, size);
         }
-        public Rect(float x, float y, float width, float height, float originNormalizedX, float originNormalizedY, bool round = false)
+        public Rect(float x, float y, float width, float height, float originNormalizedX, float originNormalizedY)
         {
             Vector2 size = new Vector2(width, height);
             Vector2 pos = new Vector2(x, y) - size * new Vector2(originNormalizedX, originNormalizedY);
-            if (round)
-                pos = pos.GetRound();
             Initialize(pos, size);
         }
 
@@ -358,6 +354,22 @@
                 vertices[i] = Vector2.Transform(vertices[i], matrix);
             }
             return FromPoints(vertices)!;
+        }
+
+        public Rect Round()
+        {
+            Vector2 bottomRight = BottomRight.GetRound();
+            pos.Round();
+            Size = bottomRight - pos;
+            return this;
+        }
+
+        internal Rect RoundToLarger()
+        {
+            Vector2 bottomRight = BottomRight.GetCeil();
+            pos.Floor();
+            Size = bottomRight - pos;
+            return this;
         }
     }
 

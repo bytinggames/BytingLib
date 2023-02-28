@@ -51,12 +51,19 @@
             for (int i = 0; i < Children.Count; i++)
             {
                 var c = Children[i];
-                Vector2 size = new Vector2(c.Width >= 0 ? c.Width : -c.Width * rect.Width, c.Height >= 0 ? c.Height : -c.Height * rect.Height);
-                Vector2 pos = c.Anchor * rect.Size + rect.Pos;
+                if (c.Width == -1 && c.Height == -1) // shortcut. no need to calculate that stuff in else
+                {
+                    Children[i].UpdateTree(rect);
+                }
+                else
+                {
+                    Vector2 size = new Vector2(c.Width >= 0 ? c.Width : -c.Width * rect.Width, c.Height >= 0 ? c.Height : -c.Height * rect.Height);
+                    Vector2 pos = c.Anchor * rect.Size + rect.Pos;
 
-                Rect myRect = new Anchor(pos, c.Anchor).Rectangle(size);
+                    Rect myRect = new Anchor(pos, c.Anchor).Rectangle(size);
 
-                Children[i].UpdateTree(myRect);
+                    Children[i].UpdateTree(myRect);
+                }
             }
         }
 

@@ -2,8 +2,8 @@
 {
     public class Label : Element
     {
-        private readonly string text;
-        private readonly Ref<SpriteFont> font;
+        protected readonly string text;
+        protected readonly Ref<SpriteFont> font;
 
         public Label(string text, Ref<SpriteFont> font /* TODO: probably should be in a style class */)
         {

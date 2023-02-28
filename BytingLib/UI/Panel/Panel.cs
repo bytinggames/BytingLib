@@ -4,7 +4,7 @@
     {
         public Color? Color { get; }
 
-        public Panel(float width, float height, Color? color, Vector2? anchor = null, Padding? padding = null)
+        public Panel(float width, float height, Color? color = null, Vector2? anchor = null, Padding? padding = null)
         {
             Width = width;
             Height = height;

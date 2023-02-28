@@ -86,18 +86,18 @@
             return new Anchor(x, y, 1f, 0f);
         }
 
-        public Rect Rectangle(float sizeXY, bool round = true)
+        public Rect Rectangle(float sizeXY)
         {
-            return new Rect(X, Y, sizeXY, sizeXY, OX, OY, round);
+            return new Rect(X, Y, sizeXY, sizeXY, OX, OY);
         }
-        public Rect Rectangle(Vector2 size, bool round = true)
+        public Rect Rectangle(Vector2 size)
         {
-            return new Rect(X, Y, size.X, size.Y, OX, OY, round);
+            return new Rect(X, Y, size.X, size.Y, OX, OY);
         }
 
-        public Rect Rectangle(float width, float height, bool round = true)
+        public Rect Rectangle(float width, float height)
         {
-            return new Rect(X, Y, width, height, OX, OY, round);
+            return new Rect(X, Y, width, height, OX, OY);
         }
 
         public Anchor Clone()
