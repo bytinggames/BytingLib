@@ -439,7 +439,7 @@
 
         public static void Draw(this Texture2D _texture, SpriteBatch spriteBatch, Rect _rectangle, Color? _color = null, Rectangle? _sourceRectangle = null, float _rotation = 0f, SpriteEffects _effects = SpriteEffects.None, float? depth = null)
         {
-            Vector2 scale = _rectangle.Size / _texture.GetSize();
+            Vector2 scale = _rectangle.Size / (_sourceRectangle == null ? _texture.GetSize() : _sourceRectangle.Value.Size.ToVector2());
             _texture.Draw(spriteBatch, _rectangle.Pos, _color, _sourceRectangle, scale, _rotation, _effects, depth);
         }
 
