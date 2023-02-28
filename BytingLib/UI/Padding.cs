@@ -12,6 +12,20 @@
             Left = Right = Top = Bottom = padding;
         }
 
+        public Padding(float paddingX, float paddingY)
+        {
+            Left = Right = paddingX;
+            Top = Bottom = paddingY;
+        }
+
+        public Padding(float left, float top, float right, float bottom)
+        {
+            Left = left;
+            Top = top;
+            Right = right;
+            Bottom = bottom;
+        }
+
         public void RemoveFromRect(Rect rect)
         {
             rect.Width -= Right + Left;
@@ -32,5 +46,8 @@
         {
             return new Vector2(Left + Right, Top + Bottom);
         }
+
+        public float Width => Left + Right;
+        public float Height => Top + Bottom;
     }
 }

@@ -72,10 +72,8 @@
             for (int i = 0; i < Children.Count; i++)
             {
                 var c = Children[i];
-                float width = c.Width >= 0 ? c.Width : -c.Width * fieldSize.X;
-                float height = c.Height >= 0 ? c.Height : -c.Height * fieldSize.Y;
-                Vector2 remainingSpace = fieldSize - new Vector2(width, height);
-                c.UpdateTree(new Rect(pos + remainingSpace * c.Anchor, new Vector2(width, height)));
+                Rect r = GetChildRect(new Rect(pos, fieldSize), c);
+                c.UpdateTree(r);
 
                 if (i % Columns < Columns - 1)
                 {
@@ -103,16 +101,19 @@
             Vector2 max = Vector2.Zero;
             bool allWidthNegative = true;
             bool allHeightNegative = true;
+
             for (int i = 0; i < Children.Count; i++)
             {
-                if (Children[i].Width >= max.X)
+                float w = Children[i].GetWidthTopToBottom();
+                if (w >= max.X)
                 {
-                    max.X = Children[i].Width;
+                    max.X = w;
                     allWidthNegative = false;
                 }
-                if (Children[i].Height > max.Y)
+                float h = Children[i].GetHeightTopToBottom();
+                if (h >= max.Y)
                 {
-                    max.Y = Children[i].Height;
+                    max.Y = h;
                     allHeightNegative = false;
                 }
             }

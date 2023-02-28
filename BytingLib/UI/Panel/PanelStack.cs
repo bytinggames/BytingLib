@@ -6,7 +6,7 @@
         public bool Vertical { get; set; }
         public float Gap { get; set; }
 
-        public PanelStack(bool vertical, Padding padding, float gap, Vector2 anchor, Color? color)
+        public PanelStack(bool vertical, Padding? padding, float gap, Vector2 anchor, Color? color)
         {
             Vertical = vertical;
             Padding = padding;

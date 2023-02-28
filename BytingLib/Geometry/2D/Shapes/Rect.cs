@@ -364,12 +364,28 @@
             return this;
         }
 
-        internal Rect RoundToLarger()
+        public Rect RoundToLarger()
         {
             Vector2 bottomRight = BottomRight.GetCeil();
             pos.Floor();
             Size = bottomRight - pos;
             return this;
+        }
+
+        public void ShrinkToAspectRatio(float aspectRatio, Vector2 anchor)
+        {
+            float targetHeight = Width / aspectRatio;
+            if (targetHeight < Height)
+            {
+                pos.Y += (Height - targetHeight) * anchor.Y;
+                Height = targetHeight;
+            }
+            else
+            {
+                float targetWidth = Height * aspectRatio;
+                pos.X += (targetWidth - Width) * anchor.X;
+                Width = targetWidth;
+            }
         }
     }
 

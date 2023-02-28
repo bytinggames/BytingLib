@@ -1,6 +1,6 @@
 ﻿namespace BytingLib.UI
 {
-    public class Button : Label
+    public class Button : Element
     {
         private readonly Action clickAction;
         private bool hover;
@@ -19,16 +19,25 @@
                 disabled = value;
             }
         }
-        public Vector2 TextShiftOnDown { get; set; } = Vector2.One;
+        public Vector2 ChildrenShiftOnDown { get; set; } = Vector2.One;
 
-        public Button(string text, Action clickAction, float width = -1f, float height = -1f, Vector2? anchor = null)
-            : base(text)
+        public Button(Action clickAction, float width = -1f, float height = -1f, Vector2? anchor = null, Padding? padding = null)
         {
             this.clickAction = clickAction;
             Width = width;
             Height = height;
             if (anchor != null)
                 Anchor = anchor.Value;
+            Padding = padding;
+        }
+
+        public Button AutoPadding(Style style)
+        {
+            var b = style.ButtonAnimation.Data.Value.meta!.slices![0].keys[0].bounds;
+            var f = style.ButtonAnimation.Data.Value.frames!.First().Value.rectangle;
+            Padding = new Padding(b.x, b.y, f.Width - b.x - b.w, f.Height - b.y - b.h);
+
+            return this;
         }
 
         protected override void UpdateSelf(ElementInput input)
@@ -65,6 +74,12 @@
             }
         }
 
+        protected override void UpdateTreeModifyRect(Rect rect)
+        {
+            if (down)
+                rect.Pos += ChildrenShiftOnDown;
+        }
+
         protected override void DrawSelf(SpriteBatch spriteBatch, Style style)
         {
             int frameIndex;
@@ -80,11 +95,6 @@
                     frameIndex = 0;
             }
             style.ButtonAnimation.DrawSliced(spriteBatch, frameIndex, absoluteRect);
-
-            Anchor textAnchor = absoluteRect.GetCenterAnchor();
-            if (down)
-                textAnchor.pos += TextShiftOnDown;
-            style.Font.Value.Draw(spriteBatch, text, textAnchor, style.ButtonFontColor[frameIndex], roundPositionTo: 1);
         }
     }
 }
