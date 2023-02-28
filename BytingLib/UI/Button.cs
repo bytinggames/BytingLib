@@ -56,7 +56,7 @@
             Anchor textAnchor = absoluteRect.GetCenterAnchor();
             if (down)
                 textAnchor.pos += TextShiftOnDown;
-            font.Value.Draw(spriteBatch, text, textAnchor, Color.Black);
+            font.Value.Draw(spriteBatch, text, textAnchor, Color.Black, roundPositionTo: 1);
         }
     }
 }

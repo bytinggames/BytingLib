@@ -46,7 +46,7 @@
 
         public virtual void UpdateTree(Rect rect)
         {
-            absoluteRect = rect.CloneRect();
+            absoluteRect = rect.CloneRect().Round();
 
             for (int i = 0; i < Children.Count; i++)
             {

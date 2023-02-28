@@ -52,7 +52,7 @@ namespace BytingLib
                 Vector2 drawPos = pos - shift;
 
                 if (roundPositionTo == 1f)
-                    drawPos.Round();
+                    drawPos = (drawPos - new Vector2(0.1f) /* to prevent 0.5 twitching */).GetRound();
                 else
                     drawPos = (drawPos / roundPositionTo).GetRound() * roundPositionTo;
 

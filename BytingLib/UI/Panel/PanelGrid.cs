@@ -33,7 +33,7 @@
 
             Rect rect = new Anchor(pos, Anchor).Rectangle(contentSizePlusPadding);
 
-            absoluteRect = rect.CloneRect();
+            absoluteRect = rect.CloneRect().Round();
 
             if (Children.Count == 0)
                 return;

@@ -97,7 +97,7 @@
             Width = rect.Width;
             Height = rect.Height;
 
-            absoluteRect = rect.CloneRect();
+            absoluteRect = rect.CloneRect().Round();
 
             for (int i = 0; i < Children.Count; i++)
             {
