@@ -9,7 +9,7 @@
         public bool ItemsStartLeft { get; set; } = true;
         public bool ItemsStartTop { get; set; } = true;
 
-        public PanelGrid(Padding padding, float gap, Vector2 anchor, Color? color, int columns)
+        public PanelGrid(Padding? padding, float gap, Vector2 anchor, Color? color, int columns)
         {
             Padding = padding;
             Gap = gap;
