@@ -12,6 +12,7 @@
         public float MinAspectRatio { get; set; }
         public float MaxAspectRatio { get; set; }
         public CanvasScaling Scaling { get; set; } = CanvasScaling.Default;
+        private float scale;
 
         public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, MouseInput mouse)
             : base(getRenderRect, mouse)
@@ -40,10 +41,9 @@
         protected virtual void UpdateTreeBegin(Rect renderRect, out float scaleCanvasRegion)
         {
             Vector2 scale2 = renderRect.Size / defaultRect.Size;
-            float scale = MathF.Min(scale2.X, scale2.Y);
+            scale = MathF.Min(scale2.X, scale2.Y);
             scaleCanvasRegion = 1f;
-            if (Scaling == CanvasScaling.PixelArt
-                || Scaling == CanvasScaling.PixelArtResponsiveCanvas)
+            if (IsScalingPixelated())
             {
                 if (scale > 1f)
                 {
@@ -55,9 +55,9 @@
             }
 
             Transform =
-                Matrix.CreateTranslation(new Vector3(-defaultRect.Size / 2f, 0f))
+                Matrix.CreateTranslation(new Vector3(-defaultRect.Size / 2f, 0f).GetRound())
                 * Matrix.CreateScale(new Vector3(scale, scale, 1f))
-                * Matrix.CreateTranslation(new Vector3(renderRect.Size / 2f, 0f));
+                * Matrix.CreateTranslation(new Vector3(renderRect.Size / 2f, 0f).GetRound());
 
         }
 
@@ -111,7 +111,10 @@
             if (ClearColor != null)
                 spriteBatch.GraphicsDevice.Clear(ClearColor.Value);
 
-            spriteBatch.Begin(transformMatrix: Transform);
+            SamplerState samplerState = IsScalingPixelated() 
+                && MathF.Abs(0.5f - ((scale + 0.5f) % 1)) < 0.01f // check if scale is roughly a whole number (1, 2, 3, etc.)
+                ? SamplerState.PointClamp : SamplerState.LinearClamp;
+            spriteBatch.Begin(samplerState: samplerState, transformMatrix: Transform);
 
             for (int i = 0; i < Children.Count; i++)
             {
@@ -125,6 +128,11 @@
         {
 
             UpdateTree(); // TODO: only update tree when necessary
+        }
+
+        public bool IsScalingPixelated()
+        {
+            return Scaling == CanvasScaling.PixelArt || Scaling == CanvasScaling.PixelArtResponsiveCanvas;
         }
     }
 }

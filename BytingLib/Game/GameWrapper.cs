@@ -18,6 +18,9 @@ namespace BytingLib
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
+            if (msaaSamples != null && msaaSamples < 2)
+                msaaSamples = null;
+
             if (msaaSamples != null)
             {
                 Graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
