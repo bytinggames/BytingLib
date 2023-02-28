@@ -5,6 +5,20 @@
         private readonly Action clickAction;
         private bool hover;
         private bool down;
+        private bool disabled;
+        public bool Disabled
+        {
+            get => disabled;
+            set
+            {
+                if (value)
+                {
+                    hover = false;
+                    down = false;
+                }
+                disabled = value;
+            }
+        }
         public Vector2 TextShiftOnDown { get; set; } = Vector2.One;
 
         public Button(string text, Action clickAction, float width = -1f, float height = -1f, Vector2? anchor = null)
@@ -19,6 +33,11 @@
 
         protected override void UpdateSelf(ElementInput input)
         {
+            if (Disabled)
+            {
+                return;
+            }
+
             hover = absoluteRect.CollidesWith(input.Mouse.Position);
 
             if (hover)
@@ -48,11 +67,18 @@
 
         protected override void DrawSelf(SpriteBatch spriteBatch, Style style)
         {
-            int frameIndex = 0;
-            if (down)
-                frameIndex = 2;
-            else if (hover)
-                frameIndex = 1;
+            int frameIndex;
+            if (Disabled)
+                frameIndex = 3;
+            else
+            {
+                if (down)
+                    frameIndex = 2;
+                else if (hover)
+                    frameIndex = 1;
+                else
+                    frameIndex = 0;
+            }
             style.ButtonAnimation.DrawSliced(spriteBatch, frameIndex, absoluteRect);
 
             Anchor textAnchor = absoluteRect.GetCenterAnchor();
