@@ -25,7 +25,7 @@
             Vector2 fieldSize = GetMaxChildSize();
 
             int columnsTaken = Math.Min(Columns, Children.Count);
-            int rowsTaken = (int)MathF.Ceiling((float)Children.Count / Columns);
+            int rowsTaken = GetRowsTaken();
             Vector2 contentSize = new Vector2(
                 columnsTaken * fieldSize.X + (columnsTaken - 1) * Gap,
                 rowsTaken * fieldSize.Y + (rowsTaken - 1) * Gap);
@@ -93,6 +93,11 @@
             }
         }
 
+        private int GetRowsTaken()
+        {
+            return (int)MathF.Ceiling((float)Children.Count / Columns);
+        }
+
         private Vector2 GetMaxChildSize()
         {
             Vector2 max = Vector2.Zero;
@@ -116,14 +121,14 @@
                 max.X = (GetInnerWidth() - Gap * (Columns - 1)) / Columns;
             if (allHeightNegative)
             {
-                int rowsTaken = Children.Count / Columns;
+                int rowsTaken = GetRowsTaken();
                 max.Y = (GetInnerHeight() - Gap * (rowsTaken - 1)) / rowsTaken;
             }
 
             return max;
         }
 
-        protected override void DrawSelf(SpriteBatch spriteBatch)
+        protected override void DrawSelf(SpriteBatch spriteBatch, Style style)
         {
             if (Color != null)
                 absoluteRect.Draw(spriteBatch, Color.Value);

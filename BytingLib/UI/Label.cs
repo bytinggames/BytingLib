@@ -3,17 +3,15 @@
     public class Label : Element
     {
         protected readonly string text;
-        protected readonly Ref<SpriteFont> font;
 
-        public Label(string text, Ref<SpriteFont> font /* TODO: probably should be in a style class */)
+        public Label(string text)
         {
             this.text = text;
-            this.font = font;
         }
 
-        protected override void DrawSelf(SpriteBatch spriteBatch)
+        protected override void DrawSelf(SpriteBatch spriteBatch, Style style)
         {
-            font.Value.Draw(spriteBatch, text, absoluteRect.GetCenterAnchor(), Color.Black, roundPositionTo: 1f);
+            style.Font.Value.Draw(spriteBatch, text, absoluteRect.GetCenterAnchor(), Color.Black, roundPositionTo: 1f);
         }
     }
 }

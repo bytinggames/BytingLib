@@ -2,7 +2,7 @@
 {
     public class CanvasFlex : Canvas, IDrawBatch, IUpdate
     {
-        public CanvasFlex(Func<Rect> getRenderRect, MouseInput mouse) : base(getRenderRect, mouse)
+        public CanvasFlex(Func<Rect> getRenderRect, MouseInput mouse, Style style) : base(getRenderRect, mouse, style)
         {
         }
 
@@ -32,7 +32,7 @@
 
             for (int i = 0; i < Children.Count; i++)
             {
-                Children[i].Draw(spriteBatch);
+                Children[i].Draw(spriteBatch, Style);
             }
 
             spriteBatch.End();

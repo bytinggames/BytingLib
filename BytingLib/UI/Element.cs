@@ -25,15 +25,15 @@
 
         public Rect absoluteRect { get; protected set; }
 
-        protected abstract void DrawSelf(SpriteBatch spriteBatch);
+        protected abstract void DrawSelf(SpriteBatch spriteBatch, Style style);
         protected virtual void UpdateSelf(ElementInput input) { }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch, Style style)
         {
-            DrawSelf(spriteBatch);
+            DrawSelf(spriteBatch, style);
 
             for (int i = 0; i < Children.Count; i++)
-                Children[i].Draw(spriteBatch);
+                Children[i].Draw(spriteBatch, style);
         }
         public virtual void Update(ElementInput input)
         {

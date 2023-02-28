@@ -14,8 +14,8 @@
         public CanvasScaling Scaling { get; set; } = CanvasScaling.Default;
         private float scale;
 
-        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, MouseInput mouse)
-            : base(getRenderRect, mouse)
+        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, MouseInput mouse, Style style)
+            : base(getRenderRect, mouse, style)
         {
             Width = defaultResX;
             Height = defaultResY;
@@ -118,7 +118,7 @@
 
             for (int i = 0; i < Children.Count; i++)
             {
-                Children[i].Draw(spriteBatch);
+                Children[i].Draw(spriteBatch, Style);
             }
 
             spriteBatch.End();

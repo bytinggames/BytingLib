@@ -38,7 +38,7 @@
                 UpdateTreeHorizontal(pos, contentSize, anyUnknownSize, rect);
         }
 
-        protected override void DrawSelf(SpriteBatch spriteBatch)
+        protected override void DrawSelf(SpriteBatch spriteBatch, Style style)
         {
             if (Color != null)
                 absoluteRect.Draw(spriteBatch, Color.Value);

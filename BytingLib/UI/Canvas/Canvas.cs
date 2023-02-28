@@ -6,10 +6,12 @@
         public Color? ClearColor { get; set; }
         protected readonly Func<Rect> getRenderRect;
         protected readonly ElementInput input;
+        public Style Style { get; set; }
 
-        public Canvas(Func<Rect> getRenderRect, MouseInput mouse)
+        public Canvas(Func<Rect> getRenderRect, MouseInput mouse, Style style)
         {
             this.getRenderRect = getRenderRect;
+            Style = style;
             input = CreateElementInput(mouse);
         }
 
@@ -45,7 +47,7 @@
             updateCatch = element;
         }
 
-        protected override void DrawSelf(SpriteBatch spriteBatch)
+        protected override void DrawSelf(SpriteBatch spriteBatch, Style style)
         {
             throw new BytingException("Call DrawBatch() instead");
         }
