@@ -17,13 +17,15 @@
         public Element? Parent { get; private set; }
         public List<Element> Children { get; } = new List<Element>();
         /// <summary>negative means take remaining space or %, depending on the parent. 0 means fit to content.</summary>
-        public float Width { get; set; } = -1;
+        public float Width { get; set; } = -1f;
         /// <summary>negative means take remaining space or %, depending on the parent. 0 means fit to content.</summary>
-        public float Height { get; set; } = -1;
+        public float Height { get; set; } = -1f;
         public Padding? Padding { get; set; }
         public Vector2 Anchor { get; set; } = new Vector2(0.5f);
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Rect absoluteRect { get; protected set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         protected virtual void DrawSelf(SpriteBatch spriteBatch, Style style) { }
         protected virtual void UpdateSelf(ElementInput input) { }
@@ -166,5 +168,10 @@
         }
 
         public Vector2 GetPaddingSize() => Padding == null ? Vector2.Zero : Padding.GetSize();
+
+        public virtual void SetDirty()
+        {
+            Parent?.SetDirty();
+        }
     }
 }

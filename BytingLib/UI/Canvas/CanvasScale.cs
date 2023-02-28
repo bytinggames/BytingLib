@@ -13,6 +13,8 @@
         public float MaxAspectRatio { get; set; }
         public CanvasScaling Scaling { get; set; } = CanvasScaling.Default;
         private float scale;
+        private bool treeDirty = true;
+        Rect? lastRenderRect;
 
         public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, MouseInput mouse, Style style)
             : base(getRenderRect, mouse, style)
@@ -103,10 +105,13 @@
             {
                 Children[i].UpdateTree(rect);
             }
+
+            treeDirty = false;
         }
         public void DrawBatch(SpriteBatch spriteBatch)
         {
-            UpdateTree(); // TODO: only update tree when necessary
+            if (treeDirty)
+                UpdateTree();
 
             if (ClearColor != null)
                 spriteBatch.GraphicsDevice.Clear(ClearColor.Value);
@@ -126,13 +131,27 @@
 
         protected override void UpdateSelf(ElementInput input)
         {
+            Rect newRenderRect = getRenderRect();
+            if (!lastRenderRect.EqualValue(newRenderRect))
+            {
+                SetDirty();
+                lastRenderRect = newRenderRect;
+            }
 
-            UpdateTree(); // TODO: only update tree when necessary
+            if (treeDirty)
+                UpdateTree(); // TODO: only update tree when necessary
         }
 
         public bool IsScalingPixelated()
         {
             return Scaling == CanvasScaling.PixelArt || Scaling == CanvasScaling.PixelArtResponsiveCanvas;
+        }
+
+        public override void SetDirty()
+        {
+            treeDirty = true;
+
+            base.SetDirty();
         }
     }
 }

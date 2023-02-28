@@ -392,9 +392,9 @@
     public static class RectExtension
     {
         /// <summary>Also considers if any is null.</summary>
-        public static bool EqualValue(this Rect rectA, Rect rectB)
+        public static bool EqualValue(this Rect? rectA, Rect? rectB)
         {
-            if ((rectA == null) != (rectB == null))
+            if (rectA == null != (rectB == null))
                 return false;
 
             if (rectA == null)

@@ -55,6 +55,7 @@
                 {
                     down = true;
                     input.SetUpdateCatch(this);
+                    SetDirty();
                 }
             }
 
@@ -68,6 +69,7 @@
                     }
 
                     down = false;
+                    SetDirty();
 
                     input.SetUpdateCatch(null);
                 }
