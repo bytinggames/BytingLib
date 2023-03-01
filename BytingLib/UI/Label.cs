@@ -17,7 +17,7 @@
             Height = height;
         }
 
-        public Label SetSizeToText(StyleRoot style)
+        private Label SetSizeToText(StyleRoot style)
         {
             Vector2 size = style.Font.Value.MeasureString(text) * style.FontScale;
             Width = size.X;
