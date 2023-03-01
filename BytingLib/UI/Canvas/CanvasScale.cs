@@ -16,7 +16,7 @@
         private bool treeDirty = true;
         Rect? lastRenderRect;
 
-        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, MouseInput mouse, Style style)
+        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, MouseInput mouse, StyleRoot style)
             : base(getRenderRect, mouse, style)
         {
             Width = defaultResX;
@@ -101,10 +101,12 @@
 
             absoluteRect = rect.CloneRect().Round();
 
+            StyleRoot.Push(Style);
             for (int i = 0; i < Children.Count; i++)
-            {
+                Children[i].UpdateTreeBegin(StyleRoot);
+            for (int i = 0; i < Children.Count; i++)
                 Children[i].UpdateTree(rect);
-            }
+            StyleRoot.Pop(Style);
 
             treeDirty = false;
         }
@@ -121,10 +123,12 @@
                 ? SamplerState.PointClamp : SamplerState.LinearClamp;
             spriteBatch.Begin(samplerState: samplerState, transformMatrix: Transform);
 
+            StyleRoot.Push(Style);
             for (int i = 0; i < Children.Count; i++)
             {
-                Children[i].Draw(spriteBatch, Style);
+                Children[i].Draw(spriteBatch, StyleRoot);
             }
+            StyleRoot.Pop(Style);
 
             spriteBatch.End();
         }

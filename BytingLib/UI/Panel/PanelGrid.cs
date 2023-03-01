@@ -4,12 +4,12 @@
     {
         public Color? Color { get; set; }
         public int Columns { get; }
-        public float Gap { get; set; }
+        public Vector2 Gap { get; set; }
         public bool ItemsVerticalDirection { get; set; } = false;
         public bool ItemsStartLeft { get; set; } = true;
         public bool ItemsStartTop { get; set; } = true;
 
-        public PanelGrid(Padding? padding, float gap, Vector2 anchor, Color? color, int columns)
+        public PanelGrid(Padding? padding, Vector2 gap, Vector2 anchor, Color? color, int columns)
         {
             Padding = padding;
             Gap = gap;
@@ -36,15 +36,15 @@
 
             Vector2 toNextItem = Vector2.Zero;
             if (ItemsVerticalDirection)
-                toNextItem.Y = fieldSize.Y + Gap;
+                toNextItem.Y = fieldSize.Y + Gap.Y;
             else
-                toNextItem.X = fieldSize.X + Gap;
+                toNextItem.X = fieldSize.X + Gap.X;
 
             Vector2 toNextRow = Vector2.Zero;
             if (ItemsVerticalDirection)
-                toNextRow.X = fieldSize.X + Gap;
+                toNextRow.X = fieldSize.X + Gap.X;
             else
-                toNextRow.Y = fieldSize.Y + Gap;
+                toNextRow.Y = fieldSize.Y + Gap.Y;
 
             pos.X = ItemsStartLeft ? rect.Left : rect.Right;
             pos.Y = ItemsStartTop ? rect.Top : rect.Bottom;
@@ -91,8 +91,8 @@
             int columnsTaken = Math.Min(Columns, Children.Count);
             int rowsTaken = GetRowsTaken();
             Vector2 contentSize = new Vector2(
-                columnsTaken * fieldSize.X + (columnsTaken - 1) * Gap,
-                rowsTaken * fieldSize.Y + (rowsTaken - 1) * Gap);
+                columnsTaken * fieldSize.X + (columnsTaken - 1) * Gap.X,
+                rowsTaken * fieldSize.Y + (rowsTaken - 1) * Gap.Y);
             contentSizePlusPadding = contentSize + GetPaddingSize();
         }
 
@@ -124,11 +124,11 @@
             }
 
             if (allWidthNegative)
-                max.X = (GetWidthTopToBottom() - Gap * (Columns - 1)) / Columns;
+                max.X = (GetWidthTopToBottom() - Gap.X * (Columns - 1)) / Columns;
             if (allHeightNegative)
             {
                 int rowsTaken = GetRowsTaken();
-                max.Y = (GetHeightTopToBottom() - Gap * (rowsTaken - 1)) / rowsTaken;
+                max.Y = (GetHeightTopToBottom() - Gap.Y * (rowsTaken - 1)) / rowsTaken;
             }
 
             return max;
@@ -145,7 +145,7 @@
             return contentSizePlusPadding.X;
         }
 
-        protected override void DrawSelf(SpriteBatch spriteBatch, Style style)
+        protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             if (Color != null)
                 absoluteRect.Draw(spriteBatch, Color.Value);

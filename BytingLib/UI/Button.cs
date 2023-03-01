@@ -31,7 +31,7 @@
             Padding = padding;
         }
 
-        public Button AutoPadding(Style style)
+        public Button AutoPadding(StyleRoot style)
         {
             var b = style.ButtonAnimation.Data.Value.meta!.slices![0].keys[0].bounds;
             var f = style.ButtonAnimation.Data.Value.frames!.First().Value.rectangle;
@@ -82,7 +82,26 @@
                 rect.Pos += ChildrenShiftOnDown;
         }
 
-        protected override void DrawSelf(SpriteBatch spriteBatch, Style style)
+        protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
+        {
+            int frameIndex = GetFrameIndex();
+            if (frameIndex >= style.ButtonAnimation.Data.Value.frames?.Count)
+                throw new BytingException("button frame does not exist: " + frameIndex + " button animation frames: " + style.ButtonAnimation.Data.Value.frames?.Count);
+
+            style.ButtonAnimation.DrawSliced(spriteBatch, frameIndex, absoluteRect);
+        }
+
+        protected override void DrawSelfPost(SpriteBatch spriteBatch, StyleRoot style)
+        {
+            int frameIndexPost = GetFrameIndex() + 4;
+
+            if (frameIndexPost < style.ButtonAnimation.Data.Value.frames?.Count)
+            {
+                style.ButtonAnimation.DrawSliced(spriteBatch, frameIndexPost, absoluteRect);
+            }
+        }
+
+        private int GetFrameIndex()
         {
             int frameIndex;
             if (Disabled)
@@ -96,7 +115,9 @@
                 else
                     frameIndex = 0;
             }
-            style.ButtonAnimation.DrawSliced(spriteBatch, frameIndex, absoluteRect);
+
+            return frameIndex;
         }
+
     }
 }

@@ -27,7 +27,7 @@
             base.UpdateTree(rect);
         }
 
-        protected override void DrawSelf(SpriteBatch spriteBatch, Style style)
+        protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             Texture.Value.Draw(spriteBatch, absoluteRect, Color);
         }

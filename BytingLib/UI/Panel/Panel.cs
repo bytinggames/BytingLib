@@ -14,7 +14,7 @@
             Padding = padding;
         }
 
-        protected override void DrawSelf(SpriteBatch spriteBatch, Style style)
+        protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             if (Color != null)
                 absoluteRect.Draw(spriteBatch, Color.Value);
