@@ -120,14 +120,14 @@
             }
         }
 
-        public static Texture2D GenerateGlow(this Texture2D source, int glowThickness, GraphicsDevice gDevice, Color? glowColor = null, bool mergeWithSource = false)
+        public static Texture2D GenerateGlow(this Texture2D source, int glowThickness, Color? glowColor = null, bool mergeWithSource = false)
         {
             Color[] colorIn = new Color[source.Width * source.Height];
             source.GetData(colorIn);
-            return GenerateGlow(colorIn, source.Width, source.Height, glowThickness, gDevice, glowColor, mergeWithSource);
+            return GenerateGlow(colorIn, source.Width, source.Height, glowThickness, source.GraphicsDevice, glowColor, mergeWithSource);
         }
 
-        public static void GenerateGlowRef(this Texture2D source, int glowThickness, GraphicsDevice gDevice, Color? glowColor = null, bool mergeWithSource = true)
+        public static void GenerateGlowRef(this Texture2D source, int glowThickness, Color? glowColor = null, bool mergeWithSource = true)
         {
             Color[] colorIn = new Color[source.Width * source.Height];
             source.GetData(colorIn);
