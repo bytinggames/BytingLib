@@ -53,30 +53,42 @@ namespace BytingPipeline
                 dataSource = dataTarget;
                 dataTarget = new byte[dataTarget.Length];
 
-                for (int iteration = 0; iteration < Thickness; iteration++)
+                List<(int x, int y)> search = new();
+
+                int maxDistanceSquared = Thickness * Thickness;
+                for (int y = -Thickness; y <= Thickness; y++)
                 {
-                    for (int y = 0; y < glyph.Bitmap.Height; y++)
+                    for (int x = -Thickness; x <= Thickness; x++)
                     {
-                        for (int x = 0; x < glyph.Bitmap.Width; x++)
-                        {
-                            int i = y * glyph.Bitmap.Width + x;
-
-                            byte darkest = dataSource[i];
-
-                            if (x > 0)
-                                darkest = Math.Max(darkest, dataSource[y * glyph.Bitmap.Width + x - 1]);
-                            if (y > 0)
-                                darkest = Math.Max(darkest, dataSource[(y - 1) * glyph.Bitmap.Width + x]);
-                            if (x < glyph.Bitmap.Width - 1)
-                                darkest = Math.Max(darkest, dataSource[y * glyph.Bitmap.Width + x + 1]);
-                            if (y < glyph.Bitmap.Height - 1)
-                                darkest = Math.Max(darkest, dataSource[(y + 1) * glyph.Bitmap.Width + x]);
-
-                            dataTarget[i] = darkest;
-                        }
+                        int distanceSquared = x * x + y * y;
+                        if (distanceSquared <= maxDistanceSquared)
+                            search.Add((x, y));
                     }
-                    if (iteration < Thickness - 1)
-                        Buffer.BlockCopy(dataTarget, 0, dataSource, 0, dataTarget.Length);
+                }
+
+                int w = glyph.Bitmap.Width;
+                int h = glyph.Bitmap.Height;
+
+                for (int y = 0; y < glyph.Bitmap.Height; y++)
+                {
+                    for (int x = 0; x < glyph.Bitmap.Width; x++)
+                    {
+                        byte darkest = 0;
+                        foreach (var s in search)
+                        {
+                            int xSearch = x + s.x;
+                            int ySearch = y + s.y;
+                            if (xSearch >= 0 && xSearch < w
+                                && ySearch >= 0 && ySearch < h)
+                            {
+                                darkest = Math.Max(darkest, dataSource[ySearch * w + xSearch]);
+                            }
+                        }
+
+                        int i = y * w + x;
+
+                        dataTarget[i] = darkest;
+                    }
                 }
 
                 glyph.Bitmap.SetPixelData(dataTarget);

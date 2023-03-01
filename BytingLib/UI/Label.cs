@@ -27,7 +27,10 @@
 
         protected override void DrawSelf(SpriteBatch spriteBatch, Style style)
         {
-            style.Font.Value.Draw(spriteBatch, text, absoluteRect.GetCenterAnchor(), style.FontColor, roundPositionTo: 1f);
+            if (style.FontBoldColor != null)
+                style.FontBold.Value.Draw(spriteBatch, text, absoluteRect.GetCenterAnchor(), style.FontBoldColor, roundPositionTo: 1f);
+            if (style.FontColor != null)
+                style.Font.Value.Draw(spriteBatch, text, absoluteRect.GetCenterAnchor(), style.FontColor, roundPositionTo: 1f);
         }
     }
 }
