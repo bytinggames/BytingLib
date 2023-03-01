@@ -78,9 +78,31 @@
 
             sliceRects = new Rectangle[3, 3];
 
-            var sliceFace = Data.Value.meta!.slices![0].keys[0].bounds;
+            AnimationData._Rect sliceFace;
 
             var frame = Data.Value.frames!.First().Value;
+
+            if (Data.Value.meta?.slices?.Length > 0)
+            {
+                sliceFace = Data.Value.meta!.slices![0].keys[0].bounds;
+            }
+            else
+            {
+                if (frame.rectangle.Width % 2 == 0
+                    || frame.rectangle.Height % 2 == 0)
+                {
+                    throw new BytingException("Either add a slice to the texture that should get sliced or make sure width and height are odd, so the center pixel is automatically considered as the face slice");
+                }
+
+                sliceFace = new AnimationData._Rect()
+                {
+                     x = frame.rectangle.Width / 2,
+                     y = frame.rectangle.Width / 2,
+                     w = 1,
+                     h = 1
+                };
+            }
+
 
             Int2[] sliceCoords = new Int2[4]
             {
