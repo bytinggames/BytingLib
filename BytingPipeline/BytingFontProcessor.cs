@@ -25,6 +25,19 @@ namespace BytingPipeline
 
         private void ModifyGlyphsThickness(HashSet<GlyphData> glyphData)
         {
+            List<(int x, int y)> search = new();
+
+            int maxDistanceSquared = Thickness * Thickness;
+            for (int y = -Thickness; y <= Thickness; y++)
+            {
+                for (int x = -Thickness; x <= Thickness; x++)
+                {
+                    int distanceSquared = x * x + y * y;
+                    if (distanceSquared <= maxDistanceSquared)
+                        search.Add((x, y));
+                }
+            }
+
             foreach (GlyphData glyph in glyphData)
             {
                 GlyphCropper.Enlarge(glyph, Thickness);
@@ -52,19 +65,6 @@ namespace BytingPipeline
 
                 dataSource = dataTarget;
                 dataTarget = new byte[dataTarget.Length];
-
-                List<(int x, int y)> search = new();
-
-                int maxDistanceSquared = Thickness * Thickness;
-                for (int y = -Thickness; y <= Thickness; y++)
-                {
-                    for (int x = -Thickness; x <= Thickness; x++)
-                    {
-                        int distanceSquared = x * x + y * y;
-                        if (distanceSquared <= maxDistanceSquared)
-                            search.Add((x, y));
-                    }
-                }
 
                 int w = glyph.Bitmap.Width;
                 int h = glyph.Bitmap.Height;
