@@ -37,6 +37,7 @@ namespace BytingPipeline.Test
             {
                 TextureFormat =  TextureProcessorOutputFormat.DxtCompressed,
                 PremultiplyAlpha = true,
+                Thickness = 1,
             };
 
             FontDescription fontDescription = null;
