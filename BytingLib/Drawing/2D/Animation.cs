@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using BytingLib.UI;
+
+namespace BytingLib
 {
     public class Animation : IDisposable
     {
@@ -71,13 +73,8 @@
             }
         }
 
-        private Rectangle[,] GetSliceRects()
+        public AnimationData._Rect GetFaceSlice()
         {
-            if (sliceRects != null)
-                return sliceRects;
-
-            sliceRects = new Rectangle[3, 3];
-
             AnimationData._Rect sliceFace;
 
             var frame = Data.Value.frames!.First().Value;
@@ -96,13 +93,33 @@
 
                 sliceFace = new AnimationData._Rect()
                 {
-                     x = frame.rectangle.Width / 2,
-                     y = frame.rectangle.Width / 2,
-                     w = 1,
-                     h = 1
+                    x = frame.rectangle.Width / 2,
+                    y = frame.rectangle.Width / 2,
+                    w = 1,
+                    h = 1
                 };
             }
 
+            return sliceFace;
+        }
+
+        public Padding GetFacePadding()
+        {
+            var face = GetFaceSlice();
+            var rect = Data.Value.frames!.First().Value.rectangle;
+            return new Padding(face.x, face.y, rect.Width - face.x - face.w, rect.Height - face.y - face.h);
+        }
+
+        private Rectangle[,] GetSliceRects()
+        {
+            if (sliceRects != null)
+                return sliceRects;
+
+            sliceRects = new Rectangle[3, 3];
+
+            AnimationData._Rect sliceFace = GetFaceSlice();
+
+            var frame = Data.Value.frames!.First().Value;
 
             Int2[] sliceCoords = new Int2[4]
             {
