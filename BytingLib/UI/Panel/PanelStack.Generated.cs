@@ -19,9 +19,14 @@ namespace BytingLib.UI
             for (int i = 0; i < Children.Count; i++)
             {
                 var c = Children[i];
-                float height = c.GetHeightTopToBottom();
+                float height = c.GetSizeTopToBottom(1);
+				if (height < 0)
+					height = nullHeight * -height;
 				float width = rect.Width;
                 Rect r = GetChildRect(new Rect(pos.X, pos.Y, width, height), c);
+				//  bit weird, to first calculate the rect and then reset one dimension
+                r.Y = pos.Y;
+                r.Height = height;
                 c.UpdateTree(r);
 				pos.Y += height + Gap;
             }
@@ -29,18 +34,18 @@ namespace BytingLib.UI
 
         private float GetFixedHeight()
         {
-            return Children.Sum(f => MathF.Max(0f, f.GetHeightTopToBottom())) + Gap * (Children.Count - 1);
+            return Children.Sum(f => MathF.Max(0f, f.GetSizeTopToBottom(1))) + Gap * (Children.Count - 1);
         }
 
         private Vector2 GetContentSizeVertical(out bool anyUnknownHeight)
         {
-            float width = Children.Count == 0 ? 0 : Children.Max(f => f.GetWidthTopToBottom());
+            float width = Children.Count == 0 ? 0 : Children.Max(f => f.GetSizeTopToBottom(1 - 1));
             float height;
 
             if (Children.Any(f => f.Height < 0))
             {
                 // take 100% height
-                height = GetHeightTopToBottom();
+                height = -1f;
                 anyUnknownHeight = true;
             }
             else
@@ -48,6 +53,9 @@ namespace BytingLib.UI
                 height = GetFixedHeight();
                 anyUnknownHeight = false;
             }
+			
+            if (width < 0)
+                width = Children.Min(f => f.GetSizeTopToBottom(1 - 1));
 
             return new Vector2(width, height);
         }
@@ -67,9 +75,14 @@ namespace BytingLib.UI
             for (int i = 0; i < Children.Count; i++)
             {
                 var c = Children[i];
-                float width = c.GetWidthTopToBottom();
+                float width = c.GetSizeTopToBottom(0);
+				if (width < 0)
+					width = nullWidth * -width;
 				float height = rect.Height;
                 Rect r = GetChildRect(new Rect(pos.X, pos.Y, width, height), c);
+				//  bit weird, to first calculate the rect and then reset one dimension
+                r.X = pos.X;
+                r.Width = width;
                 c.UpdateTree(r);
 				pos.X += width + Gap;
             }
@@ -77,18 +90,18 @@ namespace BytingLib.UI
 
         private float GetFixedWidth()
         {
-            return Children.Sum(f => MathF.Max(0f, f.GetWidthTopToBottom())) + Gap * (Children.Count - 1);
+            return Children.Sum(f => MathF.Max(0f, f.GetSizeTopToBottom(0))) + Gap * (Children.Count - 1);
         }
 
         private Vector2 GetContentSizeHorizontal(out bool anyUnknownWidth)
         {
-            float height = Children.Count == 0 ? 0 : Children.Max(f => f.GetHeightTopToBottom());
+            float height = Children.Count == 0 ? 0 : Children.Max(f => f.GetSizeTopToBottom(1 - 0));
             float width;
 
             if (Children.Any(f => f.Width < 0))
             {
                 // take 100% width
-                width = GetWidthTopToBottom();
+                width = -1f;
                 anyUnknownWidth = true;
             }
             else
@@ -96,6 +109,9 @@ namespace BytingLib.UI
                 width = GetFixedWidth();
                 anyUnknownWidth = false;
             }
+			
+            if (height < 0)
+                height = Children.Min(f => f.GetSizeTopToBottom(1 - 0));
 
             return new Vector2(width, height);
         }

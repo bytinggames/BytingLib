@@ -14,17 +14,21 @@
             if (anchor != null)
                 Anchor = anchor.Value;
             Color = color;
+            Width = 0f;
+            Height = 0f;
         }
 
         public override void UpdateTree(Rect parentRect)
         {
+            absoluteRect = parentRect.CloneRect().Round();
+
             Vector2 pos = Anchor * parentRect.Size + parentRect.Pos;
             bool anyUnknownSize;
             Vector2 contentSize, contentSizePlusPadding;
             GetSize(out anyUnknownSize, out contentSize, out contentSizePlusPadding);
+            PercentageToPixels(ref contentSizePlusPadding, ref contentSize, parentRect);
 
             Rect rect = new Anchor(pos, Anchor).Rectangle(contentSizePlusPadding);
-            absoluteRect = rect.CloneRect().Round();
 
             if (Children.Count == 0)
                 return;
@@ -39,10 +43,28 @@
                 UpdateTreeHorizontal(pos, contentSize, anyUnknownSize, rect);
         }
 
+        private void PercentageToPixels(ref Vector2 contentSizePlusPadding, ref Vector2 contentSize, Rect parentRect)
+        {
+            if (contentSizePlusPadding.X < 0)
+            {
+                contentSizePlusPadding.X = parentRect.Width * -contentSizePlusPadding.X;
+                contentSize.X = contentSizePlusPadding.X - Padding.WidthOr0();
+            }
+            if (contentSizePlusPadding.Y < 0)
+            {
+                contentSizePlusPadding.Y = parentRect.Height * -contentSizePlusPadding.Y;
+                contentSize.Y = contentSizePlusPadding.Y - Padding.HeightOr0();
+            }
+        }
+
         private void GetSize(out bool anyUnknownSize, out Vector2 contentSize, out Vector2 contentSizePlusPadding)
         {
             contentSize = Vertical ? GetContentSizeVertical(out anyUnknownSize) : GetContentSizeHorizontal(out anyUnknownSize);
-            contentSizePlusPadding = contentSize + GetPaddingSize();
+            contentSizePlusPadding = contentSize;
+            if (contentSize.X >= 0)
+                contentSizePlusPadding.X += Padding.WidthOr0();
+            if (contentSize.Y >= 0)
+                contentSizePlusPadding.Y += Padding.HeightOr0();
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
@@ -51,15 +73,17 @@
                 absoluteRect.Draw(spriteBatch, Color.Value);
         }
 
-        public override float GetHeightTopToBottom()
+        public override float GetSizeTopToBottom(int d)
         {
+            float size = Size(d);
+            if (size > 0)
+                return size;
+
             GetSize(out _, out _, out Vector2 contentSizePlusPadding);
-            return contentSizePlusPadding.Y;
-        }
-        public override float GetWidthTopToBottom()
-        {
-            GetSize(out _, out _, out Vector2 contentSizePlusPadding);
-            return contentSizePlusPadding.X;
+            if (d == 0)
+                return contentSizePlusPadding.X;
+            else
+                return contentSizePlusPadding.Y;
         }
     }
 }

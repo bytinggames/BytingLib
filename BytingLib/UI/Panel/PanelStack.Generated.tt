@@ -20,6 +20,7 @@ namespace BytingLib.UI
 		string width = vertical ? "width" : "height";
 		string X = vertical ? "X" : "Y";
 		string Y = vertical ? "Y" : "X";
+		string d = vertical ? "1" : "0";
 #>
 
         private void UpdateTree<#= vertical ? "Vertical" : "Horizontal" #>(Vector2 pos, Vector2 contentSize, bool anyUnknown<#=Height#>, Rect rect)
@@ -37,9 +38,14 @@ namespace BytingLib.UI
             for (int i = 0; i < Children.Count; i++)
             {
                 var c = Children[i];
-                float <#=height#> = c.Get<#=Height#>TopToBottom();
+                float <#=height#> = c.GetSizeTopToBottom(<#=d#>);
+				if (<#=height#> < 0)
+					<#=height#> = null<#=Height#> * -<#=height#>;
 				float <#=width#> = rect.<#=Width#>;
                 Rect r = GetChildRect(new Rect(pos.X, pos.Y, width, height), c);
+				//  bit weird, to first calculate the rect and then reset one dimension
+                r.<#=Y#> = pos.<#=Y#>;
+                r.<#=Height#> = <#=height#>;
                 c.UpdateTree(r);
 				pos.<#=Y#> += <#=height#> + Gap;
             }
@@ -47,18 +53,18 @@ namespace BytingLib.UI
 
         private float GetFixed<#=Height#>()
         {
-            return Children.Sum(f => MathF.Max(0f, f.Get<#=Height#>TopToBottom())) + Gap * (Children.Count - 1);
+            return Children.Sum(f => MathF.Max(0f, f.GetSizeTopToBottom(<#=d#>))) + Gap * (Children.Count - 1);
         }
 
         private Vector2 GetContentSize<#=Vertical#>(out bool anyUnknown<#=Height#>)
         {
-            float <#=width#> = Children.Count == 0 ? 0 : Children.Max(f => f.Get<#=Width#>TopToBottom());
+            float <#=width#> = Children.Count == 0 ? 0 : Children.Max(f => f.GetSizeTopToBottom(1 - <#=d#>));
             float <#=height#>;
 
             if (Children.Any(f => f.<#=Height#> < 0))
             {
                 // take 100% <#=height#>
-                <#=height#> = Get<#=Height#>TopToBottom();
+                <#=height#> = -1f;
                 anyUnknown<#=Height#> = true;
             }
             else
@@ -66,6 +72,9 @@ namespace BytingLib.UI
                 <#=height#> = GetFixed<#=Height#>();
                 anyUnknown<#=Height#> = false;
             }
+			
+            if (<#=width#> < 0)
+                <#=width#> = Children.Min(f => f.GetSizeTopToBottom(1 - <#=d#>));
 
             return new Vector2(width, height);
         }

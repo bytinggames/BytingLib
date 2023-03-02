@@ -7,6 +7,7 @@
             Font = font;
             ButtonAnimation = buttonAnimation;
             FontScale = Vector2.One;
+            FontColor = Color.Black;
         }
     }
 }

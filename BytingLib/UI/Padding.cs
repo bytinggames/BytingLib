@@ -1,5 +1,21 @@
 ﻿namespace BytingLib.UI
 {
+    public static class PaddingExtension
+    {
+        public static float WidthOr0(this Padding? padding)
+        {
+            if (padding == null)
+                return 0f;
+            return padding.Width;
+        }
+        public static float HeightOr0(this Padding? padding)
+        {
+            if (padding == null)
+                return 0f;
+            return padding.Height;
+        }
+    }
+
     public class Padding
     {
         public float Left { get; set; }
@@ -45,6 +61,16 @@
         public Vector2 GetSize()
         {
             return new Vector2(Left + Right, Top + Bottom);
+        }
+
+        internal float Size(int d)
+        {
+            return d switch
+            {
+                0 => Width,
+                1 => Height,
+                _ => throw new DimensionDoesNotExistException(d)
+            };
         }
 
         public float Width => Left + Right;

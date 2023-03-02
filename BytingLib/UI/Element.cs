@@ -23,6 +23,16 @@
         public Padding? Padding { get; set; }
         public Vector2 Anchor { get; set; } = new Vector2(0.5f);
 
+        public float Size(int dimension)
+        {
+            return dimension switch
+            {
+                0 => Width,
+                1 => Height,
+                _ => throw new BytingException("dimension of " + dimension + " does not exist")
+            }; ;
+        }
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Rect absoluteRect { get; protected set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -98,51 +108,43 @@
             }
             else
             {
-                Vector2 size = Vector2.Zero;
+                float[] size = new float[] { c.Width, c.Height };
 
-                if (c.Width == 0f)
+                for (int d = 0; d < 2; d++)
                 {
-                    if (c.Children.Count > 0)
-                        size.X = c.GetWidthTopToBottom();
+                    if (size[d] == 0f && c.Children.Count > 0)
+                        size[d] = c.GetSizeTopToBottom(d);
+                    if (size[d] < 0)
+                        size[d] = -size[d] * (d == 0 ? rect.Width : rect.Height);
                 }
-                else
-                    size.X = c.Width > 0 ? c.Width : -c.Width * rect.Width;
-                if (c.Height == 0f)
-                {
-                    if (c.Children.Count > 0)
-                        size.Y = c.GetHeightTopToBottom();
-                }
-                else
-                    size.Y = c.Height > 0 ? c.Height : -c.Height * rect.Height;
 
                 Vector2 pos = c.Anchor * rect.Size + rect.Pos;
 
-                myRect = new Anchor(pos, c.Anchor).Rectangle(size);
+                myRect = new Anchor(pos, c.Anchor).Rectangle(size[0], size[1]);
 
             }
 
             return myRect;
         }
 
-        public virtual float GetWidthTopToBottom()
+        public virtual float GetSizeTopToBottom(int d)
         {
-            if (Width < 0)
-                return -1;
-            if (Width > 0)
-                return Width;
-            if (Children.Count == 0)
-                return 0f;
-            return Children.Max(f => f.GetWidthTopToBottom()) + (Padding == null ? 0f : Padding.Width);
-        }
-        public virtual float GetHeightTopToBottom()
-        {
-            if (Height < 0)
-                return -1;
-            if (Height > 0)
-                return Height;
-            if (Children.Count == 0)
-                return 0f;
-            return Children.Max(f => f.GetHeightTopToBottom()) + (Padding == null ? 0f : Padding.Height);
+            if (Size(d) == 0)
+            {
+                float pad = Padding == null ? 0f : Padding.Size(d);
+                if (Children.Count == 0)
+                    return pad;
+                float maxSize = Children.Max(f => f.GetSizeTopToBottom(d));
+                if (maxSize > 0)
+                {
+                    return maxSize + pad;
+                }
+                else // no positive values
+                {
+                    return Children.Min(f => f.GetSizeTopToBottom(d));
+                }
+            }
+            return Size(d);
         }
 
         public Element Add(params Element[] children)

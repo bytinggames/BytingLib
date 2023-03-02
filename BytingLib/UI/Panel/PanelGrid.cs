@@ -16,6 +16,8 @@
             Anchor = anchor;
             Color = color;
             Columns = columns;
+            Width = 0f;
+            Height = 0f;
         }
 
         public override void UpdateTree(Rect parentRect)
@@ -24,6 +26,25 @@
             Vector2 fieldSize, contentSizePlusPadding;
 
             GetSize(out fieldSize, out contentSizePlusPadding);
+
+            if (contentSizePlusPadding.X < 0)
+            {
+                contentSizePlusPadding.X = parentRect.Width * -contentSizePlusPadding.X;
+
+                float innerSize = contentSizePlusPadding.X - Padding.WidthOr0();
+                innerSize -= (Columns - 1) * Gap.X;
+                fieldSize.X = innerSize / Columns;
+            }
+            if (contentSizePlusPadding.Y < 0)
+            {
+                contentSizePlusPadding.Y = parentRect.Height * -contentSizePlusPadding.Y;
+
+                float innerSize = contentSizePlusPadding.Y - Padding.HeightOr0();
+                int rows = GetRowsTaken();
+                innerSize -= (rows - 1) * Gap.Y;
+                fieldSize.Y = innerSize / rows;
+            }
+
 
             Rect rect = new Anchor(pos, Anchor).Rectangle(contentSizePlusPadding);
 
@@ -94,6 +115,11 @@
                 columnsTaken * fieldSize.X + (columnsTaken - 1) * Gap.X,
                 rowsTaken * fieldSize.Y + (rowsTaken - 1) * Gap.Y);
             contentSizePlusPadding = contentSize + GetPaddingSize();
+
+            if (fieldSize.X < 0)
+                contentSizePlusPadding.X = fieldSize.X;
+            if (fieldSize.Y < 0)
+                contentSizePlusPadding.Y = fieldSize.Y;
         }
 
         private int GetRowsTaken()
@@ -103,46 +129,40 @@
 
         private Vector2 GetMaxChildSize()
         {
-            Vector2 max = Vector2.Zero;
-            bool allWidthNegative = true;
-            bool allHeightNegative = true;
+            float[] max = new float[2];
+            bool[] allSizeNegative = new[] { true, true };
 
             for (int i = 0; i < Children.Count; i++)
             {
-                float w = Children[i].GetWidthTopToBottom();
-                if (w >= max.X)
+                for (int d = 0; d < 2; d++)
                 {
-                    max.X = w;
-                    allWidthNegative = false;
-                }
-                float h = Children[i].GetHeightTopToBottom();
-                if (h >= max.Y)
-                {
-                    max.Y = h;
-                    allHeightNegative = false;
+                    float size = Children[i].GetSizeTopToBottom(d);
+                    if (size >= max[d])
+                    {
+                        max[d] = size;
+                        allSizeNegative[d] = false;
+                    }
                 }
             }
 
-            if (allWidthNegative)
-                max.X = (GetWidthTopToBottom() - Gap.X * (Columns - 1)) / Columns;
-            if (allHeightNegative)
+            if (allSizeNegative[0])
+                max[0] = -1f;// (GetWidthTopToBottom() - Gap.X * (Columns - 1)) / Columns;
+            if (allSizeNegative[1])
             {
-                int rowsTaken = GetRowsTaken();
-                max.Y = (GetHeightTopToBottom() - Gap.Y * (rowsTaken - 1)) / rowsTaken;
+                //int rowsTaken = GetRowsTaken();
+                max[1] = -1f;// (GetHeightTopToBottom() - Gap.Y * (rowsTaken - 1)) / rowsTaken;
             }
 
-            return max;
+            return new Vector2(max[0], max[1]);
         }
 
-        public override float GetHeightTopToBottom()
+        public override float GetSizeTopToBottom(int d)
         {
             GetSize(out _, out Vector2 contentSizePlusPadding);
-            return contentSizePlusPadding.Y;
-        }
-        public override float GetWidthTopToBottom()
-        {
-            GetSize(out _, out Vector2 contentSizePlusPadding);
-            return contentSizePlusPadding.X;
+            if (d == 0)
+                return contentSizePlusPadding.X;
+            else
+                return contentSizePlusPadding.Y;
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
