@@ -6,7 +6,7 @@ namespace BytingLib
 {
     public class CrashLogger
     {
-        public static void TryRun(string crashLogFilePath, Action run)
+        public static void TryRun(string crashLogFilePath, string fontAssetName, Action run)
         {
             try
             {
@@ -21,7 +21,7 @@ namespace BytingLib
                 {
                     string displayMessage = message + "\n\nlogged to file: " + crashLogFilePath;
                     Console.WriteLine(displayMessage); // this gets printed to linux terminal
-                    using var messageBox = new MessageBox(message, "Fonts/MessageBox");
+                    using var messageBox = new MessageBox(message, fontAssetName);
                     messageBox.Run();
                 }
                 catch (Exception e2)
