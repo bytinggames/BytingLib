@@ -28,8 +28,6 @@ namespace BytingLib
                 Graphics.PreferMultiSampling = true;
             }
 
-            var _ = new Texture2D(GraphicsDevice, 1, 1); // somehow there must be at least one texture created before a render target with multi sampling can be used...?
-
             this.createMyGame = createMyGame;
             this.msaaSamples = msaaSamples;
         }
@@ -42,6 +40,8 @@ namespace BytingLib
 
         protected override void Initialize()
         {
+            var _ = new Texture2D(GraphicsDevice, 1, 1); // somehow there must be at least one texture created before a render target with multi sampling can be used...?
+
             base.Initialize();
 
             game = createMyGame(this);
