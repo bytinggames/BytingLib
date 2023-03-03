@@ -75,6 +75,10 @@
 {tab}{{
 {tab}{tab}this.collector = collector;
 {tab}{tab}this.disposables = disposables;{fieldInitialize}{folderConstruct}
+{tab}}}
+{tab}public Ref<T> Use<T>(string assetName)
+{tab}{{
+{tab}{tab}return disposables.Use(collector.Use<T>(assetName));
 {tab}}}{assets}{classes}
 }}";
                 return output.Replace("\r\n", "\n") // make consistent among OSs
