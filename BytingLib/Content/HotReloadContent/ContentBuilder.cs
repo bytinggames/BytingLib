@@ -126,7 +126,7 @@ namespace BytingLib
 
             File.WriteAllText(contentTempFile, cmd);
 
-            string command = "dotnet mgcb /@:\"" + contentTempFile + "\"";
+            string command = "dotnet mgcb-byting /@:\"" + contentTempFile + "\"";
             string fileName;
 #if WINDOWS
             command = "/C " + command;
@@ -169,7 +169,7 @@ namespace BytingLib
             }
             catch (Exception e)
             {
-                ShowPopup("HotReloadContent Error: " + e.ToString());
+                ShowPopup("HotReloadContent Error: " + e.ToString() + "\n\n" + "build output error: " + stdError);
             }
 
             return true;
