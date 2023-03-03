@@ -20,33 +20,34 @@
             }
         }
         public Vector2 ChildrenShiftOnDown { get; set; } = Vector2.One;
-        public bool SetPaddingToButtonStyle { get; set; } = true;
 
-        public Button(Action clickAction, float width = -1f, float height = -1f, Vector2? anchor = null, Padding? padding = null)
+        private Padding? myPadding;
+
+        public Button(Action clickAction, float width = 0f, float height = 0f, Vector2? anchor = null, Padding? padding = null)
         {
             this.clickAction = clickAction;
             Width = width;
             Height = height;
             if (anchor != null)
                 Anchor = anchor.Value;
-            if (padding != null)
-            {
-                Padding = padding;
-                SetPaddingToButtonStyle = false;
-            }
+            myPadding = padding;
         }
 
         protected override void UpdateTreeBeginSelf(StyleRoot style)
         {
-            if (SetPaddingToButtonStyle)
+            if (myPadding == null)
             {
-                AutoPadding(style);
+                if (style.ButtonPaddingToButtonBorder)
+                {
+                    Padding = style.ButtonAnimation.GetFacePadding();
+                }
+                else if (style.ButtonPadding != null)
+                {
+                    Padding = style.ButtonPadding;
+                }
             }
-        }
-
-        private void AutoPadding(StyleRoot style)
-        {
-            Padding = style.ButtonAnimation.GetFacePadding();
+            else
+                Padding = myPadding;
         }
 
         protected override void UpdateSelf(ElementInput input)

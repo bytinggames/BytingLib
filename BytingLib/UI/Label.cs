@@ -17,7 +17,7 @@
             Height = height;
         }
 
-        private Label SetSizeToText(StyleRoot style)
+        protected virtual Label SetSizeToText(StyleRoot style)
         {
             Vector2 size = style.Font.Value.MeasureString(text) * style.FontScale;
             Width = size.X;
@@ -36,9 +36,9 @@
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             if (style.FontBoldColor != null)
-                style.FontBold?.Value.Draw(spriteBatch, text, absoluteRect.GetCenterAnchor(), style.FontBoldColor, style.FontScale, roundPositionTo: 1);
+                style.FontBold?.Value.Draw(spriteBatch, text, absoluteRect.GetAnchor(Anchor), style.FontBoldColor, style.FontScale, roundPositionTo: 1);
             if (style.FontColor != null)
-                style.Font.Value.Draw(spriteBatch, text, absoluteRect.GetCenterAnchor(), style.FontColor, style.FontScale, roundPositionTo: 1f);
+                style.Font.Value.Draw(spriteBatch, text, absoluteRect.GetAnchor(Anchor), style.FontColor, style.FontScale, roundPositionTo: 1f);
         }
     }
 }

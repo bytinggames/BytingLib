@@ -8,6 +8,8 @@
         public Color? FontBoldColor => GetOverride(f => f.FontBoldColor);
         public Vector2 FontScale => GetOverride(f => f.FontScale)!.Value;
         public Animation ButtonAnimation => GetOverride(f => f.ButtonAnimation)!;
+        public Padding? ButtonPadding => GetOverride(f => f.ButtonPadding)!;
+        public bool ButtonPaddingToButtonBorder => GetOverride(f => f.ButtonPaddingToButtonBorder)!;
 
         public StyleBase StyleBase { get; set; }
         private List<Style> styleOverrides = new();

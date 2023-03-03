@@ -6,11 +6,11 @@
         public bool Vertical { get; set; }
         public float Gap { get; set; }
 
-        public PanelStack(bool vertical, Padding? padding, float gap, Vector2? anchor = null, Color? color = null)
+        public PanelStack(float gap = 0f, bool vertical = true, Padding? padding = null, Vector2? anchor = null, Color? color = null)
         {
+            Gap = gap;
             Vertical = vertical;
             Padding = padding;
-            Gap = gap;
             if (anchor != null)
                 Anchor = anchor.Value;
             Color = color;

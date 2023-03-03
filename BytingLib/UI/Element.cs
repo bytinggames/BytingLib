@@ -1,4 +1,6 @@
-﻿namespace BytingLib.UI
+﻿using static BytingLib.AnimationData;
+
+namespace BytingLib.UI
 {
     struct ElementIteration
     {
@@ -12,7 +14,7 @@
         }
     }
 
-    public class Element
+    public class Element : IDisposable
     {
         public Element? Parent { get; private set; }
         public List<Element> Children { get; } = new List<Element>();
@@ -86,7 +88,7 @@
         public virtual void UpdateTree(Rect rect)
         {
             absoluteRect = rect.CloneRect().Round();
-
+            
             rect = rect.CloneRect();
             Padding?.RemoveFromRect(rect);
             UpdateTreeModifyRect(rect);
@@ -95,7 +97,7 @@
             {
                 var c = Children[i];
                 Rect childRect = GetChildRect(rect, c);
-                Children[i].UpdateTree(childRect);
+                c.UpdateTree(childRect);
             }
         }
 
@@ -167,11 +169,31 @@
             return this;
         }
 
+        public Element SetStyle(Style style)
+        {
+            Style = style;
+            return this;
+        }
+
         public Vector2 GetPaddingSize() => Padding == null ? Vector2.Zero : Padding.GetSize();
 
         public virtual void SetDirty()
         {
             Parent?.SetDirty();
+        }
+
+        public void Dispose()
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].Dispose();
+            }
+
+            DisposeSelf();
+        }
+
+        protected virtual void DisposeSelf()
+        {
         }
     }
 }
