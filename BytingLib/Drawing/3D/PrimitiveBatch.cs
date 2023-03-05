@@ -86,6 +86,23 @@
             InstanceBuffer?.Dispose();
         }
 
+        public void Draw(Axis3 axis, Color color) => Lines.Draw(axis, color);
+        public void Draw(Line3 line, Color color) => Lines.Draw(line, color);
+        public void Draw(Ray3 ray, Color color) => Lines.Draw(ray, color);
+        public void Draw(Vector3 pos, Color color, float size) => Lines.Draw(pos, color, size);
+        public void Draw(Point3 point, Color color, float size) => Lines.Draw(point, color, size);
+        public void Draw(Plane3 plane, Color color) => Triangles.Draw(plane, color);
+        public void Draw(Plane3 plane, Color color, float infinity) => Triangles.Draw(plane, color, infinity);
+        public void Draw(Plane3 plane, Color color, float infinity, Vector3 axis1) => Triangles.Draw(plane, color, infinity, axis1);
+        public void Draw(Triangle3 triangle, Color color) => Triangles.Draw(triangle, color);
+        public void Draw(AABB3 aabb, Color color) => Boxes.Draw(aabb, color);
+        public void Draw(Box3 box, Color color) => Boxes.Draw(box, color);
+        public void Draw(Sphere3 sphere, Color color) => Spheres.Draw(sphere, color);
+        public void Draw(AxisRadius3 axisRadius, Color color) => OpenCylinders.Draw(axisRadius, color);
+        public void Draw(AxisRadius3 axisRadius, Color color, Vector3 length) => OpenCylinders.Draw(axisRadius, color, length);
+        public void DrawOpenCylinder(Cylinder3 cylinder, Color color) => OpenCylinders.Draw(cylinder, color);
+        public void Draw(Cylinder3 cylinder, Color color) => Cylinders.Draw(cylinder, color);
+
         public void Draw(Capsule3 capsule, Color color)
         {
             Spheres.Draw(capsule.Sphere0, color);
@@ -98,17 +115,13 @@
             if (shapeCollection.ShapesEnabled == null)
             {
                 for (int i = 0; i < shapeCollection.Shapes.Count; i++)
-                {
                     Draw(shapeCollection.Shapes[i], color);
-                }
             }
             else
             {
                 for (int i = 0; i < shapeCollection.Shapes.Count; i++)
-                {
                     if (shapeCollection.ShapesEnabled.Count <= i || shapeCollection.ShapesEnabled[i])
                         Draw(shapeCollection.Shapes[i], color);
-                }
             }
         }
 

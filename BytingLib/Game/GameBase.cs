@@ -2,7 +2,7 @@
 {
     public abstract class GameBase : DisposableContainer, IGameBase
     {
-        protected readonly GraphicsDevice graphicsDevice;
+        protected readonly GraphicsDevice gDevice;
         protected readonly SpriteBatch spriteBatch;
         protected readonly HotReloadContent? hotReloadContent;
         protected readonly WindowManager windowManager;
@@ -14,12 +14,12 @@
 
         public GameBase(GameWrapper g, bool contentModdingOnRelease)
         {
-            graphicsDevice = g.GraphicsDevice;
+            gDevice = g.GraphicsDevice;
             graphics = g.Graphics;
             g.Window.AllowUserResizing = true;
             Exit = g.Exit;
 
-            spriteBatch = new SpriteBatch(graphicsDevice);
+            spriteBatch = new SpriteBatch(gDevice);
             disposables.Add(spriteBatch);
 
             contentRawPipe = Use(new ContentManagerRawPipe(new ContentManagerRaw(g.Services, "Content")));
@@ -56,7 +56,7 @@
         {
             // draw black blend to hint to the user, that the window isn't active
             spriteBatch.Begin();
-            spriteBatch.DrawRectangle(new Rect(0, 0, graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height), Color.Black * 0.25f);
+            spriteBatch.DrawRectangle(new Rect(0, 0, gDevice.Viewport.Width, gDevice.Viewport.Height), Color.Black * 0.25f);
             spriteBatch.End();
         }
 

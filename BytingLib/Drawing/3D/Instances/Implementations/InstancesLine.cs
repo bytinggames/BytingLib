@@ -24,16 +24,17 @@
             AddTransposed(new(ToRenderTransform(ray), color));
         }
 
-        public void Draw(Point3 point, Color color, float size)
+        public void Draw(Point3 point, Color color, float size) => Draw(point.Pos, color, size);
+        public void Draw(Vector3 pos, Color color, float size)
         {
             Vector3 dir = new Vector3(size, size, size);
-            AddTransposed(new(ToRenderTransform(point.Pos - dir, dir * 2f), color));
+            AddTransposed(new(ToRenderTransform(pos - dir, dir * 2f), color));
             dir = new Vector3(-size, size, size);
-            AddTransposed(new(ToRenderTransform(point.Pos - dir, dir * 2f), color));
+            AddTransposed(new(ToRenderTransform(pos - dir, dir * 2f), color));
             dir = new Vector3(size, -size, size);
-            AddTransposed(new(ToRenderTransform(point.Pos - dir, dir * 2f), color));
+            AddTransposed(new(ToRenderTransform(pos - dir, dir * 2f), color));
             dir = new Vector3(size, size, -size);
-            AddTransposed(new(ToRenderTransform(point.Pos - dir, dir * 2f), color));
+            AddTransposed(new(ToRenderTransform(pos - dir, dir * 2f), color));
         }
 
         private static Matrix ToRenderTransform(Line3 line)

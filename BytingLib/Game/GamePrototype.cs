@@ -31,7 +31,7 @@ namespace BytingLib
             basePaths = paths;
             saveStateManager = new SaveStateManager(paths);
 
-            screenshotter = new Screenshotter(graphicsDevice, paths);
+            screenshotter = new Screenshotter(gDevice, paths);
 
             InitWindowAndGraphics();
         }
