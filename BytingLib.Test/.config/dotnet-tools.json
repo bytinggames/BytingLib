@@ -2,10 +2,10 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "dotnet-mgcb": {
-      "version": "3.8.1.303",
+    "bytinggames-dotnet-mgcb": {
+      "version": "3.8.1.9-develop",
       "commands": [
-        "mgcb"
+        "mgcb-byting"
       ]
     },
     "dotnet-mgcb-editor": {

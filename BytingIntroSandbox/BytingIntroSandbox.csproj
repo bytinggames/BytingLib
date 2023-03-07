@@ -25,9 +25,6 @@
 		<Message Text="Restoring dotnet tools" Importance="High" />
 		<Exec Command="dotnet tool restore" />
 	</Target>
-	<ItemGroup>
-	  <PackageReference Include="BytingGames.MonoGame.Content.Builder.Task" Version="3.8.1.1-develop" />
-	</ItemGroup>
   <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
   </ItemGroup>
