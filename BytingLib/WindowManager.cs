@@ -56,7 +56,7 @@ namespace BytingLib
                     Window.IsBorderless = false;
 
                 // set position to last window position, or if that is outside of the current screen bounds, simply center the window on the current screen
-                Rectangle bounds = GraphicsAdapter.GetCurrentDisplayBounds();
+                Rectangle bounds = GraphicsAdapter.GetCurrentDisplayBounds(Window.Handle);
                 if (bounds.Contains(windowRectBeforeFullscreen.Location))
                     Window.Position = windowRectBeforeFullscreen.Location;
                 else
@@ -70,7 +70,7 @@ namespace BytingLib
 
                 if (!realFullscreen)
                 {
-                    var bounds = GraphicsAdapter.GetCurrentDisplayBounds();
+                    var bounds = GraphicsAdapter.GetCurrentDisplayBounds(Window.Handle);
                     Window.IsBorderless = true;
                     Window.Position = new Point(bounds.X, bounds.Y);
                 }
@@ -111,7 +111,7 @@ namespace BytingLib
             if (keepFullscreen)
                 graphics.ToggleFullScreen();
 
-            int screenIndex = GraphicsAdapter.GetCurrentDisplayIndex();
+            int screenIndex = GraphicsAdapter.GetCurrentDisplayIndex(Window.Handle);
             int screenCount = GraphicsAdapter.GetDisplayCount();
             screenIndex = (screenIndex + 1) % screenCount;
             Rectangle screenBounds = GraphicsAdapter.GetDisplayBounds(screenIndex);
