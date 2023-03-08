@@ -3,21 +3,20 @@
     public class EffectParameterStack<T> : IEffectParameterStack
     {
         private readonly Stack<T> valueStack = new();
-        private EffectParameter effectParameter;
+        private EffectParameter? effectParameter;
         private Func<T, IDisposable?>? useChain = null;
         private readonly Ref<Effect> effect;
+        private readonly string parameterName;
         private T? lastAppliedValue = default;
         bool dirty;
 
         public EffectParameterStack(Ref<Effect> effect, string parameter, T? _default)
         {
             effectParameter = effect.Value.Parameters[parameter];
-            if (effectParameter == null)
-                throw new KeyNotFoundException("couldn't find parameter '" + parameter + "' in effect " + effect.Value.Name);
 
             effect.OnReload += RefreshEffect;
             this.effect = effect;
-
+            this.parameterName = parameter;
             if (_default != null)
             {
                 PushAndSetDirty(_default);
@@ -61,12 +60,12 @@
 
         public void RefreshEffect(Ref<Effect> effect)
         {
-            effectParameter = effect.Value.Parameters[effectParameter.Name];
+            effectParameter = effect.Value.Parameters[parameterName];
         }
 
         public void Apply()
         {
-            if (!dirty)
+            if (!dirty || effectParameter == null)
                 return;
             //if (lastAppliedValue == null || !lastAppliedValue.Equals(valueStack.Peek()))
             {
