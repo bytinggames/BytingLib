@@ -4,6 +4,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BytingGames.MonoGame.Framework.Content.Pipeline" Version="3.8.1.9-develop" />
-    <PackageReference Include="BytingGames.MonoGame.Framework.DesktopGL" Version="3.8.1.9-develop" />
+	  <PackageReference Include="BytingGames.MonoGame.Framework.DesktopGL" Version="3.8.1.10-develop" />
   </ItemGroup>
 </Project>
