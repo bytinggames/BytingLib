@@ -6,8 +6,8 @@ namespace BuildTemplates.Test
     [TestClass]
     public class ContentTemplateTest
     {
-        //readonly string contentPath = Path.Combine("..", "..", "..", "Content");
-        readonly string contentPath = @"D:\Documents\Visual Studio 2017\Projects\SE\SE\Content";
+        readonly string contentPath = Path.Combine("..", "..", "..", "Content");
+        //readonly string contentPath = @"D:\Documents\Visual Studio 2017\Projects\SE\SE\Content";
         readonly string nameSpace = "BytingLibGame";
 
         [TestMethod]
