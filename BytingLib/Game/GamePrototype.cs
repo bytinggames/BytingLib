@@ -117,6 +117,9 @@ namespace BytingLib
 
         public override void DrawInactiveOnce()
         {
+#if DEBUG
+            base.DrawInactiveOnce();
+#endif
         }
 
         public override void Dispose()

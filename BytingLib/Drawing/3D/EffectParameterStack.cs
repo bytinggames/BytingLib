@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using System.Diagnostics;
+
+namespace BytingLib
 {
     public class EffectParameterStack<T> : IEffectParameterStack
     {
@@ -14,8 +16,11 @@
         {
             effectParameter = effect.Value.Parameters[parameter];
             if (effectParameter == null)
-                throw new KeyNotFoundException("couldn't find parameter '" + parameter + "' in effect " + effect.Value.Name);
-
+            {
+                string msg = "couldn't find parameter '" + parameter + "' in effect " + effect.Value.Name;
+                Debug.WriteLine("Warning: " + msg);
+                //throw new KeyNotFoundException(msg);
+            }
             effect.OnReload += RefreshEffect;
             this.effect = effect;
             this.parameterName = parameter;
