@@ -53,6 +53,15 @@ namespace BytingLib
                 i = str.Length;
         }
 
+        public void SetPosition(int position)
+        {
+            i = position;
+            if (i < 0)
+                i = 0;
+            if (i > str.Length)
+                i = str.Length;
+        }
+
         public string ReadToChar(char untilChar)
         {
             int start = i;

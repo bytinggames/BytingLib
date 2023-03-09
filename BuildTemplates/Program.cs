@@ -24,7 +24,7 @@
 
             var projectPath = Environment.CurrentDirectory;
             string contentPath = Path.Combine(projectPath, "Content");
-            (string code, string mgcbOutput, string locaCode) = ContentTemplate.Create(contentPath + "/", nameSpace, referencedDlls, loadOnStartup);
+            (string code, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath + "/", nameSpace, referencedDlls, loadOnStartup);
 
             string mgcbFile = Path.Combine(contentPath, "Content.Generated.mgcb");
             File.WriteAllText(mgcbFile, mgcbOutput);
@@ -47,6 +47,12 @@ namespace {nameSpace}
 
             string locaCodeFile = Path.Combine(contentPath, "Loca.Generated.cs");
             File.WriteAllText(locaCodeFile, locaCode);
+
+
+            foreach (var shader in shaders)
+            {
+                shader.WriteToFile();
+            }
         }
     }
 }

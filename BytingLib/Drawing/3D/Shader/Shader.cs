@@ -8,8 +8,8 @@
         protected List<IEffectParameterStack> parameters = new();
         private string currentTechnique;
 
-        protected abstract string TechniqueNonInstanced { get; }
-        protected abstract string TechniqueInstanced { get; }
+        protected virtual string TechniqueNonInstanced => "Render";
+        protected virtual string TechniqueInstanced => "RenderInstanced";
 
         public Shader(Ref<Effect> effect)
         {
@@ -27,6 +27,11 @@
         }
 
         protected void AddParam(IEffectParameterStack parameter) => parameters.Add(parameter);
+
+        /// <summary>
+        /// Used for calling Initialize from generated c# shader code
+        /// </summary>
+        protected virtual void Initialize() { }
 
         #region Apply
 
@@ -96,7 +101,7 @@
 
         public virtual IDisposable? UseMaterial(MaterialGL material) => null;
         protected virtual IDisposable? UseVertexDeclaration(VertexDeclaration vertexDeclaration) => null;
-        protected abstract IDisposable? UseInstancedRender();
+        protected virtual IDisposable? UseInstancedRender() => null;
 
         public IDisposable UseRasterizer(RasterizerState rasterizerState)
         {

@@ -1,4 +1,6 @@
-﻿namespace BuildTemplates
+﻿using System.Linq;
+
+namespace BuildTemplates
 {
     public class ContentTemplate
     {
@@ -94,6 +96,20 @@
                 }
             }
 
+            internal void GetFileNamesByExtensionRecursively(List<string> collectedFiles, string extension, string currentDir)
+            {
+                currentDir = Path.Combine(currentDir, name);
+                for (int i = 0; i < files.Count; i++)
+                {
+                    if (files[i].Extension == extension)
+                        collectedFiles.Add(Path.Combine(currentDir, files[i].FullName));
+                }
+                foreach (var folder in folders)
+                {
+                    folder.Value.GetFileNamesByExtensionRecursively(collectedFiles, extension, currentDir);
+                }
+            }
+
             private void PrintMGCBRecursively(string contentDirectory, ref string assets, CustomContent customContent)
             {
                 if (!string.IsNullOrEmpty(contentDirectory))
@@ -144,46 +160,46 @@
         }
         class File
         {
-            private readonly string fullName;
+            public string FullName { get; }
+            public string Extension { get; }
             private readonly bool loadOnStartup;
             private readonly string name;
-            private readonly string extension;
             private readonly string? assetType;
             private readonly string? customPrintDeclare;
             private readonly string? customPrintInit;
 
             public File(string _name, bool loadOnStartup)
             {
-                fullName = _name;
+                FullName = _name;
                 this.loadOnStartup = loadOnStartup;
                 name = _name;
-                extension = Path.GetExtension(name)[1..];
-                this.name = _name.Remove(_name.Length - extension.Length - 1);
+                Extension = Path.GetExtension(name)[1..];
+                this.name = _name.Remove(_name.Length - Extension.Length - 1);
 
                 string? declare = null;
                 string? init = null;
                 string? varName = null;
 
-                if (extension == "ani")
+                if (Extension == "ani")
                 {
                     varName = ToVariableName(name) + "Ani";
                     declare = $"public Animation";
                     init = $"disposables.Use(collector.UseAnimation(\"{{0}}{name}\"))";
                 }
-                else if (extension == "txt")
+                else if (Extension == "txt")
                 {
                     varName = ToVariableName(name) + "Txt";
                     declare = $"public Ref<string>";
-                    init = $"disposables.Use(collector.Use<string>(\"{{0}}{fullName}\"))";
+                    init = $"disposables.Use(collector.Use<string>(\"{{0}}{FullName}\"))";
                 }
-                else if (extension == "bin")
+                else if (Extension == "bin")
                 {
                     varName = ToVariableName(name) + "Bytes";
                     declare = $"public Ref<byte[]>";
-                    init = $"disposables.Use(collector.Use<byte[]>(\"{{0}}{fullName}\"))";
+                    init = $"disposables.Use(collector.Use<byte[]>(\"{{0}}{FullName}\"))";
                 }
                 else
-                    assetType = AssetTypes.Convert(extension)!;
+                    assetType = AssetTypes.Convert(Extension)!;
 
                 if (declare != null)
                 {
@@ -254,17 +270,17 @@
 
             public string? PrintMGCB(string contentDirectory, CustomContent customContent)
             {
-                string? process = customContent.GetCustomCode(contentDirectory + fullName);
+                string? process = customContent.GetCustomCode(contentDirectory + FullName);
                 if (process == null)
                     return null;
 
-                return $@"#begin {contentDirectory}{fullName}{process}
+                return $@"#begin {contentDirectory}{FullName}{process}
 
 ";
             }
         }
 
-        public static (string output, string mgcbOutput, string locaCode) Create(string contentPath, string nameSpace, string[] referencedDlls, bool loadOnStartup)
+        public static (string output, string mgcbOutput, string locaCode, ShaderFile[] shaders) Create(string contentPath, string nameSpace, string[] referencedDlls, bool loadOnStartup)
         {
             if (!contentPath.EndsWith("/") && !contentPath.EndsWith("\\"))
                 contentPath += "/";
@@ -274,6 +290,15 @@
             List<string> locaFiles = new();
             LookIntoDirRecursive(contentPath, contentPath, root, ref locaFiles, loadOnStartup);
 
+            List<string> fxFiles = new();
+            root.GetFileNamesByExtensionRecursively(fxFiles, "fx", Path.GetFullPath(Path.Combine(contentPath, "..")));
+            const string effectRootRelative = "Effects";
+            for (int i = fxFiles.Count - 1; i >= 0; i--)
+            {
+                if (!fxFiles[i].StartsWith(Path.GetFullPath(Path.Combine(contentPath, effectRootRelative + Path.DirectorySeparatorChar))))
+                    fxFiles.RemoveAt(i);
+            }
+
             string output = root.Print("", Folder.tab);
 
             CustomContent customContent = new(contentPath);
@@ -281,7 +306,10 @@
 
             string locaCode = LocaGenerator.Generate(nameSpace, locaFiles.ToArray());
 
-            return (output, mgcbOutput, locaCode);
+            string effectRootDir = Path.Combine(contentPath, effectRootRelative);
+            ShaderFile[] shaders = ShaderGenerator.Generate(nameSpace, fxFiles, effectRootDir, Path.GetFullPath(Path.Combine(contentPath, "..", "Rendering", "Shaders")));
+
+            return (output, mgcbOutput, locaCode, shaders);
         }
 
         private static void LookIntoDirRecursive(string contentPath, string currentPath, Folder root, ref List<string> locaFiles, bool loadOnStartup)
