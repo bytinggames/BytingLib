@@ -14,7 +14,7 @@ namespace BytingLib
         private readonly Screenshotter screenshotter;
 
         public GamePrototype(GameWrapper g, DefaultPaths paths,
-            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false) 
+            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true) 
             : base(g, contentModdingOnRelease)
         {
             updateSpeed = new GameSpeed(g.TargetElapsedTime);
@@ -33,14 +33,17 @@ namespace BytingLib
 
             screenshotter = new Screenshotter(gDevice, paths);
 
-            InitWindowAndGraphics();
+            InitWindowAndGraphics(vsync);
         }
 
-        protected virtual void InitWindowAndGraphics()
+        protected virtual void InitWindowAndGraphics(bool vsync)
         {
-            // enable vsync for disabling stuttering, which probably appears mostly in window mode
-            graphics.SynchronizeWithVerticalRetrace = true;
-            graphics.ApplyChanges();
+            if (vsync)
+            {
+                // enable vsync for disabling stuttering, which probably appears mostly in window mode
+                graphics.SynchronizeWithVerticalRetrace = true;
+                graphics.ApplyChanges();
+            }
             // maximize window
             windowManager.MaximizeWindow();
         }
@@ -117,9 +120,9 @@ namespace BytingLib
 
         public override void DrawInactiveOnce()
         {
-#if DEBUG
-            base.DrawInactiveOnce();
-#endif
+//#if DEBUG
+//            base.DrawInactiveOnce();
+//#endif
         }
 
         public override void Dispose()
