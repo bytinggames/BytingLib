@@ -4,8 +4,8 @@ namespace BytingLib
 {
     public class NodeGL
     {
-        private readonly MeshGL? mesh;
-        private readonly SkinGL? skin;
+        public MeshGL? Mesh { get; }
+        public SkinGL? Skin { get; }
         private Matrix localTransform;
 
         private int globalTransformCalculationId;
@@ -29,8 +29,8 @@ namespace BytingLib
             JsonNode? t;
             if ((t = n["mesh"]) != null)
             {
-                mesh = model.Meshes?.Get(t.GetValue<int>());
-                skin = (t = n["skin"]) == null ? null : model.Skins?.Get(t.GetValue<int>());
+                Mesh = model.Meshes?.Get(t.GetValue<int>());
+                Skin = (t = n["skin"]) == null ? null : model.Skins?.Get(t.GetValue<int>());
             }
             if ((t = n["children"]) != null)
             {
@@ -87,12 +87,12 @@ namespace BytingLib
         private void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Matrix GlobalNodeTransform)
         {
             GlobalNodeTransform = localTransform * GlobalNodeTransform;
-            using (shaderSkin == null ? null : skin?.Use(shaderSkin, GlobalNodeTransform))
+            using (shaderSkin == null ? null : Skin?.Use(shaderSkin, GlobalNodeTransform))
             {
-                if (mesh != null)
+                if (Mesh != null)
                 {
                     using (shader.World.Use(f => GlobalNodeTransform * f))
-                        mesh.Draw(shader, shaderMaterial);
+                        Mesh.Draw(shader, shaderMaterial);
                 }
 
                 for (int i = 0; i < Children.Count; i++)
@@ -146,6 +146,13 @@ namespace BytingLib
         internal void InitializeForAnimation()
         {
             JointTransform ??= new JointTransform(localTransform);
+        }
+
+        public Matrix GetGlobalTransform()
+        {
+            if (Parent == null)
+                return localTransform;
+            return Parent.GetGlobalTransform() * localTransform;
         }
     }
 }

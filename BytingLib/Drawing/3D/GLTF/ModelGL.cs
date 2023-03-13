@@ -161,7 +161,7 @@ namespace BytingLib
                 }
             }
 
-            vertexBuffer = disposables.Use(new VertexBuffer(gDevice, vertexDeclaration, vertexCount, BufferUsage.WriteOnly));
+            vertexBuffer = disposables.Use(new VertexBuffer(gDevice, vertexDeclaration, vertexCount, BufferUsage.None));
             vertexBuffer.SetData(vertexData);
 
             vertexBuffers.Add(key, vertexBuffer);
@@ -180,7 +180,7 @@ namespace BytingLib
             int indicesCount = indicesAccessor["count"]!.GetValue<int>();
             IndexElementSize indexElementSize = indicesData.Length / indicesCount != 2 ? IndexElementSize.ThirtyTwoBits : IndexElementSize.SixteenBits;
 
-            indexBuffer = disposables.Use(new IndexBuffer(gDevice, indexElementSize, indicesCount, BufferUsage.WriteOnly));
+            indexBuffer = disposables.Use(new IndexBuffer(gDevice, indexElementSize, indicesCount, BufferUsage.None));
             indexBuffer.SetData(indicesData);
 
             indexBuffers.Add(id, indexBuffer);

@@ -91,15 +91,9 @@
 
         public BoundingBox GetBoundingBox()
         {
-            BoundingBox box = new BoundingBox();
-            box.Min = box.Max = this[0];
-            for (int i = 1; i < 3; i++)
-            {
-                box.Min = Vector3.Min(box.Min, this[i]);
-                box.Max = Vector3.Max(box.Max, this[i]);
-            }
-
-            return box;
+            return new BoundingBox(
+                Vector3.Min(this[0], Vector3.Min(this[1], this[2])),
+                Vector3.Max(this[0], Vector3.Max(this[1], this[2])));
         }
 
         public virtual Vector3 this[int index] { get => Vertices[index]; set => Vertices[index] = value; }

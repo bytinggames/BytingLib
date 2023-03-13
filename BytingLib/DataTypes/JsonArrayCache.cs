@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Nodes;
+﻿using System.Collections;
+using System.Text.Json.Nodes;
 
 namespace BytingLib
 {
-    public class JsonArrayCache<TValue> where TValue : class
+    public class JsonArrayCache<TValue> : IEnumerable<TValue> where TValue : class
     {
         protected TValue?[] dict;
         protected readonly JsonArray container;
@@ -42,6 +43,12 @@ namespace BytingLib
             }
         }
 
+        public void ForEach(Action<TValue> action)
+        {
+            for (int i = 0; i < TotalCount; i++)
+                action(Get(i)!);
+        }
+
         public void Clear()
         {
             for (int i = 0; i < dict.Length; i++)
@@ -49,5 +56,13 @@ namespace BytingLib
                 dict[i] = null;
             }
         }
+
+        public IEnumerator<TValue> GetEnumerator()
+        {
+            for (int i = 0; i < TotalCount; i++)
+                yield return Get(i)!;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
