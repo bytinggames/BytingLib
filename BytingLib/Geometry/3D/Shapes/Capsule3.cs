@@ -30,9 +30,9 @@
                 Spheres[1].Pos = value + SphereDistance;
             }
         }
-        public float X { get => Spheres[0].X; set => Spheres[0].X = value; }
-        public float Y { get => Spheres[0].Y; set => Spheres[0].Y = value; }
-        public float Z { get => Spheres[0].Z; set => Spheres[0].Z = value; }
+        public float X { get => Spheres[0].X; set { AxisRadius.X = Spheres[0].X = value; Spheres[1].X = value + SphereDistance.X; } }
+        public float Y { get => Spheres[0].Y; set { AxisRadius.Y = Spheres[0].Y = value; Spheres[1].Y = value + SphereDistance.Y; } }
+        public float Z { get => Spheres[0].Z; set { AxisRadius.X = Spheres[0].Z = value; Spheres[1].Z = value + SphereDistance.Z; } }
 
         public Sphere3 Sphere0 => Spheres[0];
         public Sphere3 Sphere1 => Spheres[1];
