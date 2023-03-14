@@ -2,6 +2,7 @@
 {
     public abstract class GameBase : DisposableContainer, IGameBase
     {
+        protected readonly GameWrapper gameWrapper;
         protected readonly GraphicsDevice gDevice;
         protected readonly SpriteBatch spriteBatch;
         protected readonly HotReloadContent? hotReloadContent;
@@ -14,6 +15,7 @@
 
         public GameBase(GameWrapper g, bool contentModdingOnRelease)
         {
+            gameWrapper = g;
             gDevice = g.GraphicsDevice;
             graphics = g.Graphics;
             g.Window.AllowUserResizing = true;
