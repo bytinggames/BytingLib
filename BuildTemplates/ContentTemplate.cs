@@ -307,7 +307,7 @@ namespace BuildTemplates
             string locaCode = LocaGenerator.Generate(nameSpace, locaFiles.ToArray());
 
             string effectRootDir = Path.Combine(contentPath, effectRootRelative);
-            ShaderFile[] shaders = ShaderGenerator.Generate(nameSpace, fxFiles, effectRootDir, Path.GetFullPath(Path.Combine(contentPath, "..", "Rendering", "Shaders")));
+            ShaderFile[] shaders = ShaderGenerator.Generate(nameSpace, fxFiles, effectRootDir, Path.GetFullPath(Path.Combine(contentPath, "..", "Shaders")));
 
             return (output, mgcbOutput, locaCode, shaders);
         }
