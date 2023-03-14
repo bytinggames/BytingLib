@@ -29,5 +29,24 @@
 	
 	<Target Name="DeleteNetCoreBeautyFile" AfterTargets="NetCoreBeauty">
 		<Delete Files="$(PublishDir)NetCoreBeauty" />
+
+		<!-- move x64 and x86 directory to libraries -->
+		<ItemGroup>
+			<_CopyItems Include="$(PublishDir)x64/*.*" />
+		</ItemGroup>
+		<Move
+			SourceFiles="@(_CopyItems)"
+			DestinationFolder="$(PublishDir)libraries/x64"
+			/>
+		
+		<ItemGroup>
+			<_CopyItems2 Include="$(PublishDir)x86/*.*" />
+		</ItemGroup>
+		<Move
+			SourceFiles="@(_CopyItems2)"
+			DestinationFolder="$(PublishDir)libraries/x86"
+			/>
+		
+		<RemoveDir Directories="$(PublishDir)x64;$(PublishDir)x86" />
 	</Target>
 </Project>
