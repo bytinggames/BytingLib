@@ -6,10 +6,10 @@ namespace BytingLib
     public class InputStuff : IDisposable, IUpdate
     {
         protected readonly IStuffDisposable stuff;
-        protected readonly InputRecordingManager<FullInput> inputRecordingManager;
         protected readonly InputRecordingTriggerer<FullInput> inputRecordingTriggerer;
         protected readonly StructSource<FullInput> inputSource;
 
+        public InputRecordingManager<FullInput> InputRecordingManager { get; }
         public KeyInput Keys { get; }
         public MouseInput Mouse { get; }
         public GamePadInput GamePad { get; }
@@ -54,8 +54,8 @@ namespace BytingLib
             stuff.Add(Mouse = new MouseInput(() => inputSource.Current.MouseState, () => inputSource.Current.MetaState.IsActivatedThisUpdate));
             stuff.Add(GamePad = new GamePadInput(() => inputSource.Current.GamePadState));
 
-            stuff.Add(inputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));
-            stuff.Add(inputRecordingTriggerer = new(KeysDev, inputRecordingManager, basePaths.InputRecordingsDir));
+            stuff.Add(InputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));
+            stuff.Add(inputRecordingTriggerer = new(KeysDev, InputRecordingManager, basePaths.InputRecordingsDir));
         }
 
         public void Update()
