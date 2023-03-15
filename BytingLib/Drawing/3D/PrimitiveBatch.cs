@@ -147,6 +147,28 @@
             }
         }
 
+        public void DrawCage(Vector3 pos, Vector3 size, Color color)
+        {
+            Vector3 length = new Vector3(size.X, 0, 0);
+
+            Lines.Draw(pos, length, color);
+            Lines.Draw(pos + new Vector3(0, size.Y, 0), length, color);
+            Lines.Draw(pos + new Vector3(0, size.Y, size.Z), length, color);
+            Lines.Draw(pos + new Vector3(0, 0, size.Z), length, color);
+
+            length = new Vector3(0, size.Y, 0);
+            Lines.Draw(pos, length, color);
+            Lines.Draw(pos + new Vector3(size.X, 0, 0), length, color);
+            Lines.Draw(pos + new Vector3(size.X, 0, size.Z), length, color);
+            Lines.Draw(pos + new Vector3(0, 0, size.Z), length, color);
+
+            length = new Vector3(0, 0, size.Z);
+            Lines.Draw(pos, length, color);
+            Lines.Draw(pos + new Vector3(size.X, 0, 0), length, color);
+            Lines.Draw(pos + new Vector3(size.X, size.Y, 0), length, color);
+            Lines.Draw(pos + new Vector3(0, size.Y, 0), length, color);
+        }
+
         class InstancesAndBuffer
         {
             public IInstances<VertexInstanceTransformColor> Instances { get; }

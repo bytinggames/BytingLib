@@ -9,6 +9,11 @@
             this.infinity = infinity;
         }
 
+        public void Draw(Vector3 pos, Vector3 dir, Color color)
+        {
+            AddTransposed(new(ToRenderTransform(pos, dir), color));
+        }
+
         public void Draw(Line3 line, Color color)
         {
             AddTransposed(new(ToRenderTransform(line), color));
