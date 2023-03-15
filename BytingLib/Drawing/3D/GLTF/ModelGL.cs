@@ -233,11 +233,6 @@ namespace BytingLib
             Scenes?.Get(SceneIndex)?.Draw(shader, shaderMaterial, shaderSkin);
         }
 
-        public NodeGL? FindNode(string name)
-        {
-            return Scenes?.Get(SceneIndex)?.FindNode(name);
-        }
-
         public int? GetAnimationIndex(string name)
         {
             if (animationsJsonArray == null) // no animations in json?
