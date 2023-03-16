@@ -237,6 +237,10 @@ namespace BytingLib
         {
             return Scenes?.Get(SceneIndex)?.GetNodes();
         }
+        public IEnumerable<NodeGL>? GetNodes(Func<NodeGL, bool> goDeeper)
+        {
+            return Scenes?.Get(SceneIndex)?.GetNodes(goDeeper);
+        }
         public NodeGL? FindNode(string name)
         {
             return GetNodes()?.FirstOrDefault(f => f.Name == name);
