@@ -169,6 +169,43 @@
             Lines.Draw(pos + new Vector3(0, size.Y, 0), length, color);
         }
 
+        public void Draw(BoundingFrustum frustum, Color color)
+        {
+            var corners = frustum.GetCorners();
+
+            // side planes
+            for (int i = 0; i < 4; i++)
+            {
+                int i2 = (i + 1) % 4;
+                Triangles.Draw(corners[i], corners[4 + i], corners[i2], color);
+                Triangles.Draw(corners[4 + i], corners[4 + i2], corners[i2], color);
+            }
+            // near plane
+            Triangles.Draw(corners[0], corners[1], corners[2], color);
+            Triangles.Draw(corners[0], corners[2], corners[3], color);
+
+            // far plane
+            Triangles.Draw(corners[4], corners[6], corners[5], color);
+            Triangles.Draw(corners[4], corners[7], corners[6], color);
+        }
+
+        /// <summary>Accuracy of drawing the far plane lines is bad I think.</summary>
+        public void DrawCage(BoundingFrustum frustum, Color color)
+        {
+            var corners = frustum.GetCorners();
+
+            // side lines
+            for (int i = 0; i < 4; i++)
+                Lines.Draw(corners[i], corners[4 + i], color);
+
+            // near and far plane lines
+            for (int i = 0; i < 4; i++)
+            {
+                Lines.Draw(corners[i], corners[(i + 1) % 4] - corners[i], color);
+                Lines.Draw(corners[4 + i], corners[4 + (i + 1) % 4] - corners[4 + i], color);
+            }
+        }
+
         class InstancesAndBuffer
         {
             public IInstances<VertexInstanceTransformColor> Instances { get; }
