@@ -2,9 +2,9 @@
 
 namespace BytingLib
 {
-    public class SceneGL
+    public class SceneGL : INodeContainer
     {
-        private readonly List<NodeGL> nodes = new();
+        public List<NodeGL> Children { get; } = new();
 
         public SceneGL(ModelGL model, JsonNode n)
         {
@@ -12,28 +12,14 @@ namespace BytingLib
             for (int i = 0; i < nodesArr.Count; i++)
             {
                 int nodeId = nodesArr[i]!.GetValue<int>();
-                nodes.Add(model.Nodes!.Get(nodeId)!);
+                Children.Add(model.Nodes!.Get(nodeId)!);
             }
         }
 
         internal void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin)
         {
-            for (int i = 0; i < nodes.Count; i++)
-                nodes[i].Draw(shader, shaderMaterial, shaderSkin);
-        }
-
-        internal NodeGL? FindNode(string name)
-        {
-            NodeGL? node;
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                if (nodes[i].Name == name)
-                    return nodes[i];
-                node = nodes[i].FindNode(name);
-                if (node != null)
-                    return node;
-            }
-            return null;
+            for (int i = 0; i < Children.Count; i++)
+                Children[i].Draw(shader, shaderMaterial, shaderSkin);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace BytingLib
 {
-    public class NodeGL
+    public class NodeGL : INodeContainer
     {
         public MeshGL? Mesh { get; }
         public SkinGL? Skin { get; }
@@ -124,20 +124,6 @@ namespace BytingLib
             this.globalTransformCalculationId = globalTransformCalculationId;
         }
 
-        public NodeGL? FindNode(string name)
-        {
-            NodeGL? node;
-            for (int i = 0; i < Children.Count; i++)
-            {
-                if (Children[i].Name == name)
-                    return Children[i];
-                node = Children[i].FindNode(name);
-                if (node != null)
-                    return node;
-            }
-            return null;
-        }
-
         internal void SetParentIfNotHavingOne(NodeGL? parent)
         {
             Parent ??= parent;
@@ -152,7 +138,7 @@ namespace BytingLib
         {
             if (Parent == null)
                 return localTransform;
-            return Parent.GetGlobalTransform() * localTransform;
+            return localTransform * Parent.GetGlobalTransform();
         }
 
         /// <summary>Not the most performance efficient method.</summary>

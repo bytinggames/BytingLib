@@ -8,7 +8,7 @@ namespace BytingLib
         public int SceneIndex { get; }
 
         public JsonArrayCache<SceneGL>? Scenes { get; }
-        public ArrayCacheNode? Nodes { get; }
+        internal ArrayCacheNode? Nodes { get; }
         public JsonArrayCache<MeshGL>? Meshes { get; }
         public JsonArrayCache<MaterialGL>? Materials { get; }
         public JsonArrayCache<TextureGL>? Textures { get; }
@@ -231,6 +231,15 @@ namespace BytingLib
         public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin)
         {
             Scenes?.Get(SceneIndex)?.Draw(shader, shaderMaterial, shaderSkin);
+        }
+
+        public IEnumerable<NodeGL>? GetNodes()
+        {
+            return Scenes?.Get(SceneIndex)?.GetNodes();
+        }
+        public NodeGL? FindNode(string name)
+        {
+            return GetNodes()?.FirstOrDefault(f => f.Name == name);
         }
 
         public int? GetAnimationIndex(string name)
