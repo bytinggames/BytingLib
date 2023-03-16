@@ -37,5 +37,13 @@
                 disposables.RemoveAt(disposables.Count - 1);
             }
         }
+
+        /// <summary>Returns true if item was contained. Disposed the item anyway.</summary>
+        public virtual bool DisposeItem(IDisposable item)
+        {
+            bool removed = disposables.Remove(item);
+            item.Dispose();
+            return removed;
+        }
     }
 }
