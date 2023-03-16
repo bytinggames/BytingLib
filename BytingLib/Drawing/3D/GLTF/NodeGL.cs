@@ -154,5 +154,17 @@ namespace BytingLib
                 return localTransform;
             return Parent.GetGlobalTransform() * localTransform;
         }
+
+        /// <summary>Not the most performance efficient method.</summary>
+        public IEnumerable<NodeGL> GetParents()
+        {
+            if (Parent == null)
+                yield break;
+            yield return Parent;
+            foreach (var p in Parent.GetParents())
+            {
+                yield return p;
+            }
+        }
     }
 }
