@@ -18,6 +18,7 @@ namespace BuildTemplates
 
     public class ShaderFile
     {
+        private const string staticConstStr = "static const ";
         private readonly string nameSpace;
         private string className;
 
@@ -106,8 +107,18 @@ namespace BuildTemplates
 
                 variableCode = variableCode.Replace("\r", "");
                 string[] lineBlock = variableCode.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var line in lineBlock)
+                for (int lineIndex = 0; lineIndex < lineBlock.Length; lineIndex++)
                 {
+                    string line = lineBlock[lineIndex];
+
+                    bool constant = false;
+                    string constantValue = "";
+                    if (line.StartsWith(staticConstStr)) // "static const "
+                    {
+                        constant = true;
+                        line = line.Substring(staticConstStr.Length);
+                    }
+
                     int firstSpaceIndex = line.IndexOf(" ");
                     if (firstSpaceIndex == -1)
                         continue;
@@ -117,12 +128,22 @@ namespace BuildTemplates
                     int commentIndex = line.IndexOf("//");
                     if (commentIndex != -1 && commentIndex < semicolonIndex)
                         continue;
+
                     string hlslVarType = line.Remove(firstSpaceIndex);
                     string[] hlslVarNames = line.Substring(firstSpaceIndex + 1, semicolonIndex - (firstSpaceIndex + 1)).Split(new char[] { ',' });
                     bool[] array = new bool[hlslVarNames.Length];
 
                     for (int i = 0; i < hlslVarNames.Length; i++)
                     {
+                        if (constant)
+                        {
+                            string[] s = hlslVarNames[i].Split(new char[] { '=' });
+                            constantValue = s[1].Trim();
+                            if (hlslVarType == "float")
+                                constantValue += "f";
+                            hlslVarNames[i] = s[0].Trim();
+                        }
+
                         int arrStart = hlslVarNames[i].IndexOf("[");
                         if (arrStart == -1)
                             continue;
@@ -175,18 +196,23 @@ namespace BuildTemplates
 
                         hlslVarNames[i] = hlslVarNames[i].Trim();
 
-                        declareCode += $"\t\t{_accessor}{_override}EffectParameterStack<{currentCSharpDataType}> {hlslVarNames[i]} {{ get; }}\n";
+                        if (constant)
+                            declareCode += $"\t\t{_accessor}const {currentCSharpDataType} {hlslVarNames[i]} = {constantValue};\n";
+                        else
+                        {
+                            declareCode += $"\t\t{_accessor}{_override}EffectParameterStack<{currentCSharpDataType}> {hlslVarNames[i]} {{ get; }}\n";
 
-                        string parameterVariable = hlslVarNames[i];
-                        parameterVariable = parameterVariable[0].ToString().ToLower() + parameterVariable.Substring(1);
+                            string parameterVariable = hlslVarNames[i];
+                            parameterVariable = parameterVariable[0].ToString().ToLower() + parameterVariable.Substring(1);
 
-                        ctorParameter += $", {currentCSharpDataType} {parameterVariable}";
+                            ctorParameter += $", {currentCSharpDataType} {parameterVariable}";
 
-                        string accessVar = hlslVarNames[i];
-                        if (!textureSamplerExists && (hlslVarType == "texture2D" || hlslVarType == "Texture2D"))
-                            accessVar = "Sampler+" + accessVar;
+                            string accessVar = hlslVarNames[i];
+                            if (!textureSamplerExists && (hlslVarType == "texture2D" || hlslVarType == "Texture2D"))
+                                accessVar = "Sampler+" + accessVar;
 
-                        initCode += $"\t\t\tAddParam(this.{hlslVarNames[i]} = new(effect, \"{accessVar}\", {parameterVariable}));\n";
+                            initCode += $"\t\t\tAddParam(this.{hlslVarNames[i]} = new(effect, \"{accessVar}\", {parameterVariable}));\n";
+                        }
                     }
                 }
             }
