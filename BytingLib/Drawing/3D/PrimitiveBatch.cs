@@ -189,14 +189,13 @@
             Triangles.Draw(corners[4], corners[7], corners[6], color);
         }
 
-        /// <summary>Accuracy of drawing the far plane lines is bad I think.</summary>
         public void DrawCage(BoundingFrustum frustum, Color color)
         {
             var corners = frustum.GetCorners();
 
             // side lines
             for (int i = 0; i < 4; i++)
-                Lines.Draw(corners[i], corners[4 + i], color);
+                Lines.Draw(corners[i], corners[4 + i] - corners[i], color);
 
             // near and far plane lines
             for (int i = 0; i < 4; i++)
