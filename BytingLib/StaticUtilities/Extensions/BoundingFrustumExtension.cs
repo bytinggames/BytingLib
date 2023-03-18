@@ -86,12 +86,12 @@
                 projectionPlaneSize = new Vector2(w.Length(), h.Length()) * 2f; // no * 2 when drawing the frustum. * 2 when using the matrix for real shadow calculations
             }
 
-            Vector3 rightOrth = Vector3.Normalize(Vector3.Cross(up, normalizedDirection));
-            Vector3 upOrth = Vector3.Normalize(Vector3.Cross(rightOrth, normalizedDirection));
-
             // round position to light space coordinates
             if (shadowCascadeResolution != null)
             {
+                Vector3 rightOrth = Vector3.Normalize(Vector3.Cross(up, normalizedDirection));
+                Vector3 upOrth = Vector3.Normalize(Vector3.Cross(rightOrth, normalizedDirection));
+
                 Vector2 pixelsPerMeter = shadowCascadeResolution.Value.ToVector2() / projectionPlaneSize;
 
                 Vector2 posDot = new Vector2(Vector3.Dot(center, rightOrth), Vector3.Dot(center, upOrth));
