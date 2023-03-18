@@ -5,12 +5,14 @@
         private readonly KeyInput keys;
         private readonly InputRecordingManager<T> inputRecordingManager;
         private readonly string inputRecordingDir;
+        private readonly Action<Action> onStartPlaying;
 
-        public InputRecordingTriggerer(KeyInput devKeys, InputRecordingManager<T> inputRecordingManager, string inputRecordingDir)
+        public InputRecordingTriggerer(KeyInput devKeys, InputRecordingManager<T> inputRecordingManager, string inputRecordingDir, Action<Action> onStartPlaying)
         {
             keys = devKeys;
             this.inputRecordingManager = inputRecordingManager;
             this.inputRecordingDir = inputRecordingDir;
+            this.onStartPlaying = onStartPlaying;
             if (inputRecordingDir != null)
                 inputRecordingManager.StartRecording(GetNewRecordingFile());
         }
@@ -25,7 +27,12 @@
                 {
                     string? file = GetLastRecordingFile();
                     if (file != null)
-                        inputRecordingManager.TogglePlaying(file);
+                    {
+                        onStartPlaying(() =>
+                        {
+                            inputRecordingManager.TogglePlaying(file);
+                        });
+                    }
                 }
             }
         }

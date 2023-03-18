@@ -13,6 +13,8 @@ namespace BytingLib
 
         private readonly Screenshotter screenshotter;
 
+        private Action? startRecordingPlayback;
+
         public GamePrototype(GameWrapper g, DefaultPaths paths,
             bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true) 
             : base(g, contentModdingOnRelease)
@@ -26,7 +28,7 @@ namespace BytingLib
             };
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, null, typeof(MarkupShortcutAttribute), converters);
 
-            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths);
+            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f);
 
             basePaths = paths;
             saveStateManager = new SaveStateManager(paths);
@@ -60,6 +62,13 @@ namespace BytingLib
             if (input.Keys.F12.Pressed)
             {
                 screenshotter.TakeScreenshot();
+            }
+
+            if (startRecordingPlayback != null)
+            {
+                var copy = startRecordingPlayback;
+                startRecordingPlayback = null;
+                copy.Invoke();
             }
         }
 
