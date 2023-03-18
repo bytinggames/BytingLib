@@ -68,7 +68,7 @@
             w -= normalizedDirection * Vector3.Dot(w, normalizedDirection);
             h -= normalizedDirection * Vector3.Dot(h, normalizedDirection);
 
-            float wLength_2 = w.Length();// / 2f; / 2 when drawing the frustum. no / 2 when using the matrix for real shadow calculations
+            float wLength_2 = w.Length();// / 2f;// / 2 when drawing the frustum. no / 2 when using the matrix for real shadow calculations
             float hLength_2 = h.Length();// / 2f;
 
             Matrix view = Matrix.CreateLookAt(center, center - normalizedDirection, -up);
