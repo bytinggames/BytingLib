@@ -13,7 +13,7 @@
 
             clipNear -= clipAddition;
 
-            return GetOrthographicViewProjectionFromRectangle(corners, normalizedDirection, up, clipNear, clipFar, shadowCascadeResolution, forceSize);
+            return GetOrthographicViewProjectionFromRectangle(corners, normalizedDirection, up, clipNear, clipFar, frustum.Far.Normal, shadowCascadeResolution, forceSize);
         }
 
         public static Vector3[] GetRectangleCornersForDirectionView(this BoundingFrustum frustum, Vector3 direction, out float clipNear, out float clipFar)
@@ -63,35 +63,53 @@
         }
 
         public static Matrix GetOrthographicViewProjectionFromRectangle(Vector3[] corners, Vector3 normalizedDirection, Vector3 up,
-            float clipNear, float clipFar, Int2? shadowCascadeResolution = null, Vector2? forceSize = null)
+            float clipNear, float clipFar, Vector3 viewDirection, Int2? shadowCascadeResolution = null, Vector2? forceSize = null)
         {
             Vector3 center = (corners[0] + corners[2]) / 2f;
 
+            Vector2 fittedProjectionPlaneSize;
+
+            // fit size
+            Vector3 w = corners[1] - corners[0];
+            Vector3 h = corners[2] - corners[1];
+            w -= normalizedDirection * Vector3.Dot(w, normalizedDirection);
+            h -= normalizedDirection * Vector3.Dot(h, normalizedDirection);
+
+            fittedProjectionPlaneSize = new Vector2(w.Length(), h.Length()) * 2f; // no * 2 when drawing the frustum. * 2 when using the matrix for real shadow calculations
+
             Vector2 projectionPlaneSize;
+
+            Vector3 rightOrth = Vector3.Normalize(Vector3.Cross(up, normalizedDirection));
+            Vector3 upOrth = Vector3.Cross(rightOrth, normalizedDirection); // no need to normlize here, the base vectors are orthogonal and normalized already
 
             if (forceSize.HasValue)
             {
                 // keep constant size
-                projectionPlaneSize = forceSize.Value;
+                projectionPlaneSize = forceSize.Value;// * 2f;
                 // TODO: don't naively adapt to the forced size. Adapt to it in a way, that the new gained size is in the visible space of the camera
+                Vector2 space = projectionPlaneSize - fittedProjectionPlaneSize;
+                // push projection plane into the view direction
+                if (space.X > 0f)
+                {
+                    // in which direction is the view pointing? This will determine in which direction to push the projection plane
+                    // only use XZ() here, cause otherwise, this will sometimes flip, when looking down. This could then be noticed by the player and irritating him.
+                    float sign = Vector2.Dot(viewDirection.XZ(), rightOrth.XZ()) > 0 ? 1f : -1f; // + or -?
+                    center += sign * space.X / 2f * rightOrth;
+                }
+                if (space.Y > 0f)
+                {
+                    float sign = Vector2.Dot(viewDirection.XZ(), upOrth.XZ()) > 0 ? 1f : -1f; // + or -?
+                    center += sign * space.Y / 2f * upOrth;
+                }
             }
             else
             {
-                // fit size
-                Vector3 w = corners[1] - corners[0];
-                Vector3 h = corners[2] - corners[1];
-                w -= normalizedDirection * Vector3.Dot(w, normalizedDirection);
-                h -= normalizedDirection * Vector3.Dot(h, normalizedDirection);
-
-                projectionPlaneSize = new Vector2(w.Length(), h.Length()) * 2f; // no * 2 when drawing the frustum. * 2 when using the matrix for real shadow calculations
+                projectionPlaneSize = fittedProjectionPlaneSize;
             }
 
             // round position to light space coordinates
             if (shadowCascadeResolution != null)
             {
-                Vector3 rightOrth = Vector3.Normalize(Vector3.Cross(up, normalizedDirection));
-                Vector3 upOrth = Vector3.Normalize(Vector3.Cross(rightOrth, normalizedDirection));
-
                 Vector2 pixelsPerMeter = shadowCascadeResolution.Value.ToVector2() / projectionPlaneSize;
 
                 Vector2 posDot = new Vector2(Vector3.Dot(center, rightOrth), Vector3.Dot(center, upOrth));
