@@ -2,15 +2,16 @@
 {
     public static class BoundingFrustumExtension
     {
-        public static Matrix GetOrthographicViewProjectionForDirection(this BoundingFrustum frustum, Vector3 normalizedDirection, Vector3 up)
+        public static Matrix GetOrthographicViewProjectionForDirection(this BoundingFrustum frustum, Vector3 normalizedDirection, Vector3 up, float clipAddition)
         {
             Vector3[] corners = GetRectangleCornersForDirectionView(frustum, normalizedDirection, out float clipNear, out float clipFar);
-            clipNear -= 300f;
-            clipFar += 300f;
-            //float clipDist = clipFar - clipNear;
-            //clipNear -= clipDist; // move clipNear a bit backwards, so that geometry can cast shadows behind you
-            //clipFar += clipDist;
-            // if shadows don't appear, this might be the reason for it^ maybe it should be pushed back even more then
+
+            float clipDistance = clipFar - clipNear;
+            if (clipDistance < clipAddition)
+                clipFar += clipAddition - clipDistance;
+
+            clipNear -= clipAddition;
+
             return GetOrthographicViewProjectionFromRectangle(corners, normalizedDirection, up, clipNear, clipFar);
         }
 
