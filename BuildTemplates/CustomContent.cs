@@ -78,7 +78,8 @@ namespace BuildTemplates
 
         private bool IsMatch(string localFilePath, string pattern)
         {
-            return Regex.IsMatch(localFilePath, pattern);
+            // start with "/" to match folder selections in regex like "/Folder/"
+            return Regex.IsMatch("/" + localFilePath, pattern);
         }
     }
 }
