@@ -65,12 +65,13 @@ namespace BytingLib
             //GetFromFolder("Sounds", "*.ogg|*.wav");
             //GetFromFolder("Textures", "*.png|*.jpg|*.jpeg|*.ani");
             //GetFromFolder("", "*.txt|*.csv|*.json|*.xml|*.ini|*.config");
-            Get("*.fx|*.fxh|*.xnb|*.spritefont|*.fbx|*.ogg|*.wav|*.png|*.jpg|*.jpeg|*.ani|*.txt|*.csv|*.json|*.xml|*.ini|*.config|*.gltf|*.bin|*.colmesh");
+            Get("*.fx|*.fxh|*.xnb|*.spritefont|*.fbx|*.ogg|*.wav|*.png|*.jpg|*.jpeg|*.ani|*.txt|*.csv|*.json|*.xml|*.ini|*.config|*.gltf|*.bin|*.colmesh|*.colgrid");
             GetFile("Loca.loca");
 
             dependencies.Clear();
             InitEffectDependencies(files);
             InitGLTFDependencies(files);
+            InitGLTFCollisionDependencies(files);
 
             //void GetFromFolder(string folder, string searchPattern)
             //{
@@ -157,6 +158,26 @@ namespace BytingLib
 
                     i = i2 + 1;
                 }
+            }
+        }
+        private void InitGLTFCollisionDependencies(IEnumerable<string> allFiles)
+        {
+            // colgrid and colmesh depends on gltf
+            foreach (var f in allFiles.Where(f => f.EndsWith(".colgrid") || f.EndsWith(".colmesh")))
+            {
+                string localFilePath = f.Substring(sourceContentDir.Length + 1);
+
+                string gltfFile = localFilePath;
+                const string colGridStr = "Col.colgrid";
+                const string colMeshStr = "Col.colmesh";
+                if (gltfFile.EndsWith(colGridStr))
+                    gltfFile = gltfFile.Remove(gltfFile.Length - colGridStr.Length) + ".gltf";
+                else if (gltfFile.EndsWith(colMeshStr))
+                    gltfFile = gltfFile.Remove(gltfFile.Length - colMeshStr.Length) + ".gltf";
+
+                if (!dependencies.ContainsKey(gltfFile))
+                    dependencies.Add(gltfFile, new List<string>());
+                dependencies[gltfFile].Add(localFilePath);
             }
         }
 

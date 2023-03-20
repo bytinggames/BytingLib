@@ -3,7 +3,7 @@
     public class Grid3<T> where T : IBoundingBox
     {
         public Vector3 FieldSize { get; private set; }
-        public Dictionary<Int3, List<T>> Lists { get; private set; } = new Dictionary<Int3, List<T>>();
+        public Dictionary<Int3, List<T>> Lists { get; private set; }
 
         public bool BoundsSet { get; private set; } = false;
         private Int3 min;
@@ -15,11 +15,19 @@
         public Grid3(float fieldSize)
         {
             FieldSize = new Vector3(fieldSize);
+            Lists = new Dictionary<Int3, List<T>>();
         }
 
         public Grid3(Vector3 fieldSize)
         {
             FieldSize = fieldSize;
+            Lists = new Dictionary<Int3, List<T>>();
+        }
+
+        public Grid3(Vector3 fieldSize, Dictionary<Int3, List<T>> lists)
+        {
+            FieldSize = fieldSize;
+            Lists = lists;
         }
 
         public virtual void Add(T entity)

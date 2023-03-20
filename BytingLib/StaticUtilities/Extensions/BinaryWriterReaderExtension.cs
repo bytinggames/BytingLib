@@ -23,6 +23,27 @@
             return new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         }
 
+        public static void Write(this BinaryWriter writer, Int2 vec)
+        {
+            writer.Write(vec.X);
+            writer.Write(vec.Y);
+        }
+        public static Int2 ReadInt2(this BinaryReader reader)
+        {
+            return new Int2(reader.ReadInt32(), reader.ReadInt32());
+        }
+
+        public static void Write(this BinaryWriter writer, Int3 vec)
+        {
+            writer.Write(vec.X);
+            writer.Write(vec.Y);
+            writer.Write(vec.Z);
+        }
+        public static Int3 ReadInt3(this BinaryReader reader)
+        {
+            return new Int3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
+        }
+
         public static void Write(this BinaryWriter writer, Color color)
         {
             writer.Write(color.PackedValue);

@@ -14,7 +14,8 @@ namespace BuildTemplates
             { "Model", ("Model", new[] { "fbx" }) },
             { "MyModel", ("Model", new[] { "myfbx" }) },
             { "ModelGL", ("ModelGL", new[] { "gltf" }) },
-            { "CollisionMesh", ("CollisionMesh", new[] { "colmesh" }) },
+            { "CollisionMesh", ("Mesh", new[] { "colmesh" }) },
+            { "CollisionMeshGrid", ("Grid", new[] { "colgrid" }) },
             { "byte[]", ("Bytes", new[] { "bin" }) },
             { "Animation", ("Ani", new[] { "ani" }) }
 
