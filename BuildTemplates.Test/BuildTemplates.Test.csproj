@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BuildTemplates\BuildTemplates.csproj" />
+    <ProjectReference Include="../BuildTemplates/BuildTemplates.csproj" />
   </ItemGroup>
 
 </Project>

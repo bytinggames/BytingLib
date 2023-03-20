@@ -22,11 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ContentTest\HotReloadContent\Resources\Font1.spritefont">
+    <None Update="ContentTest/HotReloadContent/Resources/Font1.spritefont">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="echo D|xcopy /y &quot;$(ProjectDir)Content\*.mgcb&quot; &quot;$(ProjectDir)$(OutDir)Content\*.mgcbcopy&quot;" />
+		<Exec Command="echo D|xcopy /y &quot;$(ProjectDir)Content/*.mgcb&quot; &quot;$(ProjectDir)$(OutDir)Content/*.mgcbcopy&quot;" />
 	</Target>
 </Project>

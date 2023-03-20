@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BytingPipeline\BytingPipeline.csproj" />
+    <ProjectReference Include="../BytingPipeline/BytingPipeline.csproj" />
   </ItemGroup>
 
 </Project>
