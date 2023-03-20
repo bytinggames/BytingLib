@@ -40,7 +40,7 @@ namespace BytingPipeline.Test
                 Thickness = 1,
             };
 
-            FontDescription fontDescription = null;
+            FontDescription? fontDescription = null;
 
             using (var input = XmlReader.Create(new StringReader(ArialFont)))
                 fontDescription = IntermediateSerializer.Deserialize<FontDescription>(input, "");

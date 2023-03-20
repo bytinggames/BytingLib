@@ -117,7 +117,9 @@ namespace BytingLib.Test.BytingSerializer
                 Console.WriteLine("data size: " + data.Length);
                 using (MemoryStream stream = new(data))
                 {
-                    return mySerializer.Deserialize<Data>(stream);
+                    Data? d = mySerializer.Deserialize<Data>(stream);
+                    Assert.IsNotNull(d);
+                    return d;
                 }
             });
         }

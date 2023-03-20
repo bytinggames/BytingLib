@@ -75,7 +75,9 @@ namespace BytingPipeline.Test
 
         public override TOutput BuildAndLoadAsset<TInput, TOutput>(ExternalReference<TInput> sourceAsset, string processorName, OpaqueDataDictionary processorParameters, string importerName)
         {
-            return default(TOutput);
+#pragma warning disable CS8603 // Possible null reference return.
+            return default;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         public override ExternalReference<TOutput> BuildAsset<TInput, TOutput>(ExternalReference<TInput> sourceAsset, string processorName, OpaqueDataDictionary processorParameters, string importerName, string assetName)
@@ -91,7 +93,7 @@ namespace BytingPipeline.Test
             if (typeof(TOutput) == typeof(MaterialContent) && typeof(TInput).IsAssignableFrom(typeof(MaterialContent)))
                 return (TOutput)((object)input);
 
-            var processor = (ContentProcessor<TInput, TOutput>)typeof(ContentProcessor<TInput, TOutput>).Assembly.CreateInstance("Microsoft.Xna.Framework.Content.Pipeline.Processors." + processorName);
+            var processor = (ContentProcessor<TInput, TOutput>?)typeof(ContentProcessor<TInput, TOutput>).Assembly.CreateInstance("Microsoft.Xna.Framework.Content.Pipeline.Processors." + processorName);
             if (processor != null)
             {
                 var type = processor.GetType();

@@ -5,37 +5,43 @@ namespace BytingLib.Test.BytingSerializer
     public class Data
     {
         [BytingProp(0)]
-        public List<object> Objects { get; set; }
+        public List<object>? Objects { get; set; }
 
         public override string ToString()
         {
             string str = "Data(";
-            for (int i = 0; i < Objects.Count; i++)
+            if (Objects != null)
             {
-                if (Objects[i] == this)
-                    return "circular reference, ";
-                else
-                    str += Objects[i].ToString() + ", ";
+                for (int i = 0; i < Objects.Count; i++)
+                {
+                    if (Objects[i] == this)
+                        return "circular reference, ";
+                    else
+                        str += Objects[i].ToString() + ", ";
+                }
             }
             return str + ")";
         }
 
         public IEnumerable<object> GetAllObjects()
         {
-            for (int i = 0; i < Objects.Count; i++)
+            if (Objects != null)
             {
-                if (Objects[i] is Data data)
+                for (int i = 0; i < Objects.Count; i++)
                 {
-                    if (data != this)
+                    if (Objects[i] is Data data)
                     {
-                        foreach (var item in data.GetAllObjects())
+                        if (data != this)
                         {
-                            yield return item;
+                            foreach (var item in data.GetAllObjects())
+                            {
+                                yield return item;
+                            }
                         }
                     }
+                    else
+                        yield return Objects[i];
                 }
-                else
-                    yield return Objects[i];
             }
         }
     }
