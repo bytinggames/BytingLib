@@ -65,7 +65,7 @@ namespace BytingLib
             //GetFromFolder("Sounds", "*.ogg|*.wav");
             //GetFromFolder("Textures", "*.png|*.jpg|*.jpeg|*.ani");
             //GetFromFolder("", "*.txt|*.csv|*.json|*.xml|*.ini|*.config");
-            Get("*.fx|*.fxh|*.xnb|*.spritefont|*.fbx|*.ogg|*.wav|*.png|*.jpg|*.jpeg|*.ani|*.txt|*.csv|*.json|*.xml|*.ini|*.config|*.gltf|*.bin");
+            Get("*.fx|*.fxh|*.xnb|*.spritefont|*.fbx|*.ogg|*.wav|*.png|*.jpg|*.jpeg|*.ani|*.txt|*.csv|*.json|*.xml|*.ini|*.config|*.gltf|*.bin|*.colmesh");
             GetFile("Loca.loca");
 
             dependencies.Clear();

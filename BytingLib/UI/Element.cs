@@ -158,6 +158,15 @@ namespace BytingLib.UI
             }
             return this;
         }
+        public Element AddEnumerable(IEnumerable<Element> children)
+        {
+            foreach (var c in children)
+            {
+                Children.Add(c);
+                c.Parent = this;
+            }
+            return this;
+        }
 
         public Element Remove(params Element[] children)
         {
@@ -165,6 +174,15 @@ namespace BytingLib.UI
             {
                 Children.Remove(children[i]);
                 children[i].Parent = null;
+            }
+            return this;
+        }
+        public Element RemoveEnumerable(IEnumerable<Element> children)
+        {
+            foreach (var c in children)
+            {
+                Children.Remove(c);
+                c.Parent = null;
             }
             return this;
         }

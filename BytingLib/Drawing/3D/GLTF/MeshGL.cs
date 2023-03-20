@@ -5,9 +5,12 @@ namespace BytingLib
     public class MeshGL
     {
         public string? Name { get; set; }
-        public List<PrimitiveGL> Primitives { get; } = new();
+        /// <summary>Only used when a GraphicsDevice is available</summary>
+        public List<PrimitiveGL>? Primitives { get; }
+        /// <summary>Only used with the Pipeline, when no GraphicsDevice is available</summary>
+        public List<PrimitiveGLContent>? PrimitivesContent { get; }
 
-        public MeshGL(ModelGL model, JsonNode n)
+        public MeshGL(ModelGL model, JsonNode n, bool graphicsDeviceAvailable)
         {
             Name = n["name"]?.GetValue<string>();
 
@@ -15,9 +18,18 @@ namespace BytingLib
             if ((t = n["primitives"]) != null)
             {
                 JsonArray primitivesArr = t.AsArray();
+
+                if (graphicsDeviceAvailable)
+                    Primitives = new();
+                else
+                    PrimitivesContent = new();
+
                 for (int i = 0; i < primitivesArr.Count; i++)
                 {
-                    Primitives.Add(new PrimitiveGL(model, primitivesArr[i]!));
+                    if (graphicsDeviceAvailable)
+                        Primitives!.Add(new PrimitiveGL(model, primitivesArr[i]!));
+                    else
+                        PrimitivesContent!.Add(new PrimitiveGLContent(model, primitivesArr[i]!));
                 }
             }
         }
@@ -26,9 +38,12 @@ namespace BytingLib
 
         public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial)
         {
-            for (int i = 0; i < Primitives.Count; i++)
+            if (Primitives != null)
             {
-                Primitives[i].Draw(shader, shaderMaterial);
+                for (int i = 0; i < Primitives.Count; i++)
+                {
+                    Primitives[i].Draw(shader, shaderMaterial);
+                }
             }
         }
     }

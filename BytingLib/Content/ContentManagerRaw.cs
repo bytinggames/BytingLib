@@ -1,6 +1,4 @@
 ﻿using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using System.Text.Json.Nodes;
 
 namespace BytingLib
 {
@@ -20,11 +18,11 @@ namespace BytingLib
         }
 
 
-        /// <summary>Foces the asset to be loaded from disc.</summary>
+        /// <summary>Forces the asset to be loaded from disc.</summary>
         /// <exception cref="ContentLoadException"/>
         public override T Load<T>(string assetName) => Load<T>(assetName, null);
 
-        /// <summary>Foces the asset to be loaded from disc.</summary>
+        /// <summary>Forces the asset to be loaded from disc.</summary>
         /// <exception cref="ContentLoadException"/>
         public T Load<T>(string assetName, ExtendedLoadParameter? extendedLoad)
         {
@@ -42,14 +40,14 @@ namespace BytingLib
             else if (typeof(T) == typeof(byte[]))
                 asset = (T)(object)LoadByteArray(assetName);
             else
-                asset = LoadTexture<T>(assetName);
+                asset = LoadT<T>(assetName);
 
             LoadedAssets.TryAdd(assetName, asset);
             return asset;
 
         }
 
-        private T LoadTexture<T>(string assetName)
+        private T LoadT<T>(string assetName)
         {
             try
             {

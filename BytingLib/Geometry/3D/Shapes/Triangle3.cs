@@ -107,5 +107,12 @@
         {
             return HashCode.Combine(Vertices);
         }
+
+        public void Transform(Matrix transform)
+        {
+            Vertices[0] = Vector3.Transform(Vertices[0], transform);
+            Vertices[1] = Vector3.Transform(Vertices[1], transform);
+            Vertices[2] = Vector3.Transform(Vertices[2], transform);
+        }
     }
 }

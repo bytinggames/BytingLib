@@ -2,13 +2,13 @@
 
 namespace BytingLib
 {
-    public class PrimitiveGL
+    public class PrimitiveGL : PrimitiveGLBase
     {
         public VertexBuffer VertexBuffer { get; }
         public IndexBuffer? IndexBuffer { get; }
-        public MaterialGL? Material { get; }
 
         public PrimitiveGL(ModelGL model, JsonNode n)
+            : base(model, n)
         {
             var attributesObj = n["attributes"]!.AsObject();
 
@@ -21,12 +21,6 @@ namespace BytingLib
             {
                 int indicesAccessorIndex = t.GetValue<int>();
                 IndexBuffer = model.GetIndexBuffer(indicesAccessorIndex);
-            }
-
-            if ((t = n["material"]) != null)
-            {
-                int materialId = t.GetValue<int>();
-                Material = model.Materials!.Get(materialId);
             }
         }
 

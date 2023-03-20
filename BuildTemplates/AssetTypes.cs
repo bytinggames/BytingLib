@@ -14,12 +14,13 @@ namespace BuildTemplates
             { "Model", ("Model", new[] { "fbx" }) },
             { "MyModel", ("Model", new[] { "myfbx" }) },
             { "ModelGL", ("ModelGL", new[] { "gltf" }) },
+            { "CollisionMesh", ("CollisionMesh", new[] { "colmesh" }) },
             { "byte[]", ("Bytes", new[] { "bin" }) },
             { "Animation", ("Ani", new[] { "ani" }) }
 
             // when adding new asset types, also update:
-            // ContentTemplate.cs File() constructor
-            // maybe updateContentTemplate.cs PrintMGCB()
+            // maybe update ContentTemplate.cs File() constructor
+            // maybe update ContentTemplate.cs PrintMGCB()
             // DirectorySupervisor.cs FileStamp.AssetName
             // HotReloadContent.cs GetFiles() Get("..."); + maybe dependencies
             // ContentManagerRaw.cs Load<T>()

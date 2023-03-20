@@ -25,9 +25,10 @@ namespace BytingLib
         private readonly Dictionary<int, IndexBuffer> indexBuffers = new();
         private readonly JsonArray? accessorsArr, bufferViewsArr, buffersArr;
         private readonly DisposableContainer disposables = new();
-        private readonly IContentCollectorUse contentCollector;
+        private readonly IContentCollectorUse? contentCollector;
         private readonly string gltfDirRelativeToContent;
-        private readonly GraphicsDevice gDevice;
+        private readonly string contentRootDirectory;
+        private readonly GraphicsDevice? gDevice;
 
 
         private Dictionary<string, int>? AnimationNameToIndex;
@@ -35,8 +36,9 @@ namespace BytingLib
 
         public SamplerGL? DefaultSampler { get; internal set; }
 
-        public ModelGL(string filePath, string contentRootDirectory, GraphicsDevice gDevice, IContentCollectorUse contentCollector)
+        public ModelGL(string filePath, string contentRootDirectory, GraphicsDevice? gDevice, IContentCollectorUse? contentCollector)
         {
+            this.contentRootDirectory = contentRootDirectory;
             this.gDevice = gDevice;
             this.contentCollector = contentCollector;
             ChannelTargets = new DictionaryCacheChannelTargets(this);
@@ -56,7 +58,7 @@ namespace BytingLib
             if ((n = root["nodes"]) != null)
                 Nodes = new(n.AsArray(), (n, parent) => new(this, n, parent));
             if ((n = root["meshes"]) != null)
-                Meshes = new(n.AsArray(), n => new(this, n));
+                Meshes = new(n.AsArray(), n => new(this, n, gDevice != null));
             //if ((n = root["accessors"]) != null)
             //     Accessors = new(n.AsArray(), n => new(this, n));
             //if ((n = root["bufferViews"]) != null)
@@ -94,7 +96,16 @@ namespace BytingLib
             if (vertexBuffers.TryGetValue(key, out vertexBuffer))
                 return vertexBuffer;
 
+            byte[] vertexData = GetVertexData(key, attributesObj, out VertexDeclaration vertexDeclaration, out int vertexCount);
+            vertexBuffer = disposables.Use(new VertexBuffer(gDevice, vertexDeclaration, vertexCount, BufferUsage.None));
+            vertexBuffer.SetData(vertexData);
 
+            vertexBuffers.Add(key, vertexBuffer);
+            return vertexBuffer;
+        }
+
+        internal byte[] GetVertexData(string key, JsonObject attributesObj, out VertexDeclaration vertexDeclaration, out int vertexCount)
+        {
             List<VertexPartGL> vertexParts = new();
             int[] vertexElementUsages = new int[Enum.GetNames(typeof(VertexElementUsage)).Length];
             int offset = 0;
@@ -135,11 +146,11 @@ namespace BytingLib
             }
 
             int vertexStride = offset;
-            var vertexDeclaration = new VertexDeclaration(vertexStride, vertexParts.Select(f => f.VertexElement).ToArray());
+            vertexDeclaration = new VertexDeclaration(vertexStride, vertexParts.Select(f => f.VertexElement).ToArray());
 
             // merge vertex data
             byte[] vertexData = new byte[vertexParts.Sum(f => f.BufferBytes.Length)];
-            int vertexCount = vertexParts[0].BufferBytes.Length / vertexParts[0].VertexElementSize;
+            vertexCount = vertexParts[0].BufferBytes.Length / vertexParts[0].VertexElementSize;
             foreach (var vertexPart in vertexParts)
             {
                 unsafe
@@ -161,11 +172,7 @@ namespace BytingLib
                 }
             }
 
-            vertexBuffer = disposables.Use(new VertexBuffer(gDevice, vertexDeclaration, vertexCount, BufferUsage.None));
-            vertexBuffer.SetData(vertexData);
-
-            vertexBuffers.Add(key, vertexBuffer);
-            return vertexBuffer;
+            return vertexData;
         }
 
         public IndexBuffer GetIndexBuffer(int id)
@@ -174,17 +181,23 @@ namespace BytingLib
             if (indexBuffers.TryGetValue(id, out indexBuffer))
                 return indexBuffer;
 
-            // set index buffer
-            var indicesAccessor = accessorsArr![id]!;
-            byte[] indicesData = GetBytesFromBuffer(id);
-            int indicesCount = indicesAccessor["count"]!.GetValue<int>();
-            IndexElementSize indexElementSize = indicesData.Length / indicesCount != 2 ? IndexElementSize.ThirtyTwoBits : IndexElementSize.SixteenBits;
+            byte[] indicesData = GetIndexData(id, out IndexElementSize indexElementSize, out int indicesCount);
 
             indexBuffer = disposables.Use(new IndexBuffer(gDevice, indexElementSize, indicesCount, BufferUsage.None));
             indexBuffer.SetData(indicesData);
 
             indexBuffers.Add(id, indexBuffer);
             return indexBuffer;
+        }
+
+        public byte[] GetIndexData(int id, out IndexElementSize indexElementSize, out int indexCount)
+        {
+            // set index buffer
+            var indicesAccessor = accessorsArr![id]!;
+            byte[] indexData = GetBytesFromBuffer(id);
+            indexCount = indicesAccessor["count"]!.GetValue<int>();
+            indexElementSize = indexData.Length / indexCount != 2 ? IndexElementSize.ThirtyTwoBits : IndexElementSize.SixteenBits;
+            return indexData;
         }
 
 
@@ -200,16 +213,25 @@ namespace BytingLib
             if (n != null)
                 bufferByteOffset = n.GetValue<int>();
 
-            Ref<byte[]> wholeBuffer = disposables.Use(contentCollector.Use<byte[]>(ContentHelper.UriToContentFileWithExtension(bufferUri, gltfDirRelativeToContent)));
-            byte[] bufferBytes = new byte[bufferByteLength];
-            System.Buffer.BlockCopy(wholeBuffer.Value, bufferByteOffset, bufferBytes, 0, bufferByteLength);
-            //using (Stream stream = File.OpenRead(bufferUri)) // TODO: only read each file once
-            //{
-            //    stream.Position = bufferByteOffset;
-            //    stream.Read(bufferBytes, 0, bufferByteLength);
-            //}
+            if (contentCollector != null)
+            {
+                Ref<byte[]> wholeBuffer = disposables.Use(contentCollector.Use<byte[]>(ContentHelper.UriToContentFileWithExtension(bufferUri, gltfDirRelativeToContent)));
+                byte[] bufferBytes = new byte[bufferByteLength];
+                Buffer.BlockCopy(wholeBuffer.Value, bufferByteOffset, bufferBytes, 0, bufferByteLength);
 
-            return bufferBytes;
+                return bufferBytes;
+            }
+            else
+            {
+                string filePath = Path.GetFullPath(Path.Combine(contentRootDirectory, gltfDirRelativeToContent, bufferUri));
+                byte[] bufferBytes = new byte[bufferByteLength];
+                using (var stream = File.OpenRead(filePath))
+                {
+                    stream.Position = bufferByteOffset;
+                    stream.Read(bufferBytes, 0, bufferByteLength);
+                }
+                return bufferBytes;
+            }
         }
 
         public void Dispose()
@@ -225,6 +247,9 @@ namespace BytingLib
 
         internal Ref<Texture2D> GetTexture(string imageUri)
         {
+            if (contentCollector == null)
+                return new Ref<Texture2D>(new Pointer<Texture2D>(), null);
+
             return contentCollector.Use<Texture2D>(ContentHelper.UriToContentFile(imageUri, gltfDirRelativeToContent));
         }
 
