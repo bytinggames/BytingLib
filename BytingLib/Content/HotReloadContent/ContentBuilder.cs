@@ -100,8 +100,10 @@ namespace BytingLib
             }
         }
 
-        public bool Build(string[] changes)
+        public bool Build(string[] changes, out List<string> updatedOutputFiles)
         {
+            updatedOutputFiles = new();
+
             if (changes.Length == 0)
                 return false;
 
@@ -118,7 +120,29 @@ namespace BytingLib
                 string localFile = Path.GetRelativePath(modContentDir, file).Replace('\\', '/');
                 if (fileToCode.TryGetValue(localFile, out CodePart code))
                 {
-                    cmd += code.GetCode(mgcbContents);
+                    string addCode = code.GetCode(mgcbContents);
+                    cmd += addCode;
+
+                    ScriptReader reader = new ScriptReader(addCode);
+
+                    GetChanges("/build:", ref updatedOutputFiles);
+                    GetChanges("/copy:", ref updatedOutputFiles);
+
+                    void GetChanges(string buildStr, ref List<string> xnbChanges)
+                    {
+                        int buildIndex = 0;
+                        while ((buildIndex = addCode.IndexOf(buildStr, buildIndex)) != -1)
+                        {
+                            buildIndex += buildStr.Length;
+                            int semicolonIndex = addCode.IndexOf(';', buildIndex);
+                            int newLineIndex = addCode.IndexOf('\n', buildIndex);
+                            if (semicolonIndex != -1 && semicolonIndex < newLineIndex)
+                                buildIndex = semicolonIndex + 1;
+                            string assetName = addCode.Substring(buildIndex, newLineIndex - buildIndex).Replace("\r", "");
+                            xnbChanges.Add(assetName);
+                            buildIndex = newLineIndex + 1;
+                        }
+                    }
                 }
             }
 

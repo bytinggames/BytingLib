@@ -69,7 +69,9 @@ namespace BuildTemplates
                 if (IsMatch(localFilePath, pattern))
                 {
                     string code = customContent[i].BuildCode;
-                    code = string.Format(code, localFilePath);
+                    int extIndex = localFilePath.LastIndexOf('.');
+                    string localFilePathWithoutExtension = localFilePath.Remove(extIndex);
+                    code = string.Format(code, localFilePath, localFilePathWithoutExtension);
                     return "\n" + code;
                 }
             }
