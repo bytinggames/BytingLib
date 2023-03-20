@@ -21,7 +21,6 @@ namespace BuildTemplates
 
             // when adding new asset types, also update:
             // maybe update ContentTemplate.cs File() constructor
-            // maybe update ContentTemplate.cs PrintMGCB()
             // DirectorySupervisor.cs FileStamp.AssetName
             // HotReloadContent.cs GetFiles() Get("..."); + maybe dependencies
             // ContentManagerRaw.cs Load<T>()
