@@ -3,43 +3,50 @@ namespace BuildTemplates
 {
     internal static class AssetTypes
     {
-        public static IReadOnlyDictionary<string, (string VarName, string[] Extensions)> Extensions { get; } = new Dictionary<string, (string, string[])>()
+        internal static readonly Dictionary<string, string> ProcessorToDataType = new()
         {
-            // { "<Class Name>", ("<Extension for Variable Name in ContentLoader>", new[] { "<file extension 1>", "<file extension 2>" }) },
-            { "Texture2D", ("Tex", new[] { "png", "jpeg", "jpg" }) },
-            { "SpriteFont", ("Font", new[] { "spritefont" } )},
-            { "SoundEffect", ("Sfx", new[] { "wav", "mp3", "ogg" } )},
-            { "Effect", ("Fx", new[] { "fx" } )},
-            { "string", ("Txt", new[] { "json", "ini", "config", "txt" } )},
-            { "Model", ("Model", new[] { "fbx" }) },
-            { "MyModel", ("Model", new[] { "myfbx" }) },
-            { "ModelGL", ("ModelGL", new[] { "gltf" }) },
-            { "CollisionMesh", ("Mesh", new[] { "colmesh" }) },
-            { "CollisionMeshGrid", ("Grid", new[] { "colgrid" }) },
-            { "byte[]", ("Bytes", new[] { "bin" }) },
-            { "Animation", ("Ani", new[] { "ani" }) }
-
-            // when adding new asset types, also update:
-            // maybe update ContentTemplate.cs File() constructor
-            // DirectorySupervisor.cs FileStamp.AssetName
-            // HotReloadContent.cs GetFiles() Get("..."); + maybe dependencies
-            // ContentManagerRaw.cs Load<T>()
-            // ExtensionToAssetType.cs Convert()
+            { "EffectProcessor", "Effect" },
+            { "FontDescriptionProcessor", "SpriteFont" },
+            { "TextureProcessor", "Texture2D" },
+            { "ModelProcessor", "Model" },
+            { "SoundEffectProcessor", "SoundEffect" },
+            { "SongProcessor", "Song" },
+            { "VideoProcessor", "Video" },
+            // BytingLib
+            { "BytingFontProcessor", "SpriteFont" },
+            { "AnimationProcessor", "Animation" },
+            { "StringProcessor", "string" },
+            { "GLTFProcessor", "ModelGL" },
+            { "BytesProcessor", "byte[]" },
         };
 
-        public static string? Convert(string extension)
+        internal static readonly Dictionary<string, string> ExtensionCopyToDataType = new()
         {
-            if (string.IsNullOrEmpty(extension))
-                return null;
-            if (extension[0] == '.')
-                extension = extension[1..];
+            { "png", "Texture2D" },
+            { "jpg", "Texture2D" },
+            { "jpeg", "Texture2D" },
+            { "bin", "byte[]" },
+            { "json", "string" },
+            { "txt", "string" },
+            { "yaml", "string" },
+            // BytingLib
+            { "ani", "Animation" },
+            { "gltf", "ModelGL" },
+        };
 
-            foreach (var ex in Extensions)
-            {
-                if (ex.Value.Extensions.Any(f => f == extension))
-                    return ex.Key;
-            }
-            throw new NotImplementedException();
-        }
+        internal static readonly Dictionary<string, string> DataTypeToVarExtension = new()
+        {
+            { "Effect", "Fx" },
+            { "SpriteFont", "Font" },
+            { "Texture2D", "Tex" },
+            { "Model", "Model" },
+            { "SoundEffect", "Sfx" },
+            { "Song", "Song" },
+            { "Video", "Video" },
+            { "byte[]", "Bytes" },
+            // BytingLib
+            { "Animation", "" }, // Ani is already in the asset name
+            { "ModelGL", "Model" }, // Ani is already in the asset name
+        };
     }
 }

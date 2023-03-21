@@ -116,6 +116,36 @@ namespace BytingLib
             return str.Substring(start);
         }
 
+        public string ReadToStringOrEnd(string[] untilStr, out int reachedStringIndex)
+        {
+            int start = i;
+            char? c;
+            int[] indexInUntilStr = new int[untilStr.Length];
+            while ((c = ReadChar()) != null)
+            {
+                if (SkipIfLiteral(c.Value))
+                    continue;
+
+                for (int u = 0; u < untilStr.Length; u++)
+                {
+                    if (c.Value == untilStr[u][indexInUntilStr[u]])
+                    {
+                        indexInUntilStr[u]++;
+                        if (indexInUntilStr[u] == untilStr[u].Length)
+                        {
+                            int end = i - untilStr[u].Length;
+                            reachedStringIndex = u;
+                            return str.Substring(start, end - start);
+                        }
+                    }
+                    else
+                        indexInUntilStr[u] = 0;
+                }
+            }
+            reachedStringIndex = -1;
+            return str.Substring(start);
+        }
+
         public string ReadUntilClosed(char open, char close, int openCounter = 1)
         {
             int start = i;

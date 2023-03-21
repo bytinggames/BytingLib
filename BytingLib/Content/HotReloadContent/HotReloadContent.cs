@@ -68,6 +68,7 @@ namespace BytingLib
             //GetFromFolder("Sounds", "*.ogg|*.wav");
             //GetFromFolder("Textures", "*.png|*.jpg|*.jpeg|*.ani");
             //GetFromFolder("", "*.txt|*.csv|*.json|*.xml|*.ini|*.config");
+            // TODO: improve this
             Get("*.fx|*.fxh|*.xnb|*.spritefont|*.fbx|*.ogg|*.wav|*.png|*.jpg|*.jpeg|*.ani|*.txt|*.csv|*.json|*.xml|*.ini|*.config|*.gltf|*.bin");
             GetFile("Loca.loca");
 
@@ -237,15 +238,16 @@ namespace BytingLib
 
             void Iterate(DirectorySupervisor.FileStamp file, bool deleted)
             {
-                Type? assetType = ExtensionToAssetType.Convert(file.LocalPath);
-                if (assetType == null)
-                {
-                    if (Path.GetExtension(file.LocalPath) == ".loca")
-                        OnTextReload?.Invoke(Path.Combine(TempContentRaw.RootDirectory, file.LocalPath));
-                    return;
-                }
+                // TODO
+                //Type? assetType = ExtensionToAssetType.Convert(file.LocalPath);
+                //if (assetType == null)
+                //{
+                //    if (Path.GetExtension(file.LocalPath) == ".loca")
+                //        OnTextReload?.Invoke(Path.Combine(TempContentRaw.RootDirectory, file.LocalPath));
+                //    return;
+                //}
 
-                ReloadIfLoadedFromType(assetType, file.AssetName, deleted);
+                //ReloadIfLoadedFromType(assetType, file.AssetName, deleted);
             }
 
 

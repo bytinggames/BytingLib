@@ -39,7 +39,7 @@
             {
                 if (style.ButtonPaddingToButtonBorder)
                 {
-                    Padding = style.ButtonAnimation.GetFacePadding();
+                    Padding = style.ButtonAnimation.Value.GetFacePadding();
                 }
                 else if (style.ButtonPadding != null)
                 {
@@ -95,19 +95,19 @@
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             int frameIndex = GetFrameIndex();
-            if (frameIndex >= style.ButtonAnimation.Data.Value.frames?.Count)
-                throw new BytingException("button frame does not exist: " + frameIndex + " button animation frames: " + style.ButtonAnimation.Data.Value.frames?.Count);
+            if (frameIndex >= style.ButtonAnimation.Value.Data.frames?.Count)
+                throw new BytingException("button frame does not exist: " + frameIndex + " button animation frames: " + style.ButtonAnimation.Value.Data.frames?.Count);
 
-            style.ButtonAnimation.DrawSliced(spriteBatch, frameIndex, absoluteRect);
+            style.ButtonAnimation.Value.DrawSliced(spriteBatch, frameIndex, absoluteRect);
         }
 
         protected override void DrawSelfPost(SpriteBatch spriteBatch, StyleRoot style)
         {
             int frameIndexPost = GetFrameIndex() + 4;
 
-            if (frameIndexPost < style.ButtonAnimation.Data.Value.frames?.Count)
+            if (frameIndexPost < style.ButtonAnimation.Value.Data.frames?.Count)
             {
-                style.ButtonAnimation.DrawSliced(spriteBatch, frameIndexPost, absoluteRect);
+                style.ButtonAnimation.Value.DrawSliced(spriteBatch, frameIndexPost, absoluteRect);
             }
         }
 

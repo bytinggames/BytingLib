@@ -56,7 +56,7 @@ namespace BytingLib
             mgcbContents = new string[mgcbFiles.Length];
 
             // check if main content file exists
-            int mainContentIndex = Array.IndexOf(mgcbFiles, (Path.Combine(outputPath, "Content.mgcbcopy")));
+            int mainContentIndex = Array.IndexOf(mgcbFiles, (Path.Combine(outputPath, "Content.Generated.mgcbcopy")));
             if (mainContentIndex == -1)
             {
                 mainContentIndex = 0;

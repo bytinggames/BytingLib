@@ -71,7 +71,8 @@ namespace BuildTemplates
                     string code = customContent[i].BuildCode;
                     int extIndex = localFilePath.LastIndexOf('.');
                     string localFilePathWithoutExtension = localFilePath.Remove(extIndex);
-                    code = string.Format(code, localFilePath, localFilePathWithoutExtension);
+                    string extension = localFilePath.Substring(extIndex + 1);
+                    code = string.Format(code, localFilePath, localFilePathWithoutExtension, extension);
                     return "\n" + code;
                 }
             }

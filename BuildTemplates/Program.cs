@@ -7,24 +7,46 @@
             string nameSpace = args.Length == 0 ? "NAMESPACE" : args[0];
             string[] referencedDlls = new string[0];
             bool loadOnStartup = false;
+            List<(string, string)> customProcessorToDataType = new();
+            List<(string, string)> customDataTypeToNameExtension = new();
+            List<(string, string)> customExtensionToDataType = new();
 
-
-            if (args.Length > 1)
+            foreach (var arg in args)
             {
-                referencedDlls = args[1].Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-
-                if (referencedDlls.Length == 1 && referencedDlls[0] == "_")
-                    referencedDlls = new string[0];
-
-                if (args.Length > 2)
+                int colonIndex = arg.IndexOf(':');
+                if (colonIndex == -1)
+                    continue;
+                string command = arg.Remove(colonIndex);
+                string value = arg.Substring(colonIndex + 1);
+                switch (command)
                 {
-                    loadOnStartup = args[2].ToLower() == "true" || args[2] == "1";
+                    case "dlls":
+                        referencedDlls = value.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                        break;
+                    case "loadOnStartup":
+                        loadOnStartup = value == "true" || value == "1";
+                        break;
+                    case "processorToDataType":
+                    case "dateTypeToName":
+                    case "extensionToDataType":
+                        var dict = command == "dateTypeToName" ? customDataTypeToNameExtension 
+                            : command == "processorToDataType" ? customProcessorToDataType
+                            : customExtensionToDataType;
+                        string[] split = value.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var s in split)
+                        {
+                            string[] s2 = s.Split(new char[] { ',' });
+                            if (s2.Length < 2)
+                                continue;
+                            dict.Add((s2[0], s2[1]));
+                        }
+                        break;
                 }
             }
 
             var projectPath = Environment.CurrentDirectory;
             string contentPath = Path.Combine(projectPath, "Content");
-            (string code, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath + "/", nameSpace, referencedDlls, loadOnStartup);
+            (string code, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath + "/", nameSpace, referencedDlls, loadOnStartup, customProcessorToDataType, customDataTypeToNameExtension, customExtensionToDataType);
 
             string mgcbFile = Path.Combine(contentPath, "Content.Generated.mgcb");
             File.WriteAllText(mgcbFile, mgcbOutput);

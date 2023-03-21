@@ -8,6 +8,7 @@ namespace BuildTemplates.Test
     {
         readonly string contentPath = Path.Combine("..", "..", "..", "Content");
         //readonly string contentPath = @"D:\Documents\Visual Studio 2017\Projects\SE\SE\Content";
+        //readonly string contentPath = @"D:\Documents\Visual Studio 2017\Projects\BytingLibGame\BytingLibGame\Content";
         readonly string nameSpace = "BytingLibGame";
 
         [TestMethod]
@@ -15,7 +16,7 @@ namespace BuildTemplates.Test
         [DataRow(true)]
         public void TestBuild(bool loadOnStartup)
         {
-            (string output, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath, nameSpace, new string[0], loadOnStartup);
+            (string output, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath, nameSpace, new string[0], loadOnStartup, null, null, null);
             Assert.IsNotNull(output);
             Assert.IsNotNull(mgcbOutput);
             Assert.IsNotNull(locaCode);

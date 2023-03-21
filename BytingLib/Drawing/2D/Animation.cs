@@ -4,42 +4,35 @@ namespace BytingLib
 {
     public class Animation : IDisposable
     {
-        public Ref<Texture2D> Texture { get; }
-        public Ref<AnimationData> Data { get; }
+        public Texture2D Texture { get; }
+        public AnimationData Data { get; }
 
         private Rectangle[,]? sliceRects;
 
-        public Animation(Ref<Texture2D> texture, Ref<AnimationData> data)
+        public Animation(Texture2D texture, string json)
         {
-            this.Texture = texture;
-            this.Data = data;
-        }
-
-        public Animation(Ref<Texture2D> texture, string json)
-        {
-            this.Texture = texture;
-            Data = new Ref<AnimationData>(new Pointer<AnimationData>(AnimationData.FromJson(json)), null);
+            Texture = texture;
+            Data = AnimationData.FromJson(json);
         }
 
         public void Dispose()
         {
-            Texture?.Dispose();
-            Data?.Dispose();
+            Texture.Dispose();
         }
 
         public void Draw(SpriteBatch spriteBatch, string animationTagName, Anchor anchor, double ms)
         {
-            Texture.Value.Draw(spriteBatch, anchor, null, Data.Value.GetSourceRectangle(ms, animationTagName));
+            Texture.Draw(spriteBatch, anchor, null, Data.GetSourceRectangle(ms, animationTagName));
         }
 
         public void Draw(SpriteBatch spriteBatch, int frameIndex, Anchor anchor)
         {
-            Texture.Value.Draw(spriteBatch, anchor, null, Data.Value.GetSourceRectangle(frameIndex));
+            Texture.Draw(spriteBatch, anchor, null, Data.GetSourceRectangle(frameIndex));
         }
 
         internal void DrawSliced(SpriteBatch spriteBatch, int frameIndex, Rect absoluteRect)
         {
-            Rectangle frameRect = Data.Value.GetSourceRectangle(frameIndex)!.Value;
+            Rectangle frameRect = Data.GetSourceRectangle(frameIndex)!.Value;
             Rectangle sourceRect;
             Rect rect;
 
@@ -61,7 +54,7 @@ namespace BytingLib
                     sourceRect.Y += frameRect.Y;
                     rect = GetWorldRect(x, y);
 
-                    Texture.Value.Draw(spriteBatch, rect, null, sourceRect);
+                    Texture.Draw(spriteBatch, rect, null, sourceRect);
                 }
             }
 
@@ -77,24 +70,24 @@ namespace BytingLib
         {
             AnimationData._Rect sliceFace;
 
-            var frame = Data.Value.frames!.First().Value;
+            var frame = Data.frames!.First();
 
-            if (Data.Value.meta?.slices?.Length > 0)
+            if (Data.meta?.slices?.Length > 0)
             {
-                sliceFace = Data.Value.meta!.slices![0].keys[0].bounds;
+                sliceFace = Data.meta!.slices![0].keys[0].bounds;
             }
             else
             {
-                if (frame.rectangle.Width % 2 == 0
-                    || frame.rectangle.Height % 2 == 0)
+                if (frame.Value.rectangle.Width % 2 == 0
+                    || frame.Value.rectangle.Height % 2 == 0)
                 {
                     throw new BytingException("Either add a slice to the texture that should get sliced or make sure width and height are odd, so the center pixel is automatically considered as the face slice");
                 }
 
                 sliceFace = new AnimationData._Rect()
                 {
-                    x = frame.rectangle.Width / 2,
-                    y = frame.rectangle.Width / 2,
+                    x = frame.Value.rectangle.Width / 2,
+                    y = frame.Value.rectangle.Width / 2,
                     w = 1,
                     h = 1
                 };
@@ -106,7 +99,7 @@ namespace BytingLib
         public Padding GetFacePadding()
         {
             var face = GetFaceSlice();
-            var rect = Data.Value.frames!.First().Value.rectangle;
+            var rect = Data.frames!.First().Value.rectangle;
             return new Padding(face.x, face.y, rect.Width - face.x - face.w, rect.Height - face.y - face.h);
         }
 
@@ -119,14 +112,14 @@ namespace BytingLib
 
             AnimationData._Rect sliceFace = GetFaceSlice();
 
-            var frame = Data.Value.frames!.First().Value;
+            var frame = Data.frames!.First();
 
             Int2[] sliceCoords = new Int2[4]
             {
                 new Int2(0,0),
                 new Int2(sliceFace.x, sliceFace.y),
                 new Int2(sliceFace.x + sliceFace.w, sliceFace.y + sliceFace.h),
-                new Int2(frame.rectangle.Width, frame.rectangle.Height)
+                new Int2(frame.Value.rectangle.Width, frame.Value.rectangle.Height)
             };
 
             for (int x = 0; x < 3; x++)

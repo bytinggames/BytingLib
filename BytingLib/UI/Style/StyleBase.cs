@@ -2,7 +2,7 @@
 {
     public class StyleBase : Style
     {
-        public StyleBase(Ref<SpriteFont> font, Animation buttonAnimation)
+        public StyleBase(Ref<SpriteFont> font, Ref<Animation> buttonAnimation)
         {
             Font = font;
             ButtonAnimation = buttonAnimation;

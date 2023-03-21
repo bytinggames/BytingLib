@@ -37,15 +37,18 @@ namespace BytingLib
         public SamplerGL? DefaultSampler { get; internal set; }
 
         public ModelGL(string filePath, string contentRootDirectory, GraphicsDevice? gDevice, IContentCollectorUse? contentCollector)
+            :this(File.ReadAllText(filePath), Path.GetDirectoryName(filePath) ?? "", contentRootDirectory, gDevice, contentCollector)
+        {
+        }
+
+        public ModelGL(string json, string gltfDirectory, string contentRootDirectory, GraphicsDevice? gDevice, IContentCollectorUse? contentCollector)
         {
             this.contentRootDirectory = contentRootDirectory;
             this.gDevice = gDevice;
             this.contentCollector = contentCollector;
             ChannelTargets = new DictionaryCacheChannelTargets(this);
 
-            string json = File.ReadAllText(filePath);
-            string gltfDir = Path.GetDirectoryName(filePath)!;
-            gltfDirRelativeToContent = gltfDir.Substring(contentRootDirectory.Length);
+            gltfDirRelativeToContent = gltfDirectory.Substring(contentRootDirectory.Length);
             gltfDirRelativeToContent = gltfDirRelativeToContent.Replace('\\', '/');
             if (gltfDirRelativeToContent.StartsWith('/'))
                 gltfDirRelativeToContent = gltfDirRelativeToContent.Substring(1);

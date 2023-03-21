@@ -8,7 +8,7 @@ namespace BytingLib
     /// </summary>
     public class ContentManagerRaw : ContentManager, IContentManagerRaw
     {
-        private bool disposed;
+        //private bool disposed;
         private GraphicsDevice gDevice;
 
         public ContentManagerRaw(IServiceProvider serviceProvider, string rootDirectory) : base(serviceProvider, rootDirectory)
@@ -26,28 +26,13 @@ namespace BytingLib
         /// <exception cref="ContentLoadException"/>
         public T Load<T>(string assetName, ExtendedLoadParameter? extendedLoad)
         {
-            T asset;
-            if (typeof(T) == typeof(AnimationData))
-                asset = LoadAnimationData<T>(assetName);
-            else if (typeof(T) == typeof(string))
-                asset = (T)(object)LoadText(assetName);
-            else if (typeof(T) == typeof(ModelGL))
-            {
-                if (extendedLoad == null)
-                    throw new BytingException("Couldn't load ModelGL. Use Load(assetName, contentCollector) instead.");
-                asset = (T)(object)LoadModelGL(assetName, extendedLoad.Value);
-            }
-            else if (typeof(T) == typeof(byte[]))
-                asset = (T)(object)LoadByteArray(assetName);
-            else
-                asset = LoadT<T>(assetName);
-
+            T asset = LoadInner<T>(assetName);
             LoadedAssets.TryAdd(assetName, asset);
             return asset;
 
         }
 
-        private T LoadT<T>(string assetName)
+        private T LoadInner<T>(string assetName)
         {
             try
             {
@@ -95,32 +80,6 @@ namespace BytingLib
                     throw;
             }
             return default!; // just to silence the compiler
-        }
-
-        private T LoadAnimationData<T>(string assetNameWithExtension)
-        {
-            string json = File.ReadAllText(GetFullFilePath(assetNameWithExtension, ""));
-            return (T)(object)AnimationData.FromJson(json);
-        }
-
-        private string LoadText(string assetNameWithExtension)
-        {
-            return File.ReadAllText(GetFullFilePath(assetNameWithExtension, ""));
-        }
-
-        private byte[] LoadByteArray(string assetNameWithExtension)
-        {
-            return File.ReadAllBytes(GetFullFilePath(assetNameWithExtension, ""));
-        }
-
-        private ModelGL LoadModelGL(string assetName, ExtendedLoadParameter extendedLoad)
-        {
-            return new ModelGL(GetFullFilePath(assetName, ".gltf"), RootDirectory, extendedLoad.GraphicsDevice, extendedLoad.ContentCollector);
-        }
-
-        private string GetFullFilePath(string assetName, string extension)
-        {
-            return Path.Combine(RootDirectory, assetName) + extension;
         }
 
         // disabled the custom dispose code, cause it creates a memory leak

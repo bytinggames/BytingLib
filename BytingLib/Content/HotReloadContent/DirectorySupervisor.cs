@@ -16,11 +16,7 @@ namespace BytingLib
                 get
                 {
                     string path = LocalPath;
-                    Type? t = ExtensionToAssetType.Convert(path);
-                    if (t != typeof(string)
-                        && t != typeof(AnimationData)
-                        && t != typeof(byte[])) // non-xnb assets keep their extensions
-                        path = path.Remove(path.Length - System.IO.Path.GetExtension(path).Length); // remove extension
+                    path = path.Remove(path.Length - System.IO.Path.GetExtension(path).Length); // remove extension
                     return path.Replace('\\', '/');
                 }
             }
