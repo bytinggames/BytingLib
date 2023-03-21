@@ -9,6 +9,7 @@ namespace BytingLib
 
         DirectorySupervisor dirSupervisor;
         IContentCollector content;
+        private readonly ContentConverter contentConverter;
         GraphicsDevice gDevice;
 
         string sourceContentDir;
@@ -18,13 +19,10 @@ namespace BytingLib
 
         readonly Dictionary<string, List<string>> dependencies = new Dictionary<string, List<string>>();
 
-        // TODO: reconsider this. It shouldn't be static. This was just a quick fix.
-        public static Dictionary<string, Type> ExoticTypes = new();
-
-        public HotReloadContent(IServiceProvider serviceProvider, IContentCollector content, string hotReloadContentPath)
+        public HotReloadContent(IServiceProvider serviceProvider, IContentCollector content, string hotReloadContentPath, ContentConverter contentConverter)
         {
             this.content = content;
-
+            this.contentConverter = contentConverter;
             sourceContentDir = Path.GetFullPath(hotReloadContentPath);
 
             bool expectEmptyDir;
@@ -48,7 +46,7 @@ namespace BytingLib
             if (Directory.Exists(tempOutputPath))
                 Directory.Delete(tempOutputPath, true);
 
-            contentBuilder = new ContentBuilder(sourceContentDir, tempOutputPath, tempPath);
+            contentBuilder = new ContentBuilder(sourceContentDir, tempOutputPath, tempPath, contentConverter);
 
             TempContentRaw = new ContentManagerRaw(serviceProvider, contentBuilder.OutputPath);
 
@@ -60,57 +58,11 @@ namespace BytingLib
 
         private string[] GetFiles()
         {
-            List<string> files = new List<string>();
-            //GetFromFolder("Effects", "*.fx|*.fxh");
-            //GetFromFolder("Fonts", "*.xnb|*.spritefont");
-            //GetFromFolder("Models", "*.fbx");
-            //GetFromFolder("Music", "*.ogg");
-            //GetFromFolder("Sounds", "*.ogg|*.wav");
-            //GetFromFolder("Textures", "*.png|*.jpg|*.jpeg|*.ani");
-            //GetFromFolder("", "*.txt|*.csv|*.json|*.xml|*.ini|*.config");
-            // TODO: improve this
-            Get("*.fx|*.fxh|*.xnb|*.spritefont|*.fbx|*.ogg|*.wav|*.png|*.jpg|*.jpeg|*.ani|*.txt|*.csv|*.json|*.xml|*.ini|*.config|*.gltf|*.bin");
-            GetFile("Loca.loca");
+            List<string> files = Directory.GetFiles(sourceContentDir, "*.*", SearchOption.AllDirectories).ToList();
 
             dependencies.Clear();
             InitEffectDependencies(files);
             InitGLTFDependencies(files);
-
-            //void GetFromFolder(string folder, string searchPattern)
-            //{
-            //    if (!Directory.Exists(Path.Combine(sourceContentDir, folder)))
-            //        return;
-            //    string[] searchPatterns = searchPattern.Split('|');
-            //    foreach (string sp in searchPatterns)
-            //    {
-            //        files.AddRange(Directory.GetFiles(Path.Combine(sourceContentDir, folder), sp, SearchOption.AllDirectories));
-            //    }
-            //}
-
-            void Get(string searchPattern)
-            {
-                if (!Directory.Exists(sourceContentDir))
-                    return;
-                string[] searchPatterns = searchPattern.Split('|');
-                foreach (string sp in searchPatterns)
-                {
-                    files.AddRange(Directory.GetFiles(sourceContentDir, sp, SearchOption.TopDirectoryOnly));
-
-                    foreach (string dir in Directory.GetDirectories(sourceContentDir))
-                    {
-                        string? dirName = Path.GetFileName(dir);
-                        if (dirName == null || dirName == "bin" || dirName == "obj")
-                            continue;
-                        files.AddRange(Directory.GetFiles(dir, sp, SearchOption.AllDirectories));
-                    }
-                }
-            }
-            void GetFile(string file)
-            {
-                file = Path.Combine(sourceContentDir, file);
-                if (File.Exists(file))
-                    files.Add(file);
-            }
 
             return files.ToArray();
         }
@@ -204,52 +156,28 @@ namespace BytingLib
 
             AddDependencies(changes);
 
-            List<string> updatedOutputFiles;
-            if (contentBuilder.Build(changes.ModifiedOrCreated().Select(f => f.Path).ToArray(), out updatedOutputFiles))//, changes.Deleted.Select(f => f.LocalPath).ToArray());
+            List<MGCBItem> itemsChangedOrCreated;
+            List<MGCBItem> itemsDeleted;
+            if (contentBuilder.Build(changes.ModifiedOrCreated().Select(f => f.Path).ToArray(),
+                changes.Deleted.Select(f => f.Path).ToArray(),
+                out itemsChangedOrCreated,
+                out itemsDeleted))
             {
-                foreach (var file in changes.ModifiedOrCreated())
-                {
-                    // TODO: replace the Iterate method with the foreach below
-                    Iterate(file, false);
-                }
-
-                foreach (var file in updatedOutputFiles)
-                {
-                    // TODO: implement this correctly, by reading from the building mgcb what files should be updated
-                    //Type? assetType = ExtensionToAssetType.Convert(file);
-                    string ext = Path.GetExtension(file);
-                    string assetName = file.Remove(file.Length - ext.Length);
-
-                    foreach (var t in ExoticTypes)
-                    {
-                        if (assetName.EndsWith(t.Key))
-                            ReloadIfLoadedFromType(t.Value, assetName, false);
-                    }
-                }
+                Update(itemsChangedOrCreated, false);
             }
 
-            if (changes.Deleted.Any())
+            Update(itemsDeleted, true);
+
+            void Update(List<MGCBItem> items, bool deleted)
             {
-                foreach (var file in changes.Deleted)
+                foreach (var file in items)
                 {
-                    Iterate(file, true);
+                    string assetName = file.FilePath.Remove(file.FilePath.LastIndexOf('.'));
+                    if (file.CSharpType != null
+                        && contentConverter.RuntimeTypes.TryGetValue(file.CSharpType, out Type? dataType))
+                        ReloadFromTypeIfLoaded(dataType, assetName, deleted);
                 }
             }
-
-            void Iterate(DirectorySupervisor.FileStamp file, bool deleted)
-            {
-                // TODO
-                //Type? assetType = ExtensionToAssetType.Convert(file.LocalPath);
-                //if (assetType == null)
-                //{
-                //    if (Path.GetExtension(file.LocalPath) == ".loca")
-                //        OnTextReload?.Invoke(Path.Combine(TempContentRaw.RootDirectory, file.LocalPath));
-                //    return;
-                //}
-
-                //ReloadIfLoadedFromType(assetType, file.AssetName, deleted);
-            }
-
 
             //Game1.ShowPopup(string.Join('\n', 
             //    changes.Modified.Select(f => f.LocalPath + " changed")
@@ -259,7 +187,7 @@ namespace BytingLib
             return true;
         }
 
-        public void ReloadIfLoadedFromType(Type assetType, string assetName, bool deleted)
+        public void ReloadFromTypeIfLoaded(Type assetType, string assetName, bool deleted)
         {
             MethodInfo method = GetType().GetMethod("ReloadIfLoaded")!;
             MethodInfo genericMethod = method.MakeGenericMethod(assetType);

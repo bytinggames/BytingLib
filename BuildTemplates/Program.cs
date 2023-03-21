@@ -1,4 +1,6 @@
-﻿namespace BuildTemplates
+﻿using BytingLib;
+
+namespace BuildTemplates
 {
     internal class Program
     {
@@ -7,9 +9,7 @@
             string nameSpace = args.Length == 0 ? "NAMESPACE" : args[0];
             string[] referencedDlls = new string[0];
             bool loadOnStartup = false;
-            List<(string, string)> customProcessorToDataType = new();
-            List<(string, string)> customDataTypeToNameExtension = new();
-            List<(string, string)> customExtensionToDataType = new();
+            ContentConverter contentConverter = new();
 
             foreach (var arg in args)
             {
@@ -27,18 +27,18 @@
                         loadOnStartup = value == "true" || value == "1";
                         break;
                     case "processorToDataType":
-                    case "dateTypeToName":
+                    case "dataTypeToVarExtension":
                     case "extensionToDataType":
-                        var dict = command == "dateTypeToName" ? customDataTypeToNameExtension 
-                            : command == "processorToDataType" ? customProcessorToDataType
-                            : customExtensionToDataType;
+                        var dict = command == "dataTypeToVarExtension" ? contentConverter.DataTypeToVarExtension
+                            : command == "processorToDataType" ? contentConverter.ProcessorToDataType
+                            : contentConverter.ExtensionCopyToDataType;
                         string[] split = value.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
                         foreach (var s in split)
                         {
                             string[] s2 = s.Split(new char[] { ',' });
                             if (s2.Length < 2)
                                 continue;
-                            dict.Add((s2[0], s2[1]));
+                            dict.Add(s2[0], s2[1]);
                         }
                         break;
                 }
@@ -46,7 +46,8 @@
 
             var projectPath = Environment.CurrentDirectory;
             string contentPath = Path.Combine(projectPath, "Content");
-            (string code, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath + "/", nameSpace, referencedDlls, loadOnStartup, customProcessorToDataType, customDataTypeToNameExtension, customExtensionToDataType);
+            (string code, string mgcbOutput, string locaCode, ShaderFile[] shaders) 
+                = ContentTemplate.Create(contentPath + "/", nameSpace, referencedDlls, loadOnStartup, contentConverter);
 
             string mgcbFile = Path.Combine(contentPath, "Content.Generated.mgcb");
             File.WriteAllText(mgcbFile, mgcbOutput);

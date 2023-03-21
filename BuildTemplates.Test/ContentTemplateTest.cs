@@ -1,3 +1,4 @@
+using BytingLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 
@@ -16,7 +17,7 @@ namespace BuildTemplates.Test
         [DataRow(true)]
         public void TestBuild(bool loadOnStartup)
         {
-            (string output, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath, nameSpace, new string[0], loadOnStartup, null, null, null);
+            (string output, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath, nameSpace, new string[0], loadOnStartup, new ContentConverter());
             Assert.IsNotNull(output);
             Assert.IsNotNull(mgcbOutput);
             Assert.IsNotNull(locaCode);

@@ -8,7 +8,7 @@ namespace BytingLib
         private readonly string modContentDir;
         private readonly string tempOutputPath;
         private readonly string tempPath;
-
+        private readonly ContentConverter contentConverter;
         private readonly string header = "";
         private readonly Dictionary<string, CodePart> fileToCode = new Dictionary<string, CodePart>();
         private readonly string[] mgcbContents = new string[0];
@@ -40,11 +40,12 @@ namespace BytingLib
         }
 
 
-        public ContentBuilder(string modContentDir, string tempOutputPath, string tempPath)
+        public ContentBuilder(string modContentDir, string tempOutputPath, string tempPath, ContentConverter contentConverter)
         {
             this.modContentDir = modContentDir;
             this.tempOutputPath = tempOutputPath;
             this.tempPath = tempPath;
+            this.contentConverter = contentConverter;
 
             // get all mgcb files
             string[] mgcbFiles;
@@ -60,7 +61,7 @@ namespace BytingLib
             if (mainContentIndex == -1)
             {
                 mainContentIndex = 0;
-                //throw new Exception("Content.mgcb doesn't exist in " + outputPath);
+                //throw new Exception("Content.Generated.mgcb doesn't exist in " + outputPath);
             }
 
             // read in all mgcb files
@@ -80,7 +81,11 @@ namespace BytingLib
 #else
             header = "/define:Release";
 #endif
-            header += mainContent.Remove(begin);
+
+            string sourceHeader = mainContent.Remove(begin);
+            sourceHeader = AdaptReferences(sourceHeader);
+
+            header += sourceHeader;
 
             for (int i = 0; i < mgcbContents.Length; i++)
             {
@@ -100,11 +105,38 @@ namespace BytingLib
             }
         }
 
-        public bool Build(string[] changes, out List<string> updatedOutputFiles)
+        private static string AdaptReferences(string sourceHeader)
         {
-            updatedOutputFiles = new();
 
-            if (changes.Length == 0)
+            // alter references, so that they point to the directory of the exe (Environment.CurrentDirectory)
+            // you need to supply that directory with all the required content dlls
+            int referenceIndex = 0;
+            const string refStr = "/reference:";
+            while ((referenceIndex = sourceHeader.IndexOf(refStr, referenceIndex)) != -1)
+            {
+                referenceIndex += refStr.Length;
+                int endLineIndex = sourceHeader.IndexOf('\n', referenceIndex);
+                if (endLineIndex != -1)
+                {
+                    string reference = sourceHeader.Substring(referenceIndex, endLineIndex - referenceIndex).Replace('\\', '/');
+                    int lastSlashIndex = reference.LastIndexOf('/');
+                    if (lastSlashIndex != -1)
+                        reference = reference.Substring(lastSlashIndex + 1);
+                    string referenceDll = Environment.CurrentDirectory + "/" + reference;
+                    sourceHeader = sourceHeader.Remove(referenceIndex) + referenceDll + sourceHeader.Substring(endLineIndex);
+                    referenceIndex += referenceDll.Length;
+                }
+            }
+
+            return sourceHeader;
+        }
+
+        public bool Build(string[] changes, string[] deleted, out List<MGCBItem> itemsChanged, out List<MGCBItem> itemsDeleted)
+        {
+            itemsChanged = new();
+            itemsDeleted = new();
+
+            if (changes.Length == 0 && deleted.Length == 0)
                 return false;
 
             if (Directory.Exists(tempOutputPath))
@@ -115,6 +147,8 @@ namespace BytingLib
             // set temporary directories
             cmd += $"/intermediateDir:{tempPath}\r\n/outputDir:{tempOutputPath}\r\n\r\n";
 
+            bool anyTasksAdded = false;
+
             foreach (var file in changes)
             {
                 string localFile = Path.GetRelativePath(modContentDir, file).Replace('\\', '/');
@@ -122,29 +156,29 @@ namespace BytingLib
                 {
                     string addCode = code.GetCode(mgcbContents);
                     cmd += addCode;
+                    anyTasksAdded = true;
 
-                    ScriptReader reader = new ScriptReader(addCode);
-
-                    GetChanges("/build:", ref updatedOutputFiles);
-                    GetChanges("/copy:", ref updatedOutputFiles);
-
-                    void GetChanges(string buildStr, ref List<string> xnbChanges)
-                    {
-                        int buildIndex = 0;
-                        while ((buildIndex = addCode.IndexOf(buildStr, buildIndex)) != -1)
-                        {
-                            buildIndex += buildStr.Length;
-                            int semicolonIndex = addCode.IndexOf(';', buildIndex);
-                            int newLineIndex = addCode.IndexOf('\n', buildIndex);
-                            if (semicolonIndex != -1 && semicolonIndex < newLineIndex)
-                                buildIndex = semicolonIndex + 1;
-                            string assetName = addCode.Substring(buildIndex, newLineIndex - buildIndex).Replace("\r", "");
-                            xnbChanges.Add(assetName);
-                            buildIndex = newLineIndex + 1;
-                        }
-                    }
+                    var mgcbActions = MGCBParser.GetMGCBActions(addCode);
+                    MGCBParser.Apply(mgcbActions, contentConverter);
+                    itemsChanged.AddRange(mgcbActions);
                 }
             }
+
+            foreach (var file in deleted)
+            {
+                string localFile = Path.GetRelativePath(modContentDir, file).Replace('\\', '/');
+                if (fileToCode.TryGetValue(localFile, out CodePart code))
+                {
+                    string addCode = code.GetCode(mgcbContents);
+
+                    var mgcbActions = MGCBParser.GetMGCBActions(addCode);
+                    MGCBParser.Apply(mgcbActions, contentConverter);
+                    itemsDeleted.AddRange(mgcbActions);
+                }
+            }
+
+            if (!anyTasksAdded)
+                return false; // not necessary to build, skip it
 
             string contentTempFile = Path.Combine(modContentDir, "Content.mgcb.tmp");
 

@@ -1,9 +1,12 @@
 ﻿
-namespace BuildTemplates
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
+
+namespace BytingLib
 {
-    internal static class AssetTypes
+    public class ContentConverter
     {
-        internal static readonly Dictionary<string, string> ProcessorToDataType = new()
+        public Dictionary<string, string> ProcessorToDataType { get; } = new()
         {
             { "EffectProcessor", "Effect" },
             { "FontDescriptionProcessor", "SpriteFont" },
@@ -11,7 +14,6 @@ namespace BuildTemplates
             { "ModelProcessor", "Model" },
             { "SoundEffectProcessor", "SoundEffect" },
             { "SongProcessor", "Song" },
-            { "VideoProcessor", "Video" },
             // BytingLib
             { "BytingFontProcessor", "SpriteFont" },
             { "AnimationProcessor", "Animation" },
@@ -20,7 +22,7 @@ namespace BuildTemplates
             { "BytesProcessor", "byte[]" },
         };
 
-        internal static readonly Dictionary<string, string> ExtensionCopyToDataType = new()
+        public Dictionary<string, string> ExtensionCopyToDataType { get; } = new()
         {
             { "png", "Texture2D" },
             { "jpg", "Texture2D" },
@@ -34,7 +36,7 @@ namespace BuildTemplates
             { "gltf", "ModelGL" },
         };
 
-        internal static readonly Dictionary<string, string> DataTypeToVarExtension = new()
+        public Dictionary<string, string> DataTypeToVarExtension { get; } = new()
         {
             { "Effect", "Fx" },
             { "SpriteFont", "Font" },
@@ -47,6 +49,21 @@ namespace BuildTemplates
             // BytingLib
             { "Animation", "" }, // Ani is already in the asset name
             { "ModelGL", "Model" }, // Ani is already in the asset name
+        };
+
+        public Dictionary<string, Type> RuntimeTypes = new()
+        {
+            { "Effect", typeof(Effect) },
+            { "SpriteFont", typeof(SpriteFont) },
+            { "Texture2D", typeof(Texture2D) },
+            { "Model", typeof(Model) },
+            { "SoundEffect", typeof(SoundEffect) },
+            { "Song", typeof(Song) },
+            // BytingLib
+            { "Animation", typeof(Animation) },
+            { "string", typeof(string) },
+            { "ModelGL", typeof(ModelGL) },
+            { "byte[]", typeof(byte[]) },
         };
     }
 }

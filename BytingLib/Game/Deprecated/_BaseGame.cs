@@ -65,7 +65,7 @@
             contentCollector = new ContentCollector(rawContent, GraphicsDevice); disposables.Add(contentCollector);
 
 #if DEBUG
-            hotReloadContent = new HotReloadContent(Services, contentCollector, Path.Combine("..", "..", "..", "Content"));
+            hotReloadContent = new HotReloadContent(Services, contentCollector, Path.Combine("..", "..", "..", "Content"), new ContentConverter());
 #else
             hotReloadContent = new HotReloadContent(Services, contentCollector, "ContentMod");
 #endif

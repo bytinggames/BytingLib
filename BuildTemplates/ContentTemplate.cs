@@ -1,4 +1,6 @@
-﻿namespace BuildTemplates
+﻿using BytingLib;
+
+namespace BuildTemplates
 {
     public class ContentTemplate
     {
@@ -129,9 +131,7 @@
 
         public static (string cSharpOutput, string mgcbOutput, string locaCode, ShaderFile[] shaders) 
             Create(string contentPath, string nameSpace, string[] referencedDlls, bool loadOnStartup,
-                IEnumerable<(string, string)>? customProcessorToDataType,
-                IEnumerable<(string, string)>? customDataTypeToNameExtension,
-                IEnumerable<(string, string)>? customExtensionCopyToDataType)
+            ContentConverter contentConverter)
         {
             if (!contentPath.EndsWith("/") && !contentPath.EndsWith("\\"))
                 contentPath += "/";
@@ -153,20 +153,8 @@
             CustomContent customContent = new(contentPath);
             string mgcbOutput = root.PrintMGCB("", referencedDlls, customContent);
 
-            Dictionary<string, string> processorToDataType = AssetTypes.ProcessorToDataType.ToDictionary(f => f.Key, f => f.Value);
-            if (customProcessorToDataType != null)
-                foreach (var type in customProcessorToDataType)
-                    processorToDataType.Add(type.Item1, type.Item2);
-            Dictionary<string, string> dataTypeToNameExtension = AssetTypes.DataTypeToVarExtension.ToDictionary(f => f.Key, f => f.Value);
-            if (customDataTypeToNameExtension != null)
-                foreach (var type in customDataTypeToNameExtension)
-                    dataTypeToNameExtension.Add(type.Item1, type.Item2);
-            Dictionary<string, string> extensionCopyToDataType = AssetTypes.ExtensionCopyToDataType.ToDictionary(f => f.Key, f => f.Value);
-            if (customExtensionCopyToDataType != null)
-                foreach (var type in customExtensionCopyToDataType)
-                    extensionCopyToDataType.Add(type.Item1, type.Item2);
-            XnbFolder mgcbOutputFolder = CSharpGenerator.FromMGCB(mgcbOutput, processorToDataType, dataTypeToNameExtension, extensionCopyToDataType, loadOnStartup);
-            string cSharpOutput = mgcbOutputFolder.Print("", XnbFolder.tab);
+            XnbFolder mgcbOutputFolder = CSharpGenerator.FromMGCB(mgcbOutput, contentConverter);
+            string cSharpOutput = mgcbOutputFolder.Print("", XnbFolder.tab, loadOnStartup);
 
             string locaCode = LocaGenerator.Generate(nameSpace, locaFiles.ToArray());
 

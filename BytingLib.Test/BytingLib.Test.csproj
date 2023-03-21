@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../BytingLib/BytingLib.csproj" />
+    <ProjectReference Include="..\BytingPipeline\BytingPipeline.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +28,6 @@
     </None>
   </ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="echo D|xcopy /y &quot;$(ProjectDir)Content/*.mgcb&quot; &quot;$(ProjectDir)$(OutDir)Content/*.mgcbcopy&quot;" />
+		<Exec Command="echo D|xcopy /y &quot;$(ProjectDir)Content\*.mgcb&quot; &quot;$(ProjectDir)$(OutDir)Content\*.mgcbcopy&quot;" /><!-- Must be backslashes \ or else this command doesn't work-->
 	</Target>
 </Project>

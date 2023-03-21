@@ -66,7 +66,7 @@ namespace BytingLib.Test.ContentTest
 
             ContentManagerRaw rawContent = new ContentManagerRaw(game.Services, "Content");
             collector = new ContentCollector(rawContent, game.GraphicsDevice);
-            hotReloadContent = new HotReloadContent(game.Services, collector, "ContentHot");
+            hotReloadContent = new HotReloadContent(game.Services, collector, "ContentHot", new ContentConverter());
         }
 
         [TestMethod]
@@ -124,15 +124,16 @@ namespace BytingLib.Test.ContentTest
         public void TestDynamicTextAndOnLoadEvent()
         {
             string newTextFile = @"ContentHot\Text.txt";
+
             Directory.CreateDirectory(Path.GetDirectoryName(newTextFile)!);
             File.Delete(newTextFile);
 
             CreateGame(out ContentCollector collector, out HotReloadContent hotReloadContent);
 
-            Ref<string> text = collector.Use<string>("Text.txt");
+            Ref<string> text = collector.Use<string>("Text");
             Assert.AreEqual("1", text.Value);
             bool onLoad = false;
-            collector.SubscribeToOnLoad<string>("Text.txt", str =>
+            collector.SubscribeToOnLoad<string>("Text", str =>
             {
                 Assert.AreEqual("2", str);
                 onLoad = true;

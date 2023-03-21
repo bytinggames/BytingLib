@@ -13,7 +13,7 @@
 
         protected readonly Action Exit;
 
-        public GameBase(GameWrapper g, bool contentModdingOnRelease)
+        public GameBase(GameWrapper g, bool contentModdingOnRelease, ContentConverter contentConverter)
         {
             gameWrapper = g;
             gDevice = g.GraphicsDevice;
@@ -30,7 +30,8 @@
 #if DEBUG
             hotReloadContent = new HotReloadContent(g.Services,
                 contentCollector,
-                Path.Combine("..", "..", "..", "Content"));
+                Path.Combine("..", "..", "..", "Content"),
+                contentConverter);
             contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
 #else
             if (contentModdingOnRelease)

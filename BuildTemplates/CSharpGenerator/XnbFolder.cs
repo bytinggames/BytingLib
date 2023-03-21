@@ -56,7 +56,7 @@ namespace BuildTemplates
             return name;
         }
 
-        public string Print(string contentDirectory, string tabs)
+        public string Print(string contentDirectory, string tabs, bool loadOnStartup)
         {
             if (!string.IsNullOrEmpty(contentDirectory))
                 contentDirectory += "/";
@@ -72,17 +72,17 @@ namespace BuildTemplates
             {
                 folderProperties += endl + tab + $"public _{folder.name} {folder.name} {{ get; }}";
                 folderConstruct += endl + tab + tab + $"{folder.name} = new _{folder.name}(collector, disposables);";
-                classes += endl + tab + folder.Print(contentDirectory + folder.name, tabs);
+                classes += endl + tab + folder.Print(contentDirectory + folder.name, tabs, loadOnStartup);
             }
 
             foreach (var file in files)
             {
-                string? print = file.PrintDeclare();
+                string? print = file.PrintDeclare(loadOnStartup);
                 if (print == null)
                     continue;
                 assets += endl + tab + print;
 
-                print = file.PrintInit();
+                print = file.PrintInit(loadOnStartup);
                 if (!string.IsNullOrEmpty(print))
                     fieldInitialize += endl + tab + tab + print;
             }

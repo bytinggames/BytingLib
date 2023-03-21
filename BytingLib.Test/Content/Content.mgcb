@@ -10,6 +10,7 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:../../../BytingLib/BytingPipeline/bin/Debug/net6.0/BytingPipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -28,7 +29,9 @@
 /build:Fonts/Font2.spritefont
 
 #begin Text.txt
-/copy:Text.txt
+/importer:StringImporter
+/processor:StringProcessor
+/build:Text.txt
 
 #begin Textures/Enemy.png
 /importer:TextureImporter

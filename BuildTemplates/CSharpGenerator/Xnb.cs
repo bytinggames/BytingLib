@@ -2,8 +2,6 @@
 {
     public class Xnb
     {
-        private readonly bool loadOnStartup;
-
         public string AssetName { get; }
         public string FilePath { get; }
         /// <summary>The same as asset name but without the parent folders</summary>
@@ -14,12 +12,11 @@
 
         string VarName => $"{ToVariableName(FileNameWithoutExtension)}{VarNameExtension}";
 
-        public Xnb(string filePath, string cSharpDataType, string varNameExtension, bool loadOnStartup)
+        public Xnb(string filePath, string cSharpDataType, string varNameExtension)
         {
             AssetName = FileName = FilePath = filePath;
             CSharpDataType = cSharpDataType;
             VarNameExtension = varNameExtension;
-            this.loadOnStartup = loadOnStartup;
 
             int dotIndex = AssetName.LastIndexOf('.');
             if (dotIndex != -1)
@@ -31,7 +28,7 @@
             return $"{FileName} {CSharpDataType} {VarNameExtension}";
         }
 
-        public string? PrintDeclare()
+        public string? PrintDeclare(bool loadOnStartup)
         {
             if (loadOnStartup)
                 return $"public Ref<{CSharpDataType}> {VarName} {{ get; }}";
@@ -39,7 +36,7 @@
                 return $"public Ref<{CSharpDataType}> {GetInitCode()}";
         }
 
-        public string? PrintInit()
+        public string? PrintInit(bool loadOnStartup)
         {
             if (loadOnStartup)
             {

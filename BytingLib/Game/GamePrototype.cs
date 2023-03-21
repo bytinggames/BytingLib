@@ -15,9 +15,9 @@ namespace BytingLib
 
         private Action? startRecordingPlayback;
 
-        public GamePrototype(GameWrapper g, DefaultPaths paths,
+        public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter,
             bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true) 
-            : base(g, contentModdingOnRelease)
+            : base(g, contentModdingOnRelease, contentConverter)
         {
             updateSpeed = new GameSpeed(g.TargetElapsedTime);
             drawSpeed = new GameSpeed(g.TargetElapsedTime);
