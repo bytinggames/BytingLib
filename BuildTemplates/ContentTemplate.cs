@@ -94,6 +94,7 @@ namespace BuildTemplates
 /config:
 /profile:Reach
 /compress:False
+/keepDuplicates:True
 
 #-------------------------------- References --------------------------------#
 {references}
