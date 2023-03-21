@@ -123,40 +123,46 @@ namespace BytingLib
             return Path.Combine(RootDirectory, assetName) + extension;
         }
 
-        /// <summary>Forces the asset to be unloaded from RAM.</summary>
-        public override void UnloadAsset(string assetName)
-        {
-            if (string.IsNullOrEmpty(assetName))
-            {
-                throw new ArgumentNullException(nameof(assetName));
-            }
-            if (disposed)
-            {
-                throw new ObjectDisposedException("ContentManager");
-            }
+        // disabled the custom dispose code, cause it creates a memory leak
+        // I'm not sure if spritefont textures are disposed correctly though, cause that's the reason I implemented this AssetDisposer.Dispose(asset) section
+        // TODO: it should be tested if SpriteFont textures are disposed correctly
+        ///// <summary>Forces the asset to be unloaded from RAM.</summary>
+        //public override void UnloadAsset(string assetName)
+        //{
+        //    if (string.IsNullOrEmpty(assetName))
+        //    {
+        //        throw new ArgumentNullException(nameof(assetName));
+        //    }
+        //    if (disposed)
+        //    {
+        //        throw new ObjectDisposedException("ContentManager");
+        //    }
 
-            //Check if the asset exists
-            object? asset;
-            if (LoadedAssets.TryGetValue(assetName, out asset))
-            {
-                AssetDisposer.Dispose(asset);
+        //    //Check if the asset exists
+        //    object? asset;
+        //    if (LoadedAssets.TryGetValue(assetName, out asset))
+        //    {
+        //        AssetDisposer.Dispose(asset);
 
-                LoadedAssets.Remove(assetName);
-            }
-        }
+        ////this is not possible like in the base UnloadAsset method. Therefore a memory leak is created...
+        ////        if (asset is IDisposable disposable)
+        ////            disposableAssets.Remove(disposable);
 
-        public new void Dispose()
-        {
-            foreach (var asset in LoadedAssets)
-            {
-                if (asset.Value is IDisposable disposable)
-                    disposable.Dispose();
-            }
-            LoadedAssets.Clear();
+        //        LoadedAssets.Remove(assetName);
+        //    }
+        //}
 
-            base.Dispose();
+        //public new void Dispose()
+        //{
+        //    foreach (var asset in LoadedAssets)
+        //    {
+        //        AssetDisposer.Dispose(asset.Value);
+        //    }
+        //    LoadedAssets.Clear();
 
-            disposed = true;
-        }
+        //    base.Dispose();
+
+        //    disposed = true;
+        //}
     }
 }
