@@ -58,7 +58,18 @@ namespace BytingLib
 
         private string[] GetFiles()
         {
-            List<string> files = Directory.GetFiles(sourceContentDir, "*.*", SearchOption.AllDirectories).ToList();
+            // get all files from top directory
+            List<string> files = Directory.GetFiles(sourceContentDir, "*.*", SearchOption.TopDirectoryOnly).ToList();
+
+            // get all files from subdirectories, excluding bin and obj
+            string[] topDirectories = Directory.GetDirectories(sourceContentDir, "*", SearchOption.TopDirectoryOnly);
+            foreach (var topDir in topDirectories)
+            {
+                if (!topDir.EndsWith("\\bin") && !topDir.EndsWith("/bin")
+                     && !topDir.EndsWith("\\obj") && !topDir.EndsWith("/obj"))
+                    files.AddRange(Directory.GetFiles(topDir, "*.*", SearchOption.AllDirectories));
+            }
+
 
             dependencies.Clear();
             InitEffectDependencies(files);
