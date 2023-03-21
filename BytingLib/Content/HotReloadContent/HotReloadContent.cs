@@ -183,7 +183,12 @@ namespace BytingLib
             {
                 foreach (var file in items)
                 {
-                    string assetName = file.FilePath.Remove(file.FilePath.LastIndexOf('.'));
+                    string assetName = file.FilePath;
+                    int lastDotIndex = assetName.LastIndexOf('.');
+                    // remove extension
+                    if (lastDotIndex != -1)
+                        assetName = assetName.Remove(lastDotIndex);
+
                     if (file.CSharpType != null
                         && contentConverter.RuntimeTypes.TryGetValue(file.CSharpType, out Type? dataType))
                         ReloadFromTypeIfLoaded(dataType, assetName, deleted);
