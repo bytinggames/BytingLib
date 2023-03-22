@@ -67,7 +67,7 @@
 #if DEBUG
             hotReloadContent = new HotReloadContent(Services, contentCollector, Path.Combine("..", "..", "..", "Content"), new ContentConverter());
 #else
-            hotReloadContent = new HotReloadContent(Services, contentCollector, "ContentMod");
+            hotReloadContent = new HotReloadContent(Services, contentCollector, "ContentMod", new ContentConverter());
 #endif
             _rawContent.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
 
