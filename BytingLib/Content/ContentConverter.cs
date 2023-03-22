@@ -34,6 +34,7 @@ namespace BytingLib
             // BytingLib
             { "ani", "Animation" },
             { "gltf", "ModelGL" },
+            { "loca", "Localization" },
         };
 
         public Dictionary<string, string> DataTypeToVarExtension { get; } = new()

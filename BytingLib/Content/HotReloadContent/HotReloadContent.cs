@@ -192,6 +192,8 @@ namespace BytingLib
                     if (file.CSharpType != null
                         && contentConverter.RuntimeTypes.TryGetValue(file.CSharpType, out Type? dataType))
                         ReloadFromTypeIfLoaded(dataType, assetName, deleted);
+                    else if (file.FilePath.EndsWith(".loca"))
+                        OnTextReload?.Invoke(Path.Combine(TempContentRaw.RootDirectory, file.FilePath));
                 }
             }
 
