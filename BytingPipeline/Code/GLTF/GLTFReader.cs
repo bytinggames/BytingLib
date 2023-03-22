@@ -18,7 +18,7 @@ namespace BytingPipeline
             IContentCollector? contentCollector = ContentCollector.CurrentContentCollector; // TODO: when fixing this, also fix it for AnimationReader
 
             if (contentCollector == null)
-                throw new BytingException("CurrentContentCollector in GLTFReader should be set");
+                throw new BytingException("CurrentContentCollector is not set");
 
             string json = input.ReadString();
             string? gltfDirectory = Path.GetDirectoryName(Path.Combine(input.ContentManager.RootDirectory, input.AssetName));

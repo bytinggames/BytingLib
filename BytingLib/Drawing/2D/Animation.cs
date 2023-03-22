@@ -4,20 +4,21 @@ namespace BytingLib
 {
     public class Animation : IDisposable
     {
-        public Texture2D Texture { get; }
+        private readonly Ref<Texture2D> textureRef;
+        public Texture2D Texture => textureRef.Value;
         public AnimationData Data { get; }
 
         private Rectangle[,]? sliceRects;
 
-        public Animation(Texture2D texture, string json)
+        public Animation(Ref<Texture2D> texture, string json)
         {
-            Texture = texture;
+            textureRef = texture;
             Data = AnimationData.FromJson(json);
         }
 
         public void Dispose()
         {
-            Texture.Dispose();
+            textureRef.Dispose();
         }
 
         public void Draw(SpriteBatch spriteBatch, string animationTagName, Anchor anchor, double ms)
