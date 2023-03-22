@@ -65,16 +65,19 @@
             }
         }
 
+        /// <summary>needs to be updated or removed alltogether (see TODO)</summary>
         public Ref<string> UseString(string assetNameWithExtension)
         {
             return UseCustom(assetNameWithExtension, fileName => File.ReadAllText(fileName));
         }
 
+        /// <summary>needs to be updated or removed alltogether (see TODO)</summary>
         public Ref<byte[]> UseBytes(string assetNameWithExtension)
         {
             return UseCustom(assetNameWithExtension, fileName => File.ReadAllBytes(fileName));
         }
 
+        /// <summary>needs to be updated or removed alltogether (see TODO)</summary>
         private Ref<T> UseCustom<T>(string assetNameWithExtension, Func<string, T> readAsset)
         {
             string assetName = relativeAssetPath + assetNameWithExtension;
@@ -83,7 +86,7 @@
             object? assetHolder;
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
             {
-                T assetContent = readAsset(Path.Combine(contentRaw.RootDirectory, assetName));
+                T assetContent = readAsset(Path.Combine(contentRaw.RootDirectory, assetName)); // TODO: currently this pulls only the RootDirectory of the first contnet manager, which could be the hot reload content manager. When this load fails, it fails alltogether. Fix this by iterating through the content manager root directories.
                 assetHolder = new AssetHolder<T>(assetContent, assetName, Unuse);
                 loadedAssets.Add(assetName, assetHolder);
 
