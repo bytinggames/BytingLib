@@ -15,8 +15,10 @@
         private float scale;
         private bool treeDirty = true;
         Rect? lastRenderRect;
+        // must only be used for non-replay related stuff
+        private readonly IResolution graphicsResolution;
 
-        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, MouseInput mouse, StyleRoot style)
+        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, IResolution graphicsResolution, MouseInput mouse, StyleRoot style)
             : base(getRenderRect, mouse, style)
         {
             Width = defaultResX;
@@ -25,6 +27,7 @@
             float aspectRatio = (float)defaultResX / defaultResY;
             MinAspectRatio = aspectRatio;
             MaxAspectRatio = aspectRatio;
+            this.graphicsResolution = graphicsResolution;
         }
 
         protected override ElementInput CreateElementInput(MouseInput mouse)
@@ -121,7 +124,16 @@
             SamplerState samplerState = IsScalingPixelated() 
                 && MathF.Abs(0.5f - ((scale + 0.5f) % 1)) < 0.01f // check if scale is roughly a whole number (1, 2, 3, etc.)
                 ? SamplerState.PointClamp : SamplerState.LinearClamp;
-            spriteBatch.Begin(samplerState: samplerState, transformMatrix: Transform);
+
+            Matrix transform = Transform;
+            Int2 graphicsRes = graphicsResolution.Resolution;
+            if (lastRenderRect != null && graphicsRes.ToVector2() != lastRenderRect.Size)
+            {
+                // custom transform, so that when watching a replay, it still displays the ui wholly independent of viewers and recorders resolution
+                transform *= Matrix.CreateScale(graphicsRes.X / lastRenderRect.Width, graphicsRes.Y / lastRenderRect.Height, 1f);
+            }
+
+            spriteBatch.Begin(samplerState: samplerState, transformMatrix: transform);
 
             StyleRoot.Push(Style);
             for (int i = 0; i < Children.Count; i++)
