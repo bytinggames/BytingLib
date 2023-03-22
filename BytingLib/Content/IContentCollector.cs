@@ -18,4 +18,9 @@
         public bool UnsubscribeToOnLoad(string assetName, Action onLoadAction);
         public void TryTriggerOnLoad<T>(string assetName, T asset);
     }
+
+    public static class IContentCollectorUseExtension
+    {
+        public static IContentCollectorUse? CurrentContentCollector { get; set; }
+    }
 }

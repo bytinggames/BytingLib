@@ -15,10 +15,10 @@ namespace BytingPipeline
                 throw new BytingException("IGraphicsDeviceService is missing");
 
             GraphicsDevice gDevice = gDeviceService.GraphicsDevice;
-            IContentCollector? contentCollector = ContentCollector.CurrentContentCollector; // TODO: when fixing this, also fix it for AnimationReader
+            IContentCollectorUse? contentCollector = IContentCollectorUseExtension.CurrentContentCollector; // TODO: when fixing this, also fix it for AnimationReader
 
             if (contentCollector == null)
-                throw new BytingException("CurrentContentCollector is not set");
+                throw new BytingException("IContentCollectorUseExtension.CurrentContentCollector is not set");
 
             string json = input.ReadString();
             string? gltfDirectory = Path.GetDirectoryName(Path.Combine(input.ContentManager.RootDirectory, input.AssetName));

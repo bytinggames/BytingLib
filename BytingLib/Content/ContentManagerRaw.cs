@@ -26,6 +26,8 @@ namespace BytingLib
         /// <exception cref="ContentLoadException"/>
         public T Load<T>(string assetName, ExtendedLoadParameter? extendedLoad)
         {
+            IContentCollectorUseExtension.CurrentContentCollector = extendedLoad == null ? null : extendedLoad.Value.ContentCollector;
+
             T asset = LoadInner<T>(assetName);
             LoadedAssets.TryAdd(assetName, asset);
             return asset;

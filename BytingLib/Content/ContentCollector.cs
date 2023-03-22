@@ -8,9 +8,6 @@
         private readonly Dictionary<string, Dictionary<object, Action<object>>> onLoad = new();
         private readonly ExtendedLoadParameter extendedLoad;
 
-        // TODO: improve this:
-        public static IContentCollector? CurrentContentCollector { get; private set; }
-
         public ContentCollector(IContentManagerRaw content, GraphicsDevice gDevice)
         {
             this.contentRaw = content;
@@ -37,7 +34,6 @@
             object? assetHolder;
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
             {
-                CurrentContentCollector = this;
                 assetHolder = new AssetHolder<T>(contentRaw.Load<T>(assetName, extendedLoad), assetName, Unuse);
                 loadedAssets.Add(assetName, assetHolder);
 
@@ -87,7 +83,6 @@
             object? assetHolder;
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
             {
-                CurrentContentCollector = this;
                 T assetContent = readAsset(Path.Combine(contentRaw.RootDirectory, assetName));
                 assetHolder = new AssetHolder<T>(assetContent, assetName, Unuse);
                 loadedAssets.Add(assetName, assetHolder);
@@ -159,7 +154,6 @@
             if (assetHolder is null) throw new ArgumentNullException(nameof(assetHolder));
 
             contentRaw.UnloadAsset(assetHolder.AssetName);
-            CurrentContentCollector = this;
             T asset = contentRaw.Load<T>(assetHolder.AssetName, extendedLoad);
 
             assetHolder.Replace(asset);
