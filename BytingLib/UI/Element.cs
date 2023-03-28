@@ -158,6 +158,18 @@ namespace BytingLib.UI
             }
             return this;
         }
+        public Element AddMaybeNull(params Element?[] children)
+        {
+            for (int i = 0; i < children.Length; i++)
+            {
+                var c = children[i];
+                if (c == null)
+                    continue;
+                Children.Add(c);
+                c.Parent = this;
+            }
+            return this;
+        }
         public Element AddEnumerable(IEnumerable<Element> children)
         {
             foreach (var c in children)
