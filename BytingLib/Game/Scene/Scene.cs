@@ -2,6 +2,8 @@
 {
     public class Scene : StuffDisposable, IUpdate, IDrawBatch
     {
+        public Scene? PopupScene { get; set; }
+
         public Scene(params Type[] extraTypes)
             : base(new Type[] { typeof(IDraw), typeof(IUpdate), typeof(IDrawBatch) }.Concat(extraTypes).ToArray())
         { }
@@ -25,11 +27,16 @@
             spriteBatch.End();
 
             ForEach<IDrawBatch>(f => f.DrawBatch(spriteBatch));
+
+            PopupScene?.DrawBatch(spriteBatch);
         }
 
         public virtual void Update()
         {
-            ForEach<IUpdate>(f => f.Update());
+            if (PopupScene != null)
+                PopupScene.Update();
+            else
+                ForEach<IUpdate>(f => f.Update());
         }
     }
 }
