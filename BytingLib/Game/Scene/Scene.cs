@@ -38,5 +38,18 @@
             else
                 ForEach<IUpdate>(f => f.Update());
         }
+
+        public void RemovePopupScene()
+        {
+            PopupScene?.Dispose();
+            PopupScene = null;
+        }
+
+        public override void Dispose()
+        {
+            RemovePopupScene();
+
+            base.Dispose();
+        }
     }
 }
