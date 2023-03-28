@@ -20,8 +20,6 @@
 
         public override void UpdateTree(Rect parentRect)
         {
-            absoluteRect = parentRect.CloneRect().Round();
-
             Vector2 pos = Anchor * parentRect.Size + parentRect.Pos;
             bool anyUnknownSize;
             Vector2 contentSize, contentSizePlusPadding;
@@ -29,6 +27,8 @@
             PercentageToPixels(ref contentSizePlusPadding, ref contentSize, parentRect);
 
             Rect rect = new Anchor(pos, Anchor).Rectangle(contentSizePlusPadding);
+
+            absoluteRect = rect.CloneRect().Round();
 
             if (Children.Count == 0)
                 return;
