@@ -1,8 +1,6 @@
-﻿using Microsoft.Xna.Framework.Input;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
-    public class GameWrapper : Game
+    public class GameWrapper : Game, IMouseVisible
     {
         private IGameBase? game;
         public readonly GraphicsDeviceManager Graphics;
