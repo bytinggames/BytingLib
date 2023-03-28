@@ -18,7 +18,6 @@ namespace BytingLib
 
         public void Dispose()
         {
-            textureRef.Dispose();
         }
 
         public void Draw(SpriteBatch spriteBatch, string animationTagName, Anchor anchor, double ms)
