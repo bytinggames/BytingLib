@@ -18,6 +18,7 @@ namespace BytingLib
         public JsonArrayCache<AnimationGL>? Animations { get; }
         internal DictionaryCacheChannelTargets ChannelTargets { get; }
         internal DictionaryCacheKeyFrames? KeyFrames { get; }
+        public SceneGL? CurrentScene => Scenes?.Get(SceneIndex);
 
         internal AnimationBlend AnimationBlend { get; } = new();
 
@@ -258,7 +259,7 @@ namespace BytingLib
 
         public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin)
         {
-            Scenes?.Get(SceneIndex)?.Draw(shader, shaderMaterial, shaderSkin);
+            CurrentScene?.Draw(shader, shaderMaterial, shaderSkin);
         }
 
         public IEnumerable<NodeGL>? GetNodes()
