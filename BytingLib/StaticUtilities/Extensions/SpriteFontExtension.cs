@@ -113,6 +113,55 @@ namespace BytingLib
 
             spriteBatch.DrawString(_font, _text, pos, color, _rotation, origin, scale, _effects, spriteBatch.DefaultDepth);
         }
+
+        /// <summary>Inserts '\n' so that the width of the text is smaller than the given width.</summary>
+        public static string WrapText(this SpriteFont font, string text, float width, float fontScaleX)
+        {
+            if (width <= 0)
+                throw new BytingException("width must be larger than 0");
+
+            int lastSpaceIndex = -1;
+            int lastNewLineIndex = -1;
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] == '\n')
+                {
+                    NewLine(i);
+                    continue;
+                }
+                else if (i - lastNewLineIndex <= 1) // when we wouldn't split anything away, don't consider splitting
+                    continue;
+
+                // TODO: this could be improved performance-wise, by only measuring char by char (but I did that, it's not trivial, if you want to have the exact same measurements. The default font measure method must be inspected more in-depth before improving this.
+                float measureWidth = font.MeasureString(text.Substring(lastNewLineIndex + 1, i - (lastNewLineIndex + 1))).X * fontScaleX;
+
+                if (measureWidth > width)
+                {
+                    i--; // we already are above the allowed width, so go back to the last char
+                    if (lastSpaceIndex != -1)
+                    {
+                        i = lastSpaceIndex;
+                        text = text.Remove(i, 1); // remove space
+                    }
+                    else
+                    {
+                        // insert -
+                        text = text.Insert(i - 1, "-");
+                    }
+                    text = text.Insert(i, "\n");
+                    NewLine(i);
+                }
+                else if (text[i] == ' ')
+                    lastSpaceIndex = i;
+            }
+            return text;
+
+            void NewLine(int newLineIndex)
+            {
+                lastSpaceIndex = -1;
+                lastNewLineIndex = newLineIndex;
+            }
+        }
     }
 
     //public static class SpriteFontExtension

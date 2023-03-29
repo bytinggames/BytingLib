@@ -2,26 +2,35 @@
 {
     public class Label : Element
     {
-        protected readonly string text;
+        protected string text;
         private bool setSizeToText;
+        private string? textToDraw;
+        private string TextToDraw => textToDraw ?? text;
 
-        public Label(string text)
-        {
-            this.text = text;
-            setSizeToText = true;
-        }
-        public Label(string text, float width = -1f, float height = -1f)
+        public Label(string text, float width = 0, float height = 0, bool setSizeToText = true)
         {
             this.text = text;
             Width = width;
             Height = height;
+            this.setSizeToText = setSizeToText;
         }
 
         protected virtual Label SetSizeToText(StyleRoot style)
         {
-            Vector2 size = style.Font.Value.MeasureString(text) * style.FontScale;
-            Width = size.X;
-            Height = size.Y;
+            if (Width == 0)
+            {
+                Vector2 size = style.Font.Value.MeasureString(text) * style.FontScale;
+                Width = size.X;
+                Height = size.Y;
+            }
+            else
+            {
+                if (Width < 0)
+                    throw new NotImplementedException("this is not implemented yet. It is not trivial, there must be a more complex dependency system in place. Maybe with Funcs that get the width and height values");
+
+                textToDraw = style.Font.Value.WrapText(text, Width, style.FontScale.X);
+                Height = style.Font.Value.MeasureString(textToDraw).Y * style.FontScale.Y;
+            }
             return this;
         }
 
@@ -36,9 +45,9 @@
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             if (style.FontBoldColor != null)
-                style.FontBold?.Value.Draw(spriteBatch, text, absoluteRect.GetAnchor(Anchor), style.FontBoldColor, style.FontScale, roundPositionTo: 1);
+                style.FontBold?.Value.Draw(spriteBatch, TextToDraw, absoluteRect.GetAnchor(Anchor), style.FontBoldColor, style.FontScale, roundPositionTo: 1);
             if (style.FontColor != null)
-                style.Font.Value.Draw(spriteBatch, text, absoluteRect.GetAnchor(Anchor), style.FontColor, style.FontScale, roundPositionTo: 1f);
+                style.Font.Value.Draw(spriteBatch, TextToDraw, absoluteRect.GetAnchor(Anchor), style.FontColor, style.FontScale, roundPositionTo: 1f);
         }
     }
 }
