@@ -26,7 +26,7 @@ namespace BytingLib
             {
                 { typeof(Color), str => ColorExtension.FromHex(str) }
             };
-            creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, null, typeof(MarkupShortcutAttribute), converters);
+            creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, new object[] { contentCollector }, typeof(MarkupShortcutAttribute), converters);
 
             input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f);
 

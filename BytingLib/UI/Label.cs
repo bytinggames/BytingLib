@@ -15,11 +15,16 @@
             this.setSizeToText = setSizeToText;
         }
 
+        protected virtual Vector2 MeasureString(StyleRoot style, string text)
+        {
+            return style.Font.Value.MeasureString(text);
+        }
+
         protected virtual Label SetSizeToText(StyleRoot style)
         {
             if (Width == 0)
             {
-                Vector2 size = style.Font.Value.MeasureString(text) * style.FontScale;
+                Vector2 size = MeasureString(style, text) * style.FontScale;
                 Width = size.X;
                 Height = size.Y;
             }
@@ -29,7 +34,7 @@
                     throw new NotImplementedException("this is not implemented yet. It is not trivial, there must be a more complex dependency system in place. Maybe with Funcs that get the width and height values");
 
                 textToDraw = style.Font.Value.WrapText(text, Width, style.FontScale.X);
-                Height = style.Font.Value.MeasureString(textToDraw).Y * style.FontScale.Y;
+                Height = MeasureString(style, textToDraw).Y * style.FontScale.Y;
             }
             return this;
         }
