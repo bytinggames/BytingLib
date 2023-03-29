@@ -19,7 +19,7 @@ namespace BytingLib
         public Int2 GetResolution() => inputSource.Current.WindowResolution;
         private int randSeed;
 
-        public Action? OnPlayInput;
+        public Action? OnPlayInput, OnPlayInputFinish;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths, Action<Action> startRecordingPlayback)
@@ -128,6 +128,8 @@ namespace BytingLib
                 fs.Dispose();
 
                 onFinish?.Invoke();
+
+                OnPlayInputFinish?.Invoke();
             });
         }
 
