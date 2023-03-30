@@ -31,7 +31,7 @@ namespace BytingLib.UI
                 markup.Draw(GetDefaultSetting(spriteBatch, style));
         }
 
-        private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style) => new MarkupSettings(spriteBatch, style.Font, absoluteRect?.GetAnchor(Anchor), style.FontColor, Anchor.X, style.FontScale) { RoundPositionTo = 1f, MinLineHeight = MinLineHeight };
+        private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style) => new MarkupSettings(spriteBatch, style.Font, absoluteRect == null ? new Anchor() : absoluteRect.GetAnchor(Anchor), style.FontColor, Anchor.X, style.FontScale) { RoundPositionTo = 1f, MinLineHeight = MinLineHeight };
 
         protected override void DisposeSelf()
         {
