@@ -2,14 +2,14 @@
 {
     public class Label : Element
     {
-        protected string text;
+        public string Text { get; set; }
         private bool setSizeToText;
         private string? textToDraw;
-        private string TextToDraw => textToDraw ?? text;
+        private string TextToDraw => textToDraw ?? Text;
 
         public Label(string text, float width = 0, float height = 0, bool setSizeToText = true)
         {
-            this.text = text;
+            this.Text = text;
             Width = width;
             Height = height;
             this.setSizeToText = setSizeToText;
@@ -24,7 +24,7 @@
         {
             if (Width == 0)
             {
-                Vector2 size = MeasureString(style, text) * style.FontScale;
+                Vector2 size = MeasureString(style, Text) * style.FontScale;
                 Width = size.X;
                 Height = size.Y;
             }
@@ -33,7 +33,7 @@
                 if (Width < 0)
                     throw new NotImplementedException("this is not implemented yet. It is not trivial, there must be a more complex dependency system in place. Maybe with Funcs that get the width and height values");
 
-                textToDraw = style.Font.Value.WrapText(text, Width, style.FontScale.X);
+                textToDraw = style.Font.Value.WrapText(Text, Width, style.FontScale.X);
                 Height = MeasureString(style, textToDraw).Y * style.FontScale.Y;
             }
             return this;
