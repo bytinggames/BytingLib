@@ -10,6 +10,7 @@ namespace BytingLib
         public string ScreenshotsDir { get; }
         public string SettingsFile { get; }
         public string SettingsDebugFile { get; }
+        public string SettingsExampleFile { get; }
         public string CrashLogFile { get; }
 
         public DefaultPaths()
@@ -34,6 +35,7 @@ namespace BytingLib
             Directory.CreateDirectory(ScreenshotsDir);
             SettingsFile = Path.Combine(GameAppDataDir, "settings.yaml");
             SettingsDebugFile = Path.Combine(GameAppDataDir, "settings.debug.yaml");
+            SettingsExampleFile = Path.Combine(GameAppDataDir, "settings.example.yaml");
             CrashLogFile = Path.Combine(GameAppDataDir, "crash.log");
         }
 

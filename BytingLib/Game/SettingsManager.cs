@@ -62,5 +62,20 @@ namespace BytingLib
 #endif
             return files.ToArray();
         }
+
+        public void CreateExampleYamlFileIfNotExisting()
+        {
+            // create settings example yaml
+            if (!File.Exists(paths.SettingsExampleFile))
+            {
+                var serializer = new YamlDotNet.Serialization.Serializer();
+                var settings = Activator.CreateInstance<_Settings>();
+                if (settings != null)
+                {
+                    string yaml = serializer.Serialize(settings);
+                    File.WriteAllText(paths.SettingsExampleFile, yaml);
+                }
+            }
+        }
     }
 }
