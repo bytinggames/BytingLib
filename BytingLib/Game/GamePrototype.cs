@@ -20,8 +20,8 @@ namespace BytingLib
         /// The difference to InputStuff.KeysDev</summary>
         protected KeyInput metaKeys;
 
-        public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter,
-            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true, bool startRecordingInstantly = true) 
+        public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter, 
+            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true, bool startRecordingInstantly = true, bool enableDevKeys = false) 
             : base(g, contentModdingOnRelease, contentConverter)
         {
             updateSpeed = new GameSpeed(g.TargetElapsedTime);
@@ -33,7 +33,7 @@ namespace BytingLib
             };
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, new object[] { contentCollector }, typeof(MarkupShortcutAttribute), converters);
 
-            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly);
+            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, enableDevKeys);
 
             basePaths = paths;
             saveStateManager = new SaveStateManager(paths);
