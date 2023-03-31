@@ -17,7 +17,7 @@ namespace BytingLib
         private Action? startRecordingPlayback;
 
         /// <summary>Only used for input that shouldn't be recorded (Fullscreen Toggle for example or Replay interrupt).
-        /// The difference to InputStuff.KeysDev is, that those can only be used in Dev mode</summary>
+        /// The difference to InputStuff.KeysDev</summary>
         protected KeyInput metaKeys;
 
         public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter,
