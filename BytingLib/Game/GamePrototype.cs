@@ -67,7 +67,7 @@ namespace BytingLib
             for (int i = 0; i < iterations; i++)
                 UpdateSingleIteration(gameTime);
 
-            if (input.Keys.F12.Pressed)
+            if (metaKeys.F12.Pressed)
             {
                 screenshotter.TakeScreenshot();
             }
