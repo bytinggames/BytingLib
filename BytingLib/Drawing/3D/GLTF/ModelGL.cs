@@ -262,6 +262,11 @@ namespace BytingLib
             CurrentScene?.Draw(shader, shaderMaterial, shaderSkin);
         }
 
+        public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Predicate<NodeGL> goDown)
+        {
+            CurrentScene?.Draw(shader, shaderMaterial, shaderSkin, goDown);
+        }
+
         public IEnumerable<NodeGL>? GetNodes()
         {
             return Scenes?.Get(SceneIndex)?.GetNodes();

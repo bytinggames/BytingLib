@@ -82,9 +82,9 @@ namespace BytingLib
             return transform;
         }
 
-        public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin) => Draw(shader, shaderMaterial, shaderSkin, Matrix.Identity);
+        public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Predicate<NodeGL>? goDown = null) => Draw(shader, shaderMaterial, shaderSkin, Matrix.Identity, goDown);
 
-        private void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Matrix GlobalNodeTransform)
+        private void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Matrix GlobalNodeTransform, Predicate<NodeGL>? goDown)
         {
             GlobalNodeTransform = localTransform * GlobalNodeTransform;
             using (shaderSkin == null ? null : Skin?.Use(shaderSkin, GlobalNodeTransform))
@@ -95,8 +95,17 @@ namespace BytingLib
                         Mesh.Draw(shader, shaderMaterial);
                 }
 
-                for (int i = 0; i < Children.Count; i++)
-                    Children[i].Draw(shader, shaderMaterial, shaderSkin, GlobalNodeTransform);
+                if (goDown == null)
+                {
+                    for (int i = 0; i < Children.Count; i++)
+                        Children[i].Draw(shader, shaderMaterial, shaderSkin, GlobalNodeTransform, null);
+                }
+                else
+                    for (int i = 0; i < Children.Count; i++)
+                    {
+                        if (goDown(Children[i]))
+                            Children[i].Draw(shader, shaderMaterial, shaderSkin, GlobalNodeTransform, goDown);
+                    }
             }
         }
 
