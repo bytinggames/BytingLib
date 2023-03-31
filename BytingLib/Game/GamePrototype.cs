@@ -1,5 +1,6 @@
 ﻿using BytingLib.Markup;
 using BytingLib.Serialization;
+using Microsoft.Xna.Framework.Input;
 
 namespace BytingLib
 {
@@ -14,6 +15,9 @@ namespace BytingLib
         private readonly Screenshotter screenshotter;
 
         private Action? startRecordingPlayback;
+
+        /// <summary>Only used for input that shouldn't be recorded (Fullscreen Toggle for example or Replay interrupt)</summary>
+        protected KeyInput metaKeys;
 
         public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter,
             bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true, bool startRecordingInstantly = true) 
@@ -36,6 +40,8 @@ namespace BytingLib
             screenshotter = new Screenshotter(gDevice, paths);
 
             InitWindowAndGraphics(vsync);
+
+            metaKeys = new KeyInput(Keyboard.GetState);
         }
 
         protected virtual void InitWindowAndGraphics(bool vsync)
@@ -53,6 +59,7 @@ namespace BytingLib
         public sealed override void UpdateActive(GameTime gameTime)
         {
             input.UpdateKeysDev();
+            metaKeys.Update();
 
             int iterations = GetIterations();
 
@@ -107,7 +114,7 @@ namespace BytingLib
 
             input.Update();
 
-            if (input.Keys.F11.Pressed)
+            if (metaKeys.F11.Pressed)
                 windowManager.ToggleFullscreen();
             if (ShouldSwapScreen())
                 windowManager.SwapScreen();
@@ -115,7 +122,7 @@ namespace BytingLib
             UpdateIteration(gameTime);
         }
 
-        protected virtual bool ShouldSwapScreen() => input.Keys.Tab.Pressed;
+        protected virtual bool ShouldSwapScreen() => metaKeys.Tab.Pressed;
 
         public sealed override void DrawActive(GameTime gameTime)
         {
