@@ -82,7 +82,9 @@ namespace BytingLib
         private IDisposable CreateInputRecorder(StructSource<FullInput> inputSource, string path)
         {
             string dir = Path.GetDirectoryName(path)!;
-            if (!Directory.Exists(dir))
+            // make sure directory exists
+            if (dir != "" // in this case, the directory is the current directory and it is already existing
+                && !Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
             FileStream fs = File.Create(path);
