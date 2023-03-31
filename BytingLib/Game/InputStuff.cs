@@ -6,10 +6,10 @@ namespace BytingLib
     public class InputStuff : IDisposable, IUpdate
     {
         protected readonly IStuffDisposable stuff;
-        protected readonly InputRecordingTriggerer<FullInput> inputRecordingTriggerer;
         protected readonly StructSource<FullInput> inputSource;
 
         public InputRecordingManager<FullInput> InputRecordingManager { get; }
+        public InputRecordingTriggerer<FullInput> InputRecordingTriggerer { get; }
         public KeyInput Keys { get; }
         public MouseInput Mouse { get; }
         public GamePadInput GamePad { get; }
@@ -20,9 +20,10 @@ namespace BytingLib
         private int randSeed;
 
         public Action? OnPlayInput, OnPlayInputFinish;
+        private IInputMetaObjectManager? metaObjectManager;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths, Action<Action> startRecordingPlayback)
+        public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths, Action<Action> startRecordingPlayback, bool startRecordingInstantly)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             stuff = new StuffDisposable(typeof(IUpdate));
@@ -55,7 +56,12 @@ namespace BytingLib
             stuff.Add(GamePad = new GamePadInput(() => inputSource.Current.GamePadState));
 
             stuff.Add(InputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));
-            stuff.Add(inputRecordingTriggerer = new(KeysDev, InputRecordingManager, basePaths.InputRecordingsDir, startRecordingPlayback));
+            stuff.Add(InputRecordingTriggerer = new(KeysDev, InputRecordingManager, basePaths.InputRecordingsDir, startRecordingPlayback, startRecordingInstantly));
+        }
+
+        public void SetMetaObjectManager(IInputMetaObjectManager? metaObjectManager)
+        {
+            this.metaObjectManager = metaObjectManager;
         }
 
         public void Update()
@@ -80,7 +86,11 @@ namespace BytingLib
                 Directory.CreateDirectory(dir);
 
             FileStream fs = File.Create(path);
-            WriteSeed(fs);
+            BinaryWriter writer = new(fs);
+
+            WriteVersion(writer);
+            WriteSeed(writer);
+            WriteMetaObject(writer);
             BeginWritingInputStream(fs);
 
             StructStreamWriterCompressed<FullInput> recorder = new(fs, true);
@@ -90,6 +100,7 @@ namespace BytingLib
             {
                 inputSource.OnUpdate -= AddState;
                 recorder.Dispose();
+                writer.Dispose();
                 fs.Dispose();
             });
 
@@ -106,25 +117,33 @@ namespace BytingLib
             OnPlayInput?.Invoke();
 
             FileStream fs = File.OpenRead(path);
+            BinaryReader reader = new(fs);
 
             MetaData metaData;
             while ((metaData = (MetaData)fs.ReadByte()) != MetaData.InputStream)
             {
                 switch (metaData)
                 {
+                    case MetaData.Version:
+                        ReadVersion(reader);
+                        break;
                     case MetaData.Seed:
-                        ReadSeed(fs);
+                        ReadSeed(reader);
+                        break;
+                    case MetaData.Object:
+                        ReadMetaObject(reader);
                         break;
                     default:
                         throw new BytingException("couldn't read meta data of input file");
                 }
             }
 
-
             StructStreamReaderCompressed<FullInput> playback = new(fs);
             inputSource.SetSource(playback, _ =>
             {
+                metaObjectManager?.OnReplayEnd();
                 playback.Dispose();
+                reader.Dispose();
                 fs.Dispose();
 
                 onFinish?.Invoke();
@@ -133,28 +152,56 @@ namespace BytingLib
             });
         }
 
-        private void WriteSeed(FileStream fs)
+        private void WriteVersion(BinaryWriter writer)
         {
-            fs.WriteByte((byte)MetaData.Seed);
+            writer.Write((byte)MetaData.Version);
+            writer.Write(1); // version
+        }
+
+        private void ReadVersion(BinaryReader reader)
+        {
+            int version = reader.ReadInt32(); // read version
+            if (version != 1)
+                throw new BytingException("this input recording version is not supported: " + version);
+        }
+
+        private void WriteSeed(BinaryWriter writer)
+        {
+            writer.Write((byte)MetaData.Seed);
 
             randSeed = new Random().Next();
             Rand = new Random(randSeed);
 
-            byte[] seedBytes = BitConverter.GetBytes(randSeed);
-            fs.Write(seedBytes, 0, seedBytes.Length);
+            writer.Write(randSeed);
         }
-        private void ReadSeed(FileStream fs)
+        private void ReadSeed(BinaryReader reader)
         {
-            byte[] seedBytes = new byte[4];
-            fs.Read(seedBytes, 0, seedBytes.Length);
-            int seed = BitConverter.ToInt32(seedBytes);
+            int seed = reader.ReadInt32();
             Rand = new Random(seed);
+        }
+
+        private void WriteMetaObject(BinaryWriter writer)
+        {
+            if (metaObjectManager != null)
+            {
+                writer.Write((byte)MetaData.Object);
+                metaObjectManager.WriteMetaObject(writer);
+            }
+        }
+        private void ReadMetaObject(BinaryReader reader)
+        {
+            if (metaObjectManager != null)
+            {
+                metaObjectManager.ReadMetaObject(reader);
+            }
         }
 
         enum MetaData
         {
             InputStream = 0,
             Seed = 1,
+            Object = 2,
+            Version = 3,
         }
     }
 }

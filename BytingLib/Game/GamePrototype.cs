@@ -16,7 +16,7 @@ namespace BytingLib
         private Action? startRecordingPlayback;
 
         public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter,
-            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true) 
+            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true, bool startRecordingInstantly = true) 
             : base(g, contentModdingOnRelease, contentConverter)
         {
             updateSpeed = new GameSpeed(g.TargetElapsedTime);
@@ -28,7 +28,7 @@ namespace BytingLib
             };
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, new object[] { contentCollector }, typeof(MarkupShortcutAttribute), converters);
 
-            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f);
+            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly);
 
             basePaths = paths;
             saveStateManager = new SaveStateManager(paths);
