@@ -33,20 +33,20 @@
             if (loadOnStartup)
                 return $"public Ref<{CSharpDataType}> {VarName} {{ get; }}";
             else
-                return $"public Ref<{CSharpDataType}> {GetInitCode()}";
+                return $"public Ref<{CSharpDataType}> {GetInitCode(loadOnStartup)}";
         }
 
         public string? PrintInit(bool loadOnStartup)
         {
             if (loadOnStartup)
             {
-                return GetInitCode();
+                return GetInitCode(loadOnStartup);
             }
             else
                 return null;
         }
 
-        private string GetInitCode() => $"{VarName} => disposables.Use(collector.Use<{CSharpDataType}>(\"{AssetName}\"));";
+        private string GetInitCode(bool loadOnStartup) => $"{VarName} ={(loadOnStartup ? "" : ">")} disposables.Use(collector.Use<{CSharpDataType}>(\"{AssetName}\"));";
 
         static string ToVariableName(string name)
         {

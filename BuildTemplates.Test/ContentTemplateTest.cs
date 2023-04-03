@@ -1,5 +1,6 @@
 using BytingLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 
 namespace BuildTemplates.Test
@@ -49,6 +50,20 @@ namespace BuildTemplates.Test
             Assert.IsNotNull(locaCode);
             Assert.IsNotNull(shaders);
         }
+
+        [TestMethod]
+        [DataRow(false)]
+        [DataRow(true)]
+        public void TestBuildPlatformer3D(bool loadOnStartup)
+        {
+            string contentPath = @"D:\Documents\Visual Studio 2017\Projects\Platformer3D\Platformer3D\Platformer3D\Content";
+            string nameSpace = "Platformer3D";
+            (string output, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath, nameSpace, new string[0], loadOnStartup, new Platformer3DContentConverter());
+            Assert.IsNotNull(output);
+            Assert.IsNotNull(mgcbOutput);
+            Assert.IsNotNull(locaCode);
+            Assert.IsNotNull(shaders);
+        }
     }
 
     class SEContentConverter : ContentConverter
@@ -63,6 +78,18 @@ namespace BuildTemplates.Test
 
             //RuntimeTypes.Add("CollisionMesh", typeof(CollisionMesh));
             //RuntimeTypes.Add("CollisionMeshGrid", typeof(CollisionMeshGrid));
+        }
+    }
+
+    class Platformer3DContentConverter : ContentConverter
+    {
+        public Platformer3DContentConverter()
+        {
+            ProcessorToDataType.Add("MyModelProcessor", "MyModel");
+
+            DataTypeToVarExtension.Add("MyModel", "Model");
+
+            //RuntimeTypes.Add("MyModel", typeof(MyModel));
         }
     }
 }
