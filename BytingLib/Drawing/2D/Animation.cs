@@ -4,15 +4,15 @@ namespace BytingLib
 {
     public class Animation : IDisposable
     {
-        private readonly Ref<Texture2D> textureRef;
-        public Texture2D Texture => textureRef.Value;
+        public Ref<Texture2D> TextureRef { get; }
+        public Texture2D Texture => TextureRef.Value;
         public AnimationData Data { get; }
 
         private Rectangle[,]? sliceRects;
 
         public Animation(Ref<Texture2D> texture, string json)
         {
-            textureRef = texture;
+            TextureRef = texture;
             Data = AnimationData.FromJson(json);
         }
 

@@ -1,11 +1,13 @@
-﻿namespace BytingLib.Markup
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace BytingLib.Markup
 {
     [MarkupShortcut("tex")]
     public class MarkupTexture : MarkupBlock, IDisposable
     {
         public Rectangle BoundingRectangle { get; }
 
-        public Ref<Texture2D> Texture { get; }
+        public Ref<Texture2D> Texture { get; protected set; }
 
         public Color Color { get; set; } = Color.White;
         public Rectangle? SourceRectangle { get; set; } = null;
@@ -20,6 +22,12 @@
         }
 
         public MarkupTexture(IContentCollector content, string texName)
+        {
+            SetTexture(content, texName);
+        }
+
+        [MemberNotNull(nameof(Texture))]
+        protected virtual void SetTexture(IContentCollector content, string texName)
         {
             Texture = content.Use<Texture2D>("Textures/" + texName);
         }
