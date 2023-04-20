@@ -15,6 +15,10 @@ namespace BytingLib
 
         public DefaultPaths()
         {
+
+#if LINUX
+            Environment.CurrentDirectory = AppContext.BaseDirectory; // this ensures that the current directory is actually the one that the exe is in.
+#endif
 #if OSX
             // if on OSX, set current directory to Resources path which is above Content directory. But NOT the directory that contains the application
             Environment.CurrentDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "Resources"));
