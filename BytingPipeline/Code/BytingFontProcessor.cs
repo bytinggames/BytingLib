@@ -59,39 +59,42 @@ namespace BytingPipeline
                     }
                 }
 
-                var newBitmap = (BitmapContent)Activator.CreateInstance(glyph.Bitmap.GetType(), new object[] { newWidth, newHeight });
-                BitmapContent.Copy(glyph.Bitmap, newBitmap);
-                glyph.Bitmap = newBitmap;
-
-                dataSource = dataTarget;
-                dataTarget = new byte[dataTarget.Length];
-
-                int w = glyph.Bitmap.Width;
-                int h = glyph.Bitmap.Height;
-
-                for (int y = 0; y < glyph.Bitmap.Height; y++)
+                var newBitmap = (BitmapContent?)Activator.CreateInstance(glyph.Bitmap.GetType(), new object[] { newWidth, newHeight });
+                if (newBitmap != null)
                 {
-                    for (int x = 0; x < glyph.Bitmap.Width; x++)
+                    BitmapContent.Copy(glyph.Bitmap, newBitmap);
+                    glyph.Bitmap = newBitmap;
+
+                    dataSource = dataTarget;
+                    dataTarget = new byte[dataTarget.Length];
+
+                    int w = glyph.Bitmap.Width;
+                    int h = glyph.Bitmap.Height;
+
+                    for (int y = 0; y < glyph.Bitmap.Height; y++)
                     {
-                        byte darkest = 0;
-                        foreach (var s in search)
+                        for (int x = 0; x < glyph.Bitmap.Width; x++)
                         {
-                            int xSearch = x + s.x;
-                            int ySearch = y + s.y;
-                            if (xSearch >= 0 && xSearch < w
-                                && ySearch >= 0 && ySearch < h)
+                            byte darkest = 0;
+                            foreach (var s in search)
                             {
-                                darkest = Math.Max(darkest, dataSource[ySearch * w + xSearch]);
+                                int xSearch = x + s.x;
+                                int ySearch = y + s.y;
+                                if (xSearch >= 0 && xSearch < w
+                                    && ySearch >= 0 && ySearch < h)
+                                {
+                                    darkest = Math.Max(darkest, dataSource[ySearch * w + xSearch]);
+                                }
                             }
+
+                            int i = y * w + x;
+
+                            dataTarget[i] = darkest;
                         }
-
-                        int i = y * w + x;
-
-                        dataTarget[i] = darkest;
                     }
-                }
 
-                glyph.Bitmap.SetPixelData(dataTarget);
+                    glyph.Bitmap.SetPixelData(dataTarget);
+                }
             }
         }
     }
