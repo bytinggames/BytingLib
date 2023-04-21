@@ -1,3 +1,4 @@
+pushd .
 
 @RD /S /Q "Release/Linux/"
 
@@ -21,4 +22,4 @@ REM I'm using 7z, as tar doesn't keep the execution rights
 cd ../../BytingLib/7z
 7za.exe a -ttar -so -an "../../%CurrDirName%/Deploy/Release/Linux/%DeployName%" | 7za.exe a -si "../../%CurrDirName%/Deploy/Release/Linux/%DeployName%.tar.gz"
 
-cd "../../%CurrDirName%/Deploy"
+popd

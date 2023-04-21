@@ -1,21 +1,9 @@
+call ".\DeployForWindowsNoZip.bat"
 
-@RD /S /Q "Release/Windows/"
+pushd .
 
-REM Get DeployName and ProjectName
-set /p DeployName=<DeployName.txt
-
-cd ..
-for %%I in (.) do set CurrDirName=%%~nxI
-
-if "%DeployName%" == "" (
-	set DeployName=%CurrDirName%
-)
-
-
-cd "%CurrDirName%"
-dotnet publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false /p:OSTarget=Windows --self-contained -o "../Deploy/Release/Windows/%DeployName%"
-cd ../Deploy/Release/Windows
+cd Release/Windows
 
 tar -caf "%DeployName%.zip" "%DeployName%"
 
-cd ../..
+popd
