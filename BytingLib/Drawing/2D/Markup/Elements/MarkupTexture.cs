@@ -95,7 +95,7 @@ namespace BytingLib.Markup
             //        }
             //        break;
             //}
-            Texture.Value.Draw(settings.SpriteBatch, settings.Anchor, ColorExtension.MultiplyColors(settings.TextureColor, Color), SourceRectangle, settings.Scale * ScaleXY * settings.TextureScale, settings.Rotation, flip);
+            Texture.Value.Draw(settings.SpriteBatch, settings.Anchor, ColorExtension.MultiplyColors(settings.TextureColor, Color), SourceRectangle, settings.Scale * ScaleXY * settings.TextureScale, settings.Rotation, flip, null, settings.RoundPositionTo);
         }
 
         public override string ToString()
