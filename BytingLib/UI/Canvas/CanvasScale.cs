@@ -115,6 +115,8 @@
         }
         public void DrawBatch(SpriteBatch spriteBatch)
         {
+            SetDirtyIfResChanged();
+
             if (treeDirty)
                 UpdateTree();
 
@@ -147,15 +149,20 @@
 
         protected override void UpdateSelf(ElementInput input)
         {
+            SetDirtyIfResChanged();
+
+            if (treeDirty)
+                UpdateTree(); // TODO: only update tree when necessary
+        }
+
+        private void SetDirtyIfResChanged()
+        {
             Rect newRenderRect = getRenderRect();
             if (!lastRenderRect.EqualValue(newRenderRect))
             {
                 SetDirty();
                 lastRenderRect = newRenderRect;
             }
-
-            if (treeDirty)
-                UpdateTree(); // TODO: only update tree when necessary
         }
 
         public bool IsScalingPixelated()
