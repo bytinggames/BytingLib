@@ -1,5 +1,8 @@
 ﻿namespace BytingLib.UI
 {
+    /// <summary>
+    /// Does not scale the ui, but resizes to fit the screen.
+    /// </summary>
     public class CanvasFlex : Canvas, IDrawBatch, IUpdate
     {
         public CanvasFlex(Func<Rect> getRenderRect, MouseInput mouse, StyleRoot style) : base(getRenderRect, mouse, style)
