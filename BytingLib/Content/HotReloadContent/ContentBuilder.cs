@@ -3,7 +3,7 @@ using System.Text;
 
 namespace BytingLib
 {
-    class ContentBuilder
+    public class ContentBuilder
     {
         private readonly string modContentDir;
         private readonly string tempOutputPath;

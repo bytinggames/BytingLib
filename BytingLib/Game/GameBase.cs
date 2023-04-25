@@ -5,13 +5,13 @@
         protected readonly GameWrapper gameWrapper;
         protected readonly GraphicsDevice gDevice;
         protected readonly SpriteBatch spriteBatch;
-        protected readonly HotReloadContent? hotReloadContent;
         protected readonly WindowManager windowManager;
         protected readonly ContentManagerRawPipe contentRawPipe;
         protected readonly IContentCollector contentCollector;
         protected readonly GraphicsDeviceManager graphics;
-
         protected readonly Action Exit;
+
+        public HotReloadContent? HotReloadContent { get; }
 
         public GameBase(GameWrapper g, bool contentModdingOnRelease, ContentConverter contentConverter)
         {
@@ -28,11 +28,11 @@
             contentCollector = new ContentCollector(contentRawPipe, g.GraphicsDevice);
 
 #if DEBUG
-            hotReloadContent = new HotReloadContent(g.Services,
+            HotReloadContent = new HotReloadContent(g.Services,
                 contentCollector,
                 Path.Combine("..", "..", "..", "Content"),
                 contentConverter);
-            contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
+            contentRawPipe.ContentManagers.Insert(0, HotReloadContent.TempContentRaw);
 #else
             if (contentModdingOnRelease)
             {
@@ -65,7 +65,7 @@
 
         public virtual void OnActivate()
         {
-            hotReloadContent?.UpdateChanges();
+            HotReloadContent?.UpdateChanges();
         }
 
         public virtual void OnDeactivate()

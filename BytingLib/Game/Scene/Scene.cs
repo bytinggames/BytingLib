@@ -2,7 +2,7 @@
 {
     public class Scene : StuffDisposable, IUpdate, IDrawBatch
     {
-        public Scene? PopupScene { get; set; }
+        public Scene? PopupScene { get; protected set; }
 
         public Scene(params Type[] extraTypes)
             : base(new Type[] { typeof(IDraw), typeof(IUpdate), typeof(IDrawBatch) }.Concat(extraTypes).ToArray())
@@ -37,6 +37,14 @@
                 PopupScene.Update();
             else
                 ForEach<IUpdate>(f => f.Update());
+        }
+
+        public void SetPopupScene(Scene? scene)
+        {
+            if (PopupScene != null)
+                RemovePopupScene();
+
+            PopupScene = scene;
         }
 
         public void RemovePopupScene()

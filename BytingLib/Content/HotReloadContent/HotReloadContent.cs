@@ -5,7 +5,7 @@ namespace BytingLib
     public class HotReloadContent
     {
         public ContentManagerRaw TempContentRaw { get; }
-        ContentBuilder contentBuilder;
+        public ContentBuilder ContentBuilder { get; }
 
         DirectorySupervisor dirSupervisor;
         IContentCollector content;
@@ -46,9 +46,9 @@ namespace BytingLib
             if (Directory.Exists(tempOutputPath))
                 Directory.Delete(tempOutputPath, true);
 
-            contentBuilder = new ContentBuilder(sourceContentDir, tempOutputPath, tempPath, contentConverter);
+            ContentBuilder = new ContentBuilder(sourceContentDir, tempOutputPath, tempPath, contentConverter);
 
-            TempContentRaw = new ContentManagerRaw(serviceProvider, contentBuilder.OutputPath);
+            TempContentRaw = new ContentManagerRaw(serviceProvider, ContentBuilder.OutputPath);
 
             gDevice = (serviceProvider.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService)!.GraphicsDevice;
 
@@ -169,7 +169,7 @@ namespace BytingLib
 
             List<MGCBItem> itemsChangedOrCreated;
             List<MGCBItem> itemsDeleted;
-            if (contentBuilder.Build(changes.ModifiedOrCreated().Select(f => f.Path).ToArray(),
+            if (ContentBuilder.Build(changes.ModifiedOrCreated().Select(f => f.Path).ToArray(),
                 changes.Deleted.Select(f => f.Path).ToArray(),
                 out itemsChangedOrCreated,
                 out itemsDeleted))
