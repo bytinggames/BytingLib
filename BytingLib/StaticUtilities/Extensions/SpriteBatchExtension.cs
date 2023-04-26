@@ -107,6 +107,54 @@
             extendedData.Add(spriteBatch, extended);
             return extended;
         }
+
+        /// <summary>
+        /// Submit a text string of sprites for drawing in the current batch.
+        /// </summary>
+        /// <remarks>
+        /// This method's performance could be improved, by caching the line widths. So it should primarily be used for debugging or for constantly changing text.
+        /// </remarks>
+        /// <param name="spriteFont">A font.</param>
+        /// <param name="text">The text which will be drawn.</param>
+        /// <param name="position">The drawing location on screen.</param>
+        /// <param name="color">A color mask.</param>
+        /// <param name="rotation">A rotation of this string.</param>
+        /// <param name="origin">Center of the rotation. 0,0 by default.</param>
+        /// <param name="scale">A scaling of this string.</param>
+        /// <param name="effects">Modificators for drawing. Can be combined.</param>
+        /// <param name="layerDepth">A depth of the layer of this string.</param>
+        /// <param name="rtl">Text is Right to Left.</param>
+        /// <param name="horizontalAlign01">Horizontal alignment of the text. 0: left; 1: right</param>
+        public static void DrawString(this SpriteBatch spriteBatch,
+            SpriteFont spriteFont, string text, Vector2 position, Color color,
+            float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, bool rtl, float horizontalAlign01)
+        {
+            if (horizontalAlign01 == 0)
+            {
+                spriteBatch.DrawString(spriteFont, text, position, color, rotation, origin, scale, effects, layerDepth, rtl);
+                return;
+            }
+
+            string[] lines = text.Split(new char[] { '\n' });
+            float[] lineWidth = new float[lines.Length];
+            float maxLineWidth = 0f;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                lineWidth[i] = spriteFont.MeasureString(lines[i]).X;
+                maxLineWidth = MathF.Max(maxLineWidth, lineWidth[i]);
+            }
+
+            Vector2 offset = Vector2.Zero;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                offset.X = (maxLineWidth - lineWidth[i]) * horizontalAlign01;
+
+                if (!string.IsNullOrEmpty(lines[i]))
+                    spriteBatch.DrawString(spriteFont, lines[i], position + offset, color, rotation, origin, scale, effects, layerDepth, rtl);
+
+                offset.Y += spriteFont.LineSpacing;
+            }
+        }
     }
 
     internal class SpriteBatchExtended
