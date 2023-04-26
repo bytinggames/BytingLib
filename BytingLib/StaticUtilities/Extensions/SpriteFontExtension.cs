@@ -120,6 +120,8 @@ namespace BytingLib
             if (width <= 0)
                 throw new BytingException("width must be larger than 0");
 
+            width /= fontScaleX;
+
             int lastSpaceIndex = -1;
             int lastNewLineIndex = -1;
             for (int i = 0; i < text.Length; i++)
@@ -133,7 +135,7 @@ namespace BytingLib
                     continue;
 
                 // TODO: this could be improved performance-wise, by only measuring char by char (but I did that, it's not trivial, if you want to have the exact same measurements. The default font measure method must be inspected more in-depth before improving this.
-                float measureWidth = font.MeasureString(text.Substring(lastNewLineIndex + 1, i - (lastNewLineIndex + 1))).X * fontScaleX;
+                float measureWidth = font.MeasureString(text.Substring(lastNewLineIndex + 1, i - (lastNewLineIndex + 1))).X;
 
                 if (measureWidth > width)
                 {
