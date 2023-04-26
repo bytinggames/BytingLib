@@ -5,7 +5,7 @@
         public string Text { get; set; }
         private bool setSizeToText;
         private string? textToDraw;
-        private string TextToDraw => textToDraw ?? Text;
+        protected string TextToDraw => textToDraw ?? Text;
 
         public Label(string text, float width = 0, float height = 0, bool setSizeToText = true)
         {
@@ -33,7 +33,7 @@
                 if (Width < 0)
                     throw new NotImplementedException("this is not implemented yet. It is not trivial, there must be a more complex dependency system in place. Maybe with Funcs that get the width and height values");
 
-                textToDraw = style.Font.Value.WrapText(Text, Width, style.FontScale.X);
+                textToDraw ??= CreateTextToDraw(style);
                 Height = MeasureString(style, textToDraw).Y * style.FontScale.Y;
             }
             return this;
@@ -41,10 +41,18 @@
 
         protected override void UpdateTreeBeginSelf(StyleRoot style)
         {
+            if (Width > 0)
+                textToDraw = CreateTextToDraw(style);
+
             if (setSizeToText)
             {
                 SetSizeToText(style);
             }
+        }
+
+        private string CreateTextToDraw(StyleRoot style)
+        {
+            return SpriteFontExtension.WrapText(Text, Width, style.FontScale.X, str => MeasureString(style, str));
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)

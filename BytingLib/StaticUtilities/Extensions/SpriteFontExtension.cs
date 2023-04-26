@@ -117,6 +117,11 @@ namespace BytingLib
         /// <summary>Inserts '\n' so that the width of the text is smaller than the given width.</summary>
         public static string WrapText(this SpriteFont font, string text, float width, float fontScaleX)
         {
+            return WrapText(text, width, fontScaleX, font.MeasureString);
+        }
+        /// <summary>Inserts '\n' so that the width of the text is smaller than the given width.</summary>
+        public static string WrapText(string text, float width, float fontScaleX, Func<string, Vector2> measureString)
+        {
             if (width <= 0)
                 throw new BytingException("width must be larger than 0");
 
@@ -135,7 +140,7 @@ namespace BytingLib
                     continue;
 
                 // TODO: this could be improved performance-wise, by only measuring char by char (but I did that, it's not trivial, if you want to have the exact same measurements. The default font measure method must be inspected more in-depth before improving this.
-                float measureWidth = font.MeasureString(text.Substring(lastNewLineIndex + 1, i - (lastNewLineIndex + 1))).X;
+                float measureWidth = measureString(text.Substring(lastNewLineIndex + 1, i - (lastNewLineIndex + 1))).X;
 
                 if (measureWidth > width)
                 {
