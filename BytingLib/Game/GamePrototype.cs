@@ -13,6 +13,7 @@ namespace BytingLib
         protected readonly SaveStateManager saveStateManager;
 
         private readonly Screenshotter screenshotter;
+        private readonly Random? screenshotsRand;
 
         private Action? startRecordingPlayback;
 
@@ -21,9 +22,12 @@ namespace BytingLib
         protected KeyInput metaKeys;
 
         public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter, 
-            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true, bool startRecordingInstantly = true, bool enableDevKeys = false) 
+            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true, bool startRecordingInstantly = true, bool enableDevKeys = false, bool randomScreenshots = false) 
             : base(g, contentModdingOnRelease, contentConverter)
         {
+            if (randomScreenshots)
+                screenshotsRand = new Random();
+
             updateSpeed = new GameSpeed(g.TargetElapsedTime);
             drawSpeed = new GameSpeed(g.TargetElapsedTime);
 
@@ -67,10 +71,15 @@ namespace BytingLib
             for (int i = 0; i < iterations; i++)
                 UpdateSingleIteration(gameTime);
 
+            ScreenshotType screenshot = ScreenshotType.None;
+
             if (metaKeys.F12.Pressed)
-            {
-                screenshotter.TakeScreenshot();
-            }
+                screenshot = ScreenshotType.ByUser;
+            else if (screenshotsRand != null && screenshotsRand.Next(60 * 60 * (int)(gameTime.ElapsedGameTime.TotalMilliseconds / 16.6)) == 0)
+                screenshot = ScreenshotType.Random;
+
+            if (screenshot != ScreenshotType.None)
+                screenshotter.TakeScreenshot(screenshot == ScreenshotType.Random);
 
             if (startRecordingPlayback != null)
             {
@@ -149,6 +158,13 @@ namespace BytingLib
             input.Dispose();
 
             base.Dispose();
+        }
+
+        enum ScreenshotType
+        {
+            None,
+            ByUser,
+            Random
         }
     }
 }

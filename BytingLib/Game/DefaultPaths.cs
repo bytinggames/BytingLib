@@ -8,6 +8,7 @@ namespace BytingLib
         public string InputRecordingsDir { get; }
         public string SaveStateDir { get; }
         public string ScreenshotsDir { get; }
+        public string RandomScreenshotsDir { get; }
         public string SettingsFile { get; }
         public string SettingsDebugFile { get; }
         public string SettingsExampleFile { get; }
@@ -37,6 +38,8 @@ namespace BytingLib
             Directory.CreateDirectory(SaveStateDir);
             ScreenshotsDir = Path.Combine(GameAppDataDir, "screenshots");
             Directory.CreateDirectory(ScreenshotsDir);
+            RandomScreenshotsDir = Path.Combine(GameAppDataDir, "screenshots-random");
+            Directory.CreateDirectory(RandomScreenshotsDir);
             SettingsFile = Path.Combine(GameAppDataDir, "settings.yaml");
             SettingsDebugFile = Path.Combine(GameAppDataDir, "settings.debug.yaml");
             SettingsExampleFile = Path.Combine(GameAppDataDir, "settings.example.yaml");
@@ -51,6 +54,10 @@ namespace BytingLib
         internal string GetNewScreenshotPng()
         {
             return Path.Combine(ScreenshotsDir, GetCurrentDateTimeFilename() + ".png");
+        }
+        internal string GetNewRandomScreenshotPng()
+        {
+            return Path.Combine(RandomScreenshotsDir, GetCurrentDateTimeFilename() + ".png");
         }
     }
 }

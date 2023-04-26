@@ -12,7 +12,7 @@
             this.paths = paths;
         }
 
-        public void TakeScreenshot()
+        public void TakeScreenshot(bool randomScreenshot)
         {
             int w = gDevice.PresentationParameters.BackBufferWidth;
             int h = gDevice.PresentationParameters.BackBufferHeight;
@@ -21,7 +21,8 @@
             if (screenshotTex == null || screenshotTex.Width != w || screenshotTex.Height != h)
                 screenshotTex = new Texture2D(gDevice, w, h, false, gDevice.PresentationParameters.BackBufferFormat);
             screenshotTex.SetData(backBuffer);
-            screenshotTex.SaveAsPng(paths.GetNewScreenshotPng());
+            string path = randomScreenshot ? paths.GetNewRandomScreenshotPng() : paths.GetNewScreenshotPng();
+            screenshotTex.SaveAsPng(path);
         }
 
         public void Dispose()
