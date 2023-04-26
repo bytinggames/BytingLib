@@ -35,7 +35,8 @@ namespace BytingLib
             {
                 try
                 {
-                    return ContentManagers[i].Load<T>(assetName, extendedLoad);
+                    if (ContentManagers[i].MightBeAbleToLoad(assetName))
+                        return ContentManagers[i].Load<T>(assetName, extendedLoad);
                 }
                 catch (ContentLoadException) { }
                 catch (DirectoryNotFoundException) { }
