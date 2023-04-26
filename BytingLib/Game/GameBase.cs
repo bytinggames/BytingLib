@@ -36,8 +36,8 @@
 #else
             if (contentModdingOnRelease)
             {
-                hotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod", contentConverter);
-                contentRawPipe.ContentManagers.Insert(0, hotReloadContent.TempContentRaw);
+                HotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod", contentConverter);
+                contentRawPipe.ContentManagers.Insert(0, HotReloadContent.TempContentRaw);
             }
 #endif
 
