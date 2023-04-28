@@ -114,5 +114,19 @@
             Vertices[1] = Vector3.Transform(Vertices[1], transform);
             Vertices[2] = Vector3.Transform(Vertices[2], transform);
         }
+
+        /// <summary>Wether any vertex of this triangle has the same position as any vertex of triB</summary>
+        public bool AnyVertexMatchesAnother(Triangle3 triB)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = i; j < 3; j++)
+                {
+                    if (Vertices[i] == triB.Vertices[j])
+                        return true;
+                }
+            }
+            return false;
+        }
     }
 }

@@ -31,6 +31,10 @@ namespace BytingLib
         private readonly string contentRootDirectory;
         private readonly GraphicsDevice? gDevice;
 
+        /// <summary>
+        /// Used instead of vertexBuffers, when no gDevice is available
+        /// </summary>
+        private readonly Dictionary<string, byte[]> vertexDatas = new();
 
         private Dictionary<string, int>? AnimationNameToIndex;
         private readonly JsonArray? animationsJsonArray;
@@ -152,9 +156,16 @@ namespace BytingLib
             int vertexStride = offset;
             vertexDeclaration = new VertexDeclaration(vertexStride, vertexParts.Select(f => f.VertexElement).ToArray());
 
-            // merge vertex data
-            byte[] vertexData = new byte[vertexParts.Sum(f => f.BufferBytes.Length)];
             vertexCount = vertexParts[0].BufferBytes.Length / vertexParts[0].VertexElementSize;
+
+            byte[]? vertexData;
+            if (vertexDatas.TryGetValue(key, out vertexData))
+            {
+                return vertexData;
+            }
+
+            // merge vertex data
+            vertexData = new byte[vertexParts.Sum(f => f.BufferBytes.Length)];
             foreach (var vertexPart in vertexParts)
             {
                 unsafe
@@ -175,6 +186,7 @@ namespace BytingLib
                     }
                 }
             }
+            vertexDatas.Add(key, vertexData);
 
             return vertexData;
         }

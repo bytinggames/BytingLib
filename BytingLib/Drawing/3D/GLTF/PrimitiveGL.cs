@@ -24,6 +24,13 @@ namespace BytingLib
             }
         }
 
+        public PrimitiveGL(VertexBuffer vertexBuffer, IndexBuffer? indexBuffer, MaterialGL? material)
+            : base(material)
+        {
+            VertexBuffer = vertexBuffer;
+            IndexBuffer = indexBuffer;
+        }
+
         public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial)
         {
             using (Material == null ? null : shaderMaterial?.UseMaterial(Material))

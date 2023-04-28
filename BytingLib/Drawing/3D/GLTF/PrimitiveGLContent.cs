@@ -34,11 +34,62 @@ namespace BytingLib
             }
         }
 
+        /// <summary>Used for cloning PrimitiveGLContent while providing different indices</summary>
+        public PrimitiveGLContent(PrimitiveGLContent cloneSource, PrimitiveGLIndexInfo indexInfo)
+            : base(cloneSource.Material)
+        {
+            VertexDeclaration = cloneSource.VertexDeclaration;
+            VertexData = cloneSource.VertexData; // no cloning, vertex data is shared
+            VertexCount = cloneSource.VertexCount;
+            IndexInfo = indexInfo;
+        }
+
         public T[] GetElementData<T>(VertexElementUsage usage) where T : struct
         {
             T[] elements = new T[VertexCount];
             GetElementData(elements, usage);
             return elements;
+        }
+
+        public T[] GetVertices<T>(VertexDeclaration vertexDeclaration) where T : struct
+        {
+            T[] vertices = new T[VertexCount];
+            GetVertices(vertices, vertexDeclaration);
+            return vertices;
+        }
+
+        public void GetVertices<T>(T[] vertices, VertexDeclaration vertexDeclaration) where T : struct
+        {
+            var vertexElements = VertexDeclaration.GetVertexElements();
+            var targetVertexElements = vertexDeclaration.GetVertexElements();
+
+            if (vertexDeclaration.VertexStride != VertexDeclaration.VertexStride)
+                throw new BytingException("vertexType doesn't match vertex declaration of vertex buffer.");
+
+            for (int i = 0; i < targetVertexElements.Length; i++)
+            {
+                if (vertexElements[i] != targetVertexElements[i])
+                {
+                    throw new BytingException("vertexType doesn't match vertex declaration of vertex buffer.");
+                }
+            }
+
+            // Copy from the temporary buffer to the destination array
+            var dataHandle = GCHandle.Alloc(VertexData, GCHandleType.Pinned);
+            try
+            {
+                var tmpPtr = dataHandle.AddrOfPinnedObject();
+                tmpPtr = (IntPtr)(tmpPtr.ToInt64() + vertexDeclaration.VertexStride);
+                for (var i = 0; i < VertexCount; i++)
+                {
+                    vertices[i] = Marshal.PtrToStructure<T>(tmpPtr);
+                    tmpPtr = (IntPtr)(tmpPtr.ToInt64() + VertexDeclaration.VertexStride);
+                }
+            }
+            finally
+            {
+                dataHandle.Free();
+            }
         }
 
         /// <summary>array must be at minimum size of VertexCount</summary>

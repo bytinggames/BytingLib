@@ -13,6 +13,9 @@ namespace BytingLib
         public Vector3? EmissiveFactor { get; set; }
         public TextureGL? EmissiveTexture { get; set; }
 
+        public MaterialGL()
+        { }
+
         public MaterialGL(ModelGL model, JsonNode n)
         {
             Name = n["name"]?.GetValue<string>();

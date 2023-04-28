@@ -54,6 +54,20 @@ namespace BuildTemplates.Test
         [TestMethod]
         [DataRow(false)]
         [DataRow(true)]
+        public void TestBuildSELaptop(bool loadOnStartup)
+        {
+            string contentPath = @"C:\Users\Julian\Documents\Visual Studio 2017\Projects\SE\SE\Content";//@"D:\Documents\Visual Studio 2017\Projects\SE\SE\Content";
+            string nameSpace = "SE";
+            (string output, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath, nameSpace, new string[0], loadOnStartup, new SEContentConverter());
+            Assert.IsNotNull(output);
+            Assert.IsNotNull(mgcbOutput);
+            Assert.IsNotNull(locaCode);
+            Assert.IsNotNull(shaders);
+        }
+
+        [TestMethod]
+        [DataRow(false)]
+        [DataRow(true)]
         public void TestBuildPlatformer3D(bool loadOnStartup)
         {
             string contentPath = @"D:\Documents\Visual Studio 2017\Projects\Platformer3D\Platformer3D\Platformer3D\Content";
@@ -70,14 +84,11 @@ namespace BuildTemplates.Test
     {
         public SEContentConverter()
         {
-            ProcessorToDataType.Add("CollisionMeshProcessor", "CollisionMesh");
-            ProcessorToDataType.Add("CollisionMeshGridProcessor", "CollisionMeshGrid");
+            ProcessorToDataType.Add("LevelModelProcessor", "LevelModel");
 
-            DataTypeToVarExtension.Add("CollisionMesh", "Col");
-            DataTypeToVarExtension.Add("CollisionMeshGrid", "Col");
+            DataTypeToVarExtension.Add("LevelModel", "Lvl");
 
-            //RuntimeTypes.Add("CollisionMesh", typeof(CollisionMesh));
-            //RuntimeTypes.Add("CollisionMeshGrid", typeof(CollisionMeshGrid));
+            //RuntimeTypes.Add(nameof(LevelModel), typeof(LevelModel));
         }
     }
 

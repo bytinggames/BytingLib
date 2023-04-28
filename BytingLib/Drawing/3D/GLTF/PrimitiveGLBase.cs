@@ -15,5 +15,10 @@ namespace BytingLib
                 Material = model.Materials!.Get(materialId);
             }
         }
+
+        public PrimitiveGLBase(MaterialGL? material)
+        {
+            Material = material;
+        }
     }
 }
