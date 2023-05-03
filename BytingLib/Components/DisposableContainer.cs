@@ -45,5 +45,22 @@
             item.Dispose();
             return removed;
         }
+
+        public void UseRange(params IDisposable[] disposables)
+        {
+            for (int i = 0; i < disposables.Length; i++)
+            {
+                Use(disposables[i]);
+            }
+        }
+        public void UseRangeCheckNull(params IDisposable?[] disposables)
+        {
+            for (int i = 0; i < disposables.Length; i++)
+            {
+                if (disposables[i] == null)
+                    continue;
+                Use(disposables[i]!);
+            }
+        }
     }
 }

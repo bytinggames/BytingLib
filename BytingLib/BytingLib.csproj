@@ -33,6 +33,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>_GenerateContentFiles.tt.remove</DependentUpon>
     </None>
+    <None Update="DataTypes\Events.Generated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Events.Generated.cs</LastGenOutput>
+    </None>
     <None Update="UI/Panel/PanelStack.Generated.tt">
       <LastGenOutput>PanelStack.Generated.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -52,6 +56,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="DataTypes\Events.Generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Events.Generated.tt</DependentUpon>
+    </Compile>
     <Compile Update="UI/Panel/PanelStack.Generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
