@@ -10,6 +10,8 @@ namespace BytingLib
 
         public ReadOnlyCollection<object> AllThings => allThings.AsReadOnly();
 
+        public bool CheckIfAnyInterfaceIsInherited { get; set; } = true;
+
         public StuffDisposable(params Type[] types)
             : base(false, types)
         { }
@@ -20,7 +22,7 @@ namespace BytingLib
 
             any = AddActual(thing, onRemove) || any;
 
-            if (!any)
+            if (!any && CheckIfAnyInterfaceIsInherited)
                 throw new ArgumentException(thing.GetType() + " didn't inherit any provided interface.");
 
             allThings.Add(thing);
@@ -57,7 +59,7 @@ namespace BytingLib
 
             any = InsertActual(index, thing) || any;
 
-            if (!any)
+            if (!any && CheckIfAnyInterfaceIsInherited)
                 throw new ArgumentException(thing.GetType() + " didn't inherit any provided interface.");
 
             if (onRemove != null)
