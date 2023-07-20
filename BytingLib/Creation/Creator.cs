@@ -5,10 +5,10 @@ namespace BytingLib
 {
     public class Creator
     {
-        public const char open = '(';
-        public const char close = ')';
-        public const char setterSeparator = '_';
-        public const char parameterSeparator = '|';
+        public char Open { get; set; } = '(';
+        public char Close { get; set; } = ')';
+        public char SetterSeparator { get; set; } = '_';
+        public char ParameterSeparator { get; set; } = '|';
 
         public Dictionary<Type, object> AutoParameters { get; } = new Dictionary<Type, object>();
 
@@ -77,13 +77,19 @@ namespace BytingLib
 
             while ((c = reader.ReadChar()).HasValue)
             {
-                if (c != setterSeparator)
+                if (c != SetterSeparator)
                 {
                     reader.Move(-1); // move back the wrongly read in char
                     return;
                 }
 
-                string setterName = reader.ReadToChar(open);
+                char? peek = reader.Peek();
+                if (peek == null)
+                    return;
+                if (peek >= '0' && peek <= '9') // if it starts with a number, it can't be a member or method, so stop.
+                    return;
+
+                string setterName = reader.ReadToChar(Open);
 
                 SetPropertyMethodOrField(type, obj, setterName, reader);
             }
@@ -92,7 +98,7 @@ namespace BytingLib
         /// <summary>"Type(ctorArg1)(ctorArg2)_Prop(val)_Method(arg1)(arg2)"</summary>
         private object CreateObject(ScriptReaderLiteral reader, Type objectBaseType)
         {
-            string typeStr = reader.ReadToChar(open);
+            string typeStr = reader.ReadToChar(Open);
 
             Type? type = null;
             if (shortcuts.ContainsKey(typeStr))
@@ -129,7 +135,7 @@ namespace BytingLib
             var prop = type.GetProperty(setterName);
             if (prop != null)
             {
-                prop.SetValue(obj, GetParameters(reader.ReadToCharOrEndConsiderOpenCloseBraces(close, open, close), prop.PropertyType));
+                prop.SetValue(obj, GetParameters(reader.ReadToCharOrEndConsiderOpenCloseBraces(Close, Open, Close), prop.PropertyType));
             }
             else
             {
@@ -145,7 +151,7 @@ namespace BytingLib
 
                     if (field != null)
                     {
-                        field.SetValue(obj, GetParameters(reader.ReadToCharOrEndConsiderOpenCloseBraces(close, open, close), field.FieldType));
+                        field.SetValue(obj, GetParameters(reader.ReadToCharOrEndConsiderOpenCloseBraces(Close, Open, Close), field.FieldType));
                     }
                     else
                     {
@@ -240,11 +246,17 @@ namespace BytingLib
         {
             if (expectedType == typeof(string))
                 return argStr;
+            else if (expectedType.IsEnum)
+            {
+                if (Enum.TryParse(expectedType, argStr, out object? result) && result != null)
+                    return result;
+                return Enum.ToObject(expectedType, 0);
+            }
             else if (converters.TryGetValue(expectedType, out var converter))
             {
                 return converter.Invoke(argStr);
             }
-            else if (argStr.Contains(open))
+            else if (argStr.Contains(Open))
             {
                 ScriptReaderLiteral reader = new ScriptReaderLiteral(argStr);
                 return CreateObject(reader, expectedType);
@@ -260,19 +272,25 @@ namespace BytingLib
             reader.RemoveLiteralCharEnabled = false;
             do
             {
-                string para = reader.ReadToCharOrEndConsiderOpenCloseBraces(new char[] { close, parameterSeparator }, open, close);
+                string para = reader.ReadToCharOrEndConsiderOpenCloseBraces(new char[] { Close, ParameterSeparator }, Open, Close);
                 splits.Add(para);
-            } while (!reader.EndOfString() && reader.Peek(-1) == parameterSeparator);
+            } while (!reader.EndOfString() && reader.Peek(-1) == ParameterSeparator);
             reader.RemoveLiteralCharEnabled = true;
 
             // clear list if paramters look like this: () <- empty
             if (splits.Count == 1 && splits[0] == "")
                 splits.Clear();
 
-            if (reader.Peek(-1) != close)
+            if (reader.Peek(-1) != Close)
                 throw new Exception($"close expected, but {reader.Peek(-1)} read instead");
 
             return splits.ToArray();
+        }
+
+        public void ReplaceAutoParameter(Type type, object value)
+        {
+            AutoParameters.Remove(type);
+            AutoParameters.Add(type, value);
         }
     }
 }
