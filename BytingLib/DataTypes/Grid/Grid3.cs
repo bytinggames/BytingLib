@@ -35,6 +35,16 @@
             AddToGrid(entity);
         }
 
+        /// <summary>
+        /// Used for when coords are pre-calculated.
+        /// Warning: Coord is not checked for validity (if it actually fits the entities).
+        /// </summary>
+        public virtual void AddMultipleToSingleCoord(Int3 coord, IList<T> entities)
+        {
+            var list = GetOrCreateList(coord);
+            list.AddRange(entities);
+        }
+
         /// <summary>Does not add to Entities list.</summary>
         private void AddToGrid(T entity)
         {
@@ -131,15 +141,16 @@
             }
         }
 
-        private void AddToCoord(Int3 c, T entity)
+        private List<T> GetOrCreateList(Int3 c)
         {
             if (Lists.TryGetValue(c, out List<T>? list))
             {
-                list.Add(entity);
+                return list;
             }
             else
             {
-                Lists.Add(c, new List<T>() { entity });
+                var list2 = new List<T>();
+                Lists.Add(c, list2);
 
                 if (!BoundsSet)
                 {
@@ -163,7 +174,15 @@
                     else if (c.Z > max.Z)
                         max.Z = c.Z;
                 }
+
+                return list2;
             }
+        }
+
+        private void AddToCoord(Int3 c, T entity)
+        {
+            var list = GetOrCreateList(c);
+            list.Add(entity);
         }
         private bool RemoveFromCoord(Int3 c, T entity)
         {
