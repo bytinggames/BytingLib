@@ -9,7 +9,7 @@ namespace BytingLib
         public ImageGL(ModelGL model, JsonNode n)
         {
             var imageUri = n["uri"]!.GetValue<string>();
-
+            imageUri = imageUri.Replace("%20", " ");
             Tex2D = model.GetTexture(imageUri)!;
         }
 
