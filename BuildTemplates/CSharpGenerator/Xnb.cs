@@ -48,7 +48,7 @@
 
         private string GetInitCode(bool loadOnStartup) => $"{VarName} ={(loadOnStartup ? "" : ">")} disposables.Use(collector.Use<{CSharpDataType}>(\"{AssetName}\"));";
 
-        static string ToVariableName(string name)
+        internal static string ToVariableName(string name)
         {
             return name.Replace(" ", "")
                 .Replace(".", "_")

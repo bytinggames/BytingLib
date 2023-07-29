@@ -70,14 +70,9 @@ namespace BuildTemplates.Test
     {
         public SEContentConverter()
         {
-            ProcessorToDataType.Add("CollisionMeshProcessor", "CollisionMesh");
-            ProcessorToDataType.Add("CollisionMeshGridProcessor", "CollisionMeshGrid");
-
-            DataTypeToVarExtension.Add("CollisionMesh", "Col");
-            DataTypeToVarExtension.Add("CollisionMeshGrid", "Col");
-
-            //RuntimeTypes.Add("CollisionMesh", typeof(CollisionMesh));
-            //RuntimeTypes.Add("CollisionMeshGrid", typeof(CollisionMeshGrid));
+            ProcessorToDataType.Add("CollisionModelProcessor", "CollisionModelBytes");
+            DataTypeToVarExtension.Add("CollisionModelBytes", "Col");
+            //RuntimeTypes.Add("CollisionModelBytes", typeof(CollisionModelBytes));
         }
     }
 
