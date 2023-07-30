@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "bytinggames-dotnet-mgcb": {
-      "version": "3.8.1.12-develop",
+      "version": "3.8.1.13-develop",
       "commands": [
         "mgcb-byting"
       ]
