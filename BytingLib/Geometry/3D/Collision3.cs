@@ -293,12 +293,12 @@ namespace BytingLib
         {
             vec = Vector3.Transform(vec, box.TransformInverse);
 
-            return vec.X >= -1
-                && vec.Y >= -1
-                && vec.Z >= -1
-                && vec.X < 1
-                && vec.Y < 1
-                && vec.Z < 1;
+            return vec.X >= -0.5f
+                && vec.Y >= -0.5f
+                && vec.Z >= -0.5f
+                && vec.X < 0.5f
+                && vec.Y < 0.5f
+                && vec.Z < 0.5f;
         }
 
         public static CollisionResult3 DistVectorSphere(Vector3 vec, Sphere3 sphere, Vector3 dir)
