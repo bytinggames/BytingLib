@@ -51,6 +51,11 @@ namespace BytingLib
             }
         }
 
+        public void AddShortcut(string name, Type type)
+        {
+            shortcuts.Add(name, type);
+        }
+
         public object CreateObject(ScriptReaderLiteral reader)
         {
             object entity = CreateObject(reader, typeof(object));
