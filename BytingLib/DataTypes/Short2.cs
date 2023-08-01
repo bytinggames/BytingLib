@@ -43,12 +43,6 @@
             return x2 != x || y2 != y;
         }
 
-        //public override bool Equals(object obj)
-        //{
-        //    if (obj is VShort2)
-        //    return x == vshort.x && Y == vshort.y;
-        //}
-
         public static bool operator ==(Short2 v1, Short2 v2)
         {
             return v1.x == v2.x && v1.y == v2.y;
@@ -87,12 +81,14 @@
 
         public override int GetHashCode()
         {
-            return ((int)x << 16) + (int)y;
+            return HashCode.Combine(x, y);
         }
 
         public override bool Equals(object? obj)
         {
-            return base.Equals(obj);
+            if (obj is Short2 f)
+                return f.X == X && f.Y == Y;
+            return false;
         }
 
         public override string ToString()

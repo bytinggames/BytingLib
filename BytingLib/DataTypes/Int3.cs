@@ -99,7 +99,9 @@ namespace BytingLib
 
         public override bool Equals(object? obj)
         {
-            return base.Equals(obj);
+            if (obj is Int3 f)
+                return f.X == X && f.Y == Y && f.Z == Z;
+            return false;
         }
 
         public override string ToString()

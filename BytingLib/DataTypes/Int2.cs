@@ -52,12 +52,6 @@ namespace BytingLib
             return x2 != X || y2 != Y;
         }
 
-        //public override bool Equals(object obj)
-        //{
-        //    if (obj is Int2)
-        //    return x == vint.x && Y == vint.y;
-        //}
-
         public static bool operator ==(Int2 v1, Int2 v2)
         {
             return v1.X == v2.X && v1.Y == v2.Y;
@@ -113,7 +107,9 @@ namespace BytingLib
 
         public override bool Equals(object? obj)
         {
-            return base.Equals(obj);
+            if (obj is Int2 f)
+                return f.X == X && f.Y == Y;
+            return false;
         }
 
         public override string ToString()

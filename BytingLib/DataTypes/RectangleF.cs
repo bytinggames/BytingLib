@@ -22,5 +22,10 @@
             Width = size.X;
             Height = size.Y;
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y, Width, Height);
+        }
     }
 }
