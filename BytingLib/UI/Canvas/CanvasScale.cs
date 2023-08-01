@@ -152,7 +152,7 @@
             SetDirtyIfResChanged();
 
             if (treeDirty)
-                UpdateTree(); // TODO: only update tree when necessary
+                UpdateTree();
         }
 
         private void SetDirtyIfResChanged()

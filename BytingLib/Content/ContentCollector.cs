@@ -86,7 +86,7 @@
             object? assetHolder;
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
             {
-                T assetContent = readAsset(Path.Combine(contentRaw.RootDirectory, assetName)); // TODO: currently this pulls only the RootDirectory of the first contnet manager, which could be the hot reload content manager. When this load fails, it fails alltogether. Fix this by iterating through the content manager root directories.
+                T assetContent = readAsset(Path.Combine(contentRaw.RootDirectory, assetName));
                 assetHolder = new AssetHolder<T>(assetContent, assetName, Unuse);
                 loadedAssets.Add(assetName, assetHolder);
 
