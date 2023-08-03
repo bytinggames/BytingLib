@@ -78,14 +78,14 @@
             var t = _transform;
             return new List<Vector3>()
             {
+                t.Translation - (t.Right - t.Up - t.Backward) / 2f,
                 t.Translation + (t.Right + t.Up + t.Backward) / 2f,
-                t.Translation + (t.Right + t.Up - t.Backward) / 2f,
                 t.Translation + (t.Right - t.Up + t.Backward) / 2f,
-                t.Translation + (t.Right - t.Up - t.Backward) / 2f,
-                t.Translation - (t.Right + t.Up + t.Backward) / 2f,
                 t.Translation - (t.Right + t.Up - t.Backward) / 2f,
                 t.Translation - (t.Right - t.Up + t.Backward) / 2f,
-                t.Translation - (t.Right - t.Up - t.Backward) / 2f,
+                t.Translation + (t.Right + t.Up - t.Backward) / 2f,
+                t.Translation + (t.Right - t.Up - t.Backward) / 2f,
+                t.Translation - (t.Right + t.Up + t.Backward) / 2f,
             };
         }
 

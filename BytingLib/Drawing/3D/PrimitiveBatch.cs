@@ -192,7 +192,17 @@
         public void DrawCage(BoundingFrustum frustum, Color color)
         {
             var corners = frustum.GetCorners();
+            DrawCageFrom8Corners(corners, color);
+        }
 
+        public void DrawCage(Box3 box, Color color)
+        {
+            var corners = box.GetCorners();
+            DrawCageFrom8Corners(corners, color);
+        }
+
+        private void DrawCageFrom8Corners(IList<Vector3> corners, Color color)
+        {
             // side lines
             for (int i = 0; i < 4; i++)
                 Lines.Draw(corners[i], corners[4 + i] - corners[i], color);

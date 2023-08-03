@@ -1370,7 +1370,7 @@ namespace BytingLib
             if (dir == Vector2.Zero)
                 return cr;
 
-            if (polygon.Vertices.Count == 0)
+            if (polygon.Vertices.Count <= 1) // TODO: check point vs circle, when polygon has 1 vertex?
                 return cr;
 
             float? cDist = null;
