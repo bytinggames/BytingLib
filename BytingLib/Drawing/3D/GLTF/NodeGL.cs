@@ -84,30 +84,42 @@ namespace BytingLib
 
         public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Predicate<NodeGL>? goDown = null) => Draw(shader, shaderMaterial, shaderSkin, Matrix.Identity, goDown);
 
-        public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Matrix GlobalNodeTransform, Predicate<NodeGL>? goDown)
+        public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Matrix nodeTransformPost, Predicate<NodeGL>? goDown)
         {
-            GlobalNodeTransform = localTransform * GlobalNodeTransform;
-            using (shaderSkin == null ? null : Skin?.Use(shaderSkin, GlobalNodeTransform))
+            Matrix transform = localTransform * nodeTransformPost;
+            DrawInner(shader, shaderMaterial, shaderSkin, goDown, transform);
+        }
+
+        public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Matrix nodeTransformPost, Predicate<NodeGL>? goDown, Matrix nodeTransformPre)
+        {
+            Matrix transform = nodeTransformPre * localTransform * nodeTransformPost;
+            DrawInner(shader, shaderMaterial, shaderSkin, goDown, transform);
+        }
+
+        private void DrawInner(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Predicate<NodeGL>? goDown, Matrix transform)
+        {
+            using (shaderSkin == null ? null : Skin?.Use(shaderSkin, transform))
             {
                 if (Mesh != null)
                 {
-                    using (shader.World.Use(f => GlobalNodeTransform * f))
+                    using (shader.World.Use(f => transform * f))
                         Mesh.Draw(shader, shaderMaterial);
                 }
 
                 if (goDown == null)
                 {
                     for (int i = 0; i < Children.Count; i++)
-                        Children[i].Draw(shader, shaderMaterial, shaderSkin, GlobalNodeTransform, null);
+                        Children[i].Draw(shader, shaderMaterial, shaderSkin, transform, null);
                 }
                 else
                     for (int i = 0; i < Children.Count; i++)
                     {
                         if (goDown(Children[i]))
-                            Children[i].Draw(shader, shaderMaterial, shaderSkin, GlobalNodeTransform, goDown);
+                            Children[i].Draw(shader, shaderMaterial, shaderSkin, transform, goDown);
                     }
             }
         }
+
 
 
         internal void CalculateGlobalTransform(int globalTransformCalculationId)
