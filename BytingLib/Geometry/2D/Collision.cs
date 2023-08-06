@@ -31,6 +31,13 @@ namespace BytingLib
                 if (key.Item1 != key.Item2) // if they are the same, no need to swap them
                     distanceFunctions.Add((key.Item2, key.Item1), (a, b, dir) => distanceFunctions[key](b, a, -dir).InvertAxisAndReturn());
             }
+            // same for distanceNoDir functions
+            keys = distanceNoDirFunctions.Keys.ToList();
+            foreach (var key in keys)
+            {
+                if (key.Item1 != key.Item2) // if they are the same, no need to swap them
+                    distanceNoDirFunctions.Add((key.Item2, key.Item1), (a, b) => distanceNoDirFunctions[key](b, a).InvertAxisAndReturn());
+            }
 
             keys = collisionFunctions.Keys.ToList();
             // also make sure point type calls can make use of vector functions
@@ -51,6 +58,16 @@ namespace BytingLib
 
                 if (key.Item2 == TVector2)
                     distanceFunctions.Add((key.Item1, TPointF), (a, b, dir) => distanceFunctions[key](a, ((PointF)b).Pos, dir));
+            }
+            // same for distance functions
+            keys = distanceNoDirFunctions.Keys.ToList();
+            foreach (var key in keys)
+            {
+                if (key.Item1 == TVector2)
+                    distanceNoDirFunctions.Add((TPointF, key.Item2), (a, b) => distanceNoDirFunctions[key](((PointF)a).Pos, b));
+
+                if (key.Item2 == TVector2)
+                    distanceNoDirFunctions.Add((key.Item1, TPointF), (a, b) => distanceNoDirFunctions[key](a, ((PointF)b).Pos));
             }
         }
 
@@ -118,6 +135,36 @@ namespace BytingLib
             //{ (TTextureShape, TTextureShape), (a, b, dir) => DistTextureShapeTextureShape((TextureShape)a, (TextureShape)b, dir) },
         };
 
+        static readonly Dictionary<(Type, Type), Func<object, object, CollisionResult>> distanceNoDirFunctions = new()
+        {
+            { (TShapeCollection, TVector2), (a, b) => DistShapeCollectionObject((ShapeCollection)a, b) },
+            { (TShapeCollection, TRect), (a, b) => DistShapeCollectionObject((ShapeCollection)a, b) },
+            { (TShapeCollection, TPolygon), (a, b) => DistShapeCollectionObject((ShapeCollection)a, b) },
+            { (TShapeCollection, TCircle), (a, b) => DistShapeCollectionObject((ShapeCollection)a, b) },
+            { (TShapeCollection, TTextureShape), (a, b) => DistShapeCollectionObject((ShapeCollection)a, b) },
+            { (TShapeCollection, TShapeCollection), (a, b) => DistShapeCollectionObject((ShapeCollection)a, b) },
+
+            //{ (TVector2, TVector2), (a, b) => DistVectorVector((Vector2)a, (Vector2)b) },
+            { (TVector2, TRect), (a, b) => DistVectorRectangle((Vector2)a, (Rect)b) },
+            { (TVector2, TCircle), (a, b) => DistVectorCircle((Vector2)a, (Circle)b) },
+            //{ (TVector2, TTextureShape), (a, b) => DistVectorTextureShape((Vector2)a, (TextureShape)b) },
+            { (TVector2, TPolygon), (a, b) => DistVectorPolygon((Vector2)a, (Polygon)b) },
+
+            { (TRect, TRect), (a, b) => DistRectangleRectangle((Rect)a, (Rect)b) },
+            { (TRect, TCircle), (a, b) => DistRectangleCircle((Rect)a, (Circle)b) },
+            //{ (TRect, TTextureShape), (a, b) => DistRectangleTextureShape((Rect)a, (TextureShape)b) },
+            { (TRect, TPolygon), (a, b) => DistRectanglePolygon((Rect)a, (Polygon)b) },
+
+            { (TPolygon, TPolygon), (a, b) => DistPolygonPolygon((Polygon)a, (Polygon)b) },
+            { (TPolygon, TCircle), (a, b) => DistPolygonCircle((Polygon)a, (Circle)b) },
+            //{ (TPolygon, TTextureShape), (a, b) => DistPolygonTextureShape((Polygon)a, (TextureShape)b) },
+
+            { (TCircle, TCircle), (a, b) => DistCircleCircle((Circle)a, (Circle)b) },
+            //{ (TCircle, TTextureShape), (a, b) => DistCircleTextureShape((Circle)a, (TextureShape)b) },
+
+            //{ (TTextureShape, TTextureShape), (a, b) => DistTextureShapeTextureShape((TextureShape)a, (TextureShape)b) },
+        };
+
         public static bool GetCollision(object shape1, object shape2)
         {
             Type t1 = (shape1 is IShape s1) ? s1.GetCollisionType() : shape1.GetType();
@@ -147,7 +194,16 @@ namespace BytingLib
             if (!distanceFunctions.TryGetValue((t1, t2), out func))
                 throw new NotImplementedException($"A distance check between {shape1.GetType()} and {shape2.GetType()} is not implemented yet.");
             return func(shape1, shape2, dir);
-                
+        }
+
+        public static CollisionResult GetDistance(object shape1, object shape2)
+        {
+            Type t1 = (shape1 is IShape s1) ? s1.GetCollisionType() : shape1.GetType();
+            Type t2 = (shape2 is IShape s2) ? s2.GetCollisionType() : shape2.GetType();
+            Func<object, object, CollisionResult>? func;
+            if (!distanceNoDirFunctions.TryGetValue((t1, t2), out func))
+                throw new NotImplementedException($"A distance check between {shape1.GetType()} and {shape2.GetType()} is not implemented yet.");
+            return func(shape1, shape2);
         }
 
         #region ShapeCollection
@@ -163,6 +219,17 @@ namespace BytingLib
             foreach (var shape in collection.Shapes)
             {
                 var cr = GetDistance(shape, obj, dir);
+                crTotal.Add(cr);
+            }
+            return crTotal;
+        }
+
+        public static CollisionResult DistShapeCollectionObject(ShapeCollection collection, object obj)
+        {
+            CollisionResult crTotal = new CollisionResult();
+            foreach (var shape in collection.Shapes)
+            {
+                var cr = GetDistance(shape, obj);
                 crTotal.Add(cr);
             }
             return crTotal;
