@@ -389,13 +389,13 @@ namespace BytingLib
                 }
                 else
                 {
-                    float dirDist1 = (projection2[1] - projection1 * Math.Sign(dotDir)) / dotDir;
-                    float dirDist2 = (projection2[0] - projection1 * Math.Sign(dotDir)) / dotDir;
+                    float dirDist1 = (projection2[1] - projection1) / dotDir;
+                    float dirDist2 = (projection2[0] - projection1) / dotDir;
 
                     if (dirDist1 < dirDist2)
-                        dirDists[i] = (new float[] { dirDist1, (projection2[0] - projection1 * Math.Sign(dotDir)) / dotDir });
+                        dirDists[i] = (new float[] { dirDist1, (projection2[0] - projection1) / dotDir });
                     else
-                        dirDists[i] = (new float[] { dirDist2, (projection2[1] - projection1 * Math.Sign(dotDir)) / dotDir });
+                        dirDists[i] = (new float[] { dirDist2, (projection2[1] - projection1) / dotDir });
 
                     if (!cr.Distance.HasValue || dirDists[i][0] > cr.Distance)
                     {
