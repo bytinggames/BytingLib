@@ -12,7 +12,7 @@ namespace BytingLib
         protected readonly DefaultPaths basePaths;
         protected readonly SaveStateManager saveStateManager;
 
-        private readonly Screenshotter screenshotter;
+        protected readonly Screenshotter screenshotter;
         private readonly Random? screenshotsRand;
 
         private Action? startRecordingPlayback;

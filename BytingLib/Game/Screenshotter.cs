@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    class Screenshotter : IDisposable
+    public class Screenshotter : IDisposable
     {
         private Texture2D? screenshotTex;
         private readonly GraphicsDevice gDevice;
