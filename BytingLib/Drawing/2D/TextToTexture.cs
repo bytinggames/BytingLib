@@ -76,7 +76,12 @@ namespace BytingLib
             gDevice.SetRenderTargets(targets);
 
             disposables.Use(tex);
-            AssetHolder<Texture2D> assetHolder = new AssetHolder<Texture2D>(tex, tex.Name, _ => tex.Dispose());
+            AssetHolder<Texture2D> assetHolder = new AssetHolder<Texture2D>(tex, tex.Name, _ =>
+            {
+                if (!textures.Remove((text, font.Value, color, textureScale)))
+                    throw new BytingException("couldn't remove a texture from TextToTexture.textures");
+                tex.Dispose();
+            });
 
             textures.Add((text, font.Value, color, textureScale), assetHolder);
 
