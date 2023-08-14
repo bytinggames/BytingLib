@@ -17,7 +17,7 @@
         {
             for (int i = 0; i < fonts.Length - 1; i++) // skip last font, that is the default one
             {
-                if (fonts[i].Item1 <= fontSize)
+                if (fontSize <= fonts[i].Item1)
                     return fonts[i].Item2;
             }
             return fonts[fonts.Length - 1].Item2;
