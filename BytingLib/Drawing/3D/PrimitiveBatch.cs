@@ -125,8 +125,8 @@
             }
         }
 
-        // don't make public, cause this method is slower than directly drawing with the Instances* properties
-        private void Draw(IShape3 shape, Color color)
+        /// <summary>If you know the type of the shape, consider using the direct draw call to prevent a cast.</summary>
+        public void Draw(IShape3 shape, Color color)
         {
             switch (shape)
             {
