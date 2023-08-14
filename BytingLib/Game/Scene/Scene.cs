@@ -4,6 +4,9 @@
     {
         public Scene? PopupScene { get; protected set; }
 
+        public event Action<Scene>? OnPopupOpen;
+        public event Action? OnPopupClose;
+
         public Scene(params Type[] extraTypes)
             : base(new Type[] { typeof(IDraw), typeof(IUpdate), typeof(IDrawBatch) }.Concat(extraTypes).ToArray())
         { }
@@ -45,12 +48,20 @@
                 RemovePopupScene();
 
             PopupScene = scene;
+
+            if (PopupScene != null)
+                OnPopupOpen?.Invoke(PopupScene);
         }
 
         public void RemovePopupScene()
         {
-            PopupScene?.Dispose();
-            PopupScene = null;
+            if (PopupScene != null)
+            {
+                PopupScene?.Dispose();
+                PopupScene = null;
+
+                OnPopupClose?.Invoke();
+            }
         }
 
         public override void Dispose()

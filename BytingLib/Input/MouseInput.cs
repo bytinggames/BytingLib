@@ -35,10 +35,10 @@ namespace BytingLib
             OnSetCurrentState();
         }
 
-        private void UpdateUsingState(MouseState keyboardState)
+        private void UpdateUsingState(MouseState mouseState)
         {
             previousState = currentState;
-            currentState = keyboardState;
+            currentState = mouseState;
             OnSetCurrentState();
 
             updateCount++;
