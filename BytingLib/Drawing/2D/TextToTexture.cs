@@ -11,14 +11,16 @@ namespace BytingLib
         private readonly float verticalSpaceBetweenLines;
         private readonly Dictionary<TextToTextureKey, AssetHolder<Texture2D>> textures = new();
         private readonly DisposableContainer disposables = new();
+        public float MinimumPixelsPerUnit { get; }
 
-        public TextToTexture(SpriteBatch spriteBatch, FontArray fontArray, IShaderColor textEffect, Creator markupCreator, float verticalSpaceBetweenLines)
+        public TextToTexture(SpriteBatch spriteBatch, FontArray fontArray, IShaderColor textEffect, Creator markupCreator, float verticalSpaceBetweenLines, float minimumPixelsPerUnit)
         {
             this.spriteBatch = spriteBatch;
             this.fontArray = fontArray;
             this.textEffect = textEffect;
             this.markupCreator = markupCreator;
             this.verticalSpaceBetweenLines = verticalSpaceBetweenLines;
+            MinimumPixelsPerUnit = minimumPixelsPerUnit;
         }
 
         public Ref<Texture2D> UseTexture(string text, Vector3 right, Color color, float? verticalSpaceBetweenLines = null)
@@ -28,13 +30,15 @@ namespace BytingLib
             markupSettings.VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines;
             var drawElement = new MarkupRoot(markupCreator, text);
             Vector2 textSize = drawElement.GetSize(markupSettings);
+            textSize /= actualFontSize;
 
-            int fontSize = GetRightFontSize(right.Length(), (int)MathF.Ceiling(textSize.X));
+            int fontSize = GetRightFontSize(right.Length() * 2f /* because right only measures half the length */, 
+                (int)MathF.Ceiling(textSize.X), MinimumPixelsPerUnit);
 
             return CreateTextTexture(text, fontArray.GetFont(fontSize), color, fontSize, verticalSpaceBetweenLines);
         }
 
-        private static int GetRightFontSize(float spaceInMeters, int textureWidthOfScale1, float targetPixelsPerCM = 350f)
+        private static int GetRightFontSize(float spaceInMeters, int textureWidthOfScale1, float targetPixelsPerCM)
         {
             float pixelsPerMeter = textureWidthOfScale1 / spaceInMeters;
 
