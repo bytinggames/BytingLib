@@ -129,5 +129,13 @@
             return frameIndex;
         }
 
+        public override void LooseFocus()
+        {
+            hover = false;
+            down = false;
+
+            base.LooseFocus();
+        }
+
     }
 }

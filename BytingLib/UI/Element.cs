@@ -225,5 +225,16 @@ namespace BytingLib.UI
         protected virtual void DisposeSelf()
         {
         }
+
+        /// <summary>
+        /// For when the ui loses focus. Buttons for example should loose the hover state then.
+        /// </summary>
+        public virtual void LooseFocus()
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].LooseFocus();
+            }
+        }
     }
 }
