@@ -8,12 +8,11 @@ namespace BytingLib
     /// </summary>
     public class WindowManager : IResolution
     {
-        private readonly bool realFullscreen;
         public GameWindow Window { get; }
+        public Rect Rect { get; private set; }
+        private readonly bool realFullscreen;
         private readonly GraphicsDeviceManager graphics;
-
         private Rectangle windowRectBeforeFullscreen;
-
         public event Action<Int2>? OnResolutionChanged;
 
         private const int SW_MAXIMIZE = 3;
@@ -34,13 +33,20 @@ namespace BytingLib
             this.graphics = graphics;
 
             window.ClientSizeChanged += Window_ClientSizeChanged;
+            Rect = new Rect(0, 0, ResolutionX, ResolutionY);
         }
 
         public Int2 Resolution => new Int2(GetViewportWidth(), GetViewportHeight());
+        public int ResolutionX => GetViewportWidth();
+        public int ResolutionY => GetViewportHeight();
+
 
         private void Window_ClientSizeChanged(object? sender, EventArgs e)
         {
             OnResolutionChanged?.Invoke(Resolution);
+
+            Rect.Width = ResolutionX;
+            Rect.Height = ResolutionY;
         }
 
         public void ToggleFullscreen()
@@ -91,7 +97,7 @@ namespace BytingLib
             }
 
 
-            OnResolutionChanged?.Invoke(Resolution);
+            Window_ClientSizeChanged(null, EventArgs.Empty);
         }
 
         private int GetViewportWidth()

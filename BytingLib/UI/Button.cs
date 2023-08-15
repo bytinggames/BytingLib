@@ -57,7 +57,7 @@
                 return;
             }
 
-            hover = absoluteRect.CollidesWith(input.Mouse.Position);
+            hover = AbsoluteRect.CollidesWith(input.Mouse.Position);
 
             if (hover)
             {
@@ -98,7 +98,7 @@
             if (frameIndex >= style.ButtonAnimation.Value.Data.frames?.Count)
                 throw new BytingException("button frame does not exist: " + frameIndex + " button animation frames: " + style.ButtonAnimation.Value.Data.frames?.Count);
 
-            style.ButtonAnimation.Value.DrawSliced(spriteBatch, frameIndex, absoluteRect);
+            style.ButtonAnimation.Value.DrawSliced(spriteBatch, frameIndex, AbsoluteRect);
         }
 
         protected override void DrawSelfPost(SpriteBatch spriteBatch, StyleRoot style)
@@ -107,7 +107,7 @@
 
             if (frameIndexPost < style.ButtonAnimation.Value.Data.frames?.Count)
             {
-                style.ButtonAnimation.Value.DrawSliced(spriteBatch, frameIndexPost, absoluteRect);
+                style.ButtonAnimation.Value.DrawSliced(spriteBatch, frameIndexPost, AbsoluteRect);
             }
         }
 

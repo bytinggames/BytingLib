@@ -30,13 +30,13 @@ namespace BytingLib.UI
             if (markup != null)
             {
                 if (style.FontBoldColor != null && style.FontBold != null)
-                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, absoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale) { RoundPositionTo = 1f });
+                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale) { RoundPositionTo = 1f });
                 if (style.FontColor != null)
                     markup.Draw(GetDefaultSetting(spriteBatch, style));
             }
         }
 
-        private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style) => new MarkupSettings(spriteBatch, style.Font, absoluteRect == null ? new Anchor() : absoluteRect.GetAnchor(Anchor), style.FontColor, Anchor.X, style.FontScale) { RoundPositionTo = 1f, MinLineHeight = MinLineHeight };
+        private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style) => new MarkupSettings(spriteBatch, style.Font, AbsoluteRect == null ? new Anchor() : AbsoluteRect.GetAnchor(Anchor), style.FontColor, Anchor.X, style.FontScale) { RoundPositionTo = 1f, MinLineHeight = MinLineHeight };
 
         protected override void DisposeSelf()
         {

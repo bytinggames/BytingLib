@@ -13,10 +13,13 @@
         {
             Rect rect = getRenderRect();
 
+            if (Padding != null)
+                rect.ApplyPadding(Padding.Left, Padding.Right, Padding.Top, Padding.Bottom);
+
             Width = rect.Width;
             Height = rect.Height;
 
-            absoluteRect = rect.CloneRect().Round();
+            AbsoluteRect = rect.CloneRect().Round();
 
             StyleRoot.Push(Style);
             for (int i = 0; i < Children.Count; i++)

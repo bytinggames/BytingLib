@@ -8,6 +8,7 @@
 
         public float Factor => (float)(GameTime.ElapsedGameTime.TotalMilliseconds / defaultMSPerFrame);
         public float DeltaMS => (float)GameTime.ElapsedGameTime.TotalMilliseconds;
+        public float DeltaSeconds => (float)GameTime.ElapsedGameTime.TotalSeconds;
 
         public GameSpeed(TimeSpan defaultElapsedTime)
         {

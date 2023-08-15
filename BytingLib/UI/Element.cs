@@ -36,7 +36,7 @@ namespace BytingLib.UI
         }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public Rect absoluteRect { get; protected set; }
+        public Rect AbsoluteRect { get; protected set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public Style? Style { get; set; }
@@ -87,7 +87,7 @@ namespace BytingLib.UI
 
         public virtual void UpdateTree(Rect rect)
         {
-            absoluteRect = rect.CloneRect().Round();
+            AbsoluteRect = rect.CloneRect().Round();
             
             rect = rect.CloneRect();
             Padding?.RemoveFromRect(rect);

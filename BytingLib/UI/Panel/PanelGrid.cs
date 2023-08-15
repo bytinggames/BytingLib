@@ -48,7 +48,7 @@
 
             Rect rect = new Anchor(pos, Anchor).Rectangle(contentSizePlusPadding);
 
-            absoluteRect = rect.CloneRect().Round();
+            AbsoluteRect = rect.CloneRect().Round();
 
             if (Children.Count == 0)
                 return;
@@ -168,7 +168,7 @@
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             if (Color != null)
-                absoluteRect.Draw(spriteBatch, Color.Value);
+                AbsoluteRect.Draw(spriteBatch, Color.Value);
         }
     }
 }

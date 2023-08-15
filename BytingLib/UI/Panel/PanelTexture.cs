@@ -29,7 +29,7 @@
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
-            Texture.Value.Draw(spriteBatch, absoluteRect, Color);
+            Texture.Value.Draw(spriteBatch, AbsoluteRect, Color);
         }
 
         public PanelTexture SetSizeToTexture()

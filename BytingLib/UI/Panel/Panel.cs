@@ -17,7 +17,7 @@
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             if (Color != null)
-                absoluteRect.Draw(spriteBatch, Color.Value);
+                AbsoluteRect.Draw(spriteBatch, Color.Value);
         }
     }
 }
