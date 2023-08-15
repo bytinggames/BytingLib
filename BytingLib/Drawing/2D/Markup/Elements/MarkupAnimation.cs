@@ -2,7 +2,7 @@
 
 namespace BytingLib.Markup
 {
-    [MarkupShortcut("anim")]
+    [MarkupShortcut("ani")]
     public class MarkupAnimation : MarkupTexture
     {
         private Ref<Animation> animation;

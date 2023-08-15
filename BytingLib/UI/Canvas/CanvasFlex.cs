@@ -3,13 +3,13 @@
     /// <summary>
     /// Does not scale the ui, but resizes to fit the screen.
     /// </summary>
-    public class CanvasFlex : Canvas, IDrawBatch, IUpdate
+    public class CanvasFlex : Canvas, IDrawBatch
     {
         public CanvasFlex(Func<Rect> getRenderRect, MouseInput mouse, StyleRoot style) : base(getRenderRect, mouse, style)
         {
         }
 
-        public void UpdateTree()
+        public override void UpdateTree()
         {
             Rect rect = getRenderRect();
 

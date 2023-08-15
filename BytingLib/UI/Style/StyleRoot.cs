@@ -13,6 +13,7 @@
 
         public StyleBase StyleBase { get; set; }
         private List<Style> styleOverrides = new();
+        public double TotalMilliseconds { get; set; }
 
         public StyleRoot(StyleBase baseStyle)
         {

@@ -51,5 +51,7 @@
         {
             throw new BytingException("Call DrawBatch() instead");
         }
+
+        public abstract void UpdateTree();
     }
 }

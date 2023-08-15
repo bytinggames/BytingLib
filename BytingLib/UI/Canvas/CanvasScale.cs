@@ -66,7 +66,7 @@
 
         }
 
-        public void UpdateTree()
+        public override void UpdateTree()
         {
             Rect renderRect = getRenderRect();
 
