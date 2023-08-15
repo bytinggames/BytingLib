@@ -42,6 +42,14 @@
             Bottom = bottom;
         }
 
+        public Padding(Padding padding)
+        {
+            Left = padding.Left;
+            Top = padding.Top;
+            Right = padding.Right;
+            Bottom = padding.Bottom;
+        }
+
         public void RemoveFromRect(Rect rect)
         {
             rect.Width -= Right + Left;

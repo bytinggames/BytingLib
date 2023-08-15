@@ -50,7 +50,7 @@
             }
         }
 
-        private string CreateTextToDraw(StyleRoot style)
+        protected virtual string CreateTextToDraw(StyleRoot style)
         {
             return SpriteFontExtension.WrapText(Text, Width, style.FontScale.X, str => MeasureString(style, str));
         }
