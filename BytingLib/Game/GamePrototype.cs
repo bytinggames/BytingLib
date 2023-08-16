@@ -75,9 +75,18 @@ namespace BytingLib
 
             if (metaKeys.F12.Pressed)
                 screenshot = ScreenshotType.ByUser;
-            else if (screenshotsRand != null && screenshotsRand.Next(60 * 60 * (int)Math.Max(1.0, 16.6 / gameTime.ElapsedGameTime.TotalMilliseconds)) == 0)
-                screenshot = ScreenshotType.Random;
-
+            else if (screenshotsRand != null)
+            {
+                // take a screenshot roughly every minute
+                if (gameTime.ElapsedGameTime.TotalMilliseconds > 0)
+                {
+                    int framesInOneMinute = (int)(60d / gameTime.ElapsedGameTime.TotalSeconds);
+                    if (screenshotsRand.Next(framesInOneMinute) == 0)
+                    {
+                        screenshot = ScreenshotType.Random;
+                    }
+                }
+            }
             if (screenshot != ScreenshotType.None)
                 screenshotter.TakeScreenshot(screenshot == ScreenshotType.Random);
 
