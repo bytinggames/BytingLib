@@ -17,7 +17,7 @@ if "%DeployName%" == "" (
 
 
 cd %CurrDirName%
-dotnet publish -c Release -r osx-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false /p:OSTarget=OSX --self-contained -o "../Deploy/Release/Mac/%DeployName%.app/Contents/MacOS/"
+dotnet publish -c Release -r osx-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false /p:OSTarget=OSX --self-contained true -o "../Deploy/Release/Mac/%DeployName%.app/Contents/MacOS/"
 
 cd "../Deploy"
 REM copy Info.plist
