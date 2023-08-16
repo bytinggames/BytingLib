@@ -12,8 +12,12 @@ namespace BytingLib
         protected readonly DefaultPaths basePaths;
         protected readonly SaveStateManager saveStateManager;
 
+        private readonly bool randomScreenshots;
         protected readonly Screenshotter screenshotter;
-        private readonly Random? screenshotsRand;
+        private readonly int screenshotsRandSecondsOffset;
+        private int lastRandomScreenshotMinute;
+
+        private bool pauseUpdate;
 
         private Action? startRecordingPlayback;
 
@@ -21,12 +25,15 @@ namespace BytingLib
         /// The difference to InputStuff.KeysDev</summary>
         protected KeyInput metaKeys;
 
-        public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter, 
-            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true, bool startRecordingInstantly = true, bool enableDevKeys = false, bool randomScreenshots = false) 
+        public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter,
+            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true, bool startRecordingInstantly = true, bool enableDevKeys = false, bool randomScreenshots = false)
             : base(g, contentModdingOnRelease, contentConverter)
         {
             if (randomScreenshots)
-                screenshotsRand = new Random();
+            {
+                this.randomScreenshots = randomScreenshots;
+                screenshotsRandSecondsOffset = new Random().Next(60);
+            }
 
             updateSpeed = new GameSpeed(g.TargetElapsedTime);
             drawSpeed = new GameSpeed(g.TargetElapsedTime);
@@ -75,16 +82,14 @@ namespace BytingLib
 
             if (metaKeys.F12.Pressed)
                 screenshot = ScreenshotType.ByUser;
-            else if (screenshotsRand != null)
+            else if (randomScreenshots)
             {
-                // take a screenshot roughly every minute
-                if (gameTime.ElapsedGameTime.TotalMilliseconds > 0)
+                // take a screenshot every minute
+                int currentMinute = (int)((gameTime.TotalGameTime.TotalSeconds + screenshotsRandSecondsOffset) / 60d);
+                if (currentMinute > lastRandomScreenshotMinute)
                 {
-                    int framesInOneMinute = (int)(60d / gameTime.ElapsedGameTime.TotalSeconds);
-                    if (screenshotsRand.Next(framesInOneMinute) == 0)
-                    {
-                        screenshot = ScreenshotType.Random;
-                    }
+                    lastRandomScreenshotMinute = currentMinute;
+                    screenshot = ScreenshotType.Random;
                 }
             }
             if (screenshot != ScreenshotType.None)
@@ -98,7 +103,6 @@ namespace BytingLib
             }
         }
 
-        bool pauseUpdate;
         private int GetIterations()
         {
             int iterations = 1;
@@ -155,9 +159,9 @@ namespace BytingLib
 
         public override void DrawInactiveOnce()
         {
-//#if DEBUG
-//            base.DrawInactiveOnce();
-//#endif
+            //#if DEBUG
+            //            base.DrawInactiveOnce();
+            //#endif
         }
 
         public override void Dispose()
