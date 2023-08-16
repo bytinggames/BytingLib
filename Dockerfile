@@ -33,8 +33,4 @@ RUN cp -f "./firefox_data/core/d3dcompiler_47.dll" "$WINEPREFIX/drive_c/windows/
 
 RUN rm -rf "/tmp/deps/"
 
-WORKDIR /opt/BytingLib
-
-RUN dotnet restore
-
 WORKDIR /opt
