@@ -9,6 +9,9 @@
         private bool previousUpdateWasActive = true;
         private bool previousDrawWasActive = true;
 
+        /// <summary>Is set by Activated and Deactivated events. Maybe this is more precise than base.IsActive. Needs testing.</summary>
+        public new bool IsActive { get; private set; }
+
         /// <summary>more than 16 msaaSamples is not recommended (made everything a bit pale on my system)</summary>
         public GameWrapper(Func<GameWrapper, IGameBase> createMyGame, int? msaaSamples)
         {
@@ -28,6 +31,19 @@
 
             this.createMyGame = createMyGame;
             this.msaaSamples = msaaSamples;
+
+            Activated += GameWrapper_Activated;
+            Deactivated += GameWrapper_Deactivated;
+        }
+
+        private void GameWrapper_Activated(object? sender, EventArgs e)
+        {
+            IsActive = true;
+        }
+
+        private void GameWrapper_Deactivated(object? sender, EventArgs e)
+        {
+            IsActive = false;
         }
 
         void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
@@ -95,6 +111,9 @@
         {
             game?.Dispose();
             game = null;
+
+            Activated -= GameWrapper_Activated;
+            Deactivated -= GameWrapper_Deactivated;
 
             base.Dispose(disposing);
         }
