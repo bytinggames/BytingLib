@@ -23,7 +23,7 @@ namespace BytingLib
             MinimumPixelsPerUnit = minimumPixelsPerUnit;
         }
 
-        public Ref<Texture2D> UseTexture(string text, Vector3 right, Color color, float? verticalSpaceBetweenLines = null)
+        public Ref<Texture2D> UseTexture(string text, Vector3 right, Color backgroundColor, float? verticalSpaceBetweenLines = null)
         {
             var font = fontArray.GetFont(1f, out float actualFontSize);
             var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.White);
@@ -35,7 +35,7 @@ namespace BytingLib
             int fontSize = GetRightFontSize(right.Length() * 2f /* because right only measures half the length */, 
                 (int)MathF.Ceiling(textSize.X), MinimumPixelsPerUnit);
 
-            return CreateTextTexture(text, fontArray.GetFont(fontSize), color, fontSize, verticalSpaceBetweenLines);
+            return CreateTextTexture(text, fontArray.GetFont(fontSize), backgroundColor, fontSize, verticalSpaceBetweenLines);
         }
 
         private static int GetRightFontSize(float spaceInMeters, int textureWidthOfScale1, float targetPixelsPerCM)
@@ -49,12 +49,12 @@ namespace BytingLib
             return fontSize;
         }
 
-        public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color color, float textureScale = 1, float? verticalSpaceBetweenLines = null)
+        public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color backgroundColor, float textureScale = 1, float? verticalSpaceBetweenLines = null)
         {
-            if (textures.ContainsKey((text, font.Value, color, textureScale)))
-                return textures[(text, font.Value, color, textureScale)].Use();
+            if (textures.ContainsKey((text, font.Value, backgroundColor, textureScale)))
+                return textures[(text, font.Value, backgroundColor, textureScale)].Use();
 
-            var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), color /* color doesn't matter, it's overridden by the "Color" Parameter of the effect */);
+            var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */);
             markupSettings.TextureScale = Vector2.One * textureScale;
             markupSettings.VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines;
             var drawElement = new MarkupRoot(markupCreator, text);
@@ -68,8 +68,9 @@ namespace BytingLib
             gDevice.SetRenderTarget(tex);
             gDevice.Clear(Color.Transparent);
 
-            using (textEffect.Color.Use(color.ToVector4()))
+            using (textEffect.Color.Use(backgroundColor.ToVector4()))
             {
+                textEffect.ApplyParameters();
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect);
 
                 drawElement.Draw(markupSettings);
@@ -82,12 +83,12 @@ namespace BytingLib
             disposables.Use(tex);
             AssetHolder<Texture2D> assetHolder = new AssetHolder<Texture2D>(tex, tex.Name, _ =>
             {
-                if (!textures.Remove((text, font.Value, color, textureScale)))
+                if (!textures.Remove((text, font.Value, backgroundColor, textureScale)))
                     throw new BytingException("couldn't remove a texture from TextToTexture.textures");
                 tex.Dispose();
             });
 
-            textures.Add((text, font.Value, color, textureScale), assetHolder);
+            textures.Add((text, font.Value, backgroundColor, textureScale), assetHolder);
 
             return assetHolder.Use();
         }
