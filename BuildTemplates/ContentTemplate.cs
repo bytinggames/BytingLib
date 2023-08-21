@@ -77,6 +77,7 @@ namespace BuildTemplates
                 if (!string.IsNullOrEmpty(contentDirectory))
                     contentDirectory += "/";
 
+                string customHeader = customContent.GetCustomHeader();
                 string references = string.Join("\n", referencedDlls.Select(f => "/reference:" + f));
                 string assets = "";
 
@@ -95,6 +96,8 @@ namespace BuildTemplates
 /profile:Reach
 /compress:False
 /keepDuplicates:True
+
+{customHeader}
 
 #-------------------------------- References --------------------------------#
 {references}

@@ -5,7 +5,8 @@ namespace BuildTemplates
 {
     public class CustomContent
     {
-        List<(string Pattern, string BuildCode)> customContent = new();
+        private string customHeader = "";
+        private readonly List<(string Pattern, string BuildCode)> customContent = new();
 
         public CustomContent(string contentDirectory)
         {
@@ -23,6 +24,8 @@ namespace BuildTemplates
 
             ReadFile(customFile);
         }
+
+        public string GetCustomHeader() => customHeader;
 
         void ReadFile(string customFile)
         {
@@ -42,13 +45,21 @@ namespace BuildTemplates
 
                 if (pattern.StartsWith('@'))
                 {
-                    const string startsWith = "@include \"";
-                    if (pattern.StartsWith(startsWith))
+                    const string startsWithInclude = "@include \"";
+                    const string startsWithHeader = "@header";
+                    if (pattern.StartsWith(startsWithInclude))
                     {
-                        int endIndex = pattern.IndexOf('"', startsWith.Length);
-                        string includeFile = pattern.Substring(startsWith.Length, endIndex - startsWith.Length);
+                        int endIndex = pattern.IndexOf('"', startsWithInclude.Length);
+                        string includeFile = pattern.Substring(startsWithInclude.Length, endIndex - startsWithInclude.Length);
                         includeFile = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(customFile)!, includeFile));
                         ReadFile(includeFile);
+                    }
+                    else if (pattern.StartsWith(startsWithHeader))
+                    {
+                        customHeader += reader.ReadToStringOrEnd("\n\n", out bool endReached1) + "\n";
+
+                        if (endReached1)
+                            break;
                     }
                     continue;
                 }
