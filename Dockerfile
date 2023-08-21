@@ -4,13 +4,13 @@
 # RUN apk add wine 7zip curl dotnet6-sdk assimp-dev bash
 
 FROM ubuntu
-RUN apt update && apt install -y wine64 p7zip-full curl dotnet-sdk-6.0 libassimp-dev
+RUN apt update && apt install -y git wine64 p7zip-full curl dotnet-sdk-6.0 libassimp-dev
 
-WORKDIR /opt
-COPY . BytingLib
+WORKDIR /tmp
+COPY ./Deploy/crashdialog.reg ./crashdialog.reg
 
 # Disables the wine crash dialog
-RUN wine64 regedit /opt/BytingLib/Deploy/crashdialog.reg
+RUN wine64 regedit ./crashdialog.reg
 
 # maybe these should be bundled somewhere
 ENV DOTNET_URL="https://download.visualstudio.microsoft.com/download/pr/44d08222-aaa9-4d35-b24b-d0db03432ab7/52a4eb5922afd19e8e0d03e0dbbb41a0/dotnet-sdk-6.0.302-win-x64.zip"
