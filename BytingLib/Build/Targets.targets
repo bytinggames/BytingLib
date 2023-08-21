@@ -26,7 +26,6 @@
 
 	<!-- Customizing the Content Build Process -->
 	<PropertyGroup>
-		<MonoGameMGCBAdditionalArguments>/define:$(Configuration)</MonoGameMGCBAdditionalArguments>
-		<MonoGameMGCBAdditionalArguments>/define:Configuration=$(Configuration)</MonoGameMGCBAdditionalArguments>
+		<MonoGameMGCBAdditionalArguments>/define:$(Configuration) /define:Configuration=$(Configuration) /define:RuntimeIdentifier=$(RuntimeIdentifier) /define:ConfigRuntime=$(Configuration)_$(RuntimeIdentifier)</MonoGameMGCBAdditionalArguments>
 	</PropertyGroup>
 </Project>
