@@ -14,7 +14,7 @@ if "%DeployName%" == "" (
 
 
 cd "%CurrDirName%"
-dotnet publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false /p:OSTarget=Windows --self-contained true -o "../Deploy/Release/Windows/%DeployName%"
+dotnet publish -c Release -r win-x64 -graphBuild:True /p:PublishReadyToRun=false /p:TieredCompilation=false /p:OSTarget=Windows --self-contained true -o "../Deploy/Release/Windows/%DeployName%"
 
 popd
 pushd .
