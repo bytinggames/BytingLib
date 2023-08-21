@@ -1,9 +1,9 @@
 @header
 $if Configuration=Debug
-/reference:..\..\..\BytingLib\BytingPipeline\bin\Debug\net6.0\BytingPipeline.dll
+/reference:../../../BytingLib/BytingPipeline/bin/Debug/net6.0/BytingPipeline.dll
 $endif
 $if Configuration=Release
-/reference:..\..\..\BytingLib\BytingPipeline\bin\Release\net6.0\BytingPipeline.dll
+/reference:../../../BytingLib/BytingPipeline/bin/Release/net6.0/BytingPipeline.dll
 $endif
 
 ^.*\.(png|jpg|jpeg|exr)$
