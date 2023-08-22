@@ -63,17 +63,30 @@ namespace BytingLib
             return files.ToArray();
         }
 
-        public void CreateExampleYamlFileIfNotExisting()
+        public void CreateExampleYamlFileIfNotExisting(string? cSharpFile)
         {
             // create settings example yaml
             if (!File.Exists(paths.SettingsExampleFile))
             {
-                var serializer = new YamlDotNet.Serialization.Serializer();
                 var settings = Activator.CreateInstance<_Settings>();
+
                 if (settings != null)
                 {
-                    string yaml = serializer.Serialize(settings);
-                    File.WriteAllText(paths.SettingsExampleFile, yaml);
+                    if (cSharpFile == null)
+                    {
+                        // generate yaml example with comments
+                        var serializer = new YamlDotNet.Serialization.Serializer();
+                        string yaml = serializer.Serialize(settings);
+                        File.WriteAllText(paths.SettingsExampleFile, yaml);
+                    }
+                    else
+                    {
+                        // generate yaml example without comments
+                        string yaml = SettingsExampleGenerator.GenerateYaml(settings,
+                            cSharpFile);
+
+                        File.WriteAllText(paths.SettingsExampleFile, yaml);
+                    }
                 }
             }
         }
