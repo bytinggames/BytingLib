@@ -70,7 +70,7 @@ namespace BytingLib
 
         public sealed override void UpdateActive(GameTime gameTime)
         {
-            input.UpdateKeysDev();
+            input.UpdateDevInput();
             metaKeys.Update();
 
             int iterations = GetIterations();
