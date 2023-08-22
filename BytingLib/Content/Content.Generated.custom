@@ -1,21 +1,9 @@
 @header
-$if ConfigRuntime=Debug_
+$if Configuration=Debug
 /reference:../../../BytingLib/BytingPipeline/bin/Debug/net6.0/BytingPipeline.dll
 $endif
-$if ConfigRuntime=Release_
+$if Configuration=Release
 /reference:../../../BytingLib/BytingPipeline/bin/Release/net6.0/BytingPipeline.dll
-$endif
-$if ConfigRuntime=Debug_win-x64
-/reference:../../../BytingLib/BytingPipeline/bin/Debug/net6.0/win-x64/BytingPipeline.dll
-$endif
-$if ConfigRuntime=Release_win-x64
-/reference:../../../BytingLib/BytingPipeline/bin/Release/net6.0/win-x64/BytingPipeline.dll
-$endif
-$if ConfigRuntime=Debug_linux-x64
-/reference:../../../BytingLib/BytingPipeline/bin/Debug/net6.0/linux-x64/BytingPipeline.dll
-$endif
-$if ConfigRuntime=Release_linux-x64
-/reference:../../../BytingLib/BytingPipeline/bin/Release/net6.0/linux-x64/BytingPipeline.dll
 $endif
 
 ^.*\.(png|jpg|jpeg|exr)$
