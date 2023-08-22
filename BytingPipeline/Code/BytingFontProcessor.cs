@@ -34,7 +34,9 @@ namespace BytingPipeline
                 {
                     int distanceSquared = x * x + y * y;
                     if (distanceSquared <= maxDistanceSquared)
+                    {
                         search.Add((x, y));
+                    }
                 }
             }
 
