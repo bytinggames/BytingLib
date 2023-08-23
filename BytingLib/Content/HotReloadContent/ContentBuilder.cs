@@ -76,11 +76,31 @@ namespace BytingLib
             if (begin == -1)
                 begin = mainContent.Length;
 
+            // define variables (match Targets.targets: <!-- Customizing the Content Build Process --> )
+
+            string Configuration, RuntimeIdentifier;
 #if DEBUG
-            header = "/define:Debug";
+            Configuration = "Debug";
 #else
-            header = "/define:Release";
+            Configuration = "Release";
 #endif
+
+#if WINDOWS
+            RuntimeIdentifier = "win-x64";
+#elif LINUX
+            RuntimeIdentifier = "linux-x64";
+#elif OSX
+            RuntimeIdentifier = "osx-x64";
+#else
+            throw new Exception("Not sure which OS this is running on");
+#endif
+
+            header = @$"
+/define:{Configuration}
+/define:Configuration={Configuration}
+/define:RuntimeIdentifier={RuntimeIdentifier}
+/define:ConfigRuntime={Configuration}_{RuntimeIdentifier}
+";
 
             string sourceHeader = mainContent.Remove(begin);
             sourceHeader = AdaptReferences(sourceHeader);
