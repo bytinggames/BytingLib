@@ -95,6 +95,7 @@ namespace BytingLib
             { (TLine3, TPlane3), (a, b) => ColLinePlane((Line3)a, (Plane3)b) },
             { (TLine3, TTriangle3), (a, b) => ColLineTriangle((Line3)a, (Triangle3)b, out _, out _) },
             { (TLine3, TCapsule3), (a, b) => ColAnyCapsule((IShape3)a, (Capsule3)b) },
+            { (TLine3, TAABB3), (a, b) => ColLineAABB((Line3)a, (AABB3)b) },
 
             { (TAxis3, TCapsule3), (a, b) => ColAnyCapsule((IShape3)a, (Capsule3)b) },
 
@@ -857,6 +858,71 @@ namespace BytingLib
                     return a;
             }
             return -1;
+        }
+
+        public static bool ColLineAABB(Line3 line, AABB3 aabb)
+        {
+            // check if line start or end lies inside aabb
+            if (aabb.CollidesWith(line.Pos)
+                || aabb.CollidesWith(line.Pos2))
+            {
+                return true;
+            }
+
+            // LATER: you could improve this algorithm, by checking in what quadrants the line positions are, to maybe early out. And there probably are way smarter algorithms out there. But for now this suffices.
+
+            int x = 0;
+            int y = 1;
+            int z = 2;
+
+            Vector3 lineDir = line.Dir;
+
+            float[] min = new float[3] { aabb.Min.X, aabb.Min.Y, aabb.Min.Z };
+            float[] max = new float[3] { aabb.Max.X, aabb.Max.Y, aabb.Max.Z };
+            float[] pos = new float[3] { line.Pos.X, line.Pos.Y, line.Pos.Z };
+            float[] pos2 = new float[3] { line.Pos2.X, line.Pos2.Y, line.Pos2.Z };
+            float[] dir = new float[3] { lineDir.X, lineDir.Y, lineDir.Z };
+
+            // check if the line edge collides with a face of the aabb
+            for (int dimension = 0; dimension < 3; dimension++)
+            {
+                // check if line is parallel to dimension, then we could skip this dimension
+                if (dir[x] != 0)
+                {
+                    for (int minOrMaxFace = 0; minOrMaxFace < 2; minOrMaxFace++)
+                    {
+                        float faceX = min[x];
+                        float faceOnLine = (faceX - pos[x]) / (pos2[x] - pos[x]);
+                        // is face on line?
+                        if (faceOnLine >= 0f && faceOnLine <= 1f)
+                        {
+                            // get collision of the line with the plane that makes up the face
+                            // check if collision lies on the face
+                            float colOnDimension = pos[y] + dir[y] * faceOnLine;
+
+                            if (colOnDimension >= min[y] && colOnDimension <= max[y])
+                            {
+                                colOnDimension = pos[z] + dir[z] * faceOnLine;
+                                if (colOnDimension >= min[z] && colOnDimension <= max[z])
+                                {
+                                    // collision happens
+                                    return true;
+                                }
+                            }
+                        }
+
+                        // swap front with back face
+                        (min, max) = (max, min);
+                    }
+                }
+
+                // goto next dimension
+                x = (x + 1) % 3;
+                y = (y + 1) % 3;
+                z = (z + 1) % 3;
+            }
+
+            return false;
         }
 
         public static CollisionResult3 DistLinePlane(Line3 line, Plane3 plane, Vector3 dir)
