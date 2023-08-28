@@ -63,18 +63,21 @@
 
         protected override void Update(GameTime gameTime)
         {
+            if (IsActive && !previousUpdateWasActive)
+            {
+                game?.OnActivate();
+            }
+
             if (IsActive)
             {
                 game?.UpdateActive(gameTime);
             }
             else
-                game?.UpdateInactive(gameTime);
-
-            if (IsActive && !previousUpdateWasActive)
             {
-                game?.OnActivate();
+                game?.UpdateInactive(gameTime);
             }
-            else if (!IsActive && previousUpdateWasActive)
+
+            if (!IsActive && previousUpdateWasActive)
             {
                 game?.OnDeactivate();
             }
