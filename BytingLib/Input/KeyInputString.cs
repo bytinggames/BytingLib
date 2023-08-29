@@ -85,10 +85,18 @@ namespace BytingLib
                     break;
 
                 case Keys.Up:
+                    if (shift)
+                        InputString.EnsureSelect();
+                    else
+                        InputString.SelectStart = null;
                     InputString.MoveCursorVertically?.Invoke(-1);
                     break;
 
                 case Keys.Down:
+                    if (shift)
+                        InputString.EnsureSelect();
+                    else
+                        InputString.SelectStart = null;
                     InputString.MoveCursorVertically?.Invoke(1);
                     break;
 
