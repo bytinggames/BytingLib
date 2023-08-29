@@ -58,12 +58,18 @@
             }
         }
 
-        protected virtual string CreateTextToDraw(StyleRoot style)
+        protected string CreateTextToDraw(StyleRoot style)
+        {
+            return CreateTextToDraw(style, out _);
+        }
+
+        protected virtual string CreateTextToDraw(StyleRoot style, out List<(int Index, int Add)>? textLengthChanges)
         {
             if (Width > 0)
             {
-                return SpriteFontExtension.WrapText(Text, Width, style.FontScale.X, str => MeasureString(style, str));
+                return SpriteFontExtension.WrapText(Text, Width, style.FontScale.X, str => MeasureString(style, str), out textLengthChanges);
             }
+            textLengthChanges = null;
             return Text;
         }
 

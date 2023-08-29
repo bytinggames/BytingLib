@@ -25,8 +25,9 @@ namespace BytingLib.UI
                 return tempRoot.GetSize(GetDefaultSetting(null!, style));
         }
 
-        protected override string CreateTextToDraw(StyleRoot style)
+        protected override string CreateTextToDraw(StyleRoot style, out List<(int Index, int Add)>? textLengthChanges)
         {
+            textLengthChanges = null;
             return Text; // TODO: implement word wrapping?
         }
 

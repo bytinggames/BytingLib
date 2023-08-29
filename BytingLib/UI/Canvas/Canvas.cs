@@ -1,39 +1,41 @@
-﻿namespace BytingLib.UI
+﻿using Microsoft.Xna.Framework.Input;
+
+namespace BytingLib.UI
 {
     public abstract class Canvas : Element, IUpdate
     {
         private Element? updateCatch;
         public Color? ClearColor { get; set; }
         protected readonly Func<Rect> getRenderRect;
-        protected readonly ElementInput input;
+        public ElementInput Input { get; }
         public StyleRoot StyleRoot { get; set; }
 
-        public Canvas(Func<Rect> getRenderRect, MouseInput mouse, StyleRoot style)
+        public Canvas(Func<Rect> getRenderRect, MouseInput mouse, KeyInput keys, GameWindow window, StyleRoot style)
         {
             this.getRenderRect = getRenderRect;
             StyleRoot = style;
-            input = CreateElementInput(mouse);
+            Input = CreateElementInput(mouse, keys, window);
         }
 
-        protected virtual ElementInput CreateElementInput(MouseInput mouse)
+        protected virtual ElementInput CreateElementInput(MouseInput mouse, KeyInput keys, GameWindow window)
         {
-            return new ElementInput(mouse, SetUpdateCatch);
+            return new ElementInput(mouse, keys, SetUpdateCatch, window);
         }
 
         public void Update()
         {
-            input.Mouse.Update();
+            Input.Mouse.Update();
 
             if (updateCatch != null)
             {
-                updateCatch.Update(input);
+                updateCatch.Update(Input);
             }
             else
             {
-                UpdateSelf(input);
+                UpdateSelf(Input);
 
                 for (int i = 0; i < Children.Count; i++)
-                    Children[i].Update(input);
+                    Children[i].Update(Input);
             }
         }
 

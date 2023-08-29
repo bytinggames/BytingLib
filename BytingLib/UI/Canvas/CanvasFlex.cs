@@ -5,7 +5,7 @@
     /// </summary>
     public class CanvasFlex : Canvas, IDrawBatch
     {
-        public CanvasFlex(Func<Rect> getRenderRect, MouseInput mouse, StyleRoot style) : base(getRenderRect, mouse, style)
+        public CanvasFlex(Func<Rect> getRenderRect, MouseInput mouse, KeyInput keys, GameWindow window, StyleRoot style) : base(getRenderRect, mouse, keys, window, style)
         {
         }
 

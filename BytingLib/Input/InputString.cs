@@ -6,8 +6,32 @@ namespace BytingLib
     {
         StringBuilder text;
 
-        public int Cursor { get; set; }
-        public int? SelectStart { get; set; }
+        private int _cursor;
+        public int Cursor 
+        { 
+            get => _cursor;
+            set
+            {
+                if (_cursor != value)
+                {
+                    _cursor = value;
+                    OnCursorMoveOrSelectChanged?.Invoke(this);
+                }
+            }
+        }
+        private int? _selectStart;
+        public int? SelectStart
+        {
+            get => _selectStart;
+            set
+            {
+                if (_selectStart != value)
+                {
+                    _selectStart = value;
+                    OnCursorMoveOrSelectChanged?.Invoke(this);
+                }
+            }
+        }
 
         public string Text
         {
@@ -15,13 +39,16 @@ namespace BytingLib
             set
             {
                 text = new StringBuilder(value);
-                Cursor = text.Length;
-                SelectStart = null;
+                _selectStart = null;
+                _cursor = text.Length;
+                OnCursorMoveOrSelectChanged?.Invoke(this);
             }
         }
 
         public event Action<InputString>? OnTextChange;
         public event Action<InputString>? OnCursorMoveOrSelectChanged;
+
+        public Action<int>? MoveCursorVertically { get; set; }
 
         public InputString()
         {
@@ -54,10 +81,11 @@ namespace BytingLib
                 return;
 
             int deleteCount;
-            if (deleteTo < Cursor)
+            bool moveCursor = deleteTo < Cursor;
+            if (moveCursor)
             {
                 deleteCount = Cursor - deleteTo;
-                Cursor = deleteTo;
+                _cursor = deleteTo;
             }
             else
             {
@@ -66,6 +94,8 @@ namespace BytingLib
 
             text.Remove(Cursor, deleteCount);
             OnTextChange?.Invoke(this);
+            if (moveCursor)
+                OnCursorMoveOrSelectChanged?.Invoke(this);
         }
         public void Insert(char c)
         {
@@ -87,8 +117,8 @@ namespace BytingLib
             int min = Math.Min(SelectStart!.Value, Cursor);
             int max = Math.Max(SelectStart.Value, Cursor);
             text.Remove(min, max - min);
-            Cursor = min;
             StopSelectInternal();
+            Cursor = min;
             return true;
         }
 
@@ -111,7 +141,6 @@ namespace BytingLib
                 return false;
 
             Cursor = newCursor;
-            OnCursorMoveOrSelectChanged?.Invoke(this);
 
             return true;
         }
@@ -124,9 +153,9 @@ namespace BytingLib
             if (!IsCharFromWord(text[Cursor]))
                 return;
 
-            while (Cursor > 0 && IsCharFromWord(text[Cursor - 1]))
+            while (_cursor > 0 && IsCharFromWord(text[_cursor - 1]))
             {
-                Cursor--;
+                _cursor--;
             }
             OnCursorMoveOrSelectChanged?.Invoke(this);
         }
@@ -144,9 +173,9 @@ namespace BytingLib
             if (!IsCharFromWord(text[Cursor - 1]))
                 return;
 
-            while (Cursor < text.Length && IsCharFromWord(text[Cursor]))
+            while (_cursor < text.Length && IsCharFromWord(text[_cursor]))
             {
-                Cursor++;
+                _cursor++;
             }
             OnCursorMoveOrSelectChanged?.Invoke(this);
         }
@@ -187,12 +216,6 @@ namespace BytingLib
             return text.ToString().Substring(min, max - min);
         }
 
-
-        public bool MoveCursorVertically(int downwards)
-        {
-            return false;
-        }
-
         public void EnsureSelect()
         {
             if (SelectStart == null)
@@ -204,8 +227,8 @@ namespace BytingLib
             if (!CheckIfAnyIsSelected())
                 return false;
 
-            if (SelectStart!.Value < Cursor)
-                Cursor = SelectStart.Value;
+            if (SelectStart!.Value < _cursor)
+                _cursor = SelectStart.Value;
 
             StopSelectInternal();
             OnCursorMoveOrSelectChanged?.Invoke(this);
@@ -217,8 +240,8 @@ namespace BytingLib
             if (!CheckIfAnyIsSelected())
                 return false;
 
-            if (SelectStart!.Value > Cursor)
-                Cursor = SelectStart.Value;
+            if (SelectStart!.Value > _cursor)
+                _cursor = SelectStart.Value;
 
             StopSelectInternal();
             OnCursorMoveOrSelectChanged?.Invoke(this);
@@ -271,9 +294,8 @@ namespace BytingLib
 
         public void SelectAll()
         {
-            SelectStart = 0;
-            Cursor = text.Length;
-
+            _selectStart = 0;
+            _cursor = text.Length;
             OnCursorMoveOrSelectChanged?.Invoke(this);
         }
     }

@@ -115,15 +115,17 @@ namespace BytingLib
         }
 
         /// <summary>Inserts '\n' so that the width of the text is smaller than the given width.</summary>
-        public static string WrapText(this SpriteFont font, string text, float width, float fontScaleX)
+        public static string WrapText(this SpriteFont font, string text, float width, float fontScaleX, out List<(int Index, int Add)> textLengthChanges)
         {
-            return WrapText(text, width, fontScaleX, font.MeasureString);
+            return WrapText(text, width, fontScaleX, font.MeasureString, out textLengthChanges);
         }
         /// <summary>Inserts '\n' so that the width of the text is smaller than the given width.</summary>
-        public static string WrapText(string text, float width, float fontScaleX, Func<string, Vector2> measureString)
+        public static string WrapText(string text, float width, float fontScaleX, Func<string, Vector2> measureString, out List<(int Index, int Add)> textLengthChanges)
         {
             if (width <= 0)
                 throw new BytingException("width must be larger than 0");
+
+            textLengthChanges = new();
 
             width /= fontScaleX;
 
@@ -148,14 +150,14 @@ namespace BytingLib
                     if (lastSpaceIndex != -1)
                     {
                         i = lastSpaceIndex;
-                        text = text.Remove(i, 1); // remove space
+                        i++; // skip this space
                     }
                     else
                     {
                         // insert -
-                        text = text.Insert(i - 1, "-");
+                        Insert(i - 1, "-", ref textLengthChanges);
                     }
-                    text = text.Insert(i, "\n");
+                    Insert(i, "\n", ref textLengthChanges);
                     NewLine(i);
                 }
                 else if (text[i] == ' ')
@@ -167,6 +169,12 @@ namespace BytingLib
             {
                 lastSpaceIndex = -1;
                 lastNewLineIndex = newLineIndex;
+            }
+
+            void Insert(int index, string str, ref List<(int, int)> textLengthChanges)
+            {
+                text = text.Insert(index, str);
+                textLengthChanges.Add((index, str.Length));
             }
         }
     }

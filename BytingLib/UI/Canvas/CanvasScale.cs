@@ -18,8 +18,8 @@
         // must only be used for non-replay related stuff
         private readonly IResolution graphicsResolution;
 
-        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, IResolution graphicsResolution, MouseInput mouse, StyleRoot style)
-            : base(getRenderRect, mouse, style)
+        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, IResolution graphicsResolution, MouseInput mouse, KeyInput keys, GameWindow window, StyleRoot style)
+            : base(getRenderRect, mouse, keys, window, style)
         {
             Width = defaultResX;
             Height = defaultResY;
@@ -30,12 +30,12 @@
             this.graphicsResolution = graphicsResolution;
         }
 
-        protected override ElementInput CreateElementInput(MouseInput mouse)
+        protected override ElementInput CreateElementInput(MouseInput mouse, KeyInput keys, GameWindow window)
         {
             MouseTransformed mouseTransformed = new MouseTransformed(mouse.GetState, GetTransform);
             MouseInput mouseNew = new MouseInput(mouseTransformed.GetState, () => mouse.IsActivatedThisFrame);
 
-            return new ElementInput(mouseNew, SetUpdateCatch);
+            return new ElementInput(mouseNew, keys, SetUpdateCatch, window);
         }
 
         private Matrix GetTransform()

@@ -13,11 +13,19 @@ namespace BytingLib
 
         public KeyInputString(GameWindow window, bool ignoreEnterWithoutShiftOrCtrl)
         {
+            this.window = window;
+            this.ignoreEnterWithoutShiftOrCtrl = ignoreEnterWithoutShiftOrCtrl;
+
             window.KeyDown += Window_KeyDown;
             window.KeyUp += Window_KeyUp;
             window.TextInput += ReceiveTextInput;
-            this.window = window;
-            this.ignoreEnterWithoutShiftOrCtrl = ignoreEnterWithoutShiftOrCtrl;
+        }
+
+        public void Dispose()
+        {
+            window.KeyDown -= Window_KeyDown;
+            window.KeyUp -= Window_KeyUp;
+            window.TextInput -= ReceiveTextInput;
         }
 
         private void Window_KeyUp(object? sender, InputKeyEventArgs e)
@@ -77,11 +85,11 @@ namespace BytingLib
                     break;
 
                 case Keys.Up:
-                    InputString.MoveCursorVertically(-1);
+                    InputString.MoveCursorVertically?.Invoke(-1);
                     break;
 
                 case Keys.Down:
-                    InputString.MoveCursorVertically(1);
+                    InputString.MoveCursorVertically?.Invoke(1);
                     break;
 
                 case Keys.C:
@@ -101,11 +109,6 @@ namespace BytingLib
                         InputString.SelectAll();
                     break;
             }
-        }
-
-        public void Dispose()
-        {
-            window.TextInput -= ReceiveTextInput;
         }
 
         void ReceiveTextInput(object? sender, TextInputEventArgs e)
