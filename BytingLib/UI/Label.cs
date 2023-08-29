@@ -2,14 +2,23 @@
 {
     public class Label : Element
     {
-        public string Text { get; set; }
+        private string _text;
+        public string Text
+        {
+            get => _text;
+            set
+            {
+                _text = value;
+                SetDirty();
+            }
+        }
         private bool setSizeToText;
         private string? textToDraw;
         protected string TextToDraw => textToDraw ?? Text;
 
         public Label(string text, float width = 0, float height = 0, bool setSizeToText = true)
         {
-            this.Text = text;
+            _text = text;
             Width = width;
             Height = height;
             this.setSizeToText = setSizeToText;
@@ -41,8 +50,7 @@
 
         protected override void UpdateTreeBeginSelf(StyleRoot style)
         {
-            if (Width > 0)
-                textToDraw = CreateTextToDraw(style);
+            textToDraw = CreateTextToDraw(style);
 
             if (setSizeToText)
             {
@@ -52,7 +60,11 @@
 
         protected virtual string CreateTextToDraw(StyleRoot style)
         {
-            return SpriteFontExtension.WrapText(Text, Width, style.FontScale.X, str => MeasureString(style, str));
+            if (Width > 0)
+            {
+                return SpriteFontExtension.WrapText(Text, Width, style.FontScale.X, str => MeasureString(style, str));
+            }
+            return Text;
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
