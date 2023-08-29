@@ -14,7 +14,7 @@
         private readonly GameSpeed updateSpeed;
         private int? moveCursorVertically;
 
-        public TextInput(GameSpeed updateSpeed, string text = "", float width = 0, float height = 0, bool setSizeToText = true) : base(text, width, height, setSizeToText)
+        public TextInput(GameSpeed updateSpeed, string text = "", float width = 0, float height = 0) : base(text, width, height, false)
         {
             this.updateSpeed = updateSpeed;
 

@@ -12,7 +12,7 @@ namespace BytingLib.UI
             set
             {
                 value = Math.Max(0, value);
-                if (value != _steps)
+                if (value != _steps || stepRects == null)
                 {
                     _steps = value;
                     stepRects = new Rect[value];
@@ -42,17 +42,21 @@ namespace BytingLib.UI
                     _value = value;
                     OnValueChanged?.Invoke(value);
                 }
+
+                ValueUnset = false;
             }
         }
         public int KnobWidth { get; set; } = 16;
         private int StepLineWidth => KnobWidth / 8;
         private int LineHeight => StepLineWidth;
-
+        public bool ValueUnset { get; set; } = true;
         private readonly Rect valueRect;
         private Rect[] stepRects;
         private readonly Rect lineRect;
         private bool catched, hover;
         public event Action<int>? OnValueChanged;
+        private int valueBeforeMouseClick;
+        public event Action<int>? OnValueChangedAfterMouseReleased;
 
         private float AbsoluteInnerLeft => AbsoluteRect.Left + KnobWidth / 2f;
         private float AbsoluteInnerRight => AbsoluteRect.Right - KnobWidth / 2f;
@@ -77,6 +81,7 @@ namespace BytingLib.UI
             {
                 input.SetUpdateCatch(this);
                 catched = true;
+                valueBeforeMouseClick = Value;
             }
 
             if (catched)
@@ -87,6 +92,11 @@ namespace BytingLib.UI
                 {
                     input.SetUpdateCatch(null);
                     catched = false;
+
+                    if (valueBeforeMouseClick != Value)
+                    {
+                        OnValueChangedAfterMouseReleased?.Invoke(Value);
+                    }
                 }
             }
 
@@ -111,10 +121,13 @@ namespace BytingLib.UI
                     stepRects[i].Draw(spriteBatch, style.FontColor.Value * 0.5f);
                 }
 
-                valueRect.Pos = StepToPos(Value) + new Vector2(-KnobWidth / 2, 0f);
-                valueRect.Size.X = KnobWidth;
-                valueRect.Size.Y = AbsoluteRect.Height;
-                valueRect.Draw(spriteBatch, style.FontColor.Value * (catched ? 1f : hover ? 0.75f : 0.5f));
+                if (!ValueUnset)
+                {
+                    valueRect.Pos = StepToPos(Value) + new Vector2(-KnobWidth / 2, 0f);
+                    valueRect.Size.X = KnobWidth;
+                    valueRect.Size.Y = AbsoluteRect.Height;
+                    valueRect.Draw(spriteBatch, style.FontColor.Value * (catched ? 1f : hover ? 0.75f : 0.5f));
+                }
             }
 
             base.DrawSelf(spriteBatch, style);
