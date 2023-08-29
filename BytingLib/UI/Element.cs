@@ -158,6 +158,15 @@ namespace BytingLib.UI
             }
             return this;
         }
+        public Element Add(List<Element> children)
+        {
+            for (int i = 0; i < children.Count; i++)
+            {
+                Children.Add(children[i]);
+                children[i].Parent = this;
+            }
+            return this;
+        }
         public Element AddMaybeNull(params Element?[] children)
         {
             for (int i = 0; i < children.Length; i++)
