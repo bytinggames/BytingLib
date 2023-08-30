@@ -100,6 +100,14 @@ namespace BytingLib
             Window_ClientSizeChanged(null, EventArgs.Empty);
         }
 
+        public void SetFullscreen(bool fullscreen)
+        {
+            if (fullscreen != IsFullscreen())
+            {
+                ToggleFullscreen();
+            }
+        }
+
         private int GetViewportWidth()
         {
             return graphics.GraphicsDevice.Viewport.Width;
