@@ -46,6 +46,7 @@ namespace BytingLib.UI
                 ValueUnset = false;
             }
         }
+        public int? ValueNullable => ValueUnset ? null : Value;
         public int KnobWidth { get; set; } = 16;
         private int StepLineWidth => KnobWidth / 8;
         private int LineHeight => StepLineWidth;
