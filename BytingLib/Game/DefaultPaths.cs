@@ -14,8 +14,11 @@ namespace BytingLib
         public string SettingsExampleFile { get; }
         public string CrashLogFile { get; }
 
-        public DefaultPaths()
+        public DefaultPaths(bool appdataNextToExe = false)
         {
+            string? gameName = Assembly.GetEntryAssembly()?.GetName().Name;
+            if (gameName == null)
+                throw new BytingException("couldn't read game name");
 
 #if LINUX
             Environment.CurrentDirectory = AppContext.BaseDirectory; // this ensures that the current directory is actually the one that the exe is in.
@@ -26,20 +29,23 @@ namespace BytingLib
             // if on OSX, store appdata stuff in Resources directory inside th .app bundle
             string appDataDir = Path.Combine(Environment.CurrentDirectory, "AppData");
             Directory.CreateDirectory(appDataDir);
-#else
-            string appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-#endif
-            string? gameName = Assembly.GetEntryAssembly()?.GetName().Name;
-            if (gameName == null)
-                throw new BytingException("couldn't read game name");
             GameAppDataDir = Path.Combine(appDataDir, gameName);
+#else
+            if (appdataNextToExe)
+            {
+                GameAppDataDir = Path.Combine(AppContext.BaseDirectory, "UserData");
+            }
+            else
+            {
+                string appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                GameAppDataDir = Path.Combine(appDataDir, gameName);
+            }
+#endif
             InputRecordingsDir = Path.Combine(GameAppDataDir, "input-recordings");
             SaveStateDir = Path.Combine(GameAppDataDir, "saves");
             Directory.CreateDirectory(SaveStateDir);
             ScreenshotsDir = Path.Combine(GameAppDataDir, "screenshots");
-            Directory.CreateDirectory(ScreenshotsDir);
             RandomScreenshotsDir = Path.Combine(GameAppDataDir, "screenshots-random");
-            Directory.CreateDirectory(RandomScreenshotsDir);
             SettingsFile = Path.Combine(GameAppDataDir, "settings.yaml");
             SettingsDebugFile = Path.Combine(GameAppDataDir, "settings.debug.yaml");
             SettingsExampleFile = Path.Combine(GameAppDataDir, "settings.example.yaml");
@@ -53,10 +59,12 @@ namespace BytingLib
 
         internal string GetNewScreenshotPng()
         {
+            Directory.CreateDirectory(ScreenshotsDir);
             return Path.Combine(ScreenshotsDir, GetCurrentDateTimeFilename() + ".png");
         }
         internal string GetNewRandomScreenshotPng()
         {
+            Directory.CreateDirectory(RandomScreenshotsDir);
             return Path.Combine(RandomScreenshotsDir, GetCurrentDateTimeFilename() + ".png");
         }
     }
