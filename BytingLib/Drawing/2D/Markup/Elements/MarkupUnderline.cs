@@ -3,12 +3,17 @@
     [MarkupShortcut("underline")]
     public class MarkupUnderline : MarkupCollection
     {
-        Color color;
+        Color? color; // if null, takes color of text
         float thickness;
         float offset;
 
         public bool SizeUnion { get; set; }
 
+        public MarkupUnderline(Creator creator, string text)
+            : base(creator, text)
+        {
+            thickness = 1f;
+        }
         public MarkupUnderline(Creator creator, string hexColor, string text)
             : base(creator, text)
         {
@@ -31,13 +36,13 @@
 
         public override string ToString()
         {
-            return $"Underline #{color.ToHex()} {base.ToString()}";
+            return $"Underline {base.ToString()}";
         }
 
         public override IEnumerable<ILeaf> IterateOverLeaves(MarkupSettings settings)
         {
             var temp = settings.TextUnderline?.CloneUnderline();
-            settings.TextUnderline = new MarkupSettings.Underline(color, thickness, SizeUnion, offset);
+            settings.TextUnderline = new MarkupSettings.Underline(color ?? settings.TextColor, thickness, SizeUnion, offset);
 
             foreach (var leaf in base.IterateOverLeaves(settings))
                 yield return leaf;
