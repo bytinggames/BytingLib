@@ -66,7 +66,7 @@ namespace BytingLib
         public void CreateExampleYamlFileIfNotExisting(string? cSharpFile)
         {
             // create settings example yaml
-            if (File.Exists(paths.SettingsExampleFile))
+            if (!File.Exists(paths.SettingsExampleFile))
             {
                 var settings = Activator.CreateInstance<_Settings>();
 
