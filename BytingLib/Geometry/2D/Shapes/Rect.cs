@@ -335,6 +335,12 @@
             return new Polygon(pos, new List<Vector2>() { Vector2.Zero, new Vector2(Size.X, 0), Size, new Vector2(0, Size.Y) });
         }
 
+        public Polygon ToPolygonCentered()
+        {
+            Vector2 s = Size / 2f;
+            return new Polygon(pos + Size / 2f, new List<Vector2>() { -s, new Vector2(s.X, -s.Y), s, new Vector2(-s.X, s.Y) });
+        }
+
         public void Draw(SpriteBatch spriteBatch, Color color, float depth)
         {
             spriteBatch.DrawRectangle(this, color, depth);
