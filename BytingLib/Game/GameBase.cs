@@ -13,7 +13,7 @@
 
         public HotReloadContent? HotReloadContent { get; }
 
-        public GameBase(GameWrapper g, bool contentModdingOnRelease, ContentConverter contentConverter)
+        public GameBase(GameWrapper g, bool contentModdingOnRelease, ContentConverter contentConverter, bool clearHotReloadOutputPath = true)
         {
             gameWrapper = g;
             gDevice = g.GraphicsDevice;
@@ -31,7 +31,8 @@
             HotReloadContent = new HotReloadContent(g.Services,
                 contentCollector,
                 Path.Combine("..", "..", "..", "Content"),
-                contentConverter);
+                contentConverter,
+                clearHotReloadOutputPath);
             contentRawPipe.ContentManagers.Insert(0, HotReloadContent.TempContentRaw);
 #else
             if (contentModdingOnRelease)

@@ -26,8 +26,10 @@ namespace BytingLib
         protected KeyInput metaKeys;
 
         public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter,
-            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false, bool vsync = true, bool startRecordingInstantly = true, bool enableDevKeys = false, bool randomScreenshots = false)
-            : base(g, contentModdingOnRelease, contentConverter)
+            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false,
+            bool vsync = true, bool startRecordingInstantly = true, bool enableDevKeys = false,
+            bool randomScreenshots = false, bool clearHotReloadOutputPath = true)
+            : base(g, contentModdingOnRelease, contentConverter, clearHotReloadOutputPath)
         {
             if (randomScreenshots)
             {

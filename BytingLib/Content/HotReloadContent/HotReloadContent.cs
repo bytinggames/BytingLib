@@ -19,7 +19,7 @@ namespace BytingLib
 
         readonly Dictionary<string, List<string>> dependencies = new Dictionary<string, List<string>>();
 
-        public HotReloadContent(IServiceProvider serviceProvider, IContentCollector content, string hotReloadContentPath, ContentConverter contentConverter)
+        public HotReloadContent(IServiceProvider serviceProvider, IContentCollector content, string hotReloadContentPath, ContentConverter contentConverter, bool clearHotReloadOutputPath = true)
         {
             this.content = content;
             this.contentConverter = contentConverter;
@@ -43,9 +43,11 @@ namespace BytingLib
 
             if (Directory.Exists(tempPath))
                 Directory.Delete(tempPath, true);
-            if (Directory.Exists(tempOutputPath))
-                Directory.Delete(tempOutputPath, true);
-
+            if (clearHotReloadOutputPath)
+            {
+                if (Directory.Exists(tempOutputPath))
+                    Directory.Delete(tempOutputPath, true);
+            }
             ContentBuilder = new ContentBuilder(sourceContentDir, tempOutputPath, tempPath, contentConverter);
 
             TempContentRaw = new ContentManagerRaw(serviceProvider, ContentBuilder.OutputPath);

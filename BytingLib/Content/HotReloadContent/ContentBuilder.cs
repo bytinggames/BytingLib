@@ -19,6 +19,9 @@ namespace BytingLib
 
         public Action<string> ShowPopup { get; set; } = msg => throw new Exception(msg);
 
+        /// <summary>This is disabled per default, so hot reloaded content will stay built, even when other content files are getting built afterwards.</summary>
+        public bool DeleteTempOutputDirectoryBeforeBuild { get; set; } = false;
+
         struct CodePart
         {
             int contentIndex, start, length;
@@ -159,8 +162,11 @@ namespace BytingLib
             if (changes.Length == 0 && deleted.Length == 0)
                 return false;
 
-            if (Directory.Exists(tempOutputPath))
-                Directory.Delete(tempOutputPath, true);
+            if (DeleteTempOutputDirectoryBeforeBuild)
+            {
+                if (Directory.Exists(tempOutputPath))
+                    Directory.Delete(tempOutputPath, true);
+            }
 
             string cmd = header;
 
