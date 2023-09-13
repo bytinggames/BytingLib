@@ -37,8 +37,18 @@
                                     throw new NotImplementedException();
                             }
                         }
+                        else if (val is Matrix m)
+                        {
+                            p.SetValue(m);
+                        }
+                        else if (val is Matrix[] matrixArray)
+                        {
+                            p.SetValue(matrixArray[0]);
+                        }
                         else
-                            p.SetValue((Matrix)val);
+                        {
+                            throw new NotImplementedException();
+                        }
                     }
                     else
                     {
