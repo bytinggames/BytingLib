@@ -29,7 +29,7 @@
             StyleRoot.Pop(Style);
         }
 
-        public void DrawBatch(SpriteBatch spriteBatch)
+        public override void DrawBatch(SpriteBatch spriteBatch)
         {
             UpdateTree(); // TODO: only update tree when necessary
 

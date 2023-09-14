@@ -2,7 +2,7 @@
 
 namespace BytingLib.UI
 {
-    public abstract class Canvas : Element, IUpdate
+    public abstract class Canvas : Element, IUpdate, IDrawBatch
     {
         private Element? updateCatch;
         public Color? ClearColor { get; set; }
@@ -48,6 +48,8 @@ namespace BytingLib.UI
         {
             updateCatch = element;
         }
+
+        public abstract void DrawBatch(SpriteBatch spriteBatch);
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {

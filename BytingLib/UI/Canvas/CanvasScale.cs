@@ -116,7 +116,7 @@
 
             treeDirty = false;
         }
-        public void DrawBatch(SpriteBatch spriteBatch)
+        public override void DrawBatch(SpriteBatch spriteBatch)
         {
             SetDirtyIfResChanged();
 

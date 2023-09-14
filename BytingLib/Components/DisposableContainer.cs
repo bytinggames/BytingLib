@@ -20,6 +20,11 @@
             return disposable;
         }
 
+        public void UseRange(params IDisposable[] multipleDisposables)
+        {
+            disposables.AddRange(multipleDisposables);
+        }
+
         /// <summary>Same as Use, with the difference, that null can be passed as disposable. In this case this method does nothing.</summary>
         public T? UseCheckNull<T>(T? disposable) where T : IDisposable
         {
