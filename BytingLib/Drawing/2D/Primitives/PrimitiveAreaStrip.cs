@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using System.Linq;
+
+namespace BytingLib
 {
     public class PrimitiveAreaStrip : PrimitiveArea
     {
@@ -113,7 +115,14 @@
                 Draw(gDevice);
                 return;
             }
+            VertexPosition[] arr = GetVerticesToLength(length)
+                .Select(f => new VertexPosition(new Vector3(f, 0f)))
+                .ToArray();
+            gDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, arr, 0, arr.Length - 2);
+        }
 
+        private IEnumerable<Vector2> GetVerticesToLength(float length)
+        {
             if (lengths == null)
                 CalculateLengths();
 
@@ -138,10 +147,8 @@
 
             var arr = Vertices
                 .Take(vertexCount - 2)
-                .Concat(endVertices)
-                .Select(f => new VertexPosition(new Vector3(f, 0f)))
-                .ToArray();
-            gDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, arr, 0, arr.Length - 2);
+                .Concat(endVertices);
+            return arr;
         }
 
         public void SetLengthsDirty()
@@ -187,6 +194,20 @@
         public override void Draw(SpriteBatch spriteBatch, Color color, float layerDepth)
         {
             spriteBatch.DrawStrip(spriteBatch.GetPixel(), Vertices, color, layerDepth);
+        }
+
+        /// <param name="length">ranging from 0 to 1 to draw only a part of the strip</param>
+        public void Draw(SpriteBatch spriteBatch, Color color, float layerDepth, float length)
+        {
+            if (length <= 0f)
+                return;
+            if (length >= 1f)
+            {
+                Draw(spriteBatch, color, layerDepth);
+                return;
+            }
+            Vector2[] arr = GetVerticesToLength(length).ToArray();
+            spriteBatch.DrawStrip(spriteBatch.GetPixel(), arr, color, layerDepth);
         }
 
         public void DrawGradient(SpriteBatch spriteBatch, Color color1, Color color2)
