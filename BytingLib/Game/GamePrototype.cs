@@ -28,7 +28,7 @@ namespace BytingLib
         public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter,
             bool mouseWithActivationClick = false, bool contentModdingOnRelease = false,
             bool vsync = true, bool startRecordingInstantly = true, bool enableDevKeys = false,
-            bool randomScreenshots = false, bool clearHotReloadOutputPath = true)
+            bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool controlViaF5 = true)
             : base(g, contentModdingOnRelease, contentConverter, clearHotReloadOutputPath)
         {
             if (randomScreenshots)
@@ -46,7 +46,7 @@ namespace BytingLib
             };
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, new object[] { contentCollector }, typeof(MarkupShortcutAttribute), converters);
 
-            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, enableDevKeys);
+            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, enableDevKeys, controlViaF5);
 
             basePaths = paths;
             saveStateManager = new SaveStateManager(paths);

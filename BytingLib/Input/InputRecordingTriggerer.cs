@@ -6,35 +6,52 @@
         private readonly InputRecordingManager<T> inputRecordingManager;
         private readonly string inputRecordingDir;
         private readonly Action<Action> onStartPlaying;
+        private readonly bool controlViaF5;
 
-        public InputRecordingTriggerer(KeyInput devKeys, InputRecordingManager<T> inputRecordingManager, string inputRecordingDir, Action<Action> onStartPlaying, bool startRecordingInstantly)
+        public InputRecordingTriggerer(KeyInput devKeys, InputRecordingManager<T> inputRecordingManager, string inputRecordingDir, Action<Action> onStartPlaying, bool startRecordingInstantly, bool controlViaF5 = true)
         {
             keys = devKeys;
             this.inputRecordingManager = inputRecordingManager;
             this.inputRecordingDir = inputRecordingDir;
             this.onStartPlaying = onStartPlaying;
+            this.controlViaF5 = controlViaF5;
+
             if (inputRecordingDir != null && startRecordingInstantly)
+            {
                 StartRecording();
+            }
         }
 
         public void Update()
         {
-            if (keys.F5.Pressed)
+            if (controlViaF5 && keys.F5.Pressed)
             {
                 if (keys.Shift.Down)
-                    inputRecordingManager.ToggleRecording(GetNewRecordingFile());
+                {
+                    Record();
+                }
                 else
                 {
-                    string? file = GetLastRecordingFile();
-                    if (file != null)
-                    {
-                        onStartPlaying(() =>
-                        {
-                            inputRecordingManager.TogglePlaying(file);
-                        });
-                    }
+                    Play();
                 }
             }
+        }
+
+        public void Play()
+        {
+            string? file = GetLastRecordingFile();
+            if (file != null)
+            {
+                onStartPlaying(() =>
+                {
+                    inputRecordingManager.TogglePlaying(file);
+                });
+            }
+        }
+
+        public void Record()
+        {
+            inputRecordingManager.ToggleRecording(GetNewRecordingFile());
         }
 
         private string GetNewRecordingFile()

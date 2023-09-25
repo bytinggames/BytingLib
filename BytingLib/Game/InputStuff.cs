@@ -26,7 +26,7 @@ namespace BytingLib
         private IInputMetaObjectManager? metaObjectManager;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths, Action<Action> startRecordingPlayback, bool startRecordingInstantly, bool enableDevInput)
+        public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths, Action<Action> startRecordingPlayback, bool startRecordingInstantly, bool enableDevInput, bool controlViaF5 = true)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             stuff = new StuffDisposable(typeof(IUpdate));
@@ -71,7 +71,7 @@ namespace BytingLib
             stuff.Add(GamePad = new GamePadInput(() => inputSource.Current.GamePadState));
 
             stuff.Add(InputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));
-            stuff.Add(InputRecordingTriggerer = new(KeysDev, InputRecordingManager, basePaths.InputRecordingsDir, startRecordingPlayback, startRecordingInstantly));
+            stuff.Add(InputRecordingTriggerer = new(KeysDev, InputRecordingManager, basePaths.InputRecordingsDir, startRecordingPlayback, startRecordingInstantly, controlViaF5));
         }
 
         private void InputSource_OnUpdate(FullInput obj)
