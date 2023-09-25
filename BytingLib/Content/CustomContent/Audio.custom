@@ -1,0 +1,11 @@
+^.*\.wav$
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:{0}
+
+^.*\.ogg$
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:{0}
