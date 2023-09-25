@@ -8,8 +8,11 @@
             get => _text;
             set
             {
-                _text = value;
-                SetDirty();
+                if (_text != value)
+                {
+                    _text = value;
+                    SetDirty();
+                }
             }
         }
         private bool setSizeToText;
