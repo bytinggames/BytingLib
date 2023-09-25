@@ -20,6 +20,7 @@ namespace BytingLib
         public Int2 Resolution => inputSource.Current.WindowResolution;
         public Int2 GetResolution() => inputSource.Current.WindowResolution;
         private int randSeed;
+        public int RecordingUpdate { get; private set; } = 0;
 
         public Action? OnPlayInput, OnPlayInputFinish;
         private IInputMetaObjectManager? metaObjectManager;
@@ -49,6 +50,7 @@ namespace BytingLib
                 Microsoft.Xna.Framework.Input.GamePad.GetState(0), 
                 new MetaInputState(game.IsActivatedThisFrame()),
                 windowManager.Resolution)));
+            inputSource.OnUpdate += InputSource_OnUpdate;
 
             stuff.Add(Keys = new KeyInput(() => inputSource.Current.KeyState));
 
@@ -70,6 +72,11 @@ namespace BytingLib
 
             stuff.Add(InputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));
             stuff.Add(InputRecordingTriggerer = new(KeysDev, InputRecordingManager, basePaths.InputRecordingsDir, startRecordingPlayback, startRecordingInstantly));
+        }
+
+        private void InputSource_OnUpdate(FullInput obj)
+        {
+            RecordingUpdate++;
         }
 
         public void SetMetaObjectManager(IInputMetaObjectManager? metaObjectManager)
@@ -131,6 +138,8 @@ namespace BytingLib
 
         private void PlayInput(StructSource<FullInput> inputSource, string path, Action onFinish)
         {
+            RecordingUpdate = 0;
+
             OnPlayInput?.Invoke();
 
             FileStream fs = File.OpenRead(path);
