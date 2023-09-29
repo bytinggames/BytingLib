@@ -39,7 +39,7 @@
         /// Used for when coords are pre-calculated.
         /// Warning: Coord is not checked for validity (if it actually fits the entities).
         /// </summary>
-        public virtual void AddMultipleToSingleCoord(Int3 coord, IList<T> entities)
+        public virtual void AddMultipleToSingleCoord(Int3 coord, IEnumerable<T> entities)
         {
             var list = GetOrCreateList(coord);
             list.AddRange(entities);
