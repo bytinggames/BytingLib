@@ -91,6 +91,14 @@ namespace BytingLib
             }
         }
 
+        public IKey ScrollAsPressedButton
+        {
+            get
+            {
+                return new Key(Scroll != 0, Scroll != 0);
+            }
+        }
+
         private int ConsiderIntMaxValue(int scroll)
         {
             // checking for scrolling over int.MaxValue or under int.MinValue
