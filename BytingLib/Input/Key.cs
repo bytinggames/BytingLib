@@ -19,5 +19,23 @@
                     Released = true;
             }
         }
+
+        public IKey Or(IKey key)
+        {
+            bool downNow = Down || key.Down;
+            bool toggle;
+            if (downNow)
+            {
+                toggle = Pressed && key.Pressed
+                    || Pressed && !key.Down
+                    || key.Pressed && !Down;
+            }
+            else
+            {
+                toggle = Released && !key.Down
+                    || key.Released && !Down;
+            }
+            return new Key(downNow, toggle);
+        }
     }
 }
