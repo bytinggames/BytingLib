@@ -208,6 +208,39 @@ namespace BytingLib.UI
             return this;
         }
 
+        public void InsertBefore(Element beforeElement, Element elementToInsert)
+        {
+            int index = Children.IndexOf(beforeElement);
+
+            if (index == -1)
+            {
+                Add(elementToInsert);
+            }
+            else
+            {
+                Insert(index, elementToInsert);
+            }
+        }
+        public void InsertAfter(Element afterElement, Element elementToInsert)
+        {
+            int index = Children.IndexOf(afterElement);
+
+            if (index == -1)
+            {
+                Add(elementToInsert);
+            }
+            else
+            {
+                Insert(index + 1, elementToInsert);
+            }
+        }
+
+        public void Insert(int index, Element element)
+        {
+            Children.Insert(index, element);
+            element.Parent = this;
+        }
+
         public Element SetStyle(Style style)
         {
             Style = style;
