@@ -26,6 +26,17 @@
             GetSize(out anyUnknownSize, out contentSize, out contentSizePlusPadding);
             PercentageToPixels(ref contentSizePlusPadding, ref contentSize, parentRect);
 
+            if (Width != 0)
+            {
+                contentSizePlusPadding.X = parentRect.Width;
+                contentSize.X = contentSizePlusPadding.X - Padding.WidthOr0();
+            }
+            if (Height != 0)
+            {
+                contentSizePlusPadding.Y = parentRect.Height;
+                contentSize.Y = contentSizePlusPadding.Y - Padding.HeightOr0();
+            }
+
             Rect rect = new Anchor(pos, Anchor).Rectangle(contentSizePlusPadding);
 
             AbsoluteRect = rect.CloneRect().Round();
