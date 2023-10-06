@@ -85,7 +85,6 @@
         {
             InstanceBuffer?.Dispose();
 
-            instancesAndBuffers.ForEach(f => f.Dispose());
             instancesAndBuffers.Clear();
         }
 
@@ -218,7 +217,7 @@
             }
         }
 
-        class InstancesAndBuffer : IDisposable
+        class InstancesAndBuffer
         {
             public IInstances<VertexInstanceTransformColor> Instances { get; }
             public VertexIndexBuffer Buffer { get; }
@@ -227,12 +226,6 @@
             {
                 Instances = instances;
                 Buffer = buffer;
-            }
-
-            public void Dispose()
-            {
-                Buffer.VertexBuffer.Dispose();
-                Buffer.IndexBuffer.Dispose();
             }
         }
     }
