@@ -84,6 +84,9 @@
         public void Dispose()
         {
             InstanceBuffer?.Dispose();
+
+            instancesAndBuffers.ForEach(f => f.Dispose());
+            instancesAndBuffers.Clear();
         }
 
         public void Draw(Axis3 axis, Color color) => Lines.Draw(axis, color);
@@ -215,7 +218,7 @@
             }
         }
 
-        class InstancesAndBuffer
+        class InstancesAndBuffer : IDisposable
         {
             public IInstances<VertexInstanceTransformColor> Instances { get; }
             public VertexIndexBuffer Buffer { get; }
@@ -224,6 +227,12 @@
             {
                 Instances = instances;
                 Buffer = buffer;
+            }
+
+            public void Dispose()
+            {
+                Buffer.VertexBuffer.Dispose();
+                Buffer.IndexBuffer.Dispose();
             }
         }
     }

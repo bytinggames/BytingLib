@@ -13,6 +13,8 @@
             PrimitiveType = primitiveType;
         }
 
+        public bool IsDisposed => VertexBuffer.IsDisposed || IndexBuffer.IsDisposed;
+
         public static VertexIndexBuffer Create<V>(GraphicsDevice gDevice, V[] vertices, short[] indices, PrimitiveType primitiveType) where V : struct, IVertexType
         {
             var vertexBuffer = new VertexBuffer(gDevice, vertices.GetType().GetElementType(), vertices.Length, BufferUsage.WriteOnly);
@@ -28,7 +30,7 @@
         static VertexIndexBuffer? triangle;
         public static VertexIndexBuffer GetTriangle(GraphicsDevice gDevice)
         {
-            if (triangle == null)
+            if (triangle == null || triangle.IsDisposed)
             {
                 triangle = Create(gDevice, new VertexPositionNormal[]
                     {  new(Vector3.Zero, Vector3.UnitZ), new(Vector3.UnitX, Vector3.UnitZ), new(Vector3.UnitY, Vector3.UnitZ) },
@@ -41,7 +43,7 @@
         static VertexIndexBuffer? line;
         public static VertexIndexBuffer GetLine(GraphicsDevice gDevice)
         {
-            if (line == null)
+            if (line == null || line.IsDisposed)
             {
                 line = Create(gDevice, new VertexPosition[]
                 {  new(Vector3.Zero), new(Vector3.UnitX) },
@@ -54,7 +56,7 @@
         static VertexIndexBuffer? box;
         public static VertexIndexBuffer GetBox(GraphicsDevice gDevice)
         {
-            if (box == null)
+            if (box == null || box.IsDisposed)
             {
                 // draw 6 quads, where each quad has 6 indices and 4 vertices
                 const int faces = 6;
@@ -126,7 +128,7 @@
         static VertexIndexBuffer? sphere;
         public static VertexIndexBuffer GetSphere(GraphicsDevice gDevice)
         {
-            if (sphere == null)
+            if (sphere == null || sphere.IsDisposed)
             {
                 var v = Icosahedron.VerticesSub;
                 var ind = Icosahedron.IndicesSub;
@@ -143,7 +145,9 @@
                     indices[indicesIndex++] = (short)(verticesIndex + ind[i][1]);
                 }
                 for (int i = 0; i < v.Length; i++)
+                {
                     vertices[verticesIndex++] = new VertexPositionNormal(v[i], v[i]);
+                }
 
                 sphere = Create(gDevice, vertices, indices, PrimitiveType.TriangleList);
             }
@@ -153,7 +157,7 @@
         static VertexIndexBuffer? openCylinder;
         public static VertexIndexBuffer GetOpenCylinder(GraphicsDevice gDevice)
         {
-            if (openCylinder == null)
+            if (openCylinder == null || openCylinder.IsDisposed)
             {
                 int indicesIndex = 0;
                 short verticesIndex = 0;
@@ -208,7 +212,7 @@
         static VertexIndexBuffer? cylinder;
         public static VertexIndexBuffer GetCylinder(GraphicsDevice gDevice)
         {
-            if (cylinder == null)
+            if (cylinder == null || cylinder.IsDisposed)
             {
                 int indicesIndex = 0;
                 short verticesIndex = 0;
