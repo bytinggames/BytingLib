@@ -30,5 +30,13 @@ namespace BytingLib
                     Children[i].Draw(shader, shaderMaterial, shaderSkin, goDown);
             }
         }
+
+        internal void DrawSelect(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Predicate<NodeGL> select, Matrix transform)
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].DrawSelect(shader, shaderMaterial, shaderSkin, select, transform);
+            }
+        }
     }
 }

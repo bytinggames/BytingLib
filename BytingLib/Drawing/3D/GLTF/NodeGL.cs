@@ -96,15 +96,17 @@ namespace BytingLib
             DrawInner(shader, shaderMaterial, shaderSkin, goDown, transform);
         }
 
+        public void DrawSelect(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Predicate<NodeGL> select, Matrix nodeTransformPost)
+        {
+            Matrix transform = localTransform * nodeTransformPost;
+            DrawInnerSelect(shader, shaderMaterial, shaderSkin, select, transform);
+        }
+
         private void DrawInner(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Predicate<NodeGL>? goDown, Matrix transform)
         {
             using (shaderSkin == null ? null : Skin?.Use(shaderSkin, transform))
             {
-                if (Mesh != null)
-                {
-                    using (shader.World.Use(f => transform * f))
-                        Mesh.Draw(shader, shaderMaterial);
-                }
+                DrawMesh(shader, shaderMaterial, transform);
 
                 if (goDown == null)
                 {
@@ -120,7 +122,30 @@ namespace BytingLib
             }
         }
 
+        private void DrawInnerSelect(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Predicate<NodeGL> select, Matrix transform)
+        {
+            using (shaderSkin == null ? null : Skin?.Use(shaderSkin, transform))
+            {
+                if (select(this))
+                {
+                    DrawMesh(shader, shaderMaterial, transform);
+                }
 
+                for (int i = 0; i < Children.Count; i++)
+                {
+                    Children[i].DrawSelect(shader, shaderMaterial, shaderSkin, select, transform);
+                }
+            }
+        }
+
+        private void DrawMesh(IShaderWorld shader, IShaderMaterial? shaderMaterial, Matrix transform)
+        {
+            if (Mesh != null)
+            {
+                using (shader.World.Use(f => transform * f))
+                    Mesh.Draw(shader, shaderMaterial);
+            }
+        }
 
         internal void CalculateGlobalTransform(int globalTransformCalculationId)
         {
