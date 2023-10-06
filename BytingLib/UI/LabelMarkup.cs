@@ -8,6 +8,7 @@ namespace BytingLib.UI
         private readonly Creator creator;
 
         public float MinLineHeight { get; set; }
+        public double AnimationMillisecondsOffset { get; set; }
 
         public LabelMarkup(string text, Creator creator) : base(text)
         {
@@ -36,7 +37,7 @@ namespace BytingLib.UI
             if (markup != null)
             {
                 if (style.FontBoldColor != null && style.FontBold != null)
-                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale) { RoundPositionTo = 1f, MinLineHeight = MinLineHeight, TotalMilliseconds = style.TotalMilliseconds });
+                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale) { RoundPositionTo = 1f, MinLineHeight = MinLineHeight, TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset });
                 if (style.FontColor != null)
                     markup.Draw(GetDefaultSetting(spriteBatch, style));
             }
