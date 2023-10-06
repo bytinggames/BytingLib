@@ -8,7 +8,7 @@
         public event Action? OnPopupClose;
 
         public Scene(params Type[] extraTypes)
-            : base(new Type[] { typeof(IDraw), typeof(IUpdate), typeof(IDrawBatch) }.Concat(extraTypes).ToArray())
+            : base(new Type[] { typeof(IDraw), typeof(IUpdate), typeof(IUpdateWhenBelowPopup), typeof(IDrawBatch) }.Concat(extraTypes).ToArray())
         { }
 
         protected virtual void Begin(SpriteBatch spriteBatch)
@@ -37,9 +37,14 @@
         public virtual void Update()
         {
             if (PopupScene != null)
+            {
                 PopupScene.Update();
+                ForEach<IUpdateWhenBelowPopup>(f => f.UpdateWhenBelowPopup());
+            }
             else
+            {
                 ForEach<IUpdate>(f => f.Update());
+            }
         }
 
         public void SetPopupScene(Scene? scene)
