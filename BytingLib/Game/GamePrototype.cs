@@ -7,6 +7,7 @@ namespace BytingLib
     public abstract class GamePrototype : GameBase
     {
         protected readonly GameSpeed updateSpeed, drawSpeed;
+        /// <summary>Used for creating markup elements</summary>
         protected readonly Creator creator;
         protected readonly InputStuff input;
         protected readonly DefaultPaths basePaths;

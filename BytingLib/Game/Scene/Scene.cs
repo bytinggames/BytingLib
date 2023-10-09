@@ -69,6 +69,15 @@
             }
         }
 
+        public Scene GetTopmostScene()
+        {
+            if (PopupScene == null)
+            {
+                return this;
+            }
+            return PopupScene.GetTopmostScene();
+        }
+
         public override void Dispose()
         {
             RemovePopupScene();
