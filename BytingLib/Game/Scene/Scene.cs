@@ -3,6 +3,7 @@
     public class Scene : StuffDisposable, IUpdate, IDrawBatch
     {
         public Scene? PopupScene { get; protected set; }
+        public bool DrawUnderlyingParents { get; set; } = true;
 
         public event Action<Scene>? OnPopupOpen;
         public event Action? OnPopupClose;
@@ -21,7 +22,17 @@
             ForEach<IDraw>(f => f.Draw(spriteBatch));
         }
 
-        public virtual void DrawBatch(SpriteBatch spriteBatch)
+        public void DrawBatch(SpriteBatch spriteBatch)
+        {
+            if (IsVisible())
+            {
+                DrawBatchInner(spriteBatch);
+            }
+
+            PopupScene?.DrawBatch(spriteBatch);
+        }
+
+        protected virtual void DrawBatchInner(SpriteBatch spriteBatch)
         {
             Begin(spriteBatch);
 
@@ -30,8 +41,6 @@
             spriteBatch.End();
 
             ForEach<IDrawBatch>(f => f.DrawBatch(spriteBatch));
-
-            PopupScene?.DrawBatch(spriteBatch);
         }
 
         public virtual void Update()
@@ -83,6 +92,21 @@
             RemovePopupScene();
 
             base.Dispose();
+        }
+
+        private bool IsVisible()
+        {
+            if (PopupScene == null)
+            {
+                return true;
+            }
+
+            if (!PopupScene.DrawUnderlyingParents)
+            {
+                return false;
+            }
+
+            return PopupScene.IsVisible();
         }
     }
 }
