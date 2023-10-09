@@ -10,7 +10,7 @@ namespace BytingLib
         private readonly Ref<Effect> effect;
         private readonly string parameterName;
         private T? lastAppliedValue = default;
-        bool dirty;
+        private bool dirty;
 
         public EffectParameterStack(Ref<Effect> effect, string parameter, T? _default)
         {
@@ -79,7 +79,10 @@ namespace BytingLib
                 if (valueStack.TryPeek(out lastAppliedValue))
                     effectParameter.SetValueObject(lastAppliedValue!);
                 else if (typeof(T).IsValueType)
-                    effectParameter.SetValueObject(default(T)!);
+                {
+                    lastAppliedValue = default;
+                    effectParameter.SetValueObject(lastAppliedValue!);
+                }
             }
             dirty = false;
         }
