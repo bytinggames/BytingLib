@@ -148,7 +148,11 @@ namespace BytingLib
             UpdateIteration(gameTime);
         }
 
+#if DEBUG
+        protected virtual bool ShouldSwapScreen() => metaKeys.Tab.Pressed;
+#else
         protected virtual bool ShouldSwapScreen() => metaKeys.Control.Down && metaKeys.Tab.Pressed;
+#endif
 
         public sealed override void DrawActive(GameTime gameTime)
         {
