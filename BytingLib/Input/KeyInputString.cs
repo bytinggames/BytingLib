@@ -5,16 +5,29 @@ namespace BytingLib
     public class KeyInputString : IDisposable
     {
         private readonly GameWindow window;
-        private readonly bool ignoreEnterWithoutShiftOrCtrl;
+        private readonly AllowNewLine allowNewLine;
 
         public InputString? InputString { get; set; }
 
         private bool control, shift;
 
+        public Func<bool>? OnEnter { get; set; }
+
+        public enum AllowNewLine
+        {
+            Always,
+            OnlyWithShiftOrCtrl,
+            Never
+        }
+
         public KeyInputString(GameWindow window, bool ignoreEnterWithoutShiftOrCtrl)
+            : this(window, ignoreEnterWithoutShiftOrCtrl ? AllowNewLine.OnlyWithShiftOrCtrl : AllowNewLine.Always)
+        { }
+
+        public KeyInputString(GameWindow window, AllowNewLine allowNewLine)
         {
             this.window = window;
-            this.ignoreEnterWithoutShiftOrCtrl = ignoreEnterWithoutShiftOrCtrl;
+            this.allowNewLine = allowNewLine;
 
             window.KeyDown += Window_KeyDown;
             window.KeyUp += Window_KeyUp;
@@ -145,11 +158,27 @@ namespace BytingLib
                             InputString.Delete(1);
                         break;
                     case Keys.Enter:
-                        if (ignoreEnterWithoutShiftOrCtrl
-                            && !shift
-                            && !control)
-                            break;
-                        InputString.Insert('\n');
+
+                        if (OnEnter == null || OnEnter.Invoke())
+                        {
+                            switch (allowNewLine)
+                            {
+                                case AllowNewLine.Always:
+                                    InputString.Insert('\n');
+                                    break;
+                                case AllowNewLine.OnlyWithShiftOrCtrl:
+                                    if (shift || control)
+                                    {
+                                        InputString.Insert('\n');
+                                    }
+                                    break;
+                                case AllowNewLine.Never:
+                                    break;
+                                default:
+                                    throw new NotImplementedException();
+                            }
+                        }
+
                         break;
                 }
             }

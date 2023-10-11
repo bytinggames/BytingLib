@@ -13,10 +13,15 @@
         float lastMSCursorOrSelectionChanged;
         private readonly GameSpeed updateSpeed;
         private int? moveCursorVertically;
+        public event Func<bool>? OnEnter;
+        public KeyInputString.AllowNewLine AllowNewLine { get; }
+        private bool doFocus;
 
-        public TextInput(GameSpeed updateSpeed, string text = "", float width = 0, float height = 0) : base(text, width, height, false)
+        public TextInput(GameSpeed updateSpeed, string text = "", float width = 0, float height = 0, KeyInputString.AllowNewLine allowNewLine = KeyInputString.AllowNewLine.Never)
+            : base(text, width, height, false)
         {
             this.updateSpeed = updateSpeed;
+            AllowNewLine = allowNewLine;
 
             lastMSCursorOrSelectionChanged = updateSpeed.TotalMSF();
         }
@@ -40,9 +45,10 @@
                 }
             }
 
-            if (input.Mouse.Left.Pressed)
+            if (input.Mouse.Left.Pressed || doFocus)
             {
-                bool hover = AbsoluteRect.CollidesWith(input.Mouse.Position);
+                bool hover = doFocus || AbsoluteRect.CollidesWith(input.Mouse.Position);
+                doFocus = false;
                 if (input.FocusElement == this)
                 {
                     if (!hover)
@@ -91,12 +97,13 @@
 
         private void OnFocus(ElementInput input)
         {
-            keyInputString = new KeyInputString(input.Window, false);
+            keyInputString = new KeyInputString(input.Window, AllowNewLine);
             keyInputString.InputString = new InputString();
             keyInputString.InputString.Text = Text;
             keyInputString.InputString.OnTextChange += InputString_OnTextChange;
             keyInputString.InputString.OnCursorMoveOrSelectChanged += InputString_OnCursorMoveOrSelectChanged;
             keyInputString.InputString.MoveCursorVertically += MoveCursorVertically;
+            keyInputString.OnEnter = () => OnEnter == null ? true : OnEnter();
 
             InputString_OnTextChange(keyInputString.InputString);
             InputString_OnCursorMoveOrSelectChanged(keyInputString.InputString);
@@ -389,6 +396,11 @@
             }
 
             return Text.Length;
+        }
+
+        public void Focus()
+        {
+            doFocus = true;
         }
     }
 }

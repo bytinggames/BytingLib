@@ -30,7 +30,7 @@ namespace BytingLib.Serialization
             File.WriteAllText(filePath, json);
         }
 
-        private string GetFilePath(string saveStateName)
+        public string GetFilePath(string saveStateName)
         {
             return Path.Combine(paths.SaveStateDir, saveStateName + ".json");
         }
