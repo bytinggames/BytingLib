@@ -19,6 +19,11 @@ namespace BytingLib.UI
         {
             this.creator = creator;
         }
+        public LabelMarkup(string text, Creator creator, float width = -1f, float height = -1f, bool setSizeToText = true)
+            : base(text, width, height, setSizeToText)
+        {
+            this.creator = creator;
+        }
 
         protected override Vector2 MeasureString(StyleRoot style, string text)
         {

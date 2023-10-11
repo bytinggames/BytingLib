@@ -2,7 +2,7 @@
 {
     public class Panel : Element
     {
-        public Color? Color { get; }
+        public Color? Color { get; set; }
 
         public Panel(float width = -1f, float height = -1f, Color? color = null, Vector2? anchor = null, Padding? padding = null)
         {
