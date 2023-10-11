@@ -79,9 +79,9 @@
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             if (style.FontBoldColor != null)
-                style.FontBold?.Value.Draw(spriteBatch, TextToDraw, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, style.FontScale, roundPositionTo: 1f);
+                style.FontBold?.Value.Draw(spriteBatch, TextToDraw, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, style.FontScale, roundPositionTo: style.RoundPositionTo);
             if (style.FontColor != null)
-                style.Font.Value.Draw(spriteBatch, TextToDraw, AbsoluteRect.GetAnchor(Anchor), style.FontColor, style.FontScale, roundPositionTo: 1f);
+                style.Font.Value.Draw(spriteBatch, TextToDraw, AbsoluteRect.GetAnchor(Anchor), style.FontColor, style.FontScale, roundPositionTo: style.RoundPositionTo);
         }
     }
 }

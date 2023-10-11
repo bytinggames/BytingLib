@@ -37,13 +37,13 @@ namespace BytingLib.UI
             if (markup != null)
             {
                 if (style.FontBoldColor != null && style.FontBold != null)
-                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale) { RoundPositionTo = 1f, MinLineHeight = MinLineHeight, TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset });
+                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale) { RoundPositionTo = style.RoundPositionTo, MinLineHeight = MinLineHeight, TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset });
                 if (style.FontColor != null)
                     markup.Draw(GetDefaultSetting(spriteBatch, style));
             }
         }
 
-        private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style) => new MarkupSettings(spriteBatch, style.Font, AbsoluteRect == null ? new Anchor() : AbsoluteRect.GetAnchor(Anchor), style.FontColor, Anchor.X, style.FontScale) { RoundPositionTo = 1f, MinLineHeight = MinLineHeight, TotalMilliseconds = style.TotalMilliseconds };
+        private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style) => new MarkupSettings(spriteBatch, style.Font, AbsoluteRect == null ? new Anchor() : AbsoluteRect.GetAnchor(Anchor), style.FontColor, Anchor.X, style.FontScale) { RoundPositionTo = style.RoundPositionTo, MinLineHeight = MinLineHeight, TotalMilliseconds = style.TotalMilliseconds };
 
         protected override void DisposeSelf()
         {

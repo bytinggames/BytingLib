@@ -8,6 +8,8 @@
             ButtonAnimation = buttonAnimation;
             FontScale = Vector2.One;
             FontColor = Color.Black;
+            ButtonPaddingToButtonBorder = false;
+            RoundPositionTo = 1f;
         }
     }
 }
