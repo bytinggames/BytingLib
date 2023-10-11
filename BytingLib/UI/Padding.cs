@@ -83,5 +83,22 @@
 
         public float Width => Left + Right;
         public float Height => Top + Bottom;
+
+        public static Padding GetLeft(float paddingLeft)
+        {
+            return new Padding(paddingLeft, 0f, 0f, 0f);
+        }
+        public static Padding GetTop(float paddingTop)
+        {
+            return new Padding(0f, paddingTop, 0f, 0f);
+        }
+        public static Padding GetRight(float paddingRight)
+        {
+            return new Padding(0f, 0f, paddingRight, 0f);
+        }
+        public static Padding GetBottom(float paddingBottom)
+        {
+            return new Padding(0f, 0f, 0f, paddingBottom);
+        }
     }
 }
