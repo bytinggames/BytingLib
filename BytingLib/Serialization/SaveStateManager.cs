@@ -11,9 +11,9 @@ namespace BytingLib.Serialization
             this.paths = paths;
         }
 
-        public T LoadOrCreate<T>(string fileName)
+        public T LoadOrCreate<T>(string saveStateName)
         {
-            string filePath = GetFilePath(fileName);
+            string filePath = GetFilePath(saveStateName);
             if (!File.Exists(filePath))
                 return Activator.CreateInstance<T>();
             string json = File.ReadAllText(filePath);
@@ -30,9 +30,9 @@ namespace BytingLib.Serialization
             File.WriteAllText(filePath, json);
         }
 
-        private string GetFilePath(string fileName)
+        private string GetFilePath(string saveStateName)
         {
-            return Path.Combine(paths.SaveStateDir, fileName + ".json");
+            return Path.Combine(paths.SaveStateDir, saveStateName + ".json");
         }
     }
 }
