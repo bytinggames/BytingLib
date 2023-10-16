@@ -208,6 +208,14 @@ namespace BytingLib.UI
             return this;
         }
 
+        public void Clear()
+        {
+            while (Children.Count > 0)
+            {
+                Remove(Children[^1]);
+            }
+        }
+
         public void InsertBefore(Element beforeElement, Element elementToInsert)
         {
             int index = Children.IndexOf(beforeElement);
