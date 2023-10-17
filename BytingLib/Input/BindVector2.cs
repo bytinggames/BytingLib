@@ -3,6 +3,9 @@
     public class BindVector2
     {
         public Flag BindFlag { get; set; }
+        public float? MouseSpeedFactor { get; set; }
+        public float? GamePadStickSpeedFactor { get; set; }
+        public float? GamePadStickPow { get; set; }
 
         public BindVector2(Flag bindFlag)
         {
@@ -53,22 +56,36 @@
             }
             if (IsFlag(Flag.Mouse2D))
             {
-                inputDir += input.Mouse.Move;
+                inputDir += input.Mouse.Move * (MouseSpeedFactor ?? 1f);
             }
             if (IsFlag(Flag.Mouse3D))
             {
-                inputDir += input.GetCustomMouseMovement();
+                inputDir += input.GetCustomMouseMovement() * (MouseSpeedFactor ?? 1f);
             }
             if (IsFlag(Flag.GamePadLeftStick))
             {
-                inputDir += input.GamePad.LeftThumbStick;
+                AddGamePadStickMovment(ref inputDir, input.GamePad.LeftThumbStick);
             }
             if (IsFlag(Flag.GamePadRightStick))
             {
-                inputDir += input.GamePad.RightThumbStick;
+                AddGamePadStickMovment(ref inputDir, input.GamePad.RightThumbStick);
             }
 
             return inputDir;
+        }
+
+        private void AddGamePadStickMovment(ref Vector2 inputDir, Vector2 move)
+        {
+            if (GamePadStickPow != null && GamePadStickPow != 1f)
+            {
+                move = move.GetSign() * new Vector2(MathF.Pow(move.X, GamePadStickPow.Value), MathF.Pow(move.Y, GamePadStickPow.Value)).GetAbs();
+            }
+            if (GamePadStickSpeedFactor != null)
+            {
+                move *= GamePadStickSpeedFactor.Value;
+            }
+
+            inputDir += move;
         }
 
         private bool IsFlag(Flag flag)
