@@ -30,6 +30,25 @@ namespace BytingLib.Serialization
             File.WriteAllText(filePath, json);
         }
 
+        public T LoadOrCreate<T>(string saveStateName, Migrator<T> migrator)
+        {
+            string filePath = GetFilePath(saveStateName);
+            if (!File.Exists(filePath))
+                return Activator.CreateInstance<T>();
+            string json = File.ReadAllText(filePath);
+            T? save = migrator.Deserialize(json);
+            if (save == null)
+                throw new BytingException("Couldn't load save file");
+            return save;
+        }
+
+        public void Save<T>(T save, string fileName, Migrator<T> migrator)
+        {
+            string json = migrator.Serialize(save);
+            string filePath = GetFilePath(fileName);
+            File.WriteAllText(filePath, json);
+        }
+
         public string GetFilePath(string saveStateName)
         {
             return Path.Combine(paths.SaveStateDir, saveStateName + ".json");
