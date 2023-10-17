@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace BytingLib.Serialization
@@ -23,7 +24,7 @@ namespace BytingLib.Serialization
             this.typePerVersion = typePerVersion.Concat(new Type[] { typeof(CurrentVersion) }).ToArray();
         }
 
-        private uint GetVersion(ref string json)
+        public uint StripVersionFromJson(ref string json)
         {
             if (string.IsNullOrEmpty(json)
                 || json[0] != 'v')
@@ -48,9 +49,14 @@ namespace BytingLib.Serialization
             return version;
         }
 
+        public void StripVersionFromJson(ref ReadOnlySpan<byte> json)
+        {
+            json = json.Slice(json.IndexOf(Encoding.UTF8.GetBytes("{"))); // skip migration version
+        }
+
         public CurrentVersion? Deserialize(string json)
         {
-            uint version = GetVersion(ref json);
+            uint version = StripVersionFromJson(ref json);
 
             if (version >= typePerVersion.Length)
             {
