@@ -64,6 +64,14 @@ namespace BytingLib
             return new Key(downNow, downNow != downPreviously);
         }
 
+        public IKey GetKeyAny(params Buttons[] keys) => GetKeyAnyFromIList(keys);
+        public IKey GetKeyAnyFromIList(IList<Buttons> keys)
+        {
+            bool downNow = keys.Any(f => currentState.IsButtonDown(f));
+            bool downPreviously = keys.Any(f => previousState.IsButtonDown(f));
+            return new Key(downNow, downNow != downPreviously);
+        }
+
         public GamePadState GetState() => currentState;
         public GamePadState GetStatePrevious() => previousState;
     }

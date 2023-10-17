@@ -49,7 +49,8 @@ namespace BytingLib
             bool downPreviously = previousState.IsKeyDown(key);
             return new Key(downNow, downNow != downPreviously);
         }
-        public IKey GetKeyAny(params Keys[] keys)
+        public IKey GetKeyAny(params Keys[] keys) => GetKeyAnyFromIList(keys);
+        public IKey GetKeyAnyFromIList(IList<Keys> keys)
         {
             bool downNow = keys.Any(f => currentState.IsKeyDown(f));
             bool downPreviously = keys.Any(f => previousState.IsKeyDown(f));

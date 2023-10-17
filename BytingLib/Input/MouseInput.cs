@@ -98,6 +98,20 @@ namespace BytingLib
                 return new Key(Scroll != 0, Scroll != 0);
             }
         }
+        public IKey ScrollPlusAsPressedButton
+        {
+            get
+            {
+                return new Key(Scroll > 0, Scroll > 0);
+            }
+        }
+        public IKey ScrollMinusAsPressedButton
+        {
+            get
+            {
+                return new Key(Scroll < 0, Scroll < 0);
+            }
+        }
 
         private int ConsiderIntMaxValue(int scroll)
         {
@@ -119,7 +133,45 @@ namespace BytingLib
             return new Key(downNow, downNow != downPreviously);
         }
 
+        public IKey GetKeyAny(params MouseButton[] keys) => GetKeyAnyFromIList(keys);
+        public IKey GetKeyAnyFromIList(IList<MouseButton> keys)
+        {
+            if (keys.Count == 0)
+                return new Key();
+
+            IKey key = MouseButtonToKey(keys[0]);
+
+            for (int i = 1; i < keys.Count; i++)
+            {
+                key = key.Or(MouseButtonToKey(keys[i]));
+            }
+
+            return key;
+        }
+
         public MouseState GetState() => currentState;
         public MouseState GetStatePrevious() => previousState;
+
+        private IKey MouseButtonToKey(MouseButton mouseButton)
+        {
+            switch (mouseButton)
+            {
+                case MouseButton.Left:
+                    return Left;
+                case MouseButton.Right:
+                    return Right;
+                case MouseButton.Middle:
+                    return Middle;
+                case MouseButton.WheelPlusOrMinus:
+                    return ScrollAsPressedButton;
+                case MouseButton.WheelPlus:
+                    return ScrollPlusAsPressedButton;
+                case MouseButton.WheelMinus:
+                    return ScrollMinusAsPressedButton;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
     }
 }
