@@ -52,9 +52,21 @@ namespace BytingLib
             CrashLogFile = Path.Combine(GameAppDataDir, "crash.log");
         }
 
-        public static string GetCurrentDateTimeFilename()
+        public static string GetCurrentDateTimeFilename() => DateTimeToFilename(DateTime.Now);
+
+        public static string DateToFilename(DateTime dateTime)
         {
-            return DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss_fff");
+            return dateTime.ToString("yyyy.MM.dd");
+        }
+
+        public static string TimeToFilename(DateTime dateTime)
+        {
+            return dateTime.ToString("HH.mm.ss_fff");
+        }
+
+        public static string DateTimeToFilename(DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy.MM.dd_HH.mm.ss_fff");
         }
 
         internal string GetNewScreenshotPng()
