@@ -26,7 +26,7 @@
                 {
                     inputDir.Y++;
                 }
-                if (input.Keys.F.Down)
+                if (input.Keys.D.Down)
                 {
                     inputDir.X++;
                 }
