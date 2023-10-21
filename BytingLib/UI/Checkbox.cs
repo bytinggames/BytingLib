@@ -18,6 +18,10 @@
             }
         }
         public bool DisposeCheckpointChildrenOnDispose { get; set; } = true;
+        /// <summary>
+        /// For holding mouse over multiple checkboxes to select all of them
+        /// </summary>
+        public string? MultiSelectionID { get; set; }
 
 
         public Checkbox(Action<bool> onStateChanged, bool startChecked, float width = 0, float height = 0, Vector2? anchor = null, Padding? padding = null)
@@ -112,6 +116,41 @@
             }
 
             base.DisposeSelf();
+        }
+
+        protected override void UpdateSelf(ElementInput input)
+        {
+            if (MultiSelectionID != null)
+            {
+                if (Disabled)
+                {
+                    return;
+                }
+
+                hover = AbsoluteRect.CollidesWith(input.Mouse.Position);
+
+                if (hover)
+                {
+                    if (input.Mouse.Left.Pressed)
+                    {
+                        input.FocusElement = this;
+                        OnClick();
+                        SetDirty();
+                    }
+                    else if (input.Mouse.Left.Down && input.FocusElement is Checkbox checkboxFocus && checkboxFocus.MultiSelectionID == MultiSelectionID)
+                    {
+                        if (checkboxFocus.Checked != Checked)
+                        {
+                            OnClick();
+                            SetDirty();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                base.UpdateSelf(input);
+            }
         }
     }
 }

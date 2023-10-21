@@ -2,7 +2,7 @@
 {
     public abstract class ButtonParent : Element
     {
-        private bool hover;
+        protected bool hover;
         private bool down;
         private bool disabled;
         public bool Disabled
