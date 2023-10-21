@@ -45,20 +45,30 @@
         public static Vector2 GetNormalizedOrZero(this Vector2 vec)
         {
             if (vec == Vector2.Zero)
+            {
                 return Vector2.Zero;
+            }
             else
+            {
                 return Vector2.Normalize(vec);
+            }
         }
         internal static Vector2 XPositive(this Vector2 vec)
         {
             if (vec.X < 0 || (vec.X == 0 && vec.Y < 0))
+            {
                 return -vec;
+            }
+
             return vec;
         }
         internal static Vector2 YPositive(this Vector2 vec)
         {
             if (vec.Y < 0 || (vec.Y == 0 && vec.X < 0))
+            {
                 return -vec;
+            }
+
             return vec;
         }
         public static Vector2 GetRotate90(this Vector2 vec)
@@ -72,14 +82,20 @@
         public static Vector2 GetMoveTo(this Vector2 val, Vector2 goal, float speed)
         {
             if (val == goal)
+            {
                 return val;
+            }
 
             Vector2 dist = goal - val;
             float distLength = dist.Length();
             if (distLength < speed)
+            {
                 return goal;
+            }
             else
+            {
                 return val + dist * speed / distLength;
+            }
         }
         public static float ToAngle(this Vector2 vec)
         {

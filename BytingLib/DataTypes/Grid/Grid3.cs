@@ -49,13 +49,17 @@
         private void AddToGrid(T entity)
         {
             foreach (var c in GetCoords(entity))
+            {
                 AddToCoord(c, entity);
+            }
         }
 
         public void ChangePos(T entity, Action<T> changePosAction)
         {
             if (!RemoveFromGrid(entity))
+            {
                 throw new Exception("Error in map storage: Couldn't find entity in some coordinations where it should have been.");
+            }
 
             changePosAction(entity);
 
@@ -74,7 +78,9 @@
             foreach (var c in GetCoords(entity))
             {
                 if (!RemoveFromCoord(c, entity))
+                {
                     anyFail = true;
+                }
             }
             return !anyFail;
         }
@@ -118,8 +124,9 @@
                 || !float.IsFinite(boundingBox.Max.X)
                 || !float.IsFinite(boundingBox.Max.Y)
                 || !float.IsFinite(boundingBox.Max.Z))
+            {
                 yield break;
-
+            }
 
             int x1 = (int)Math.Floor(boundingBox.Min.X / FieldSize.X);
             int y1 = (int)Math.Floor(boundingBox.Min.Y / FieldSize.Y);
@@ -160,19 +167,31 @@
                 else
                 {
                     if (c.X < min.X)
+                    {
                         min.X = c.X;
+                    }
                     else if (c.X > max.X)
+                    {
                         max.X = c.X;
+                    }
 
                     if (c.Y < min.Y)
+                    {
                         min.Y = c.Y;
+                    }
                     else if (c.Y > max.Y)
+                    {
                         max.Y = c.Y;
+                    }
 
                     if (c.Z < min.Z)
+                    {
                         min.Z = c.Z;
+                    }
                     else if (c.Z > max.Z)
+                    {
                         max.Z = c.Z;
+                    }
                 }
 
                 return list2;
@@ -192,7 +211,9 @@
 
                 // if list is empty, remove entry from dictionary
                 if (list.Count == 0)
+                {
                     Lists.Remove(c);
+                }
 
                 return true;
             }
@@ -204,9 +225,13 @@
         public IEnumerable<T> GetEntities(Int3 c)
         {
             if (Lists.TryGetValue(c, out List<T>? list))
+            {
                 return list.AsEnumerable();
+            }
             else
+            {
                 return Enumerable.Empty<T>();
+            }
         }
 
         public IEnumerable<T> GetEntities(int x, int y, int z) => GetEntities(new Int3(x, y, z));
@@ -246,7 +271,9 @@
 
             // if it's a dot, call a faster method
             if (box.Min == box.Max)
+            {
                 return GetEntities(box.Min, movement);
+            }
 
             return GetEntities(box.Expand(movement));
         }
@@ -273,7 +300,9 @@
             foreach (var c in coords)
             {
                 if (!continueCondition(c))
+                {
                     yield break;
+                }
 
                 foreach (var e in GetEntities(c))
                 {
@@ -318,7 +347,9 @@
                 yield return new Int3(cx, cy, cz);
 
                 if (rayLength <= 0)
+                {
                     yield break;
+                }
 
                 float remainingX = dx >= 0 ? 1f - x1 : x1;
                 float remainingY = dy >= 0 ? 1f - y1 : y1;
@@ -331,16 +362,24 @@
                 if (timeToY < timeToX)
                 {
                     if (timeToY < timeToZ)
+                    {
                         MoveToY();
+                    }
                     else
+                    {
                         MoveToZ();
+                    }
                 }
                 else
                 {
                     if (timeToX < timeToZ)
+                    {
                         MoveToX();
+                    }
                     else
+                    {
                         MoveToZ();
+                    }
                 }
 
                 void MoveToX()
@@ -391,7 +430,10 @@
                     foreach (var triB in this[c])
                     {
                         if (EqualityComparer<T>.Default.Equals(triA, triB)) // same triangle
+                        {
                             continue;
+                        }
+
                         if (!done.Contains((triB, triA)) && done.Add((triA, triB)))
                         {
                             yield return (triA, triB);
@@ -412,9 +454,15 @@
                     foreach (var triB in this[c])
                     {
                         if (EqualityComparer<T>.Default.Equals(triA, triB)) // same triangle
+                        {
                             continue;
+                        }
+
                         if (!isPairable(triA, triB))
+                        {
                             continue;
+                        }
+
                         if (!done.Contains((triB, triA)) && done.Add((triA, triB)))
                         {
                             yield return (triA, triB);

@@ -29,14 +29,18 @@ namespace BytingLib
             foreach (var key in keys)
             {
                 if (key.Item1 != key.Item2) // if they are the same, no need to swap them
+                {
                     collisionFunctions.Add((key.Item2, key.Item1), (a, b) => collisionFunctions[key](b, a));
+                }
             }
             // same for distance functions
             keys = distanceFunctions.Keys.ToList();
             foreach (var key in keys)
             {
                 if (key.Item1 != key.Item2) // if they are the same, no need to swap them
+                {
                     distanceFunctions.Add((key.Item2, key.Item1), (a, b, dir) => distanceFunctions[key](b, a, -dir).GetAxisInvert());
+                }
             }
 
             keys = collisionFunctions.Keys.ToList();
@@ -44,20 +48,28 @@ namespace BytingLib
             foreach (var key in keys)
             {
                 if (key.Item1 == TVector3)
+                {
                     collisionFunctions.Add((TPoint3, key.Item2), (a, b) => collisionFunctions[key](((Point3)a).Pos, b));
+                }
 
                 if (key.Item2 == TVector3)
+                {
                     collisionFunctions.Add((key.Item1, TPoint3), (a, b) => collisionFunctions[key](a, ((Point3)b).Pos));
+                }
             }
             // same for distance functions
             keys = distanceFunctions.Keys.ToList();
             foreach (var key in keys)
             {
                 if (key.Item1 == TVector3)
+                {
                     distanceFunctions.Add((TPoint3, key.Item2), (a, b, dir) => distanceFunctions[key](((Point3)a).Pos, b, dir));
+                }
 
                 if (key.Item2 == TVector3)
+                {
                     distanceFunctions.Add((key.Item1, TPoint3), (a, b, dir) => distanceFunctions[key](a, ((Point3)b).Pos, dir));
+                }
             }
         }
 
@@ -202,7 +214,10 @@ namespace BytingLib
             Type t2 = (shape2 is IShape3 s2) ? s2.GetCollisionType() : shape2.GetType();
             Func<object, object, Vector3, CollisionResult3>? func;
             if (!distanceFunctions.TryGetValue((t1, t2), out func))
+            {
                 throw new NotImplementedException($"A distance check between {shape1.GetType()} and {shape2.GetType()} is not implemented yet.");
+            }
+
             return func(shape1, shape2, dir);
 
         }
@@ -214,7 +229,9 @@ namespace BytingLib
         {
             // check if the capsule is actually a sphere, then we can only do any x sphere collisions
             if (capsule.SphereDistance == Vector3.Zero)
+            {
                 return shape.DistanceTo(capsule.Spheres[0], dir);
+            }
 
             CollisionResult3 cr;
 
@@ -225,7 +242,9 @@ namespace BytingLib
             {
                 float dot = Vector3.Dot(cr.ColPoint.Value - capsule.Pos, Vector3.Normalize(capsule.SphereDistance));
                 if (dot >= 0f && dot * dot <= capsule.SphereDistance.LengthSquared())
+                {
                     return cr;
+                }
             }
 
             // calculate distance to bottom sphere
@@ -240,15 +259,25 @@ namespace BytingLib
         public static bool ColAnyCapsule(IShape3 shape, Capsule3 capsule)
         {
             if (shape.CollidesWith(capsule.Sphere0))
+            {
                 return true;
+            }
+
             if (capsule.SphereDistance == Vector3.Zero)
+            {
                 return false;
+            }
+
             if (shape.CollidesWith(capsule.Sphere1))
+            {
                 return true;
+            }
 
             Cylinder3 cylinder = new Cylinder3(capsule.AxisRadius.Pos, capsule.SphereDistance, capsule.Radius);
             if (cylinder.CollidesWith(shape))
+            {
                 return true;
+            }
 
             return false;
         }
@@ -308,7 +337,9 @@ namespace BytingLib
             float[] t = ABCFormulaOrSomethingSimilar(dist.X, dir.X, dist.Y, dir.Y, dist.Z, dir.Z, sphere.Radius);
 
             if (float.IsNaN(t[1]))
+            {
                 return new CollisionResult3();
+            }
 
             CollisionResult3 cr = new CollisionResult3();
             cr.Distance = t[1];
@@ -342,7 +373,9 @@ namespace BytingLib
 
             // is parallel to plane?
             if (rayDirectionToPlane == 0)
+            {
                 return new CollisionResult3();
+            }
 
             return new CollisionResult3()
             {
@@ -356,11 +389,16 @@ namespace BytingLib
             CollisionResult3 cr = DistVectorPlane(vec, triangle.ToPlane(), dir);
 
             if (!cr.Distance.HasValue)
+            {
                 return cr;
+            }
 
             cr.ColPoint = vec + dir * cr.Distance.Value;
             if (CheckIfPointOnPlaneIsAlsoOnTriangle(cr.ColPoint.Value, triangle))
+            {
                 return cr;
+            }
+
             return new CollisionResult3();
         }
 
@@ -397,16 +435,22 @@ namespace BytingLib
             CollisionResult3 cr = DistSpherePlane(sphere, tri.ToPlane(), dir);
 
             if (!cr.Distance.HasValue)
+            {
                 throw new Exception("there should always be a distance, because the sphere is moved towards the triangle plane");
+            }
 
             if (cr.Distance.Value > 0 || cr.DistanceReversed.Value < 0)
+            {
                 return false;
+            }
 
             Vector3 spherePosOnCol = sphere.Pos + dir * cr.Distance.Value;
 
             float collisionRadius = sphere.Radius + cr.Distance.Value;
             if (collisionRadius < 0)
+            {
                 collisionRadius = -collisionRadius;
+            }
 
             float radiusOnTriPlane = MathF.Sqrt(sphere.Radius * sphere.Radius - collisionRadius * collisionRadius);
 
@@ -432,11 +476,19 @@ namespace BytingLib
         public static bool ColSphereCapsule(Sphere3 sphere, Capsule3 capsule)
         {
             if (ColSphereSphere(sphere, capsule.Sphere0))
+            {
                 return true;
+            }
+
             if (capsule.SphereDistance == Vector3.Zero)
+            {
                 return false;
+            }
+
             if (ColSphereSphere(sphere, capsule.Sphere1))
+            {
                 return true;
+            }
 
             Vector3 dist = sphere.Pos - capsule.Pos;
             float dot = Vector3.Dot(dist, capsule.DistanceN);
@@ -447,7 +499,9 @@ namespace BytingLib
                 float radiusSumSq = capsule.Radius + sphere.Radius;
                 radiusSumSq *= radiusSumSq;
                 if (dist.LengthSquared() < radiusSumSq)
+                {
                     return true;
+                }
             }
             return false;
         }
@@ -459,9 +513,14 @@ namespace BytingLib
 
             Vector3 dist = nearestInBox - sphere.Pos;
             if (dist == Vector3.Zero)
+            {
                 return true;
+            }
             else if (dist.LengthSquared() < sphere.Radius * sphere.Radius)
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -493,21 +552,28 @@ namespace BytingLib
             Vector3 cross = Vector3.Cross(dir, axis.Dir);
             // parallel?
             if (cross == Vector3.Zero)
+            {
                 return new CollisionResult3();
+            }
+
             cross.Normalize();
 
             Vector3 dist = axis.Pos - sphere.Pos;
             float axesDistance = Vector3.Dot(dist, cross);
 
             if (Math.Abs(axesDistance) > sphere.Radius)
+            {
                 return new CollisionResult3();
+            }
 
             cross = Vector3.Normalize(Vector3.Cross(axis.Dir, cross));
             Plane3 plane = new Plane3(axis.Pos, cross);
 
             CollisionResult3 cr = DistVectorPlane(sphere.Pos, plane, dir);
             if (!cr.Distance.HasValue)
+            {
                 return new CollisionResult3();
+            }
 
             float shiftOnDir = (float)Math.Sqrt(sphere.Radius * sphere.Radius - axesDistance * axesDistance);
             float dirLength = dir.Length();
@@ -519,11 +585,15 @@ namespace BytingLib
             Vector3 axisDirN = axis.Dir;
             float angle = (float)Math.Acos(Vector3.Dot(dirNormalized, axisDirN));
             if (angle > MathHelper.PiOver2)
+            {
                 angle = MathHelper.Pi - angle;
+            }
 
             // second check for parallelism...
             if (angle <= 0)
+            {
                 return new CollisionResult3();
+            }
 
             float shiftOnDirWithRespectToMoreParallelDir = shiftOnDir / (float)Math.Sin(angle);
             shiftOnDir = shiftOnDirWithRespectToMoreParallelDir;
@@ -544,7 +614,9 @@ namespace BytingLib
             CollisionResult3 cr = DistSphereAxis(sphere, new Axis3(line.Pos, line.DirN), dir);
 
             if (!cr.Distance.HasValue)
+            {
                 return new CollisionResult3();
+            }
 
             Vector3 spherePosAxisCol = sphere.Pos + cr.Distance.Value * dir;
             Vector3 spherePosAxisColRelativeToLineOrigin = spherePosAxisCol - line.Pos;
@@ -570,12 +642,17 @@ namespace BytingLib
             Vector3 nearestPointOnSphereToPlane;
             Vector3 pole = plane.Normal * sphere.Radius;
             if (Vector3.Dot(plane.Normal, dir) > 0)
+            {
                 pole = -pole;
+            }
+
             nearestPointOnSphereToPlane = sphere.Pos - pole;
 
             CollisionResult3 cr = DistVectorPlane(nearestPointOnSphereToPlane, plane, dir);
             if (!cr.Distance.HasValue)
+            {
                 return new CollisionResult3();
+            }
 
             float dirOnNormal = Vector3.Dot(dir, plane.Normal);
             float penetrationDuration = (2 * sphere.Radius) / Math.Abs(dirOnNormal);
@@ -617,9 +694,13 @@ namespace BytingLib
                     if (cr.MinResult(cr2))
                     {
                         if (cr.ColTriangleIndex == 2)
+                        {
                             cr.ColTriangleIndex = 3 + i;
+                        }
                         else
+                        {
                             cr.ColTriangleIndex += i;
+                        }
                     }
                 }
                 return cr;
@@ -631,9 +712,13 @@ namespace BytingLib
                 int j = (i + 1) % 3;
                 cr = DistSphereLine(sphere, Line3.FromTwoPoints(tri[i], tri[j]), dir);
                 if (cr.ColTriangleIndex == 2)
+                {
                     cr.ColTriangleIndex = 3 + i;
+                }
                 else if (cr.ColTriangleIndex != -1)
+                {
                     cr.ColTriangleIndex += i;
+                }
 
                 return cr;
             }
@@ -656,7 +741,9 @@ namespace BytingLib
 
             // are parallel? (TODO: again?)
             if (!depth.HasValue)
+            {
                 return new CollisionResult3();
+            }
 
             CollisionResult3 cr = new CollisionResult3();
             cr.ColPoint = axis2.Pos + axis2.Dir * depth.Value;
@@ -711,12 +798,17 @@ namespace BytingLib
 
             // does ray start inside plane?
             if (distProjectionOnNormal == 0)
+            {
                 return true;
+            }
 
             // is ray facing towards plane?
             float rayDirectionToPlane = Vector3.Dot(normal, ray.Dir);
             if (Math.Sign(rayDirectionToPlane) == Math.Sign(distProjectionOnNormal))
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -777,7 +869,9 @@ namespace BytingLib
 
             // does line start inside plane?
             if (distProjectionOnNormal == 0)
+            {
                 return true;
+            }
 
             // is line facing towards plane?
             float lineProjectionOnNormal = Vector3.Dot(normal, line.Dir);
@@ -785,7 +879,9 @@ namespace BytingLib
             {
                 // does the end of the line end after the plane?
                 if (Math.Abs(lineProjectionOnNormal) >= Math.Abs(distProjectionOnNormal))
+                {
                     return true;
+                }
             }
             return false;
         }
@@ -855,7 +951,9 @@ namespace BytingLib
                 float col_a = Vector3.Dot(colPoint - triangle[a], a_bc);
 
                 if (col_a > d)
+                {
                     return a;
+                }
             }
             return -1;
         }
@@ -971,11 +1069,15 @@ namespace BytingLib
 
             // are parallel? (TODO: again?)
             if (!depth.HasValue)
+            {
                 return new CollisionResult3();
+            }
 
             // line2 is too short?
             if (depth.Value < 0 || depth.Value > 1f)
+            {
                 return new CollisionResult3();
+            }
 
             CollisionResult3 cr = new CollisionResult3();
             cr.ColPoint = line2.Pos + line2.Dir * depth.Value;
@@ -985,10 +1087,15 @@ namespace BytingLib
             float colOnLine1 = Vector3.Dot(cr.ColPoint.Value, n);
             float line1Begin = Vector3.Dot(line1.Pos, n);
             if (colOnLine1 < line1Begin)
+            {
                 return new CollisionResult3();
+            }
+
             float line1End = Vector3.Dot(line1.Pos2, n);
             if (colOnLine1 > line1End)
+            {
                 return new CollisionResult3();
+            }
 
             float lerpOnLine1 = (colOnLine1 - line1Begin) / (line1End - line1Begin);
 
@@ -999,7 +1106,9 @@ namespace BytingLib
             // calculate axisCol, by crossing both line dirs
             cr.AxisCol = Vector3.Normalize(Vector3.Cross(line1.Dir, line2.Dir));
             if (Vector3.Dot(cr.AxisCol, dir) > 0) // axisCol must face to the reverse of dir
+            {
                 cr.AxisCol = -cr.AxisCol;
+            }
 
             //if (cr.Distance == 0)
             //    cr.Collision = true;
@@ -1021,13 +1130,17 @@ namespace BytingLib
             {
                 Line3 line = new Line3(tri1[i], tri1[(i + 1) % 3] - tri1[i]);
                 if (ColLineTriangle(line, tri2, out colNormal, out colPoint))
+                {
                     return true;
+                }
             }
             for (int i = 0; i < 3; i++)
             {
                 Line3 line = new Line3(tri2[i], tri2[(i + 1) % 3] - tri2[i]);
                 if (ColLineTriangle(line, tri1, out colNormal, out colPoint))
+                {
                     return true;
+                }
             }
 
             colNormal = Vector3.Zero;
@@ -1077,7 +1190,9 @@ namespace BytingLib
             List<Vector2> clipped = new List<Vector2>();
 
             if (lastVertexStatus == 0)
+            {
                 clipped.Add(v[0].XZ());
+            }
 
             for (int i = 1; i < v.Count; i++)
             {
@@ -1115,7 +1230,9 @@ namespace BytingLib
                 else if (status == 0)
                 {
                     if (i != v.Count - 1) // ignore last vertex, cause it only closes the polygon
+                    {
                         clipped.Add(v[i].XZ());
+                    }
                 }
 
                 lastVertexStatus = status;
@@ -1127,11 +1244,18 @@ namespace BytingLib
             {
                 int lastVertexStatus;
                 if (v.Y < 0f)
+                {
                     lastVertexStatus = -1;
+                }
                 else if (v.Y > 1f)
+                {
                     lastVertexStatus = 1;
+                }
                 else
+                {
                     lastVertexStatus = 0;
+                }
+
                 return lastVertexStatus;
             }
 
@@ -1181,7 +1305,9 @@ namespace BytingLib
             List<Vector3> clipped = new List<Vector3>();
 
             if (lastVertexStatus == 0)
+            {
                 clipped.Add(v[0]);
+            }
 
             for (int i = 1; i < v.Count; i++)
             {
@@ -1219,7 +1345,9 @@ namespace BytingLib
                 else if (status == 0)
                 {
                     if (i != v.Count - 1) // ignore last vertex, cause it only closes the polygon
+                    {
                         clipped.Add(v[i]);
+                    }
                 }
 
                 lastVertexStatus = status;
@@ -1236,11 +1364,18 @@ namespace BytingLib
             {
                 int lastVertexStatus;
                 if (v.Y < 0f)
+                {
                     lastVertexStatus = -1;
+                }
                 else if (v.Y > 1f)
+                {
                     lastVertexStatus = 1;
+                }
                 else
+                {
                     lastVertexStatus = 0;
+                }
+
                 return lastVertexStatus;
             }
 
@@ -1379,24 +1514,38 @@ namespace BytingLib
             {
                 int floor = (int)Math.Floor(cr2D.ColVertexIndex);
                 if (floor < 0)
+                {
                     floor = triToPolyIndex.Count - 1;
+                }
+
                 if (floor == triToPolyIndex.Count)
+                {
                     floor = 0;
+                }
+
                 int ceil = (int)Math.Ceiling(cr2D.ColVertexIndex);
                 if (ceil >= triToPolyIndex.Count)
+                {
                     ceil = 0;
+                }
 
                 float lerpAmount = cr2D.ColVertexIndex % 1;
                 if (lerpAmount < 0)
+                {
                     lerpAmount += 1;
+                }
 
                 cr.ColPoint = Vector3.LerpPrecise(tri[triToPolyIndex[floor]], tri[triToPolyIndex[ceil]], lerpAmount)
                             + dir * cr2D.Distance.Value;
 
                 if (cr2D.ColVertexIndex % 1 == 0)
+                {
                     cr.ColTriangleIndex = floor;
+                }
                 else
+                {
                     cr.ColTriangleIndex = 3 + floor;
+                }
             }
             return cr;
         }
@@ -1426,13 +1575,17 @@ namespace BytingLib
         {
             // check if cylinder origin is inside the box
             if (box.CollidesWith(cylinder.Center))
+            {
                 return true;
+            }
 
             // triangulate the box and check if any triangle collides with the cylinder
             foreach (var tri in box.Triangulate())
             {
                 if (ColTriangleCylinder(tri, cylinder))
+                {
                     return true;
+                }
             }
             return false;
         }

@@ -28,7 +28,9 @@
             {
                 T? value = get(styleOverrides[i]);
                 if (value != null)
+                {
                     return value;
+                }
             }
             return default;
         }
@@ -36,14 +38,20 @@
         public void Push(Style? styleOverride)
         {
             if (styleOverride == null)
+            {
                 return;
+            }
+
             styleOverrides.Add(styleOverride);
         }
 
         public void Pop(Style? styleOverride)
         {
             if (styleOverride == null)
+            {
                 return;
+            }
+
             styleOverrides.RemoveAt(styleOverrides.Count - 1);
         }
     }

@@ -39,7 +39,9 @@
                 for (int i = 0; i < Shapes.Count; i++)
                 {
                     if (IsShapeEnabled(i))
+                    {
                         yield return Shapes[i];
+                    }
                 }
             }
         }
@@ -47,16 +49,25 @@
         public bool IsShapeEnabled(int index)
         {
             if (ShapesEnabled == null || ShapesEnabled.Count <= index)
+            {
                 return true;
+            }
+
             return ShapesEnabled[index];
         }
 
         public void EnableShape(int index, bool enable)
         {
             if (ShapesEnabled == null)
+            {
                 ShapesEnabled = new List<bool>();
+            }
+
             while (ShapesEnabled.Count <= index)
+            {
                 ShapesEnabled.Add(true);
+            }
+
             ShapesEnabled[index] = enable;
         }
 
@@ -72,7 +83,9 @@
                 clone.Shapes.Add((IShape3)Shapes[i].Clone());
             }
             if (ShapesEnabled != null)
+            {
                 clone.ShapesEnabled = new List<bool>(ShapesEnabled);
+            }
 
             return clone;
         }
@@ -80,7 +93,9 @@
         public BoundingBox GetBoundingBox()
         {
             if (Shapes.Count == 0)
+            {
                 return default;
+            }
 
             BoundingBox box = default;// = new BoundingBox(Vector3.In Shapes[0].GetBoundingBox();
             bool isset = false;
@@ -103,7 +118,9 @@
             }
 
             if (!isset)
+            {
                 throw new Exception("empty shape collection cannot return a BoundingBox");
+            }
 
             return box;
         }

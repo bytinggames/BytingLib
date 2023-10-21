@@ -13,7 +13,9 @@ namespace BytingLib
         public ContentManagerRawPipe(params IContentManagerRaw[] contentManagers)
         {
             if (contentManagers.Length == 0)
+            {
                 throw new ArgumentException("There must be at least one contentManager given in the arguments.");
+            }
 
             this.ContentManagers = contentManagers.ToList();
         }
@@ -36,7 +38,9 @@ namespace BytingLib
                 try
                 {
                     if (ContentManagers[i].MightBeAbleToLoad(assetName))
+                    {
                         return ContentManagers[i].Load<T>(assetName, extendedLoad);
+                    }
                 }
                 catch (ContentLoadException) { }
                 catch (DirectoryNotFoundException) { }

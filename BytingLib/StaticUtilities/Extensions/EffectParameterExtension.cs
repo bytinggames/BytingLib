@@ -11,15 +11,22 @@
                     break;
                 case EffectParameterType.Int32:
                     if (p.Elements.Count == 0)
+                    {
                         p.SetValue((int)val);
+                    }
                     else
+                    {
                         p.SetValue((int[])val);
+                    }
+
                     break;
                 case EffectParameterType.Single:
                     if (p.Elements.Count == 0)
                     {
                         if (p.ColumnCount == 1 && p.RowCount == 1)
+                        {
                             p.SetValue((float)val);
+                        }
                         else if (p.RowCount == 1)
                         {
                             switch (p.ColumnCount)
@@ -53,7 +60,9 @@
                     else
                     {
                         if (p.ColumnCount == 1 && p.RowCount == 1)
+                        {
                             p.SetValue((float[])val);
+                        }
                         else if (p.RowCount == 1)
                         {
                             switch (p.ColumnCount)
@@ -72,7 +81,9 @@
                             }
                         }
                         else
+                        {
                             p.SetValue((Matrix[])val);
+                        }
                     }
                     break;
                 case EffectParameterType.Texture:

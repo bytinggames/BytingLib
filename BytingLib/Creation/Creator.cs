@@ -90,9 +90,14 @@ namespace BytingLib
 
                 char? peek = reader.Peek();
                 if (peek == null)
+                {
                     return;
+                }
+
                 if (peek >= '0' && peek <= '9') // if it starts with a number, it can't be a member or method, so stop.
+                {
                     return;
+                }
 
                 string setterName = reader.ReadToChar(Open);
 
@@ -118,16 +123,22 @@ namespace BytingLib
                 {
                     type = assemblies[i].GetType(fullTypeName);
                     if (type != null)
+                    {
                         break;
+                    }
                 }
 
                 if (type == null)
+                {
                     throw new Exception("type " + fullTypeName + " not found in given assemblies");
+                }
             }
 
             if (!objectBaseType.IsAssignableFrom(type))
+            {
                 throw new Exception("type " + nameof(type)  + " is not assignable to " + objectBaseType);
-            
+            }
+
             object obj = CreateObject(type, reader);
 
             ExecuteOnObjectInner(obj, type, reader);
@@ -183,7 +194,9 @@ namespace BytingLib
 
             ConstructorInfo? ctorInfo = GetMatchingConstructor(ctors, split);
             if (ctorInfo == null)
+            {
                 throw new Exception("no matching constructor found");
+            }
 
             var parameterInfos = ctorInfo.GetParameters().ToArray();
 
@@ -199,11 +212,15 @@ namespace BytingLib
                 for (int i = 0; i < parameters.Length; i++)
                 {
                     if (!TryGetAutoParameter(parameters[i].ParameterType, out _))
+                    {
                         parametersForSplitArray++;
+                    }
                 }
 
                 if (parametersForSplitArray == split.Length)
+                {
                     return ctor;
+                }
             }
 
             return null;
@@ -212,7 +229,9 @@ namespace BytingLib
         private bool TryGetAutoParameter(Type parameterType, out object? obj)
         {
             if (AutoParameters.TryGetValue(parameterType, out obj))
+            {
                 return true;
+            }
 
             if (parameterType.IsInterface)
             {
@@ -230,7 +249,9 @@ namespace BytingLib
         private object[] GetParameters(string[] split, Type[] expectedTypes)
         {
             if (split == null)
+            {
                 split = new string[0];
+            }
 
             object[] output = new object[expectedTypes.Length];
 
@@ -238,9 +259,13 @@ namespace BytingLib
             for (int i = 0; i < expectedTypes.Length; i++)
             {
                 if (TryGetAutoParameter(expectedTypes[i], out object? obj))
+                {
                     output[i] = obj!;
+                }
                 else
+                {
                     output[i] = GetParameters(split[splitIndex++], expectedTypes[i]);
+                }
             }
 
             return output;
@@ -250,11 +275,16 @@ namespace BytingLib
         private object GetParameters(string argStr, Type expectedType)
         {
             if (expectedType == typeof(string))
+            {
                 return argStr;
+            }
             else if (expectedType.IsEnum)
             {
                 if (Enum.TryParse(expectedType, argStr, out object? result) && result != null)
+                {
                     return result;
+                }
+
                 return Enum.ToObject(expectedType, 0);
             }
             else if (converters.TryGetValue(expectedType, out var converter))
@@ -267,7 +297,9 @@ namespace BytingLib
                 return CreateObject(reader, expectedType);
             }
             else
+            {
                 return Convert.ChangeType(argStr, expectedType, CultureInfo.InvariantCulture);
+            }
         }
 
         private string[] GetParameterStrings(ScriptReaderLiteral reader)
@@ -284,10 +316,14 @@ namespace BytingLib
 
             // clear list if paramters look like this: () <- empty
             if (splits.Count == 1 && splits[0] == "")
+            {
                 splits.Clear();
+            }
 
             if (reader.Peek(-1) != Close)
+            {
                 throw new Exception($"close expected, but {reader.Peek(-1)} read instead");
+            }
 
             return splits.ToArray();
         }

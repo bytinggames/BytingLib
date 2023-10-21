@@ -15,7 +15,9 @@ namespace BytingLib
         public void Update()
         {
             if (trigger())
+            {
                 action();
+            }
         }
     }
 }

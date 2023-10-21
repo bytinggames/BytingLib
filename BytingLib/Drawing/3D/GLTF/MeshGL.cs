@@ -20,16 +20,24 @@ namespace BytingLib
                 JsonArray primitivesArr = t.AsArray();
 
                 if (graphicsDeviceAvailable)
+                {
                     Primitives = new();
+                }
                 else
+                {
                     PrimitivesContent = new();
+                }
 
                 for (int i = 0; i < primitivesArr.Count; i++)
                 {
                     if (graphicsDeviceAvailable)
+                    {
                         Primitives!.Add(new PrimitiveGL(model, primitivesArr[i]!));
+                    }
                     else
+                    {
                         PrimitivesContent!.Add(new PrimitiveGLContent(model, primitivesArr[i]!));
+                    }
                 }
             }
         }

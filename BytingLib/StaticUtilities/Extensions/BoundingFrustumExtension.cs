@@ -9,7 +9,9 @@
 
             float clipDistance = clipFar - clipNear;
             if (clipDistance < clipAddition)
+            {
                 clipFar += clipAddition - clipDistance;
+            }
 
             clipNear -= clipAddition;
 

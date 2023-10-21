@@ -54,20 +54,32 @@ namespace BytingLib
             hsv.Alpha = color.A;
 
             if (dist == 0)
+            {
                 hsv.hue = 0;
+            }
             else if (cmax == r)
+            {
                 hsv.hue = 60f * ((g - b) / dist % 6);
+            }
             else if (cmax == g)
+            {
                 hsv.hue = 60 * ((b - r) / dist + 2);
+            }
             else if (cmax == b)
+            {
                 hsv.hue = 60 * ((r - g) / dist + 4);
+            }
             else
             { }
 
             if (cmax == 0)
+            {
                 hsv.saturation = 0;
+            }
             else
+            {
                 hsv.saturation = dist / cmax;
+            }
 
             hsv.value = cmax;
 
@@ -118,8 +130,13 @@ namespace BytingLib
             tex.GetData<Color>(colors);
 
             for (int i = 0; i < colors.Length; i++)
+            {
                 if (colors[i].A > 0)
+                {
                     colors[i] = color;
+                }
+            }
+
             tex.SetData<Color>(colors);
         }
 
@@ -132,8 +149,12 @@ namespace BytingLib
             tex.GetData<Color>(colors);
 
             for (int i = 0; i < colors.Length; i++)
+            {
                 if (colors[i].A > 0)
+                {
                     colors[i] = color;
+                }
+            }
 
             tex = new Texture2D(tex.GraphicsDevice, tex.Width, tex.Height);
 
@@ -147,13 +168,22 @@ namespace BytingLib
         {
             if (string.IsNullOrEmpty(hex)
                 || (hex.Length != 1 && hex.Length != 3 && hex.Length != 4 && hex.Length != 6 && hex.Length != 8))
+            {
                 return Color.White;
+            }
+
             if (hex.Length == 1)
+            {
                 hex = new string(hex[0], 6);
+            }
             else if (hex.Length == 3)
+            {
                 hex = hex.Insert(0, hex[0].ToString()).Insert(2, hex[1].ToString()).Insert(4, hex[2].ToString());
+            }
             else if (hex.Length == 4)
+            {
                 hex = hex[0].ToString() + hex[0] + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+            }
 
             byte r, g, b, a = 255;
             byte.TryParse(hex.Substring(0, 2), NumberStyles.HexNumber, hexToColorCultureInfo, out r);
@@ -161,7 +191,9 @@ namespace BytingLib
             byte.TryParse(hex.Substring(4, 2), NumberStyles.HexNumber, hexToColorCultureInfo, out b);
 
             if (hex.Length == 8)
+            {
                 byte.TryParse(hex.Substring(6, 2), NumberStyles.HexNumber, hexToColorCultureInfo, out a);
+            }
 
             return new Color(r, g, b, a);
         }
@@ -181,7 +213,10 @@ namespace BytingLib
             hex += color.G.ToString("X2");
             hex += color.B.ToString("X2");
             if (color.A != 255)
+            {
                 hex += color.A.ToString("X2");
+            }
+
             return hex;
         }
 

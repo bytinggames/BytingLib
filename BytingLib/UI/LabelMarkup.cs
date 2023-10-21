@@ -28,7 +28,9 @@ namespace BytingLib.UI
         protected override Vector2 MeasureString(StyleRoot style, string text)
         {
             using (MarkupRoot tempRoot = new MarkupRoot(creator, text))
+            {
                 return tempRoot.GetSize(GetDefaultSetting(null!, style));
+            }
         }
 
         protected override string CreateTextToDraw(StyleRoot style, out List<(int Index, int Add)>? textLengthChanges)
@@ -42,9 +44,14 @@ namespace BytingLib.UI
             if (markup != null)
             {
                 if (style.FontBoldColor != null && style.FontBold != null)
+                {
                     markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale) { RoundPositionTo = style.RoundPositionTo, MinLineHeight = MinLineHeight, TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset });
+                }
+
                 if (style.FontColor != null)
+                {
                     markup.Draw(GetDefaultSetting(spriteBatch, style));
+                }
             }
         }
 

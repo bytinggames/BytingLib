@@ -35,7 +35,10 @@
         protected DynamicVertexBuffer GetInstanceBuffer(int capacity)
         {
             if (InstanceBuffer != null && InstanceBuffer.VertexCount >= capacity)
+            {
                 return InstanceBuffer;
+            }
+
             capacity = capacity * 3 / 2; // make 1.5 times as big
             capacity = (int)MathF.Ceiling((float)capacity / growBuffersBy) * growBuffersBy; // grow in steps
             InstanceBuffer?.Dispose();
@@ -50,14 +53,19 @@
         public void Begin()
         {
             if (begun)
+            {
                 throw new BytingException("Begin() has already been called. Call End() first.");
+            }
+
             begun = true;
         }
 
         public void End(IShaderWorld shader)
         {
             if (!begun)
+            {
                 throw new BytingException("Begin() has not yet been called.");
+            }
 
             try
             {
@@ -66,7 +74,10 @@
                 foreach (var f in instancesAndBuffers)
                 {
                     if (f.Instances.Count == 0)
+                    {
                         continue;
+                    }
+
                     InstanceDrawer<VertexInstanceTransformColor>.DrawBuffers(shader, f.Instances,
                         GetInstanceBuffer(f.Instances.Count), f.Buffer);
                 }
@@ -117,13 +128,19 @@
             if (shapeCollection.ShapesEnabled == null)
             {
                 for (int i = 0; i < shapeCollection.Shapes.Count; i++)
+                {
                     Draw(shapeCollection.Shapes[i], color);
+                }
             }
             else
             {
                 for (int i = 0; i < shapeCollection.Shapes.Count; i++)
+                {
                     if (shapeCollection.ShapesEnabled.Count <= i || shapeCollection.ShapesEnabled[i])
+                    {
                         Draw(shapeCollection.Shapes[i], color);
+                    }
+                }
             }
         }
 
@@ -207,7 +224,9 @@
         {
             // side lines
             for (int i = 0; i < 4; i++)
+            {
                 Lines.Draw(corners[i], corners[4 + i] - corners[i], color);
+            }
 
             // near and far plane lines
             for (int i = 0; i < 4; i++)

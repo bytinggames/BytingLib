@@ -14,7 +14,9 @@
                 yield return container.Children[i];
 
                 foreach (var n in container.Children[i].GetNodes())
+                {
                     yield return n;
+                }
             }
         }
 
@@ -23,12 +25,16 @@
             for (int i = 0; i < container.Children.Count; i++)
             {
                 if (!goDeeper(container.Children[i]))
+                {
                     continue;
+                }
 
                 yield return container.Children[i];
 
                 foreach (var n in container.Children[i].GetNodes(goDeeper))
+                {
                     yield return n;
+                }
             }
         }
     }

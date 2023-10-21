@@ -52,17 +52,27 @@ namespace BytingLib
             gltfDirRelativeToContent = gltfDirectory.Substring(contentRootDirectory.Length);
             gltfDirRelativeToContent = gltfDirRelativeToContent.Replace('\\', '/');
             if (gltfDirRelativeToContent.StartsWith('/'))
+            {
                 gltfDirRelativeToContent = gltfDirRelativeToContent.Substring(1);
+            }
 
             var root = JsonNode.Parse(json)!;
 
             JsonNode? n;
             if ((n = root["scenes"]) != null)
+            {
                 Scenes = new(n.AsArray(), n => new(this, n));
+            }
+
             if ((n = root["nodes"]) != null)
+            {
                 Nodes = new(n.AsArray(), (n, parent) => new(this, n, parent));
+            }
+
             if ((n = root["meshes"]) != null)
+            {
                 Meshes = new(n.AsArray(), n => new(this, n, gDevice != null));
+            }
             //if ((n = root["accessors"]) != null)
             //     Accessors = new(n.AsArray(), n => new(this, n));
             //if ((n = root["bufferViews"]) != null)
@@ -70,22 +80,39 @@ namespace BytingLib
             //if ((n = root["buffers"]) != null)
             //    Buffers = new(n.AsArray(), n => new(this, n));
             if ((n = root["materials"]) != null)
+            {
                 Materials = new(n.AsArray(), n => new(this, n));
+            }
+
             if ((n = root["textures"]) != null)
+            {
                 Textures = new(n.AsArray(), n => new(this, n));
+            }
+
             if ((n = root["samplers"]) != null)
+            {
                 Samplers = new(n.AsArray(), n => new(n));
+            }
+
             if ((n = root["images"]) != null)
+            {
                 Images = new(n.AsArray(), n => new(this, n));
+            }
+
             if ((n = root["skins"]) != null)
+            {
                 Skins = new(n.AsArray(), n => new(this, n));
+            }
+
             if ((n = root["animations"]) != null)
             {
                 animationsJsonArray = n.AsArray();
                 Animations = new(animationsJsonArray, n => new(this, n));
             }
             if ((n = root["accessors"]) != null)
+            {
                 KeyFrames = new(this);
+            }
 
             accessorsArr = root["accessors"]?.AsArray();
             bufferViewsArr = root["bufferViews"]?.AsArray();
@@ -98,7 +125,9 @@ namespace BytingLib
         {
             VertexBuffer? vertexBuffer;
             if (vertexBuffers.TryGetValue(key, out vertexBuffer))
+            {
                 return vertexBuffer;
+            }
 
             byte[] vertexData = GetVertexData(key, attributesObj, out VertexDeclaration vertexDeclaration, out int vertexCount);
             vertexBuffer = disposables.Use(new VertexBuffer(gDevice, vertexDeclaration, vertexCount, BufferUsage.None));
@@ -183,7 +212,9 @@ namespace BytingLib
         {
             IndexBuffer? indexBuffer;
             if (indexBuffers.TryGetValue(id, out indexBuffer))
+            {
                 return indexBuffer;
+            }
 
             byte[] indicesData = GetIndexData(id, out IndexElementSize indexElementSize, out int indicesCount);
 
@@ -215,7 +246,9 @@ namespace BytingLib
             int bufferByteOffset = 0;
             JsonNode? n = bufferView["byteOffset"];
             if (n != null)
+            {
                 bufferByteOffset = n.GetValue<int>();
+            }
 
             if (contentCollector != null)
             {
@@ -252,7 +285,9 @@ namespace BytingLib
         internal Ref<Texture2D> GetTexture(string imageUri)
         {
             if (contentCollector == null)
+            {
                 return new Ref<Texture2D>(new Pointer<Texture2D>(), null);
+            }
 
             return contentCollector.Use<Texture2D>(ContentHelper.UriToContentFile(imageUri, gltfDirRelativeToContent));
         }
@@ -288,7 +323,9 @@ namespace BytingLib
         public int? GetAnimationIndex(string name)
         {
             if (animationsJsonArray == null) // no animations in json?
+            {
                 return null;
+            }
 
             if (AnimationNameToIndex == null)
             {
@@ -296,14 +333,19 @@ namespace BytingLib
             }
             int index;
             if (AnimationNameToIndex!.TryGetValue(name, out index))
+            {
                 return index;
+            }
+
             return -1;
         }
 
         private void InitAnimationNameToIndex()
         {
             if (animationsJsonArray == null) // no animations in json?
+            {
                 return;
+            }
 
             AnimationNameToIndex = new();
 

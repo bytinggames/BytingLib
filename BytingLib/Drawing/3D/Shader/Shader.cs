@@ -23,7 +23,9 @@
         public void Dispose()
         {
             foreach (var p in parameters)
+            {
                 p.Dispose();
+            }
         }
 
         protected void AddParam(IEffectParameterStack parameter) => parameters.Add(parameter);
@@ -88,7 +90,9 @@
                 disposables.UseCheckNull(UseInstancedRender());
             }
             else
+            {
                 disposables.UseCheckNull(UseTechnique(TechniqueNonInstanced));
+            }
 
             ApplyParameters();
 

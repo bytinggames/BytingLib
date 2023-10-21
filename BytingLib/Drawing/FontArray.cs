@@ -8,7 +8,9 @@
         public FontArray((float, Ref<SpriteFont>)[] fonts)
         {
             if (fonts.Length == 0)
+            {
                 throw new ArgumentException("fonts must be more than 0");
+            }
 
             this.fonts = fonts;
         }
@@ -18,7 +20,9 @@
             for (int i = 0; i < fonts.Length - 1; i++) // skip last font, that is the default one
             {
                 if (fontSize <= fonts[i].Item1)
+                {
                     return fonts[i].Item2;
+                }
             }
             return fonts[fonts.Length - 1].Item2;
         }

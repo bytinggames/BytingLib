@@ -19,7 +19,9 @@ namespace BytingLib
         public NodeGL(ModelGL model, JsonNode n, NodeGL? parent)
         {
             if (Parent == null)
+            {
                 Parent = parent;
+            }
 
             localTransform = GetTransform(n);
             //initialTransform = LocalTransform;
@@ -111,14 +113,20 @@ namespace BytingLib
                 if (goDown == null)
                 {
                     for (int i = 0; i < Children.Count; i++)
+                    {
                         Children[i].Draw(shader, shaderMaterial, shaderSkin, transform, null);
+                    }
                 }
                 else
+                {
                     for (int i = 0; i < Children.Count; i++)
                     {
                         if (goDown(Children[i]))
+                        {
                             Children[i].Draw(shader, shaderMaterial, shaderSkin, transform, goDown);
+                        }
                     }
+                }
             }
         }
 
@@ -143,14 +151,18 @@ namespace BytingLib
             if (Mesh != null)
             {
                 using (shader.World.Use(f => transform * f))
+                {
                     Mesh.Draw(shader, shaderMaterial);
+                }
             }
         }
 
         internal void CalculateGlobalTransform(int globalTransformCalculationId)
         {
             if (this.globalTransformCalculationId == globalTransformCalculationId)
+            {
                 return;
+            }
 
             if (JointTransform != null && JointTransform.Dirty)
             {
@@ -183,7 +195,10 @@ namespace BytingLib
         public Matrix GetGlobalTransform()
         {
             if (Parent == null)
+            {
                 return localTransform;
+            }
+
             return localTransform * Parent.GetGlobalTransform();
         }
 
@@ -191,7 +206,10 @@ namespace BytingLib
         public IEnumerable<NodeGL> GetParents()
         {
             if (Parent == null)
+            {
                 yield break;
+            }
+
             yield return Parent;
             foreach (var p in Parent.GetParents())
             {

@@ -25,7 +25,9 @@ namespace BytingLib.Serialization
             for (int count = br.ReadInt32(); count > 0; count--)
             {
                 if (br.ReadByte() == 0)
+                {
                     continue;
+                }
 
                 list.Add(br.ReadObject(itemType));
             }
@@ -45,7 +47,9 @@ namespace BytingLib.Serialization
             for (int i = 0; i < count; i++)
             {
                 if (br.ReadByte() == 0)
+                {
                     continue;
+                }
 
                 arr.SetValue(br.ReadObject(itemType), i);
             }

@@ -16,7 +16,9 @@
         public ShapeCollection(params IShape[] shapes)
         {
             if (shapes.Length == 0)
+            {
                 throw new BytingException("ShapeCollection contains 0 shapes. That should never happen.");
+            }
 
             Shapes = shapes;
         }
@@ -24,7 +26,9 @@
         public ShapeCollection(Vector2 pos, params IShape[] shapes)
         {
             if (shapes.Length == 0)
+            {
                 throw new BytingException("ShapeCollection contains 0 shapes. That should never happen.");
+            }
 
             Shapes = shapes;
             Move(pos);
@@ -33,10 +37,15 @@
         private void Move(Vector2 move)
         {
             if (move == Vector2.Zero)
+            {
                 return;
+            }
 
             for (int i = 0; i < Shapes.Count; i++)
+            {
                 Shapes[i].Pos += move;
+            }
+
             pos += move;
         }
 
@@ -56,13 +65,18 @@
         public void Draw(SpriteBatch spriteBatch, Color color, float depth = 0)
         {
             for (int i = 0; i < Shapes.Count; i++)
+            {
                 Shapes[i].Draw(spriteBatch, color, depth);
+            }
         }
 
         public Rect GetBoundingRect()
         {
             if (Shapes.Count == 0)
+            {
                 throw new BytingException("ShapeCollection contains 0 shapes. That should never happen.");
+            }
+
             return Rect.FromRects(Shapes.Select(f => f.GetBoundingRect()))!;
         }
     }

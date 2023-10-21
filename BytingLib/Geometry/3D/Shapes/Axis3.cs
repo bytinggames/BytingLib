@@ -27,11 +27,19 @@
             Vector3 boundingSize = Vector3.Zero;
 
             if (Dir.X != 0)
+            {
                 boundingSize.X = float.PositiveInfinity;
+            }
+
             if (Dir.Y != 0)
+            {
                 boundingSize.Y = float.PositiveInfinity;
+            }
+
             if (Dir.Z != 0)
+            {
                 boundingSize.Z = float.PositiveInfinity;
+            }
 
             return new BoundingBox(Pos - boundingSize, Pos + boundingSize);
         }

@@ -19,7 +19,9 @@ namespace BytingLib
             if (inputSource != null)
             {
                 if (!inputSource.MoveNext())
+                {
                     RemoveSource();
+                }
             }
 
             Current = inputSource?.Current ?? getStateDefault();
@@ -38,7 +40,9 @@ namespace BytingLib
             inputSource = source;
 
             if (oldSource != null)
+            {
                 oldOnEnumeratorRemove?.Invoke(oldSource);
+            }
         }
 
         public void Dispose()

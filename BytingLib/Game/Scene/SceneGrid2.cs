@@ -13,7 +13,9 @@
         public override void Remove(object thing)
         {
             if (thing is T t)
+            {
                 Grid.Remove(t);
+            }
 
             base.Remove(thing);
         }
@@ -23,7 +25,9 @@
             base.Add(thing, onRemove);
 
             if (thing is T t)
+            {
                 Grid.Add(t);
+            }
         }
     }
 }

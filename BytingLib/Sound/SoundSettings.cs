@@ -25,7 +25,9 @@
             for (int i = 0; i < lines.Length; i++)
             {
                 if (lines[i].StartsWith("//"))
+                {
                     continue;
+                }
 
                 int tabs = 0;
 
@@ -34,7 +36,9 @@
                     tabs++;
                 }
                 if (tabs > 0)
+                {
                     lines[i] = lines[i].Substring(tabs);
+                }
 
                 while (folderStack.Count > tabs)
                 {

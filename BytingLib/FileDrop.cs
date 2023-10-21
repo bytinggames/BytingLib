@@ -20,7 +20,9 @@
         private void Window_FileDrop(object? sender, FileDropEventArgs e)
         {
             if (e.Files?.Length > 0)
+            {
                 droppedFile.Invoke(e.Files[0]);
+            }
         }
     }
 }

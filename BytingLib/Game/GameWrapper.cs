@@ -20,7 +20,9 @@
             IsMouseVisible = true;
 
             if (msaaSamples != null && msaaSamples < 2)
+            {
                 msaaSamples = null;
+            }
 
             if (msaaSamples != null)
             {
@@ -49,7 +51,9 @@
         void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
         {
             if (msaaSamples != null)
+            {
                 e.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = msaaSamples.Value;
+            }
         }
 
         protected override void Initialize()

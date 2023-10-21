@@ -79,12 +79,16 @@ namespace BytingLib
             int iterations = GetIterations();
 
             for (int i = 0; i < iterations; i++)
+            {
                 UpdateSingleIteration(gameTime);
+            }
 
             ScreenshotType screenshot = ScreenshotType.None;
 
             if (metaKeys.F12.Pressed)
+            {
                 screenshot = ScreenshotType.ByUser;
+            }
             else if (randomScreenshots)
             {
                 // take a screenshot every minute
@@ -96,7 +100,9 @@ namespace BytingLib
                 }
             }
             if (screenshot != ScreenshotType.None)
+            {
                 screenshotter.TakeScreenshot(screenshot == ScreenshotType.Random);
+            }
 
             if (startRecordingPlayback != null)
             {
@@ -113,7 +119,9 @@ namespace BytingLib
             {
                 iterations *= 10;
                 if (input.KeysDev.Apps.Down)
+                {
                     iterations *= 10;
+                }
             }
             else
             {
@@ -122,9 +130,13 @@ namespace BytingLib
                     pauseUpdate = true;
 
                     if (input.KeysDev.Alt.Pressed)
+                    {
                         iterations = 1; // display next frame
+                    }
                     else
+                    {
                         iterations = 0;
+                    }
                 }
                 else
                 {
@@ -141,9 +153,14 @@ namespace BytingLib
             input.Update();
 
             if (metaKeys.F11.Pressed)
+            {
                 windowManager.ToggleFullscreen();
+            }
+
             if (ShouldSwapScreen())
+            {
                 windowManager.SwapScreen();
+            }
 
             UpdateIteration(gameTime);
         }

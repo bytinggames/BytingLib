@@ -9,7 +9,10 @@
             {
                 int currentRead = stream.Read(buffer, read, buffer.Length);
                 if (currentRead == 0)
+                {
                     return false;
+                }
+
                 read += currentRead;
             }
             return true;

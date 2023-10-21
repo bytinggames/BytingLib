@@ -16,7 +16,9 @@ namespace BytingLib.Serialization
         {
             int? frameDiff = ReadNextFrameDiff();
             if (frameDiff == null)
+            {
                 return null;
+            }
 
             int nextFrame = lastFrame + frameDiff.Value;
             lastFrame = nextFrame;
@@ -29,10 +31,15 @@ namespace BytingLib.Serialization
             {
                 byte frameDiffByte = ReadByte();
                 if (frameDiffByte != byte.MaxValue)
+                {
                     return frameDiffByte;
+                }
 
                 if (!stream.ReadFullBuffer(intBuffer))
+                {
                     return null;
+                }
+
                 return BitConverter.ToInt32(intBuffer);
             }
             catch (StructPlaybackEndOfStreamException)
@@ -90,7 +97,10 @@ namespace BytingLib.Serialization
         {
             int read = stream.ReadByte();
             if (read == -1) // unexpected end of stream
+            {
                 throw new StructPlaybackEndOfStreamException();
+            }
+
             return (byte)read;
         }
 

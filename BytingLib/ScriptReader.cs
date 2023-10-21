@@ -20,7 +20,10 @@ namespace BytingLib
         public char? ReadChar()
         {
             if (i < str.Length)
+            {
                 return str[i++];
+            }
+
             return null;
         }
 
@@ -31,7 +34,9 @@ namespace BytingLib
             while ((c = ReadChar()) != null)
             {
                 if (SkipIfLiteral(c.Value))
+                {
                     continue;
+                }
 
                 if (chars.Contains(c.Value))
                 {
@@ -48,18 +53,28 @@ namespace BytingLib
         {
             i += moveBy;
             if (i < 0)
+            {
                 i = 0;
+            }
+
             if (i > str.Length)
+            {
                 i = str.Length;
+            }
         }
 
         public void SetPosition(int position)
         {
             i = position;
             if (i < 0)
+            {
                 i = 0;
+            }
+
             if (i > str.Length)
+            {
                 i = str.Length;
+            }
         }
 
         public string ReadToChar(char untilChar)
@@ -69,7 +84,9 @@ namespace BytingLib
             while ((c = ReadChar()) != null)
             {
                 if (SkipIfLiteral(c.Value))
+                {
                     continue;
+                }
 
                 if (c.Value == untilChar)
                 {
@@ -85,7 +102,10 @@ namespace BytingLib
             int start = i;
             string str = ReadToCharOrEnd(out foundChar, chars);
             if (foundChar == null)
+            {
                 throw new ScriptReaderException("chars '" + string.Join(", ", chars) + "' not found in " + str + " after position " + start);
+            }
+
             return str;
         }
 
@@ -97,7 +117,9 @@ namespace BytingLib
             while ((c = ReadChar()) != null)
             {
                 if (SkipIfLiteral(c.Value))
+                {
                     continue;
+                }
 
                 if (c.Value == untilStr[indexInUntilStr])
                 {
@@ -110,7 +132,9 @@ namespace BytingLib
                     }
                 }
                 else
+                {
                     indexInUntilStr = 0;
+                }
             }
             endReached = true;
             return str.Substring(start);
@@ -124,7 +148,9 @@ namespace BytingLib
             while ((c = ReadChar()) != null)
             {
                 if (SkipIfLiteral(c.Value))
+                {
                     continue;
+                }
 
                 for (int u = 0; u < untilStr.Length; u++)
                 {
@@ -139,7 +165,9 @@ namespace BytingLib
                         }
                     }
                     else
+                    {
                         indexInUntilStr[u] = 0;
+                    }
                 }
             }
             reachedStringIndex = -1;
@@ -153,7 +181,9 @@ namespace BytingLib
             while ((c = ReadChar()) != null)
             {
                 if (SkipIfLiteral(c.Value))
+                {
                     continue;
+                }
 
                 if (c.Value == open)
                 {
@@ -190,7 +220,9 @@ namespace BytingLib
             while ((c = ReadChar()) != null)
             {
                 if (SkipIfLiteral(c.Value))
+                {
                     continue;
+                }
 
                 if (c.Value == untilChar)
                 {
@@ -212,7 +244,9 @@ namespace BytingLib
             while ((c = ReadChar()) != null)
             {
                 if (SkipIfLiteral(c.Value))
+                {
                     continue;
+                }
 
                 if (untilChar.Contains(c.Value))
                 {
@@ -233,7 +267,10 @@ namespace BytingLib
         {
             char? c = Peek();
             if (c == null)
+            {
                 return "END";
+            }
+
             return $"{i}: '{c.Value}'";
         }
 
@@ -255,7 +292,9 @@ namespace BytingLib
         protected override bool SkipIfLiteral(char value)
         {
             if (value != LiteralChar)
+            {
                 return false;
+            }
 
             SkipLiteral();
             return true;
@@ -266,7 +305,10 @@ namespace BytingLib
 
             char? literalIdentifier = ReadChar();
             if (literalIdentifier == null)
+            {
                 return;
+            }
+
             RemoveLiteralCharIfEnabled();
 
             char? c;
@@ -283,7 +325,9 @@ namespace BytingLib
         private void RemoveLiteralCharIfEnabled()
         {
             if (RemoveLiteralCharEnabled)
+            {
                 str = str.Remove(--i, 1);
+            }
         }
     }
 }

@@ -62,7 +62,9 @@
             {
                 totalSize.Y += size.Y;
                 if (size.X > totalSize.X)
+                {
                     totalSize.X = size.X;
+                }
             }
             return totalSize;
         }
@@ -75,7 +77,9 @@
             {
                 totalSize.Y += size.Y;
                 if (size.X > totalSize.X)
+                {
                     totalSize.X = size.X;
+                }
             }
             return (totalSize, lineSizes);
         }
@@ -103,13 +107,19 @@
                     Vector2 size = element.GetSize(settings);
                     lineSize.X += size.X;
                     if (size.Y > lineSize.Y)
+                    {
                         lineSize.Y = size.Y;
+                    }
                 }
 
                 if (firstLine)
+                {
                     firstLine = false;
+                }
                 else
+                {
                     lineSize.Y += settings.VerticalSpaceBetweenLines;
+                }
 
                 yield return lineSize;
             }

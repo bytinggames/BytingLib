@@ -19,7 +19,9 @@ namespace BytingLib
         public void Update()
         {
             if (keys.GetKey(key).Pressed)
+            {
                 action();
+            }
         }
     }
 }

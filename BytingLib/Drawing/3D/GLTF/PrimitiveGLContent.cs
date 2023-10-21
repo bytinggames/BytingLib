@@ -68,19 +68,25 @@ namespace BytingLib
         public IEnumerable<Triangle3> GetTriangles()
         {
             if (IndexInfo == null)
+            {
                 yield break;
+            }
 
             Vector3[] positions = GetElementData<Vector3>(VertexElementUsage.Position);
             object indicesObj = IndexInfo.GetIndices();
             if (indicesObj is short[] ind16)
             {
                 for (int i = 0; i < ind16.Length; i += 3)
+                {
                     yield return new Triangle3(positions[ind16[i]], positions[ind16[i + 2]], positions[ind16[i + 1]]);
+                }
             }
             else if (indicesObj is int[] ind32)
             {
                 for (int i = 0; i < ind32.Length; i += 3)
+                {
                     yield return new Triangle3(positions[ind32[i]], positions[ind32[i + 2]], positions[ind32[i + 1]]);
+                }
             }
         }
     }

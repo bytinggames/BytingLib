@@ -14,9 +14,13 @@
             if (toggled)
             {
                 if (down)
+                {
                     Pressed = true;
+                }
                 else
+                {
                     Released = true;
+                }
             }
         }
 

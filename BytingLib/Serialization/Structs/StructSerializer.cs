@@ -9,7 +9,9 @@ namespace BytingLib.Serialization
         {
             byte[] buffer = new byte[Marshal.SizeOf(t)];
             if (!stream.ReadFullBuffer(buffer))
+            {
                 return null;
+            }
 
             return Read(buffer, t);
         }
@@ -19,7 +21,9 @@ namespace BytingLib.Serialization
         {
             buffer = new byte[Marshal.SizeOf(t)];
             if (!stream.ReadFullBuffer(buffer))
+            {
                 return null;
+            }
 
             return Read(buffer, t);
         }

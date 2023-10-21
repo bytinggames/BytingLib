@@ -17,7 +17,10 @@
         public void EnsureSize(int capacity)
         {
             if (Arr.Length >= capacity)
+            {
                 return;
+            }
+
             capacity = (int)MathF.Ceiling((float)capacity / growBy) * growBy;
             Array.Resize(ref Arr, capacity);
         }

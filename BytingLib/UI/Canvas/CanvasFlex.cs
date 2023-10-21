@@ -14,7 +14,9 @@
             Rect rect = getRenderRect();
 
             if (Padding != null)
+            {
                 rect.ApplyPadding(Padding.Left, Padding.Right, Padding.Top, Padding.Bottom);
+            }
 
             Width = rect.Width;
             Height = rect.Height;
@@ -23,9 +25,15 @@
 
             StyleRoot.Push(Style);
             for (int i = 0; i < Children.Count; i++)
+            {
                 Children[i].UpdateTreeBegin(StyleRoot);
+            }
+
             for (int i = 0; i < Children.Count; i++)
+            {
                 Children[i].UpdateTree(rect);
+            }
+
             StyleRoot.Pop(Style);
         }
 
@@ -34,7 +42,9 @@
             UpdateTree(); // TODO: only update tree when necessary
 
             if (ClearColor != null)
+            {
                 spriteBatch.GraphicsDevice.Clear(ClearColor.Value);
+            }
 
             spriteBatch.Begin();
 

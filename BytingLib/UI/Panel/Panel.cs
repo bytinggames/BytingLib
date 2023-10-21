@@ -10,14 +10,19 @@
             Height = height;
             Color = color;
             if (anchor != null)
+            {
                 Anchor = anchor.Value;
+            }
+
             Padding = padding;
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             if (Color != null)
+            {
                 AbsoluteRect.Draw(spriteBatch, Color.Value);
+            }
         }
     }
 }

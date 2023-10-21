@@ -29,7 +29,10 @@
         public T? UseCheckNull<T>(T? disposable) where T : IDisposable
         {
             if (disposable == null)
+            {
                 return disposable;
+            }
+
             disposables.Add(disposable);
             return disposable;
         }

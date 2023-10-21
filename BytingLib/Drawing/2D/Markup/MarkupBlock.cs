@@ -40,7 +40,9 @@
         public void Draw(MarkupSettings settings)
         {
             if (MarginLeft == 0 && MarginTop == 0 && MarginRight == 0 && MarginBottom == 0)
+            {
                 InnerDraw(settings);
+            }
             else
             {
                 Vector2 temp = settings.Anchor.pos;
@@ -59,7 +61,9 @@
                 Vector2 subSize = subContainer.GetSize(settings);
                 Vector2 larger = subSize - thisSize;
                 if (larger.X > 0)
+                {
                     settings.Anchor.X += larger.X * SubAnchorX;
+                }
             }
 
             DrawChild(settings);

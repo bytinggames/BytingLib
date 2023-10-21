@@ -35,7 +35,10 @@ namespace BytingLib
             var last = transitioner.GetAllValues().Last();
             if (last.Animation == animationInstance.Animation
                 && last.StartTimeStamp == animationInstance.StartTimeStamp)
+            {
                 return; // no need to add a duplicate
+            }
+
             transitioner.TransitTo(animationInstance, transitionDurationInSeconds);
         }
 
@@ -62,14 +65,20 @@ namespace BytingLib
         public void ApplyBlend()
         {
             if (drawnUpdate)
+            {
                 return;
+            }
 
             drawnUpdate = true;
 
             if (transitioner.TransitionCount == 0)
+            {
                 GetAnimation(transitioner.OldestValue.Animation)?.UpdateAnimationTime(CurrentSecond - transitioner.OldestValue.StartTimeStamp);
+            }
             else
+            {
                 transitioner.ApplyBlend(BlendStart, BlendContinue);
+            }
         }
 
         private void BlendStart(AnimationInstance from)

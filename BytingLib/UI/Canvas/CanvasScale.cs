@@ -54,7 +54,10 @@
                 {
                     float newScale = MathF.Floor(scale);
                     if (Scaling == CanvasScaling.PixelArtResponsiveCanvas)
+                    {
                         scaleCanvasRegion = scale / newScale;
+                    }
+
                     scale = newScale;
                 }
             }
@@ -100,7 +103,9 @@
             }
 
             if (Padding != null)
+            {
                 rect.ApplyPadding(Padding.Left, Padding.Right, Padding.Top, Padding.Bottom);
+            }
 
             Width = rect.Width;
             Height = rect.Height;
@@ -109,9 +114,15 @@
 
             StyleRoot.Push(Style);
             for (int i = 0; i < Children.Count; i++)
+            {
                 Children[i].UpdateTreeBegin(StyleRoot);
+            }
+
             for (int i = 0; i < Children.Count; i++)
+            {
                 Children[i].UpdateTree(rect);
+            }
+
             StyleRoot.Pop(Style);
 
             treeDirty = false;
@@ -121,10 +132,14 @@
             SetDirtyIfResChanged();
 
             if (treeDirty)
+            {
                 UpdateTree();
+            }
 
             if (ClearColor != null)
+            {
                 spriteBatch.GraphicsDevice.Clear(ClearColor.Value);
+            }
 
             SamplerState samplerState = IsScalingPixelated() 
                 && MathF.Abs(0.5f - ((scale + 0.5f) % 1)) < 0.01f // check if scale is roughly a whole number (1, 2, 3, etc.)
@@ -155,7 +170,9 @@
             SetDirtyIfResChanged();
 
             if (treeDirty)
+            {
                 UpdateTree();
+            }
         }
 
         private void SetDirtyIfResChanged()

@@ -80,7 +80,9 @@ namespace BytingLib.Serialization
                 int outputCount = br.ReadInt32();
                 byte[] outputIDs = new byte[outputCount];
                 for (int j = 0; j < outputCount; j++)
+                {
                     outputIDs[j] = br.ReadByte();
+                }
 
                 var ctors = t.GetConstructors();
 
@@ -103,20 +105,30 @@ namespace BytingLib.Serialization
                                 continue;
                             }
                             else
+                            {
                                 break;
+                            }
                         }
                         
                         if (outputIDs.All(f => f != cs!.Id))
+                        {
                             break;
+                        }
+
                         ctorParamIDs.Add(cs!.Id);
                     }
 
                     if (pIndex == parameters.Length)
+                    {
                         break;
+                    }
+
                     ctorParamIDs = new List<byte?>();
                 }
                 if (cIndex == ctors.Length)
+                {
                     throw new Exception("no matching constructor found");
+                }
 
                 ConstructorInfo ctor = ctors[cIndex];
 

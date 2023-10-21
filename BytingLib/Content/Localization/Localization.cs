@@ -57,14 +57,20 @@ namespace BytingLib
             string[] localizationLines = CsvFileToLines(csvFile);
 
             if (dictionary != null)
+            {
                 dictionary.Clear();
+            }
             else
+            {
                 dictionary = new Dictionary<string, string>();
+            }
 
             dictionary.Add("", ""); // add empty
 
             if (localizationLines.Length == 0)
+            {
                 return;
+            }
 
             string head = localizationLines[0];
             int languageIndex = -1;
@@ -75,7 +81,9 @@ namespace BytingLib
                 nextI = head.IndexOf(separator, i);
 
                 if (nextI == -1)
+                {
                     nextI = head.Length;
+                }
 
                 languageIndex++;
                 string language = head.Substring(i, nextI - i);
@@ -87,7 +95,9 @@ namespace BytingLib
             }
 
             if (!foundLanguage)
+            {
                 throw new InvalidDataException("language " + LanguageKey + " not found");
+            }
 
             List<StackItem> keyStack = new List<StackItem>();
             keyStack.Add(new StackItem("NONE"));
@@ -116,15 +126,23 @@ namespace BytingLib
                 value = GetCellValue(indexStart, indexEnd, textMarked);
 
                 int newStackSize;
-                for (newStackSize = 0; newStackSize < key.Length && key[newStackSize] == nestedLevel; newStackSize++) ;
+                for (newStackSize = 0; newStackSize < key.Length && key[newStackSize] == nestedLevel; newStackSize++)
+                {
+                    ;
+                }
+
                 key = key.Substring(newStackSize);
                 newStackSize++;
 
                 if (key == "")
+                {
                     continue;
+                }
 
                 if (value == "")
+                {
                     throw new InvalidDataException("Translation missing for key \"" + key + "\" (localization.csv)");
+                }
 
                 if (newStackSize == keyStack.Count + 1)
                 {
@@ -158,7 +176,10 @@ namespace BytingLib
                 for (int j = 0; j < keyStack.Count; j++)
                 {
                     if (j > 0)
+                    {
                         key += adder;
+                    }
+
                     key += keyStack[j].key;
                 }
 
@@ -223,9 +244,14 @@ namespace BytingLib
                                 string InnerE(string c)
                                 {
                                     if (c.Length == 0)
+                                    {
                                         return "";
+                                    }
+
                                     if (c[c.Length - 1] != '}')
+                                    {
                                         return Localize(c);
+                                    }
 
                                     int searchIndex = 0;
                                     List<string> parameters = new List<string>();
@@ -235,7 +261,9 @@ namespace BytingLib
                                     while ((searchIndex = c.IndexOf('{', searchIndex)) != -1)
                                     {
                                         if (realKey == null)
+                                        {
                                             realKey = c.Remove(searchIndex);
+                                        }
 
                                         searchIndex++;
 
@@ -276,7 +304,9 @@ namespace BytingLib
                 value = value.Replace("\\n", "\n");
 
                 if (dictionary.ContainsKey(key))
+                {
                     throw new InvalidDataException($"The key {key} is defined two or more times in the Localization.csv file.");
+                }
 
                 dictionary.Add(key, value);
 
@@ -301,11 +331,15 @@ namespace BytingLib
 
                             index++;
                             if (index >= localizationLines[i].Length)
+                            {
                                 throw new InvalidDataException("End of " + textMarker + " marker not found");
+                            }
                         }
 
                         if (localizationLines[i].Length < index && localizationLines[i][index] != separator)
+                        {
                             throw new InvalidDataException("after " + textMarker + " marker, no separator " + separator + " found");
+                        }
 
                         //return (true, KeyedByTypeCollection);
                     }
@@ -321,11 +355,18 @@ namespace BytingLib
                 string GetCellValue(int start, int end, bool marked)
                 {
                     if (end == -1)
+                    {
                         end = localizationLines[i].Length;
+                    }
+
                     if (marked)
+                    {
                         return localizationLines[i].Substring(start + 1, end - start - 2).Replace("\"\"", "\""); // minus the 2 markers
+                    }
                     else
+                    {
                         return localizationLines[i].Substring(start, end - start);
+                    }
                 }
 
                 string GetFirstLanguageCellValue()
@@ -350,12 +391,17 @@ namespace BytingLib
                     args = parameters.Split(new char[] { ',' }).Concat(args).ToArray();
                 }
                 else
+                {
                     throw new Exception("key params were opened with '{' but were not closed with '}')");
+                }
             }
 
             string value = Localize(key);
             if (args == null || args.Length == 0)
+            {
                 return value;
+            }
+
             value = string.Format(value, args);
             return value;
         }

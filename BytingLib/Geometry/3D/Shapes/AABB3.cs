@@ -44,25 +44,44 @@
         {
             Vector3 nearestInBox;
             if (pos.X < Min.X)
+            {
                 nearestInBox.X = Min.X;
+            }
             else if (pos.X > Max.X)
+            {
                 nearestInBox.X = Max.X;
+            }
             else
+            {
                 nearestInBox.X = pos.X;
+            }
 
             if (pos.Y < Min.Y)
+            {
                 nearestInBox.Y = Min.Y;
+            }
             else if (pos.Y > Max.Y)
+            {
                 nearestInBox.Y = Max.Y;
+            }
             else
+            {
                 nearestInBox.Y = pos.Y;
+            }
 
             if (pos.Z < Min.Z)
+            {
                 nearestInBox.Z = Min.Z;
+            }
             else if (pos.Z > Max.Z)
+            {
                 nearestInBox.Z = Max.Z;
+            }
             else
+            {
                 nearestInBox.Z = pos.Z;
+            }
+
             return nearestInBox;
         }
 

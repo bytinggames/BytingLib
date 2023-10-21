@@ -25,7 +25,9 @@ namespace BytingLib.Serialization
             for (int i = 0; i < list.Count; i++)
             {
                 if (list[i] == null)
+                {
                     bw.Write((byte)0); // null
+                }
                 else
                 {
                     bw.Write((byte)1); // not null
@@ -45,7 +47,9 @@ namespace BytingLib.Serialization
             {
                 object? item = arr.GetValue(i);
                 if (item == null)
+                {
                     bw.Write((byte)0); // null
+                }
                 else
                 {
                     bw.Write((byte)1); // not null

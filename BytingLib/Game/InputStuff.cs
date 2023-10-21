@@ -107,7 +107,9 @@ namespace BytingLib
             // make sure directory exists
             if (dir != "" // in this case, the directory is the current directory and it is already existing
                 && !Directory.Exists(dir))
+            {
                 Directory.CreateDirectory(dir);
+            }
 
             FileStream fs = File.Create(path);
             BinaryWriter writer = new(fs);
@@ -188,7 +190,9 @@ namespace BytingLib
         {
             int version = reader.ReadInt32(); // read version
             if (version != 1)
+            {
                 throw new BytingException("this input recording version is not supported: " + version);
+            }
         }
 
         private void WriteSeed(BinaryWriter writer)

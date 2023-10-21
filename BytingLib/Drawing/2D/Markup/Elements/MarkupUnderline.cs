@@ -45,7 +45,9 @@
             settings.TextUnderline = new MarkupSettings.Underline(color ?? settings.TextColor, thickness, SizeUnion, offset);
 
             foreach (var leaf in base.IterateOverLeaves(settings))
+            {
                 yield return leaf;
+            }
 
             settings.TextUnderline = temp;
         }

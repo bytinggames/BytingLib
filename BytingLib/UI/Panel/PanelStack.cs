@@ -12,7 +12,10 @@
             Vertical = vertical;
             Padding = padding;
             if (anchor != null)
+            {
                 Anchor = anchor.Value;
+            }
+
             Color = color;
             Width = 0f;
             Height = 0f;
@@ -42,16 +45,22 @@
             AbsoluteRect = rect.CloneRect().Round();
 
             if (Children.Count == 0)
+            {
                 return;
+            }
 
             Padding?.RemoveFromRect(rect);
 
             pos = rect.TopLeft;
 
             if (Vertical)
+            {
                 UpdateTreeVertical(pos, contentSize, anyUnknownSize, rect);
+            }
             else
+            {
                 UpdateTreeHorizontal(pos, contentSize, anyUnknownSize, rect);
+            }
         }
 
         private void PercentageToPixels(ref Vector2 contentSizePlusPadding, ref Vector2 contentSize, Rect parentRect)
@@ -73,28 +82,41 @@
             contentSize = Vertical ? GetContentSizeVertical(out anyUnknownSize) : GetContentSizeHorizontal(out anyUnknownSize);
             contentSizePlusPadding = contentSize;
             if (contentSize.X >= 0)
+            {
                 contentSizePlusPadding.X += Padding.WidthOr0();
+            }
+
             if (contentSize.Y >= 0)
+            {
                 contentSizePlusPadding.Y += Padding.HeightOr0();
+            }
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             if (Color != null)
+            {
                 AbsoluteRect.Draw(spriteBatch, Color.Value);
+            }
         }
 
         public override float GetSizeTopToBottom(int d)
         {
             float size = Size(d);
             if (size > 0)
+            {
                 return size;
+            }
 
             GetSize(out _, out _, out Vector2 contentSizePlusPadding);
             if (d == 0)
+            {
                 return contentSizePlusPadding.X;
+            }
             else
+            {
                 return contentSizePlusPadding.Y;
+            }
         }
     }
 }

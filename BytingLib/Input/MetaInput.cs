@@ -30,7 +30,9 @@ namespace BytingLib
 
             if (OnStateChanged != null
                 && currentState != previousState)
+            {
                 OnStateChanged?.Invoke(currentState, previousState);
+            }
         }
     }
 }

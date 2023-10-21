@@ -23,7 +23,9 @@ namespace BytingLib
             if (blockLeftButton)
             {
                 if (state.LeftButton == ButtonState.Released)
+                {
                     blockLeftButton = false;
+                }
             }
             else if (state.LeftButton == ButtonState.Pressed
                 && previousMouseState.LeftButton == ButtonState.Released) // only prevent mouse click if clicked this frame

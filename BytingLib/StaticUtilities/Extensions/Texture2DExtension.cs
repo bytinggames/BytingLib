@@ -35,7 +35,9 @@
                 for (int i = 0; i < colorOut.Length; i++)
                 {
                     if (colorIn[i].A != 0)
+                    {
                         colorOut[i] = colorIn[i];
+                    }
                 }
             }
 
@@ -81,7 +83,9 @@
                 for (int i = 0; i < colorOut.Length; i++)
                 {
                     if (colorIn[i].A != 0)
+                    {
                         colorOut[i] = colorIn[i];
+                    }
                 }
             }
 
@@ -92,9 +96,14 @@
         {
             Color myColor;
             if (color == null)
+            {
                 myColor = Color.White;
+            }
             else
+            {
                 myColor = color.Value;
+            }
+
             Color[] colors = new Color[source.Width * source.Height];
             source.GetData(colors);
             for (int i = 0; i < colors.Length; i++)
@@ -115,7 +124,9 @@
                 for (int x = Math.Max(-shiftX, 0); x < w2; x++)
                 {
                     if (colorIn[y * w + x].A != 0 && colorIn[(y + shiftY) * w + (x + shiftX)].A == 0)
+                    {
                         colorOut[(y + shiftY) * w + (x + shiftX)] = color;
+                    }
                 }
             }
         }
@@ -157,7 +168,9 @@
                 for (int j = 0; j < colorIn.Length; j++)
                 {
                     if (colorOut[j].A != 0)
+                    {
                         colorIn[j] = colorOut[j];
+                    }
                 }
             }
 
@@ -166,7 +179,9 @@
                 for (int i = 0; i < colorOut.Length; i++)
                 {
                     if (colorIn[i].A != 0)
+                    {
                         colorOut[i] = colorIn[i];
+                    }
                 }
             }
 
@@ -183,7 +198,9 @@
                 for (int i = 0; i < output.Length; i++)
                 {
                     if (input[i].A != 0)
+                    {
                         output[i] = input[i];
+                    }
                 }
             }
 
@@ -216,7 +233,9 @@
         public static Texture2D? BlendOver(this Texture2D tex1, Texture2D tex2, GraphicsDevice gDevice)
         {
             if (tex1.Width != tex2.Width || tex1.Height != tex2.Height)
+            {
                 return null;
+            }
 
             Color[] colors = tex1.ToColor();
             Color[] colors2 = tex2.ToColor();
@@ -292,12 +311,16 @@
         public static void SaveAsPng(this Texture2D tex, string file)
         {
             using (FileStream f = File.Create(file))
+            {
                 tex.SaveAsPng(f, tex.Width, tex.Height);
+            }
         }
         public static void SaveAsJpeg(this Texture2D tex, string file)
         {
             using (FileStream f = File.Create(file))
+            {
                 tex.SaveAsJpeg(f, tex.Width, tex.Height);
+            }
         }
 
         /// <summary>ONUSE: this method needs to be tested for cases, where some edges can't be trimmed</summary>
@@ -314,15 +337,21 @@
             { }
             // if the whole texture has the same color, return a transparent pixel texture
             if (i == colors.Length)
+            {
                 return new Color[] { Color.Transparent }.ToTexture(1, tex.GraphicsDevice);
+            }
 
             int trimYStart = i / tex.Width;
 
             // if top couldn't be trimmed, try trimming with the bottom right most pixel color
             if (trimYStart == 0)
+            {
                 trimColor = colors[colors.Length - 1];
+            }
             else
+            {
                 trimmedAny = true;
+            }
 
             // trim bottom
             for (i = colors.Length - 1; i >= 0 && colors[i] == trimColor; i--)
@@ -332,23 +361,32 @@
 
             // if still nothing has been trimmed, try trimming with the top left most pixel color
             if (!trimmedAny && trimYEnd == tex.Height - 1)
+            {
                 trimColor = colors[0];
+            }
             else
+            {
                 trimmedAny = true;
-
+            }
 
             int trimXStart = TrimLeft(widthIn, colors, trimColor, trimYStart, trimYEnd);
             // if still nothing has been trimmed, try trimming with the bottom right most pixel color
             if (!trimmedAny && trimXStart == 0)
+            {
                 trimColor = colors[colors.Length - 1];
+            }
             else
+            {
                 trimmedAny = true;
+            }
 
             int trimXEnd = TrimRight(widthIn, colors, trimColor, trimYStart, trimYEnd);
 
             // if nothing has been trimmed, return a clone of the input texture
             if (!trimmedAny && trimXEnd == tex.Width - 1)
+            {
                 return colors.ToTexture(widthIn, tex.GraphicsDevice);
+            }
 
             int widthOut = trimXEnd - trimXStart + 1;
             int heightOut = trimYEnd - trimYStart + 1;
@@ -380,7 +418,9 @@
                 {
                     int i = x + y * widthIn;
                     if (colors[i] != trimColor)
+                    {
                         return x;
+                    }
                 }
             }
 
@@ -396,7 +436,9 @@
                 {
                     int i = x + y * widthIn;
                     if (colors[i] != trimColor)
+                    {
                         return x;
+                    }
                 }
             }
 
@@ -422,9 +464,13 @@
                 Vector2 drawPos = _anchor.pos - shift;
 
                 if (roundPositionTo == 1f)
+                {
                     drawPos = drawPos.RoundVectorCustom();
+                }
                 else
+                {
                     drawPos = (drawPos / roundPositionTo).RoundVectorCustom() * roundPositionTo;
+                }
 
                 pos = drawPos + shift;
             }

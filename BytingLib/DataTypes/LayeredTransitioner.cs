@@ -28,7 +28,9 @@ namespace BytingLib
                 }
             }
             else
+            {
                 transitions.Add(new Transition<TValue>(value, transitionDurationSeconds));
+            }
         }
 
         public void Update(float elapsedSeconds)
@@ -89,9 +91,13 @@ namespace BytingLib
             {
                 CurrentBlendAmount += elapsedSeconds / durationSeconds;
                 if (CurrentBlendAmount >= 1)
+                {
                     CurrentBlendAmount = 1;
+                }
                 else if (CurrentBlendAmount < 0) // just in case someone puts in negative elapsedSeconds
+                {
                     CurrentBlendAmount = 0;
+                }
             }
 
             public bool HasTransitionFinished()

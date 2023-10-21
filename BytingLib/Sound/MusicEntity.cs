@@ -24,7 +24,9 @@ namespace BytingLib
         public void TogglePlayStop()
         {
             if (musicInstance.IsDisposed)
+            {
                 return;
+            }
 
             switch (musicInstance.State)
             {

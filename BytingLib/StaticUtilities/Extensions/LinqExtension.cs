@@ -11,8 +11,16 @@
         public static TSource? MinByOrDefault<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector, IComparer<TKey>? comparer, TSource? defaultValue = default)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+
             comparer ??= Comparer<TKey>.Default;
 
             using (var sourceIterator = source.GetEnumerator())
@@ -24,7 +32,10 @@
                 TSource? min = defaultValue;
                 TKey minKey = selector(sourceIterator.Current);
                 if (minKey != null)
+                {
                     min = sourceIterator.Current;
+                }
+
                 while (sourceIterator.MoveNext())
                 {
                     var candidate = sourceIterator.Current;
@@ -62,8 +73,16 @@
         private static TSource MinBy_<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector, IComparer<TKey>? comparer)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+
             comparer ??= Comparer<TKey>.Default;
 
             using (var sourceIterator = source.GetEnumerator())
@@ -98,8 +117,16 @@
         public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector, IComparer<TKey>? comparer)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+
             comparer ??= Comparer<TKey>.Default;
 
             using (var sourceIterator = source.GetEnumerator())
@@ -133,8 +160,16 @@
         public static int IndexOfMaxBy<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector, IComparer<TKey>? comparer)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+
             comparer ??= Comparer<TKey>.Default;
 
             int index = 0;
@@ -172,8 +207,16 @@
         public static int IndexOfMinBy<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector, IComparer<TKey>? comparer)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+
             comparer ??= Comparer<TKey>.Default;
 
             int index = 0;

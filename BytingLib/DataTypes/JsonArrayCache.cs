@@ -24,10 +24,14 @@ namespace BytingLib
         {
             if (index < 0
                 || index >= container.Count)
+            {
                 return null;
+            }
 
             if (dict[index] != null)
+            {
                 return dict[index];
+            }
 
             var val = loadFromContainer(container[index]!);
             dict[index] = val;
@@ -39,14 +43,18 @@ namespace BytingLib
             for (int i = 0; i < dict.Length; i++)
             {
                 if (dict[i] != null)
+                {
                     action(dict[i]!);
+                }
             }
         }
 
         public void ForEach(Action<TValue> action)
         {
             for (int i = 0; i < TotalCount; i++)
+            {
                 action(Get(i)!);
+            }
         }
 
         public void Clear()
@@ -60,7 +68,9 @@ namespace BytingLib
         public IEnumerator<TValue> GetEnumerator()
         {
             for (int i = 0; i < TotalCount; i++)
+            {
                 yield return Get(i)!;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

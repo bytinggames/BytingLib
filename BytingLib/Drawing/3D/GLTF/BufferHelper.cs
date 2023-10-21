@@ -25,23 +25,40 @@
                     return VertexElementFormat.Single;
                 case "VEC2":
                     if (componentType == typeof(float))
+                    {
                         return VertexElementFormat.Vector2;
+                    }
                     else if (componentType == typeof(short))
+                    {
                         return VertexElementFormat.Short2;
+                    }
+
                     break;
                 case "VEC3":
                     if (componentType == typeof(float))
+                    {
                         return VertexElementFormat.Vector3;
+                    }
+
                     break;
                 case "VEC4":
                     if (componentType == typeof(float))
+                    {
                         return VertexElementFormat.Vector4;
+                    }
                     else if (componentType == typeof(ushort))
+                    {
                         return VertexElementFormat.Color;
+                    }
                     else if (componentType == typeof(byte))
+                    {
                         return VertexElementFormat.Byte4;
+                    }
                     else if (componentType == typeof(short))
+                    {
                         return VertexElementFormat.Short4;
+                    }
+
                     break;
             }
             throw new NotImplementedException();

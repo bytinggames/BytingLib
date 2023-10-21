@@ -16,17 +16,25 @@
         {
             angleFrom = angleFrom % MathHelper.TwoPi;
             if (angleFrom < 0)
+            {
                 angleFrom += MathHelper.TwoPi;
+            }
 
             angleTo = angleTo % MathHelper.TwoPi;
             if (angleTo < 0)
+            {
                 angleTo += MathHelper.TwoPi;
+            }
 
             float dist = angleTo - angleFrom;
             if (Math.Abs(dist) <= MathF.PI)
+            {
                 return dist;
+            }
             else
+            {
                 return -Math.Sign(dist) * (MathHelper.TwoPi - Math.Abs(dist));
+            }
         }
         public static float AngleDistanceAbs(this float angleFrom, float angleTo)
         {
@@ -36,49 +44,71 @@
         {
             angleFrom = angleFrom % TwoPi;
             if (angleFrom < 0)
+            {
                 angleFrom += TwoPi;
+            }
 
             angleTo = angleTo % TwoPi;
             if (angleTo < 0)
+            {
                 angleTo += TwoPi;
+            }
 
             double dist = angleTo - angleFrom;
             if (Math.Abs(dist) <= Math.PI)
+            {
                 return dist;
+            }
             else
+            {
                 return -Math.Sign(dist) * (TwoPi - Math.Abs(dist));
+            }
         }
         public static float GetMoveTo(this float val, float goal, float speed)
         {
             if (val == goal)
+            {
                 return val;
+            }
 
             if (val < goal)
             {
                 val += speed;
                 if (val > goal)
+                {
                     return goal;
+                }
+
                 return val;
             }
             else
             {
                 val -= speed;
                 if (val < goal)
+                {
                     return goal;
+                }
+
                 return val;
             }
         }
         public static float GetMoveToAngle(this float val, float goal, float speed)
         {
             if (val == goal)
+            {
                 return val;
+            }
 
             float dist = AngleDistance(val, goal);
 
             if (speed > Math.Abs(dist))
+            {
                 return goal;
+            }
             else
+            {
                 return val + MathF.Sign(dist) * speed;
+            }
         }
     }
 }

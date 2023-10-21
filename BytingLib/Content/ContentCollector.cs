@@ -15,7 +15,9 @@
             if (!string.IsNullOrEmpty(relativeAssetPath))
             {
                 if (!relativeAssetPath.EndsWith("/"))
+                {
                     relativeAssetPath += "/";
+                }
             }
 
             extendedLoad = new(this, gDevice);
@@ -38,12 +40,16 @@
                 loadedAssets.Add(assetName, assetHolder);
 
                 if (onLoad.ContainsKey(assetName))
+                {
                     triggerOnLoad = true;
+                }
             }
 
             Ref<T> asset = (assetHolder as AssetHolder<T>)!.Use();
             if (triggerOnLoad && asset != null)
+            {
                 TriggerOnLoad(assetName, asset.Value);
+            }
 
             return asset!;
         }
@@ -51,7 +57,9 @@
         public void TryTriggerOnLoad<T>(string assetName, T asset)
         {
             if (onLoad.ContainsKey(assetName) && asset != null)
+            {
                 TriggerOnLoad<T>(assetName, asset);
+            }
         }
 
         private void TriggerOnLoad<T>(string assetName, T asset)
@@ -91,13 +99,17 @@
                 loadedAssets.Add(assetName, assetHolder);
 
                 if (onLoad.ContainsKey(assetName))
+                {
                     triggerOnLoad = true;
+                }
             }
 
             Ref<T> asset = (assetHolder as AssetHolder<T>)!.Use();
 
             if (triggerOnLoad && asset.Value != null)
+            {
                 TriggerOnLoad(assetName, asset.Value);
+            }
 
             return asset;
         }
@@ -124,7 +136,9 @@
 
             object? assetHolder;
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
+            {
                 return null;
+            }
 
             return assetHolder as AssetHolder<T>;
         }
@@ -154,7 +168,10 @@
 
         public void ReloadLoadedAsset<T>(AssetHolder<T> assetHolder)
         {
-            if (assetHolder is null) throw new ArgumentNullException(nameof(assetHolder));
+            if (assetHolder is null)
+            {
+                throw new ArgumentNullException(nameof(assetHolder));
+            }
 
             contentRaw.UnloadAsset(assetHolder.AssetName);
             T asset = contentRaw.Load<T>(assetHolder.AssetName, extendedLoad);
@@ -162,7 +179,9 @@
             assetHolder.Replace(asset);
 
             if (onLoad.ContainsKey(assetHolder.AssetName))
+            {
                 TriggerOnLoad(assetHolder.AssetName, asset);
+            }
         }
 
         public void SubscribeToOnLoad<T>(string assetName, Action<T> onLoadAction)
@@ -170,9 +189,14 @@
             assetName = ToTotalAssetName(assetName);
 
             if (!onLoad.ContainsKey(assetName))
+            {
                 onLoad.Add(assetName, new Dictionary<object, Action<object>>());
+            }
             else if (onLoad[assetName].ContainsKey(onLoadAction))
+            {
                 throw new Exception($"there is already a subscription on asset {assetName} with key {onLoadAction}");
+            }
+
             onLoad[assetName].Add(onLoadAction, obj => onLoadAction((T)obj));
         }
 
@@ -181,9 +205,14 @@
             assetName = ToTotalAssetName(assetName);
 
             if (!onLoad.ContainsKey(assetName))
+            {
                 onLoad.Add(assetName, new Dictionary<object, Action<object>>());
+            }
             else if (onLoad[assetName].ContainsKey(onLoadAction))
+            {
                 throw new Exception($"there is already a subscription on asset {assetName} with key {onLoadAction}");
+            }
+
             onLoad[assetName].Add(onLoadAction, obj => onLoadAction());
         }
 
@@ -206,7 +235,9 @@
                 onLoad[assetName].Remove(action);
 
                 if (onLoad[assetName].Count == 0)
+                {
                     onLoad.Remove(assetName);
+                }
 
                 return true;
             }

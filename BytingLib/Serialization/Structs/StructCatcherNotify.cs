@@ -20,16 +20,24 @@
             if (match)
             {
                 if (currentlyMatching != match)
+                {
                     OnCatchBegin?.Invoke();
+                }
                 else
+                {
                     OnCatchSustain?.Invoke();
+                }
             }
             else
             {
                 if (currentlyMatching != match)
+                {
                     OnCatchEnd?.Invoke();
+                }
                 else
+                {
                     OnCatchNone?.Invoke();
+                }
             }
             currentlyMatching = match;
 

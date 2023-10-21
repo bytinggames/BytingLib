@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class PrimitiveAreaStrip : PrimitiveArea
     {
@@ -13,7 +11,10 @@ namespace BytingLib
             get
             {
                 if (lengths == null)
+                {
                     CalculateLengths();
+                }
+
                 return totalLength;
             }
         }
@@ -53,7 +54,10 @@ namespace BytingLib
             {
                 //Vector2 a = line.Vertices[i] - line.Vertices[(i + line.Vertices.Length - 1) % line.Vertices.Length];
                 if (i < line.Vertices.Count - 1)
+                {
                     b = line.Vertices[i] - line.Vertices[i + 1];
+                }
+
                 float angleA = MathF.Atan2(a.Y, a.X);
                 float angleB = MathF.Atan2(b.Y, b.X);
                 float angleDistHalved = MathExtension.AngleDistance(angleA, angleB) / 2f;
@@ -109,7 +113,10 @@ namespace BytingLib
         public void Draw(GraphicsDevice gDevice, float length)
         {
             if (length <= 0f)
+            {
                 return;
+            }
+
             if (length >= 1f)
             {
                 Draw(gDevice);
@@ -124,7 +131,9 @@ namespace BytingLib
         private IEnumerable<Vector2> GetVerticesToLength(float length)
         {
             if (lengths == null)
+            {
                 CalculateLengths();
+            }
 
             int i = 0;
             length *= totalLength;
@@ -200,7 +209,10 @@ namespace BytingLib
         public void Draw(SpriteBatch spriteBatch, Color color, float layerDepth, float length)
         {
             if (length <= 0f)
+            {
                 return;
+            }
+
             if (length >= 1f)
             {
                 Draw(spriteBatch, color, layerDepth);

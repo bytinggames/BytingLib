@@ -51,7 +51,10 @@
         void Restart()
         {
             if (ingame != null)
+            {
                 gameStuff.Remove(ingame);
+            }
+
             CreateIngame();
             triggerRestart = false;
 

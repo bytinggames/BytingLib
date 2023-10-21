@@ -59,7 +59,9 @@ namespace BytingLib.Intro
             float lineThickness = defaultLineThickness;
             float displayedThickness = lineThickness * scale;
             if (displayedThickness < minLineThickness)
+            {
                 lineThickness *= minLineThickness / displayedThickness;
+            }
 
             if (Shadow)
             {
@@ -95,7 +97,10 @@ namespace BytingLib.Intro
                     Vector2 bc = c - b;
                     Vector2 orth = Vector2.Normalize(ab).GetRotate90();
                     if (!t.DirectionForward)
+                    {
                         orth = -orth;
+                    }
+
                     Vector2 maxWidthPoint = b + orth * thickerThickness;
                     Vector2 aToMaxWidth = maxWidthPoint - a;
 
@@ -104,7 +109,9 @@ namespace BytingLib.Intro
                     Vector2 thickCorner = a + aToMaxWidth * col;
 
                     if (!t.DirectionForward)
+                    {
                         CodeHelper.Swap(ref a, ref b);
+                    }
 
                     spriteBatch.DrawTriangle(spriteBatch.GetPixel(), a, b, thickCorner, color);
                 }
@@ -115,11 +122,16 @@ namespace BytingLib.Intro
                     Vector2 ab = b - a;
                     Vector2 orth = Vector2.Normalize(ab).GetRotate90();
                     if (!t.DirectionForward)
+                    {
                         orth = -orth;
+                    }
+
                     Vector2 maxWidthPoint = b + orth * thickerThickness;
 
                     if (!t.DirectionForward)
+                    {
                         CodeHelper.Swap(ref a, ref b);
+                    }
 
                     spriteBatch.DrawTriangle(spriteBatch.GetPixel(), a, b, maxWidthPoint, color);
                 }
@@ -130,7 +142,10 @@ namespace BytingLib.Intro
         {
             index %= Vertices.Count;
             if (index < 0)
+            {
                 index += Vertices.Count;
+            }
+
             return Vertices[index];
         }
 
@@ -187,7 +202,9 @@ namespace BytingLib.Intro
             }), false);
 
             using (var fs = File.OpenRead(introDataFile))
+            {
                 data = serializer.Deserialize<IntroData>(fs)!;
+            }
 
             Vector2 center;
 
@@ -247,7 +264,9 @@ namespace BytingLib.Intro
                 spriteBatch.End();
             }
             if (renderTarget == null || renderTarget.Width != size.X || renderTarget.Height != size.Y)
+            {
                 RefreshRenderTarget(spriteBatch.GraphicsDevice, size);
+            }
 
             float wScale = size.X / requiredSpace.Width;
             float hScale = size.Y / requiredSpace.Height;
@@ -339,7 +358,10 @@ namespace BytingLib.Intro
         private void RefreshRenderTarget(GraphicsDevice gDevice, Int2 size)
         {
             if (renderTarget != null)
+            {
                 renderTarget.Dispose();
+            }
+
             renderTarget = new RenderTarget2D(gDevice, size.X, size.Y, false, SurfaceFormat.Color, DepthFormat.None, 8, RenderTargetUsage.DiscardContents);
         }
 
@@ -349,7 +371,9 @@ namespace BytingLib.Intro
         public void Update()
         {
             if (!animate)
+            {
                 return;
+            }
 
             time += 0.01f;
 
@@ -377,7 +401,9 @@ namespace BytingLib.Intro
             {
                 File.Move(introDataFile, introDataFile + DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss_fff"));
                 using (var fs = File.Create(introDataFile))
+                {
                     serializer.Serialize(fs, data);
+                }
             }
 
             renderTarget?.Dispose();

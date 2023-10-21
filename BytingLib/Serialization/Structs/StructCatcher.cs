@@ -15,12 +15,16 @@
         public virtual bool DoesMatch(byte[] stateBytes)
         {
             if (stateBytes.Length != catchBytes.Length)
+            {
                 return false;
+            }
 
             for (int j = 0; j < stateBytes.Length; j++)
             {
                 if ((stateBytes[j] & catchBytes[j]) != catchBytes[j])
+                {
                     return false;
+                }
             }
             return true;
         }

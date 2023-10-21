@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework.Input;
-
-namespace BytingLib.UI
+﻿namespace BytingLib.UI
 {
     public abstract class Canvas : Element, IUpdate, IDrawBatch
     {
@@ -35,7 +33,9 @@ namespace BytingLib.UI
                 UpdateSelf(Input);
 
                 for (int i = 0; i < Children.Count; i++)
+                {
                     Children[i].Update(Input);
+                }
             }
         }
 

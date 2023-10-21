@@ -54,9 +54,14 @@
         public PrimitiveAreaFan Enlarge(float enlarge)
         {
             if (enlarge < 0)
+            {
                 throw new ArgumentException(nameof(enlarge) + " < 0 is not supported");
+            }
+
             if (enlarge == 0)
+            {
                 return this;
+            }
 
             var vertices = Outline().ThickenOutside(enlarge).Vertices;
 

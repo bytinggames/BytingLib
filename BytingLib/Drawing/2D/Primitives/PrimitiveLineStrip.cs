@@ -73,18 +73,30 @@
         public PrimitiveLineStrip AddArc(float radius, float angle, int vertexCount = -1)
         {
             if (Vertices.Count == 0)
+            {
                 throw new Exception("no vertices to start with");
+            }
+
             if (Vertices.Count < 2 && LastVectorDirection == Vector2.Zero)
+            {
                 throw new Exception("no two vertices and no LastVectorDirection to start with");
+            }
 
             if (angle == 0)
+            {
                 return this;
+            }
 
             Vector2 dir;
             if (LastVectorDirection == Vector2.Zero)
+            {
                 dir = Vertices[Vertices.Count - 1] - Vertices[Vertices.Count - 2];
+            }
             else
+            {
                 dir = LastVectorDirection;
+            }
+
             dir.Normalize();
 
             float dirAngle = MathF.Atan2(dir.Y, dir.X);
@@ -92,18 +104,26 @@
             LastVectorDirection = new Vector2(MathF.Cos(dirAngleAfterArc), MathF.Sin(dirAngleAfterArc));
 
             if (radius == 0)
+            {
                 return this;
+            }
 
             Vector2 dirN = new Vector2(-dir.Y, dir.X);
             if (angle < 0)
+            {
                 dirN = -dirN;
+            }
 
             Vector2 circleCenter = Vertices[Vertices.Count - 1] + dirN * radius;
             float circleAngle = dirAngle;
             if (angle > 0)
+            {
                 circleAngle -= MathHelper.PiOver2;
+            }
             else
+            {
                 circleAngle += MathHelper.PiOver2;
+            }
 
             if (vertexCount == -1)
             {

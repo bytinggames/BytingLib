@@ -63,7 +63,9 @@ namespace BytingLib
             #region Emissive
 
             if ((t = n["emissiveFactor"]) != null)
+            {
                 EmissiveFactor = t.AsArray().GetVector3();
+            }
 
             if ((t = n["emissiveTexture"]) != null)
             {
@@ -112,11 +114,17 @@ namespace BytingLib
                 {
                     int cull = culling.GetValue<int>();
                     if (cull > 0)
+                    {
                         RasterizerState = RasterizerState.CullClockwise;
+                    }
                     else if (cull < 0)
+                    {
                         RasterizerState = RasterizerState.CullCounterClockwise;
+                    }
                     else
+                    {
                         RasterizerState = RasterizerState.CullNone;
+                    }
                 }
             }
         }

@@ -29,7 +29,9 @@ namespace BytingLib
 
                 supervisorDirLength = supervisorDir.Length;
                 if (!supervisorDir.EndsWith(System.IO.Path.DirectorySeparatorChar.ToString()))
+                {
                     supervisorDirLength++;
+                }
             }
         }
 
@@ -106,9 +108,13 @@ namespace BytingLib
         private string[] GetFiles()
         {
             if (getFiles == null)
+            {
                 return Directory.GetFiles(directory, searchPattern, SearchOption.AllDirectories);
+            }
             else
+            {
                 return getFiles();
+            }
         }
 
         public Changes GetChanges()
@@ -147,7 +153,9 @@ namespace BytingLib
                 void FileChanged(DateTime changeTime, long fileSize)
                 {
                     if (changeTime > newestUpdate)
+                    {
                         newestUpdate = changeTime;
+                    }
 
                     FileStamp fileStamp = new FileStamp(cFile, changeTime, directory);
 
@@ -178,7 +186,9 @@ namespace BytingLib
 
             //files = cFiles;
             if (newestUpdate > lastUpdate)
+            {
                 lastUpdate = newestUpdate;
+            }
 
             return changes;
         }

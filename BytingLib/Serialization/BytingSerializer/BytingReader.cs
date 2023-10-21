@@ -14,7 +14,9 @@
             this.idToType = idToType;
 
             if (references)
+            {
                 refIDs = new();
+            }
         }
 
         private object ReadObjectForReal(Type declarationType)
@@ -37,7 +39,9 @@
         public object ReadObject(Type declarationType)
         {
             if (refIDs == null || declarationType.IsValueType)
+            {
                 return ReadObjectForReal(declarationType);
+            }
 
             byte oldReference = ReadByte();
 

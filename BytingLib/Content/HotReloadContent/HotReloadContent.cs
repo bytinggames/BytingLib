@@ -29,9 +29,13 @@ namespace BytingLib
 
             if (Path.GetFileName(sourceContentDir) == "Content"
                 && Directory.EnumerateFiles(sourceContentDir, "*.mgcb", SearchOption.TopDirectoryOnly).Any()) // check if any mgcb file is present
+            {
                 expectEmptyDir = false;
+            }
             else
+            {
                 expectEmptyDir = true;
+            }
 
             //sourceContentDir = Paths.ModContent;// Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"../../../../Content"));
             //bool expectEmptyDir = true;
@@ -42,11 +46,16 @@ namespace BytingLib
             string tempOutputPath = Path.Combine(sourceContentDir, "bin", "HotReload", "Content");
 
             if (Directory.Exists(tempPath))
+            {
                 Directory.Delete(tempPath, true);
+            }
+
             if (clearHotReloadOutputPath)
             {
                 if (Directory.Exists(tempOutputPath))
+                {
                     Directory.Delete(tempOutputPath, true);
+                }
             }
             ContentBuilder = new ContentBuilder(sourceContentDir, tempOutputPath, tempPath, contentConverter);
 
@@ -55,7 +64,9 @@ namespace BytingLib
             gDevice = (serviceProvider.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService)!.GraphicsDevice;
 
             if (expectEmptyDir)
+            {
                 UpdateChanges();
+            }
         }
 
         private string[] GetFiles()
@@ -69,7 +80,9 @@ namespace BytingLib
             {
                 if (!topDir.EndsWith("\\bin") && !topDir.EndsWith("/bin")
                      && !topDir.EndsWith("\\obj") && !topDir.EndsWith("/obj"))
+                {
                     files.AddRange(Directory.GetFiles(topDir, "*.*", SearchOption.AllDirectories));
+                }
             }
 
 
@@ -97,7 +110,10 @@ namespace BytingLib
                     string file = shaderCode.Substring(i, i2 - i);
                     file = Path.Combine(Path.GetDirectoryName(localFilePath)!, file);
                     if (!dependencies.ContainsKey(file))
+                    {
                         dependencies.Add(file, new List<string>());
+                    }
+
                     dependencies[file].Add(localFilePath);
 
                     i = i2 + 1;
@@ -121,7 +137,10 @@ namespace BytingLib
                     string file = json.Substring(i, i2 - i);
                     file = Path.Combine(Path.GetDirectoryName(localFilePath)!, file);
                     if (!dependencies.ContainsKey(file))
+                    {
                         dependencies.Add(file, new List<string>());
+                    }
+
                     dependencies[file].Add(localFilePath);
 
                     i = i2 + 1;
@@ -140,7 +159,9 @@ namespace BytingLib
                         // if dependent files are already included, remove them so they aren't added two times, and so that the dependent file gets loaded after the dependency
                         var matches = changes.Modified.FindAll(f => f.LocalPath == d[j]).ToArray();
                         for (int k = 0; k < matches.Length; k++)
+                        {
                             changes.Modified.Remove(matches[k]);
+                        }
 
                         // add dependent file
                         changes.Modified.Add(new DirectorySupervisor.FileStamp(Path.Combine(sourceContentDir, d[j]), DateTime.Now, sourceContentDir));
@@ -159,13 +180,17 @@ namespace BytingLib
             if (Directory.Exists(modelPath))
             {
                 while (Directory.EnumerateFiles(modelPath, "*.exporting", SearchOption.AllDirectories).Any())
+                {
                     Thread.Sleep(100);
+                }
             }
 
             var changes = dirSupervisor.GetChanges();
 
             if (!changes.ModifiedOrCreated().Any() && !changes.Deleted.Any())
+            {
                 return false;
+            }
 
             AddDependencies(changes);
 
@@ -189,13 +214,19 @@ namespace BytingLib
                     int lastDotIndex = assetName.LastIndexOf('.');
                     // remove extension
                     if (lastDotIndex != -1)
+                    {
                         assetName = assetName.Remove(lastDotIndex);
+                    }
 
                     if (file.CSharpType != null
                         && contentConverter.RuntimeTypes.TryGetValue(file.CSharpType, out Type? dataType))
+                    {
                         ReloadFromTypeIfLoaded(dataType, assetName, deleted);
+                    }
                     else if (file.FilePath.EndsWith(".loca"))
+                    {
                         OnTextReload?.Invoke(Path.Combine(TempContentRaw.RootDirectory, file.FilePath));
+                    }
                 }
             }
 
@@ -218,7 +249,9 @@ namespace BytingLib
         {
             AssetHolder<T>? assetHolder = content.GetAssetHolder<T>(assetName);
             if (assetHolder == null) // check if the asset has already been loaded
+            {
                 return; // if not, then don't bother with replacing
+            }
 
             TempContentRaw.UnloadAsset(assetName); // to dispose
 
@@ -231,7 +264,10 @@ namespace BytingLib
             {
                 T? newlyLoadedAsset = TempContentRaw.Load<T>(assetName, new(content, gDevice));
                 if (newlyLoadedAsset == null)
+                {
                     return;
+                }
+
                 assetHolder.Replace(newlyLoadedAsset);
                 content.TryTriggerOnLoad(assetName, newlyLoadedAsset!);
                 assetHolder.TryTriggerOnLoad();

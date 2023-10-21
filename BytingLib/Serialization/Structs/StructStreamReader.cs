@@ -24,7 +24,10 @@ namespace BytingLib.Serialization
         private void Initialize()
         {
             if (startPosition.HasValue)
+            {
                 stream.Position = startPosition.Value;
+            }
+
             currentFrame = -1;
             frameWithNextStateChange = -1;
             Current = default;
@@ -40,9 +43,13 @@ namespace BytingLib.Serialization
             if (newFrame != null)
             {
                 if (newFrame == frameWithNextStateChange)
+                {
                     OnFinish();
+                }
                 else
+                {
                     frameWithNextStateChange = newFrame.Value;
+                }
             }
             else
             {
@@ -53,7 +60,10 @@ namespace BytingLib.Serialization
         protected virtual int? ReadNextFrameActual()
         {
             if (!stream.ReadFullBuffer(intBuffer))
+            {
                 return null;
+            }
+
             return BitConverter.ToInt32(intBuffer);
         }
 
@@ -90,10 +100,14 @@ namespace BytingLib.Serialization
             currentFrame++;
 
             if (IsFinished)
+            {
                 return false;
+            }
 
             if (currentFrame == frameWithNextStateChange)
+            {
                 ReadStruct();
+            }
 
             return true;
         }
@@ -101,7 +115,9 @@ namespace BytingLib.Serialization
         public void Reset()
         {
             if (startPosition == null)
+            {
                 throw new StructPlaybackException("Reset() is only supported, if startPosition is not null. Also make sure, that the position of the stream can be changed.");
+            }
 
             Initialize();
         }

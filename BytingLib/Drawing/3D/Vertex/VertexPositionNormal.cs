@@ -51,10 +51,14 @@ namespace BytingLib
         public override bool Equals(object? obj)
         {
             if (obj == null)
+            {
                 return false;
+            }
 
             if (obj.GetType() != base.GetType())
+            {
                 return false;
+            }
 
             return (this == ((VertexPositionNormal)obj));
         }

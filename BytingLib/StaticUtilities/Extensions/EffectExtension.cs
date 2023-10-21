@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public static class EffectExtension
     {
@@ -12,7 +10,10 @@ namespace BytingLib
             {
                 var p2 = parametersTarget[p.Name];
                 if (p2 == null) // removed parameter
+                {
                     continue;
+                }
+
                 switch (p.ParameterType)
                 {
                     case EffectParameterType.Bool:
@@ -20,15 +21,22 @@ namespace BytingLib
                         break;
                     case EffectParameterType.Int32:
                         if (p.Elements.Count == 0)
+                        {
                             p2.SetValue(p.GetValueInt32());
+                        }
                         else
+                        {
                             p2.SetValue(p.GetValueInt32Array());
+                        }
+
                         break;
                     case EffectParameterType.Single:
                         if (p.Elements.Count == 0)
                         {
                             if (p.ColumnCount == 1 && p.RowCount == 1)
+                            {
                                 p2.SetValue(p.GetValueSingle());
+                            }
                             else if (p.RowCount == 1)
                             {
                                 switch (p.ColumnCount)
@@ -47,12 +55,16 @@ namespace BytingLib
                                 }
                             }
                             else
+                            {
                                 p2.SetValue(p.GetValueMatrix());
+                            }
                         }
                         else
                         {
                             if (p.ColumnCount == 1 && p.RowCount == 1)
+                            {
                                 p2.SetValue(p.GetValueSingleArray());
+                            }
                             else if (p.RowCount == 1)
                             {
                                 switch (p.ColumnCount)
@@ -71,7 +83,9 @@ namespace BytingLib
                                 }
                             }
                             else // Warning: it seems not possible to get the values of a matrix3x3 array...?
+                            {
                                 p2.SetValue(p.GetValueMatrixArray(p.Elements.Count));
+                            }
                         }
                         break;
                     case EffectParameterType.Texture:
@@ -124,13 +138,18 @@ namespace BytingLib
             }
 
             if (primitiveCount <= 0)
+            {
                 return;
+            }
 
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
                 if (texture != null)
+                {
                     effect.GraphicsDevice.Textures[0] = texture;
+                }
+
                 effect.GraphicsDevice.DrawUserIndexedPrimitives(primitiveType, vertices, 0, vertexCount, indices, 0, primitiveCount);
             }
         }

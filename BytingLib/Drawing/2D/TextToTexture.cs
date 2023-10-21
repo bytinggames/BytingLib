@@ -52,7 +52,9 @@ namespace BytingLib
         public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color backgroundColor, float textureScale = 1, float? verticalSpaceBetweenLines = null)
         {
             if (textures.ContainsKey((text, font.Value, backgroundColor, textureScale)))
+            {
                 return textures[(text, font.Value, backgroundColor, textureScale)].Use();
+            }
 
             var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */);
             markupSettings.TextureScale = Vector2.One * textureScale;
@@ -84,7 +86,10 @@ namespace BytingLib
             AssetHolder<Texture2D> assetHolder = new AssetHolder<Texture2D>(tex, tex.Name, _ =>
             {
                 if (!textures.Remove((text, font.Value, backgroundColor, textureScale)))
+                {
                     throw new BytingException("couldn't remove a texture from TextToTexture.textures");
+                }
+
                 tex.Dispose();
             });
 

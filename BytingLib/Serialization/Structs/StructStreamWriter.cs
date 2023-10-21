@@ -18,7 +18,9 @@
         public void AddState(T state)
         {
             if (isDisposed)
+            {
                 throw new ObjectDisposedException(nameof(StructStreamWriter<T>));
+            }
 
             frame++;
             if (!state.Equals(lastState))
@@ -31,12 +33,16 @@
         private void OnStateChanged(T currentState, T previousState)
         {
             if (isDisposed)
+            {
                 throw new ObjectDisposedException(nameof(StructStreamWriter<T>));
+            }
 
             WriteFrame();
             WriteStructChange(currentState, previousState);
             if (alwaysFlush)
+            {
                 stream.Flush();
+            }
         }
 
         public void Dispose()

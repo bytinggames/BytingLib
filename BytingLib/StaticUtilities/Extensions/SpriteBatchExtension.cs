@@ -102,7 +102,10 @@
         {
             SpriteBatchExtended? extended;
             if (extendedData.TryGetValue(spriteBatch, out extended))
+            {
                 return extended;
+            }
+
             extended = new SpriteBatchExtended(spriteBatch);
             extendedData.Add(spriteBatch, extended);
             return extended;
@@ -150,7 +153,9 @@
                 offset.X = (maxLineWidth - lineWidth[i]) * horizontalAlign01;
 
                 if (!string.IsNullOrEmpty(lines[i]))
+                {
                     spriteBatch.DrawString(spriteFont, lines[i], position + offset, color, rotation, origin, scale, effects, layerDepth, rtl);
+                }
 
                 offset.Y += spriteFont.LineSpacing;
             }

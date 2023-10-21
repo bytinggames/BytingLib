@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace BytingLib
 {
@@ -44,7 +42,9 @@ namespace BytingLib
         public float GetAverageMS()
         {
             if (samples.Count == 0)
+            {
                 return -1;
+            }
 
             return (float)totalTicks / TimeSpan.TicksPerMillisecond / samples.Count;
         }

@@ -5,13 +5,19 @@
         public static float WidthOr0(this Padding? padding)
         {
             if (padding == null)
+            {
                 return 0f;
+            }
+
             return padding.Width;
         }
         public static float HeightOr0(this Padding? padding)
         {
             if (padding == null)
+            {
                 return 0f;
+            }
+
             return padding.Height;
         }
     }

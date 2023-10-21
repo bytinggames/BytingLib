@@ -26,13 +26,17 @@ namespace BytingLib
         public void Pause()
         {
             if (sw != null)
+            {
                 sw.Stop();
+            }
         }
 
         public void Continue()
         {
             if (sw != null)
+            {
                 sw.Start();
+            }
         }
 
         public int CurrentFPS => sw == null ? -1 : sw.Elapsed.TotalSeconds == 0 ? -1 : (int)(timestamps.Count / Math.Min(1d, sw.Elapsed.TotalSeconds));

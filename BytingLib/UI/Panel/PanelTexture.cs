@@ -13,7 +13,10 @@
             Texture = texture;
             Color = color ?? Color.White;
             if (anchor != null)
+            {
                 Anchor = anchor.Value;
+            }
+
             Padding = padding;
         }
 

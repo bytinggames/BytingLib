@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class TransparencyBatch
     {
@@ -21,7 +18,10 @@ namespace BytingLib
         public void Begin()
         {
             if (listeningForDrawCalls || drawLater.Count > 0)
+            {
                 throw new Exception("RenderEnd() must be called after RenderBegin()");
+            }
+
             listeningForDrawCalls = true;
 
         }

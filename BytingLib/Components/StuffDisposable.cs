@@ -23,7 +23,9 @@ namespace BytingLib
             any = AddActual(thing, onRemove) || any;
 
             if (!any && CheckIfAnyInterfaceIsInherited)
+            {
                 throw new ArgumentException(thing.GetType() + " didn't inherit any provided interface.");
+            }
 
             allThings.Add(thing);
         }
@@ -31,10 +33,14 @@ namespace BytingLib
         public override void Remove(object thing)
         {
             if (!allThings.Remove(thing))
+            {
                 return; //throw new ArgumentException("thing wasn't contained in stuff.");
+            }
 
             if (thing is IDisposable disposable)
+            {
                 disposable.Dispose();
+            }
 
             RemoveActual(thing);
         }
@@ -48,7 +54,9 @@ namespace BytingLib
 
             if (listsOfThings.Count > 0
                 && listsOfThings.Any(f => f.Value.Count > 0))
+            {
                 throw new BytingException("listsOfThings aren't empty after disposal.");
+            }
 
             OnDispose?.Invoke();
         }
@@ -60,12 +68,16 @@ namespace BytingLib
             any = InsertActual(index, thing) || any;
 
             if (!any && CheckIfAnyInterfaceIsInherited)
+            {
                 throw new ArgumentException(thing.GetType() + " didn't inherit any provided interface.");
+            }
 
             if (onRemove != null)
             {
                 if (!onRemoveActions.TryAdd(thing, onRemove))
+                {
                     throw new ArgumentException("The thing has been added before to the onRemoveActions dictionary. This is not supported.");
+                }
             }
 
             allThings.Insert(index, thing);

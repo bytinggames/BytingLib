@@ -25,7 +25,9 @@
 
             AnimationGL.ChannelTarget? channelTarget;
             if (dictionary.TryGetValue(key, out channelTarget))
+            {
                 return channelTarget;
+            }
 
             channelTarget = new(model, targetNodeIndex);
 

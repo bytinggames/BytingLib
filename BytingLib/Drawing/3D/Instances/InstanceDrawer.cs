@@ -5,7 +5,9 @@
         private static void DrawBegin(IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, Effect effect)
         {
             if (instances.Count == 0)
+            {
                 return;
+            }
 
             instanceBuffer.SetData(instances.Array, 0, instances.Count, SetDataOptions.Discard);
         }

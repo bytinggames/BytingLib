@@ -45,7 +45,10 @@
         {
             IEnumerator<Vector2> enumerator = points.GetEnumerator();
             if (!enumerator.MoveNext())
+            {
                 return null;
+            }
+
             Vector2 min, max;
             min = max = enumerator.Current;
             while (enumerator.MoveNext())
@@ -62,7 +65,9 @@
             IEnumerator<Rect> enumerator = rects.GetEnumerator();
 
             if (!enumerator.MoveNext())
+            {
                 return null;
+            }
 
             float left, top, bottom, right;
             left = enumerator.Current.Left;
@@ -73,13 +78,24 @@
             while (enumerator.MoveNext())
             {
                 if (enumerator.Current.Left < left)
+                {
                     left = enumerator.Current.Left;
+                }
+
                 if (enumerator.Current.Top < top)
+                {
                     top = enumerator.Current.Top;
+                }
+
                 if (enumerator.Current.Right > right)
+                {
                     right = enumerator.Current.Right;
+                }
+
                 if (enumerator.Current.Bottom > bottom)
+                {
                     bottom = enumerator.Current.Bottom;
+                }
             }
             return new Rect(left, top, right - left, bottom - top);
         }
@@ -158,27 +174,43 @@
         public void PushIntoRectangle(Rect bounds) //no center, if bounds is smaller than this rectangle!
         {
             if (X < bounds.X)
+            {
                 X = bounds.X;
+            }
             else if (Right > bounds.Right)
+            {
                 X = bounds.Right - Size.X;
+            }
 
             if (Y < bounds.Y)
+            {
                 Y = bounds.Y;
+            }
             else if (Bottom > bounds.Bottom)
+            {
                 Y = bounds.Bottom - Size.Y;
+            }
         }
 
         public Vector2 VectorPushInto(Vector2 pos) //no center, if bounds is smaller than this rectangle!
         {
             if (pos.X < X)
+            {
                 pos.X = X;
+            }
             else if (pos.X > Right)
+            {
                 pos.X = Right;
+            }
 
             if (pos.Y < Y)
+            {
                 pos.Y = Y;
+            }
             else if (pos.Y > Bottom)
+            {
                 pos.Y = Bottom;
+            }
 
             return pos;
         }
@@ -204,7 +236,9 @@
         public Rect Expand(float x, float y)
         {
             if (x > 0)
+            {
                 Size.X += x;
+            }
             else if (x < 0)
             {
                 pos.X += x;
@@ -212,7 +246,9 @@
             }
 
             if (y > 0)
+            {
                 Size.Y += y;
+            }
             else if (y < 0)
             {
                 pos.Y += y;
@@ -225,17 +261,27 @@
         {
             Vector2 expand = Vector2.Zero;
             if (vec.X < Left)
+            {
                 expand.X = vec.X - Left;
+            }
             else if (vec.X > Right)
+            {
                 expand.X = vec.X - Right;
+            }
 
             if (vec.Y < Top)
+            {
                 expand.Y = vec.Y - Top;
+            }
             else if (vec.Y > Bottom)
+            {
                 expand.Y = vec.Y - Bottom;
+            }
 
             if (expand != Vector2.Zero)
+            {
                 Expand(expand);
+            }
 
             return this;
         }
@@ -243,7 +289,10 @@
         {
             Rect? rect = FromPoints(vertices);
             if (rect == null)
+            {
                 return this;
+            }
+
             return Encapsulate(rect);
         }
         public Rect Encapsulate(Rect rect)
@@ -293,14 +342,20 @@
         {
             pos = anchor.pos - Size * anchor.origin;
             if (round)
+            {
                 pos = pos.GetRound();
+            }
+
             Initialize(pos, Size);
         }
         public void SetToAnchor(Anchor anchor, Vector2 size, bool round = true)
         {
             pos = anchor.pos - size * anchor.origin;
             if (round)
+            {
                 pos = pos.GetRound();
+            }
+
             Initialize(pos, size);
         }
         public Anchor GetCenterAnchor()
@@ -401,10 +456,14 @@
         public static bool EqualValue(this Rect? rectA, Rect? rectB)
         {
             if (rectA == null != (rectB == null))
+            {
                 return false;
+            }
 
             if (rectA == null)
+            {
                 return true;
+            }
 
             return rectA.X == rectB!.X
                 && rectA.Y == rectB.Y

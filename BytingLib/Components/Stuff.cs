@@ -17,14 +17,19 @@ namespace BytingLib
         {
             if (mustHaveOneEntry &&
                 (types == null || types.Length == 0))
+            {
                 throw new ArgumentException("Types must have at least one entry.");
+            }
 
             if (types != null)
             {
                 foreach (Type t in types)
                 {
                     if (!t.IsInterface)
+                    {
                         throw new ArgumentException("Only interfaces are supported.");
+                    }
+
                     Type genericListType = typeof(List<>).MakeGenericType(t);
                     listsOfThings.Add(t, (IList)Activator.CreateInstance(genericListType)!);
                 }
@@ -33,11 +38,16 @@ namespace BytingLib
 
         public virtual void Add(object thing, Action<object>? onRemove = null)
         {
-            if (thing is null) throw new ArgumentNullException(nameof(thing));
+            if (thing is null)
+            {
+                throw new ArgumentNullException(nameof(thing));
+            }
 
             bool any = AddActual(thing, onRemove);
             if (!any)
+            {
                 throw new ArgumentException("The thing didn't inherit any provided interface.");
+            }
         }
 
         protected virtual bool AddActual(object thing, Action<object>? onRemove)
@@ -52,7 +62,9 @@ namespace BytingLib
             if (onRemove != null)
             {
                 if (!onRemoveActions.TryAdd(thing, onRemove))
+                {
                     throw new ArgumentException("The thing has been added before to the onRemoveActions dictionary. This is not supported.");
+                }
             }
 
             return any;
@@ -62,7 +74,9 @@ namespace BytingLib
         {
             bool any = RemoveActual(thing);
             if (!any)
+            {
                 throw new ArgumentException("The thing didn't inherit any provided interface.");
+            }
         }
 
         protected bool RemoveActual(object thing)
@@ -77,7 +91,9 @@ namespace BytingLib
                     foreach (var iteration in iterations.Where(f => f.InterfaceType == match.Type))
                     {
                         if (iteration.Index >= index)
+                        {
                             iteration.Index--;
+                        }
                     }
                 }
                 any = true;
@@ -110,10 +126,14 @@ namespace BytingLib
         public virtual IReadOnlyCollection<T> Get<T>()
         {
             if (!typeof(T).IsInterface)
+            {
                 throw new ArgumentException("Type is no interface.");
+            }
 
             if (!listsOfThings.TryGetValue(typeof(T), out IList? list))
+            {
                 throw new ArgumentException("There is no list of generic type " + typeof(T) + " inside this collection.");
+            }
 
             return (list as List<T>)!.AsReadOnly();
         }

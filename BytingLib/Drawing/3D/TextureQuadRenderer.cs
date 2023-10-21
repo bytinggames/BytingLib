@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class TextureQuadRenderer
     {
@@ -38,7 +36,9 @@ namespace BytingLib
 
             using (shader.World.Use(world))
             using (shader.AlbedoTex.Use(texture))
+            {
                 shader.Draw(vertexBuffer, indexBuffer, PrimitiveType.TriangleStrip);
+            }
         }
 
         private void UpdateSourceRectUV(Texture2D texture, Rectangle? sourceRect)

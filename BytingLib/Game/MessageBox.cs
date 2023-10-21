@@ -18,7 +18,9 @@
             for (int i = 0; i < text.Length; i++, lineLength++)
             {
                 if (text[i] == '\n')
+                {
                     lineLength = 0;
+                }
                 else if (lineLength >= 200)
                 {
                     text = text.Remove(i) + "\n        " + text.Substring(i);

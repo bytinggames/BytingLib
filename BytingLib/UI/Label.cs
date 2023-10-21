@@ -43,7 +43,9 @@
             else
             {
                 if (Width < 0)
+                {
                     throw new NotImplementedException("this is not implemented yet. It is not trivial, there must be a more complex dependency system in place. Maybe with Funcs that get the width and height values");
+                }
 
                 textToDraw ??= CreateTextToDraw(style);
                 Height = MeasureString(style, textToDraw).Y * style.FontScale.Y;
@@ -79,9 +81,14 @@
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             if (style.FontBoldColor != null)
+            {
                 style.FontBold?.Value.Draw(spriteBatch, TextToDraw, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, style.FontScale, roundPositionTo: style.RoundPositionTo);
+            }
+
             if (style.FontColor != null)
+            {
                 style.Font.Value.Draw(spriteBatch, TextToDraw, AbsoluteRect.GetAnchor(Anchor), style.FontColor, style.FontScale, roundPositionTo: style.RoundPositionTo);
+            }
         }
     }
 }

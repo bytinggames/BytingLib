@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class CrashLogger
     {

@@ -31,7 +31,9 @@ namespace BytingLib
             if (blockLeftButton)
             {
                 if (state.LeftButton == ButtonState.Released)
+                {
                     blockLeftButton = false;
+                }
                 else
                 {
                     // manipulate input so that left button isn't pressed

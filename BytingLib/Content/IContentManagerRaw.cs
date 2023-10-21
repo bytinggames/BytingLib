@@ -17,12 +17,19 @@
             string? localDir = Path.GetDirectoryName(assetName);
             string dir;
             if (localDir == null)
+            {
                 dir = contentManager.RootDirectory;
+            }
             else
+            {
                 dir = Path.Combine(contentManager.RootDirectory, localDir);
+            }
 
             if (!Directory.Exists(dir))
+            {
                 return false;
+            }
+
             return true;
         }
     }

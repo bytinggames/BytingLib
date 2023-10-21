@@ -50,9 +50,13 @@
             x *= 2f;
             x %= 2f;
             if (x > 1f)
+            {
                 return 2f - x;
+            }
             else
+            {
                 return x;
+            }
         }
         public static float One(float _) => 1f;
         public static float Zero(float _) => 0f;

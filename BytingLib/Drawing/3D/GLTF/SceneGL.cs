@@ -19,7 +19,9 @@ namespace BytingLib
         internal void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin)
         {
             for (int i = 0; i < Children.Count; i++)
+            {
                 Children[i].Draw(shader, shaderMaterial, shaderSkin);
+            }
         }
 
         internal void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Predicate<NodeGL> goDown)
@@ -27,7 +29,9 @@ namespace BytingLib
             for (int i = 0; i < Children.Count; i++)
             {
                 if (goDown(Children[i]))
+                {
                     Children[i].Draw(shader, shaderMaterial, shaderSkin, goDown);
+                }
             }
         }
 

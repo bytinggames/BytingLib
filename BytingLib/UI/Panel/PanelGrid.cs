@@ -51,21 +51,31 @@
             AbsoluteRect = rect.CloneRect().Round();
 
             if (Children.Count == 0)
+            {
                 return;
+            }
 
             Padding?.RemoveFromRect(rect);
 
             Vector2 toNextItem = Vector2.Zero;
             if (ItemsVerticalDirection)
+            {
                 toNextItem.Y = fieldSize.Y + Gap.Y;
+            }
             else
+            {
                 toNextItem.X = fieldSize.X + Gap.X;
+            }
 
             Vector2 toNextRow = Vector2.Zero;
             if (ItemsVerticalDirection)
+            {
                 toNextRow.X = fieldSize.X + Gap.X;
+            }
             else
+            {
                 toNextRow.Y = fieldSize.Y + Gap.Y;
+            }
 
             pos.X = ItemsStartLeft ? rect.Left : rect.Right;
             pos.Y = ItemsStartTop ? rect.Top : rect.Bottom;
@@ -99,9 +109,13 @@
                     pos += toNextRow;
 
                     if (ItemsVerticalDirection)
+                    {
                         pos.Y = startPos.Y;
+                    }
                     else
+                    {
                         pos.X = startPos.X;
+                    }
                 }
             }
         }
@@ -117,9 +131,14 @@
             contentSizePlusPadding = contentSize + GetPaddingSize();
 
             if (fieldSize.X < 0)
+            {
                 contentSizePlusPadding.X = fieldSize.X;
+            }
+
             if (fieldSize.Y < 0)
+            {
                 contentSizePlusPadding.Y = fieldSize.Y;
+            }
         }
 
         private int GetRowsTaken()
@@ -146,7 +165,10 @@
             }
 
             if (allSizeNegative[0])
+            {
                 max[0] = -1f;// (GetWidthTopToBottom() - Gap.X * (Columns - 1)) / Columns;
+            }
+
             if (allSizeNegative[1])
             {
                 //int rowsTaken = GetRowsTaken();
@@ -160,15 +182,21 @@
         {
             GetSize(out _, out Vector2 contentSizePlusPadding);
             if (d == 0)
+            {
                 return contentSizePlusPadding.X;
+            }
             else
+            {
                 return contentSizePlusPadding.Y;
+            }
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             if (Color != null)
+            {
                 AbsoluteRect.Draw(spriteBatch, Color.Value);
+            }
         }
     }
 }

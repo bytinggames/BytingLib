@@ -40,7 +40,9 @@
         public static void DrawTriangles<V>(this IShader shader, V[] vertices) where V : struct, IVertexType
         {
             if (vertices.Length == 0)
+            {
                 return;
+            }
 
             var e = shader.Effect;
 

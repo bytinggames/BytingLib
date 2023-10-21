@@ -63,7 +63,9 @@
         {
             string[] files = Directory.GetFiles(inputRecordingDir, "*.inr");
             if (files.Length == 0)
+            {
                 return null;
+            }
 
             Array.Sort(files);
             return files[0];

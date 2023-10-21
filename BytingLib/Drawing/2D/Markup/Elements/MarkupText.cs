@@ -9,7 +9,9 @@
             Text = reader.ReadToCharOrEnd(out char? until, '#', '\n');
 
             if (until != null)
+            {
                 reader.Move(-1);
+            }
         }
 
         protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings)

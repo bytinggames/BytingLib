@@ -27,7 +27,10 @@
             Width = width;
             Height = height;
             if (anchor != null)
+            {
                 Anchor = anchor.Value;
+            }
+
             myPadding = padding;
         }
 
@@ -45,7 +48,9 @@
                 }
             }
             else
+            {
                 Padding = myPadding;
+            }
         }
 
         protected override void UpdateSelf(ElementInput input)
@@ -87,14 +92,18 @@
         protected override void UpdateTreeModifyRect(Rect rect)
         {
             if (down)
+            {
                 rect.Pos += ChildrenShiftOnDown;
+            }
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             int frameIndex = GetFrameIndex();
             if (frameIndex >= style.ButtonAnimation.Value.Data.frames?.Count)
+            {
                 throw new BytingException("button frame does not exist: " + frameIndex + " button animation frames: " + style.ButtonAnimation.Value.Data.frames?.Count);
+            }
 
             style.ButtonAnimation.Value.DrawSliced(spriteBatch, frameIndex, AbsoluteRect);
         }
@@ -113,15 +122,23 @@
         {
             int frameIndex;
             if (Disabled)
+            {
                 frameIndex = 3;
+            }
             else
             {
                 if (down)
+                {
                     frameIndex = 2;
+                }
                 else if (hover)
+                {
                     frameIndex = 1;
+                }
                 else
+                {
                     frameIndex = 0;
+                }
             }
 
             return frameIndex;

@@ -12,7 +12,10 @@
             set
             {
                 if (value <= 0)
+                {
                     value = 0f;
+                }
+
                 if (value != innerVolume)
                 {
                     innerVolume = value;

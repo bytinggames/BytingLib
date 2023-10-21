@@ -57,16 +57,24 @@ namespace BytingLib
                 graphics.PreferredBackBufferHeight = windowRectBeforeFullscreen.Height;
 
                 if (realFullscreen)
+                {
                     graphics.ToggleFullScreen();
+                }
                 else
+                {
                     Window.IsBorderless = false;
+                }
 
                 // set position to last window position, or if that is outside of the current screen bounds, simply center the window on the current screen
                 Rectangle bounds = GraphicsAdapter.GetCurrentDisplayBounds(Window.Handle);
                 if (bounds.Contains(windowRectBeforeFullscreen.Location))
+                {
                     Window.Position = windowRectBeforeFullscreen.Location;
+                }
                 else
+                {
                     Window.Position = bounds.Center - new Point(windowRectBeforeFullscreen.Width / 2, windowRectBeforeFullscreen.Height / 2);
+                }
 
                 graphics.ApplyChanges();
             }
@@ -85,7 +93,9 @@ namespace BytingLib
                 graphics.PreferredBackBufferHeight = GetScreenHeight();
 
                 if (!realFullscreen)
+                {
                     graphics.ApplyChanges();
+                }
                 else
                 {
 #if !WINDOWS
@@ -123,7 +133,9 @@ namespace BytingLib
             bool keepFullscreen = realFullscreen && IsFullscreen();
 
             if (keepFullscreen)
+            {
                 graphics.ToggleFullScreen();
+            }
 
             int screenIndex = GraphicsAdapter.GetCurrentDisplayIndex(Window.Handle);
             int screenCount = GraphicsAdapter.GetDisplayCount();
@@ -147,10 +159,14 @@ namespace BytingLib
 #endif
             }
             else
+            {
                 Window.Position = screenBounds.Center - (Resolution / 2).ToPoint();
+            }
 
             if (keepFullscreen)
+            {
                 graphics.ToggleFullScreen();
+            }
         }
 
         /// <summary>
@@ -164,9 +180,13 @@ namespace BytingLib
         public bool IsFullscreen()
         {
             if (realFullscreen)
+            {
                 return graphics.IsFullScreen;
+            }
             else
+            {
                 return Window.IsBorderless;
+            }
         }
 
         private static int GetScreenHeight()

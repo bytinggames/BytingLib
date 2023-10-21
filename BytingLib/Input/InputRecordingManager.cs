@@ -28,29 +28,43 @@ namespace BytingLib
             get
             {
                 if (playing)
+                {
                     return InputRecordingState.Playing;
+                }
                 else if (recorder != null)
+                {
                     return InputRecordingState.Recording;
+                }
                 else
+                {
                     return InputRecordingState.None;
+                }
             }
         }
 
         public void ToggleRecording(string filePath)
         {
             if (CurrentState == InputRecordingState.Recording)
+            {
                 StopRecording();
+            }
             else
+            {
                 StartRecording(filePath);
+            }
         }
 
         public void StartRecording(string filePath)
         {
             if (playing)
+            {
                 StopPlaying();
+            }
 
             if (recorder != null)
+            {
                 StopRecording();
+            }
 
             parent.Add(recorder = createInputRecorder(inputSource, filePath));
         }
@@ -58,18 +72,26 @@ namespace BytingLib
         public void TogglePlaying(string filePath)
         {
             if (CurrentState == InputRecordingState.Playing)
+            {
                 StopPlaying();
+            }
             else
+            {
                 StartPlaying(filePath);
+            }
         }
 
         public void StartPlaying(string filePath)
         {
             if (recorder != null)
+            {
                 StopRecording();
+            }
 
             if (playing)
+            {
                 StopPlaying();
+            }
 
             if (File.Exists(filePath))
             {

@@ -87,7 +87,10 @@
         public override bool Equals(object? obj)
         {
             if (obj is Short2 f)
+            {
                 return f.X == X && f.Y == Y;
+            }
+
             return false;
         }
 

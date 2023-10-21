@@ -22,7 +22,9 @@
             assetReferences.Add(assetRef);
 
             if (assetRef == null)
+            {
                 assetRef = new Ref<T>(assetPointer, Unuse);
+            }
 
             return assetRef;
         }
@@ -31,7 +33,9 @@
         {
             assetReferences.Remove(asset);
             if (assetReferences.Count == 0)
+            {
                 onUnusedTo0References?.Invoke(assetName);
+            }
         }
 
         public T Peek()

@@ -43,11 +43,15 @@ namespace BytingLib
 
             updateCount++;
             if (updateCount == 2)
+            {
                 isPreviousMouseStateSet = true;
+            }
 
             if (OnStateChanged != null
                 && currentState != previousState)
+            {
                 OnStateChanged?.Invoke(currentState, previousState);
+            }
         }
 
         private void OnSetCurrentState()
@@ -118,10 +122,15 @@ namespace BytingLib
             // checking for scrolling over int.MaxValue or under int.MinValue
             if (currentState.ScrollWheelValue > int.MaxValue * 0.5
                 && previousState.ScrollWheelValue < int.MinValue * 0.5)
+            {
                 scroll = -1;
+            }
             else if (currentState.ScrollWheelValue < int.MinValue * 0.5
                 && previousState.ScrollWheelValue > int.MaxValue * 0.5)
+            {
                 scroll = 1;
+            }
+
             return scroll;
         }
 
@@ -137,7 +146,9 @@ namespace BytingLib
         public IKey GetKeyAnyFromIList(IList<MouseButton> keys)
         {
             if (keys.Count == 0)
+            {
                 return new Key();
+            }
 
             IKey key = MouseButtonToKey(keys[0]);
 

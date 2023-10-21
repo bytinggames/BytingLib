@@ -15,11 +15,17 @@ namespace BytingLib.Serialization
         {
             string filePath = GetFilePath(saveStateName);
             if (!File.Exists(filePath))
+            {
                 return Activator.CreateInstance<T>();
+            }
+
             string json = File.ReadAllText(filePath);
             T? save = JsonSerializer.Deserialize<T>(json);
             if (save == null)
+            {
                 throw new BytingException("Couldn't load save file");
+            }
+
             return save;
         }
 
@@ -34,11 +40,17 @@ namespace BytingLib.Serialization
         {
             string filePath = GetFilePath(saveStateName);
             if (!File.Exists(filePath))
+            {
                 return Activator.CreateInstance<T>();
+            }
+
             string json = File.ReadAllText(filePath);
             T? save = migrator.Deserialize(json);
             if (save == null)
+            {
                 throw new BytingException("Couldn't load save file");
+            }
+
             return save;
         }
 

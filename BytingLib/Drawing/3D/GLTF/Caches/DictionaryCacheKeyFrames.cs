@@ -14,7 +14,9 @@
         {
             KeyFrames? val;
             if (keyFrames.TryGetValue(accessorIndex, out val))
+            {
                 return val;
+            }
 
             val = new KeyFrames(model.GetBytesFromBuffer(accessorIndex));
 

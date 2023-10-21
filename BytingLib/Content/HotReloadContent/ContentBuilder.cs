@@ -36,9 +36,13 @@ namespace BytingLib
             public string GetCode(string[] mgcbContents)
             {
                 if (length == -1)
+                {
                     return mgcbContents[contentIndex].Substring(start);
+                }
                 else
+                {
                     return mgcbContents[contentIndex].Substring(start, length);
+                }
             }
         }
 
@@ -53,9 +57,13 @@ namespace BytingLib
             // get all mgcb files
             string[] mgcbFiles;
             if (Directory.Exists(outputPath))
+            {
                 mgcbFiles = Directory.GetFiles(outputPath, "*.mgcbcopy");
+            }
             else
+            {
                 return;
+            }
 
             mgcbContents = new string[mgcbFiles.Length];
 
@@ -77,7 +85,9 @@ namespace BytingLib
             string mainContent = mgcbContents[mainContentIndex];
             int begin = mainContent.IndexOf("#begin");
             if (begin == -1)
+            {
                 begin = mainContent.Length;
+            }
 
             // define variables (match Targets.targets: <!-- Customizing the Content Build Process --> )
 
@@ -119,7 +129,10 @@ namespace BytingLib
                     int startName = start + "#begin ".Length;
                     int endName = mgcbContents[i].IndexOf("\n", startName);
                     if (mgcbContents[i][endName - 1] == '\r') // check if it's a \r\n
+                    {
                         endName--;
+                    }
+
                     string key = mgcbContents[i].Substring(startName, endName - startName);
                     int end = mgcbContents[i].IndexOf("#begin", start + 1);
                     fileToCode.Add(key, new CodePart(i, start, end == -1 ? -1 : end - start));
@@ -144,7 +157,10 @@ namespace BytingLib
                     string reference = sourceHeader.Substring(referenceIndex, endLineIndex - referenceIndex).Replace('\\', '/');
                     int lastSlashIndex = reference.LastIndexOf('/');
                     if (lastSlashIndex != -1)
+                    {
                         reference = reference.Substring(lastSlashIndex + 1);
+                    }
+
                     string referenceDll = Environment.CurrentDirectory + "/" + reference;
                     sourceHeader = sourceHeader.Remove(referenceIndex) + referenceDll + sourceHeader.Substring(endLineIndex);
                     referenceIndex += referenceDll.Length;
@@ -160,12 +176,16 @@ namespace BytingLib
             itemsDeleted = new();
 
             if (changes.Length == 0 && deleted.Length == 0)
+            {
                 return false;
+            }
 
             if (DeleteTempOutputDirectoryBeforeBuild)
             {
                 if (Directory.Exists(tempOutputPath))
+                {
                     Directory.Delete(tempOutputPath, true);
+                }
             }
 
             string cmd = header;
@@ -204,7 +224,9 @@ namespace BytingLib
             }
 
             if (!anyTasksAdded)
+            {
                 return false; // not necessary to build, skip it
+            }
 
             string contentTempFile = Path.Combine(modContentDir, "Content.mgcb.tmp");
 
@@ -249,7 +271,9 @@ namespace BytingLib
                 process.WaitForExit();
 
                 if (!CheckOutput(stdOutput, ShowPopup))
+                {
                     return false;
+                }
             }
             catch (Exception e)
             {

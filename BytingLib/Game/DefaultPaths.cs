@@ -18,7 +18,9 @@ namespace BytingLib
         {
             string? gameName = Assembly.GetEntryAssembly()?.GetName().Name;
             if (gameName == null)
+            {
                 throw new BytingException("couldn't read game name");
+            }
 
 #if LINUX
             Environment.CurrentDirectory = AppContext.BaseDirectory; // this ensures that the current directory is actually the one that the exe is in.

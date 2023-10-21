@@ -89,7 +89,9 @@
                 return new Rect(pos + minPos, maxPos - minPos);
             }
             else
+            {
                 return new Rect(pos, Vector2.Zero);
+            }
         }
 
         public List<Vector2> GetEdges()
@@ -98,11 +100,15 @@
             if (Vertices.Count > 1)
             {
                 for (int i = 0; i < Vertices.Count - 1; i++)
+                {
                     edges.Add(Vertices[i + 1] - Vertices[i]);
+                }
 
                 //if (vertices.Count > 2)
                 if (LastEdgeClosed)
+                {
                     edges.Add(Vertices[0] - Vertices[Vertices.Count - 1]);
+                }
             }
             return edges;
         }
@@ -113,7 +119,10 @@
             if (Vertices.Count > 1)
             {
                 for (int i = 0; i < Vertices.Count - 1; i++)
+                {
                     edges.Add(Vertices[i + 1] - Vertices[i]);
+                }
+
                 edges.Add(Vertices[0] - Vertices[Vertices.Count - 1]);
             }
             return edges;
@@ -122,7 +131,9 @@
         public Polygon TransformVertices(Matrix transform)
         {
             for (int i = 0; i < Vertices.Count; i++)
+            {
                 Vertices[i] = Vector2.Transform(Vertices[i], transform);
+            }
 
             return this;
         }
@@ -130,48 +141,90 @@
         public void RotateDegrees(float angle)
         {
             if (angle < 0)
+            {
                 angle = 360 + angle % 360;
+            }
+
             if (angle > 360)
+            {
                 angle = angle % 360;
+            }
 
             if (angle % 90 == 0)
             {
                 //right angle rotation
                 if (angle == 90)
+                {
                     for (int i = 0; i < Vertices.Count; i++)
+                    {
                         Vertices[i] = new Vector2(-Vertices[i].Y, Vertices[i].X);
+                    }
+                }
+
                 if (angle == 180)
+                {
                     for (int i = 0; i < Vertices.Count; i++)
+                    {
                         Vertices[i] = new Vector2(-Vertices[i].X, -Vertices[i].Y);
+                    }
+                }
+
                 if (angle == 270)
+                {
                     for (int i = 0; i < Vertices.Count; i++)
+                    {
                         Vertices[i] = new Vector2(Vertices[i].Y, -Vertices[i].X);
+                    }
+                }
             }
             else
+            {
                 RotateRadians(angle * MathHelper.TwoPi / 360f);
+            }
         }
         public void RotateDegrees(float angle, Vector2 center)
         {
             if (angle < 0)
+            {
                 angle = 360 + angle % 360;
+            }
+
             if (angle > 360)
+            {
                 angle = angle % 360;
+            }
 
             if (angle % 90 == 0)
             {
                 //right angle rotation
                 if (angle == 90)
+                {
                     for (int i = 0; i < Vertices.Count; i++)
+                    {
                         Vertices[i] = center + new Vector2(-Vertices[i].Y + center.Y, Vertices[i].X - center.X);
+                    }
+                }
+
                 if (angle == 180)
+                {
                     for (int i = 0; i < Vertices.Count; i++)
+                    {
                         Vertices[i] = center + new Vector2(-Vertices[i].X + center.X, -Vertices[i].Y + center.Y);
+                    }
+                }
+
                 if (angle == 270)
+                {
                     for (int i = 0; i < Vertices.Count; i++)
+                    {
                         Vertices[i] = center + new Vector2(Vertices[i].Y - center.Y, -Vertices[i].X + center.X);
+                    }
+                }
             }
             else
+            {
                 RotateRadians(angle * MathHelper.TwoPi / 360f, center);
+            }
         }
         public void RotateRadians(float angle)
         {
@@ -198,11 +251,20 @@
         public void Flip(bool horizontally, bool vertically, Vector2 center)
         {
             if (horizontally)
+            {
                 for (int i = 0; i < Vertices.Count; i++)
+                {
                     Vertices[i] = new Vector2(2 * center.X - Vertices[i].X, Vertices[i].Y);
+                }
+            }
+
             if (vertically)
+            {
                 for (int i = 0; i < Vertices.Count; i++)
+                {
                     Vertices[i] = new Vector2(Vertices[i].X, 2 * center.Y - Vertices[i].Y);
+                }
+            }
         }
         public void Scale(Vector2 scale)
         {
@@ -216,13 +278,17 @@
                 List<Vector2> oldVertices = Vertices.ToList();
                 int j = Vertices.Count - 1;
                 for (int i = 0; i < Vertices.Count; i++, j--)
+                {
                     Vertices[i] = center + (oldVertices[j] - center) * scale;
+                }
             }
             else
             {
                 //normal order
                 for (int i = 0; i < Vertices.Count; i++)
+                {
                     Vertices[i] = center + (Vertices[i] - center) * scale;
+                }
             }
 
         }
@@ -318,7 +384,9 @@
         public static IEnumerable<(float, float)> GetDistanceSquaredToIndex(List<Vector2> vertices, Vector2 target)
         {
             if (vertices.Count == 0)
+            {
                 yield break;
+            }
 
             // check edges
             for (int i = 0; i < vertices.Count - 1; i++)
@@ -326,7 +394,9 @@
                 Vector2 lineStart = vertices[i];
                 Vector2 lineDir = vertices[i + 1] - lineStart;
                 if (lineDir == Vector2.Zero)
+                {
                     continue;
+                }
                 //float lineDirLength = lineDir.Length();
                 //Vector2 lineDirN = lineDir / lineDirLength;
 
@@ -335,7 +405,9 @@
                 float dotTimesLineLength = Vector2.Dot(lineDir, toPos);
                 if (dotTimesLineLength < 0
                     || dotTimesLineLength > lineDir.LengthSquared())
+                {
                     continue;
+                }
 
                 float lineLength = lineDir.Length();
                 float dot = dotTimesLineLength / lineLength;

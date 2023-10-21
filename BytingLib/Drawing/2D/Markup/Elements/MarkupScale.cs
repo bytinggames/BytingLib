@@ -22,7 +22,9 @@
             settings.Scale = new Vector2(scale);
 
             foreach (var leaf in base.IterateOverLeaves(settings))
+            {
                 yield return leaf;
+            }
 
             settings.Scale = temp;
         }

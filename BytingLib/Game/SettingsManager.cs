@@ -55,10 +55,14 @@ namespace BytingLib
         {
             List<string> files = new();
             if (File.Exists(paths.SettingsFile))
+            {
                 files.Add(paths.SettingsFile);
+            }
 #if DEBUG
             if (File.Exists(paths.SettingsDebugFile))
+            {
                 files.Add(paths.SettingsDebugFile);
+            }
 #endif
             return files.ToArray();
         }

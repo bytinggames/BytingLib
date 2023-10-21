@@ -22,21 +22,27 @@ namespace BytingLib
             foreach (var key in keys)
             {
                 if (key.Item1 != key.Item2) // if they are the same, no need to swap them
+                {
                     collisionFunctions.Add((key.Item2, key.Item1), (a,b) => collisionFunctions[key](b,a));
+                }
             }
             // same for distance functions
             keys = distanceFunctions.Keys.ToList();
             foreach (var key in keys)
             {
                 if (key.Item1 != key.Item2) // if they are the same, no need to swap them
+                {
                     distanceFunctions.Add((key.Item2, key.Item1), (a, b, dir) => distanceFunctions[key](b, a, -dir).InvertAxisAndReturn());
+                }
             }
             // same for distanceNoDir functions
             keys = distanceNoDirFunctions.Keys.ToList();
             foreach (var key in keys)
             {
                 if (key.Item1 != key.Item2) // if they are the same, no need to swap them
+                {
                     distanceNoDirFunctions.Add((key.Item2, key.Item1), (a, b) => distanceNoDirFunctions[key](b, a).InvertAxisAndReturn());
+                }
             }
 
             keys = collisionFunctions.Keys.ToList();
@@ -44,30 +50,42 @@ namespace BytingLib
             foreach (var key in keys)
             {
                 if (key.Item1 == TVector2)
+                {
                     collisionFunctions.Add((TPointF, key.Item2), (a, b) => collisionFunctions[key](((PointF)a).Pos, b));
+                }
 
                 if (key.Item2 == TVector2)
+                {
                     collisionFunctions.Add((key.Item1, TPointF), (a, b) => collisionFunctions[key](a, ((PointF)b).Pos));
+                }
             }
             // same for distance functions
             keys = distanceFunctions.Keys.ToList();
             foreach (var key in keys)
             {
                 if (key.Item1 == TVector2)
+                {
                     distanceFunctions.Add((TPointF, key.Item2), (a, b, dir) => distanceFunctions[key](((PointF)a).Pos, b, dir));
+                }
 
                 if (key.Item2 == TVector2)
+                {
                     distanceFunctions.Add((key.Item1, TPointF), (a, b, dir) => distanceFunctions[key](a, ((PointF)b).Pos, dir));
+                }
             }
             // same for distance functions
             keys = distanceNoDirFunctions.Keys.ToList();
             foreach (var key in keys)
             {
                 if (key.Item1 == TVector2)
+                {
                     distanceNoDirFunctions.Add((TPointF, key.Item2), (a, b) => distanceNoDirFunctions[key](((PointF)a).Pos, b));
+                }
 
                 if (key.Item2 == TVector2)
+                {
                     distanceNoDirFunctions.Add((key.Item1, TPointF), (a, b) => distanceNoDirFunctions[key](a, ((PointF)b).Pos));
+                }
             }
         }
 
@@ -192,7 +210,10 @@ namespace BytingLib
             Type t2 = (shape2 is IShape s2) ? s2.GetCollisionType() : shape2.GetType();
             Func<object, object, Vector2, CollisionResult>? func;
             if (!distanceFunctions.TryGetValue((t1, t2), out func))
+            {
                 throw new NotImplementedException($"A distance check between {shape1.GetType()} and {shape2.GetType()} is not implemented yet.");
+            }
+
             return func(shape1, shape2, dir);
         }
 
@@ -202,7 +223,10 @@ namespace BytingLib
             Type t2 = (shape2 is IShape s2) ? s2.GetCollisionType() : shape2.GetType();
             Func<object, object, CollisionResult>? func;
             if (!distanceNoDirFunctions.TryGetValue((t1, t2), out func))
+            {
                 throw new NotImplementedException($"A distance check between {shape1.GetType()} and {shape2.GetType()} is not implemented yet.");
+            }
+
             return func(shape1, shape2);
         }
 
@@ -251,28 +275,40 @@ namespace BytingLib
         {
             float distX = rect.X - vec.X;
             if (distX >= 0)
+            {
                 return new CollisionResult();
+            }
             else if (distX + rect.Size.X < rect.Size.X / 2f)
             {
                 distX = rect.Size.X + distX;
                 if (distX <= 0)
+                {
                     return new CollisionResult();
+                }
             }
 
             float distY = rect.Y - vec.Y;
             if (distY >= 0)
+            {
                 return new CollisionResult();
+            }
             else if (distY + rect.Size.Y < rect.Size.Y / 2f)
             {
                 distY = rect.Size.Y + distY;
                 if (distY <= 0)
+                {
                     return new CollisionResult();
+                }
             }
 
             if (Math.Abs(distX) <= Math.Abs(distY))
+            {
                 return new CollisionResult() { Distance = Math.Abs(distX), AxisCol = new Vector2(Math.Sign(distX), 0) };
+            }
             else
+            {
                 return new CollisionResult() { Distance = Math.Abs(distY), AxisCol = new Vector2(0, Math.Sign(distY)) };
+            }
         }
 
         public static CollisionResult DistVectorRectangle(Vector2 vec, Rect rect, Vector2 dir)
@@ -290,7 +326,10 @@ namespace BytingLib
             if (axes.Count == 0)
             {
                 if (polygon.Vertices.Count == 1)
+                {
                     return polygon.Pos + polygon.Vertices[0] == vec;
+                }
+
                 return false;
             }
 
@@ -303,7 +342,9 @@ namespace BytingLib
                 float dirDist2 = projection2[0] - projection1;
 
                 if (dirDist1 < dirDist2)
+                {
                     dirDist2 = projection2[0] - projection1;
+                }
                 else
                 {
                     dirDist1 = dirDist2;
@@ -311,7 +352,9 @@ namespace BytingLib
                 }
 
                 if (Math.Sign(dirDist1) == Math.Sign(dirDist2))
+                {
                     return false;
+                }
             }
             return true;
         }
@@ -325,7 +368,9 @@ namespace BytingLib
             axes.AddRange(GetAxes(edges));
 
             if (axes.Count == 0)
+            {
                 return cr;
+            }
 
             for (int i = 0; i < axes.Count; i++)
             {
@@ -336,7 +381,9 @@ namespace BytingLib
                 float dirDist2 = projection2[0] - projection1;
 
                 if (dirDist1 < dirDist2)
+                {
                     dirDist2 = projection2[0] - projection1;
+                }
                 else
                 {
                     dirDist1 = dirDist2;
@@ -344,7 +391,9 @@ namespace BytingLib
                 }
 
                 if (Math.Sign(dirDist1) == Math.Sign(dirDist2))
+                {
                     return new CollisionResult();
+                }
 
                 if (!cr.Distance.HasValue || Math.Abs(dirDist1) < Math.Abs(cr.Distance.Value))
                 {
@@ -366,7 +415,9 @@ namespace BytingLib
             CollisionResult cr = new CollisionResult();
 
             if (dir == Vector2.Zero)
+            {
                 return cr;
+            }
 
             List<Vector2> edges = polygon.GetEdges();
             List<Vector2> axes = new List<Vector2>();
@@ -385,7 +436,9 @@ namespace BytingLib
                 {
                     //no move direction on this axis, if no collision on this axis, then there is no distance on this direction
                     if (projection1 <= projection2[0] || projection1 >= projection2[1])
+                    {
                         return new CollisionResult();
+                    }
                 }
                 else
                 {
@@ -393,9 +446,13 @@ namespace BytingLib
                     float dirDist2 = (projection2[0] - projection1) / dotDir;
 
                     if (dirDist1 < dirDist2)
+                    {
                         dirDists[i] = (new float[] { dirDist1, (projection2[0] - projection1) / dotDir });
+                    }
                     else
+                    {
                         dirDists[i] = (new float[] { dirDist2, (projection2[1] - projection1) / dotDir });
+                    }
 
                     if (!cr.Distance.HasValue || dirDists[i][0] > cr.Distance)
                     {
@@ -416,13 +473,20 @@ namespace BytingLib
                 for (int i = 0; i < dirDists.Length; i++)
                 {
                     if (dirDists[i] != null && dirDists[i][1] <= cr.Distance)
+                    {
                         return new CollisionResult();
+                    }
                 }
 
                 if (Vector2.Dot(dir, cr.AxisCol) > 0)
+                {
                     cr.AxisCol = -cr.AxisCol;
+                }
+
                 if (Vector2.Dot(dir, cr.AxisColReversed) < 0)
+                {
                     cr.AxisColReversed = -cr.AxisColReversed;
+                }
             }
 
             return cr;
@@ -441,7 +505,9 @@ namespace BytingLib
             float distLength = (float)Math.Sqrt(dist.X * dist.X + dist.Y * dist.Y);
 
             if (distLength >= circle.Radius)
+            {
                 return new CollisionResult();
+            }
             else
             {
                 CollisionResult cr = new CollisionResult();
@@ -528,9 +594,13 @@ namespace BytingLib
                             distDown = MathExtension.MinAbs(distDown, distUp); //distY
 
                             if (Math.Abs(distRight) <= Math.Abs(distDown))
+                            {
                                 return new CollisionResult() { Distance = Math.Abs(distRight), AxisCol = new Vector2(Math.Sign(distRight), 0) };
+                            }
                             else
+                            {
                                 return new CollisionResult() { Distance = Math.Abs(distDown), AxisCol = new Vector2(0, Math.Sign(distDown)) };
+                            }
                         }
                     }
                 }
@@ -549,14 +619,21 @@ namespace BytingLib
 
             // move smaller number to index 0
             if (distX[0] > distX[1])
+            {
                 CodeHelper.Swap(ref distX[0], ref distX[1]);
+            }
+
             if (distY[0] > distY[1])
+            {
                 CodeHelper.Swap(ref distY[0], ref distY[1]);
+            }
 
             // check if no collision happens
             if (distX[1] < distY[0]
                 || distY[1] < distX[0])
+            {
                 return cr;
+            }
 
             // forward
             if (distX[0] < distY[0])
@@ -614,11 +691,15 @@ namespace BytingLib
 
             //Check if bounding boxes collide
             if (dist.X >= circle.Radius + rect.Size.X / 2 || dist.Y >= circle.Radius + rect.Size.Y / 2)
+            {
                 return false;
+            }
 
             //Check if Circle center in rectangle
             if (dist.X <= rect.Size.X / 2 || dist.Y <= rect.Size.Y / 2)
+            {
                 return true;
+            }
 
             //Calc corner distance
             float cornerDistPow = (float)(Math.Pow(dist.X - rect.Size.X / 2, 2) + Math.Pow(dist.Y - rect.Size.Y / 2, 2));
@@ -662,23 +743,33 @@ namespace BytingLib
                         if (pos1.X >= 0 && pos1.X < sprite.Size.X && pos1.Y >= 0 && pos1.Y < sprite.Size.Y)
                         {
                             if (sprite.colorData[(int)pos1.Y * sprite.Size.X + (int)pos1.X].A != 0)
+                            {
                                 return true;
+                            }
                         }
                         pos1 += stepX;
 
                         x2++;
                         if (x2 == xEnd && pos1.X % 1 == 0)
+                        {
                             break;
+                        }
                         else if (x2 > xEnd)
+                        {
                             break;
+                        }
                     }
                     pos1InY += stepY;
 
                     y2++;
                     if (y2 == yEnd && pos1InY.Y % 1 == 0)
+                    {
                         break;
+                    }
                     else if (y2 > yEnd)
+                    {
                         break;
+                    }
                 }
             }
 
@@ -693,7 +784,9 @@ namespace BytingLib
         {
             if (poly1.Vertices.Count < 2
                 || poly2.Vertices.Count < 2)
+            {
                 return false;
+            }
 
             List<Vector2> edges1 = poly1.GetEdges();
             List<Vector2> edges2 = poly2.GetEdges();
@@ -704,7 +797,10 @@ namespace BytingLib
             if (axes.Count == 0)
             {
                 if (poly1.Vertices.Count == 1 && poly2.Vertices.Count == 1)
+                {
                     return poly1.Pos + poly1.Vertices[0] == poly2.Pos + poly2.Vertices[0];
+                }
+
                 return false;
             }
 
@@ -714,7 +810,9 @@ namespace BytingLib
                 float[] projection2 = GetProjection(axes[i], poly2.Pos, poly2.Vertices, edges2);
 
                 if (projection1[0] >= projection2[1] || projection1[1] <= projection2[0])
+                {
                     return false;
+                }
 
                 ////minDist inclusion
                 //if (projection1[0] > projection2[1] || projection1[1] < projection2[0])
@@ -734,7 +832,9 @@ namespace BytingLib
             axes.AddRange(GetAxes(edges2));
 
             if (axes.Count == 0)
+            {
                 return cr;
+            }
 
             for (int i = 0; i < axes.Count; i++)
             {
@@ -745,7 +845,9 @@ namespace BytingLib
                 float dirDist2 = projection2[0] - projection1[1];
 
                 if (dirDist1 < dirDist2)
+                {
                     dirDist2 = projection2[0] - projection1[1];
+                }
                 else
                 {
                     dirDist1 = dirDist2;
@@ -753,7 +855,9 @@ namespace BytingLib
                 }
 
                 if (Math.Sign(dirDist1) == Math.Sign(dirDist2))
+                {
                     return new CollisionResult();
+                }
 
                 if (!cr.Distance.HasValue || Math.Abs(dirDist1) < Math.Abs(cr.Distance.Value))
                 {
@@ -773,9 +877,13 @@ namespace BytingLib
         public static CollisionResult DistPolygonPolygon(Polygon poly1, Polygon poly2, Vector2 dir)
         {
             if (poly1.LastEdgeClosed && poly2.LastEdgeClosed)
+            {
                 return DistPolygonPolygonClosed(poly1, poly2, dir);
+            }
             else
+            {
                 return DistPolygonPolygonOpened(poly1, poly2, dir);
+            }
         }
 
         public static CollisionResult DistPolygonPolygonClosed(Polygon poly1, Polygon poly2, Vector2 dir)
@@ -783,7 +891,9 @@ namespace BytingLib
             CollisionResult cr = new CollisionResult();
 
             if (dir == Vector2.Zero)
+            {
                 return cr;
+            }
 
             List<Vector2> edges1 = poly1.GetClosedEdges();
             List<Vector2> edges2 = poly2.GetClosedEdges();
@@ -836,8 +946,9 @@ namespace BytingLib
                     }
                 }
                 else if (axis.b2 - axis.a1 <= 0) // ONTROUBLESHOOT: CHECK: <= before was < (2017.08.14)
+                {
                     return new CollisionResult();
-
+                }
             }
             for (int i = 0; i < edges2.Count; i++)
             {
@@ -882,11 +993,15 @@ namespace BytingLib
                     }
                 }
                 else if (axis.b2 - axis.a1 <= 0) // ONTROUBLESHOOT: CHECK: <= before was < (2017.08.14)
+                {
                     return new CollisionResult();
+                }
             }
 
             if (cr.Distance.HasValue && cr.DistanceReversed <= cr.Distance)
+            {
                 return new CollisionResult();
+            }
 
             cr.ColCornerPoly = polyAxisCol + 1;
             cr.ColCornerIndex = jNearest;
@@ -901,7 +1016,9 @@ namespace BytingLib
             CollisionResult cr = new CollisionResult();
 
             if (dir == Vector2.Zero)
+            {
                 return cr;
+            }
 
             List<Vector2> edges1 = poly1.GetClosedEdges();
             List<Vector2> edges2 = poly2.GetClosedEdges();
@@ -936,19 +1053,25 @@ namespace BytingLib
                         cr.AxisCol = axis.axis;
 
                         if (!poly1.LastEdgeClosed && i == edges1.Count - 1)
+                        {
                             open = true;
+                        }
                         else
                         {
                             open = false;
                             if (endVerticeCol == 0)
                             {
                                 if (!poly2.StartCorner || Vector2.Dot(new Vector2(-edges2[0].Y, edges2[0].X), cr.AxisCol) > 0)
+                                {
                                     open = true;
+                                }
                             }
                             else if (endVerticeCol != -1)
                             {
                                 if (!poly2.EndCorner || Vector2.Dot(new Vector2(-edges2[endVerticeCol - 1].Y, edges2[endVerticeCol - 1].X), cr.AxisCol) > 0)
+                                {
                                     open = true;
+                                }
                             }
                         }
                     }
@@ -961,26 +1084,33 @@ namespace BytingLib
                         cr.AxisColReversed = axis.axis;
 
                         if (!poly1.LastEdgeClosed && i == edges1.Count - 1)
+                        {
                             openReversed = true;
+                        }
                         else
                         {
                             openReversed = false;
                             if (endVerticeCol == 0)
                             {
                                 if (!poly2.StartCorner || Vector2.Dot(new Vector2(-edges2[0].Y, edges2[0].X), cr.AxisColReversed) > 0)
+                                {
                                     openReversed = true;
+                                }
                             }
                             else if (endVerticeCol != -1)
                             {
                                 if (!poly2.EndCorner || Vector2.Dot(new Vector2(-edges2[endVerticeCol - 1].Y, edges2[endVerticeCol - 1].X), cr.AxisColReversed) > 0)
+                                {
                                     openReversed = true;
+                                }
                             }
                         }
                     }
                 }
                 else if (axis.b2 - axis.a1 < 0)
+                {
                     return new CollisionResult();
-
+                }
             }
             for (int i = 0; i < edges2.Count; i++)
             {
@@ -1012,19 +1142,25 @@ namespace BytingLib
                         cr.AxisCol = -axis.axis;
 
                         if (!poly2.LastEdgeClosed && i == edges2.Count - 1)
+                        {
                             open = true;
+                        }
                         else
                         {
                             open = false;
                             if (endVerticeCol == 0)
                             {
                                 if (!poly1.StartCorner || Vector2.Dot(new Vector2(-edges1[0].Y, edges1[0].X), cr.AxisCol) < 0)
+                                {
                                     open = true;
+                                }
                             }
                             else if (endVerticeCol != -1)
                             {
                                 if (!poly1.EndCorner || Vector2.Dot(new Vector2(-edges1[endVerticeCol - 1].Y, edges1[endVerticeCol - 1].X), cr.AxisCol) < 0)
+                                {
                                     open = true;
+                                }
                             }
                         }
                     }
@@ -1037,29 +1173,39 @@ namespace BytingLib
                         cr.AxisColReversed = -axis.axis;
 
                         if (!poly2.LastEdgeClosed && i == edges2.Count - 1)
+                        {
                             openReversed = true;
+                        }
                         else
                         {
                             openReversed = false;
                             if (endVerticeCol == 0)
                             {
                                 if (!poly1.StartCorner || Vector2.Dot(new Vector2(-edges1[0].Y, edges1[0].X), cr.AxisColReversed) < 0)
+                                {
                                     openReversed = true;
+                                }
                             }
                             else if (endVerticeCol != -1)
                             {
                                 if (!poly1.EndCorner || Vector2.Dot(new Vector2(-edges1[endVerticeCol - 1].Y, edges1[endVerticeCol - 1].X), cr.AxisColReversed) < 0)
+                                {
                                     openReversed = true;
+                                }
                             }
                         }
                     }
                 }
                 else if (axis.b2 - axis.a1 < 0)
+                {
                     return new CollisionResult();
+                }
             }
 
             if (cr.Distance.HasValue && cr.DistanceReversed <= cr.Distance)
+            {
                 return new CollisionResult();
+            }
 
             if (open)
             {
@@ -1080,7 +1226,9 @@ namespace BytingLib
             CollisionResult cr = new CollisionResult();
 
             if (dir == Vector2.Zero)
+            {
                 return cr;
+            }
 
             List<Vector2> edges1 = poly1.GetEdges();
             List<Vector2> edges2 = poly2.GetEdges();
@@ -1101,7 +1249,9 @@ namespace BytingLib
                 {
                     //no move direction on this axis, if no collision on this axis, then there is no distance on this direction
                     if (projection1[1] <= projection2[0] || projection1[0] >= projection2[1])
+                    {
                         return new CollisionResult();
+                    }
                 }
                 else
                 {
@@ -1109,10 +1259,13 @@ namespace BytingLib
                     float dirDist2 = (projection2[0] - projection1[1] * Math.Sign(dotDir)) / dotDir;
 
                     if (dirDist1 < dirDist2)
+                    {
                         dirDists[i] = (new float[] { dirDist1, (projection2[0] - projection1[1] * Math.Sign(dotDir)) / dotDir });
+                    }
                     else
+                    {
                         dirDists[i] = (new float[] { dirDist2, (projection2[1] - projection1[0] * Math.Sign(dotDir)) / dotDir });
-
+                    }
 
                     if (!cr.Distance.HasValue || dirDists[i][0] > cr.Distance)
                     {
@@ -1133,13 +1286,20 @@ namespace BytingLib
                 for (int i = 0; i < dirDists.Length; i++)
                 {
                     if (dirDists[i] != null && dirDists[i][1] <= cr.Distance)
+                    {
                         return new CollisionResult();
+                    }
                 }
 
                 if (Vector2.Dot(dir, cr.AxisCol) > 0)
+                {
                     cr.AxisCol = -cr.AxisCol;
+                }
+
                 if (Vector2.Dot(dir, cr.AxisColReversed) < 0)
+                {
                     cr.AxisColReversed = -cr.AxisColReversed;
+                }
             }
 
             return cr;
@@ -1149,7 +1309,9 @@ namespace BytingLib
         public static bool ColPolygonCircle(Polygon polygon, Circle circle)
         {
             if (polygon.Vertices.Count == 0)
+            {
                 return false;
+            }
 
             List<Vector2> edges1 = polygon.GetEdges();
             List<Vector2> axes = new List<Vector2>();
@@ -1158,7 +1320,10 @@ namespace BytingLib
             if (axes.Count == 0)
             {
                 if (polygon.Vertices.Count == 1)
+                {
                     return ColVectorCircle(polygon.Pos + polygon.Vertices[0], circle);
+                }
+
                 return false;
             }
 
@@ -1177,8 +1342,9 @@ namespace BytingLib
 
             Vector2 cornerAxis = circle.Pos - polygon.Pos - polygon.Vertices[nearestI];
             if (cornerAxis != Vector2.Zero)
+            {
                 axes.Add(Vector2.Normalize(cornerAxis).XPositive());
-
+            }
 
             for (int i = 0; i < axes.Count; i++)
             {
@@ -1186,7 +1352,9 @@ namespace BytingLib
                 float circle_axis = Vector2.Dot(axes[i], circle.Pos);
 
                 if (projection1[0] > circle_axis + circle.Radius || projection1[1] < circle_axis - circle.Radius)
+                {
                     return false;
+                }
             }
             return true;
         }
@@ -1201,7 +1369,9 @@ namespace BytingLib
 
 
             if (axes.Count == 0)
+            {
                 return cr;
+            }
 
             //add axis between circle and nearest vertice
             int nearestI = -1;
@@ -1218,8 +1388,9 @@ namespace BytingLib
 
             Vector2 cornerAxis = circle.Pos - polygon.Pos - polygon.Vertices[nearestI];
             if (cornerAxis != Vector2.Zero)
+            {
                 axes.Add(Vector2.Normalize(cornerAxis).XPositive());
-
+            }
 
             for (int i = 0; i < axes.Count; i++)
             {
@@ -1231,7 +1402,9 @@ namespace BytingLib
                 float dirDist2 = projection2[0] - projection1[1];
 
                 if (dirDist1 < dirDist2)
+                {
                     dirDist2 = projection2[0] - projection1[1];
+                }
                 else
                 {
                     dirDist1 = dirDist2;
@@ -1239,7 +1412,9 @@ namespace BytingLib
                 }
 
                 if (Math.Sign(dirDist1) == Math.Sign(dirDist2))
+                {
                     return new CollisionResult();
+                }
 
                 if (!cr.Distance.HasValue || Math.Abs(dirDist1) < Math.Abs(cr.Distance.Value))
                 {
@@ -1263,10 +1438,14 @@ namespace BytingLib
             CollisionResult cr = new CollisionResult();
 
             if (dir == Vector2.Zero)
+            {
                 return cr;
+            }
 
             if (polygon.Vertices.Count == 0)
+            {
                 return cr;
+            }
 
             float? cDist = null;
 
@@ -1300,7 +1479,9 @@ namespace BytingLib
                         bool forward = dir_ne < 0;
                         Vector2 cDir = dir;
                         if (!forward)
+                        {
                             cDir *= -1f;
+                        }
 
                         //if (dir_ne < 0) //dir against ne? (pointing to the top side of the edge)
                         //{
@@ -1339,7 +1520,9 @@ namespace BytingLib
                             }
 
                             if (cr.Distance.HasValue && cr.DistanceReversed.HasValue)
+                            {
                                 return cr;
+                            }
                         }
                         //}
                     }
@@ -1349,11 +1532,15 @@ namespace BytingLib
                 noEdge = false;
                 int j = i + 1;
                 if (j == polygon.Vertices.Count)
+                {
                     j = 0;
+                }
                 else if (j == edges2.Count)
                 {
                     if (!polygon.LastEdgeClosed)//???????is this necessary?
+                    {
                         noEdge = true;
+                    }
                     //else
                     //    j = 0;
                 }
@@ -1363,9 +1550,13 @@ namespace BytingLib
 
                 Vector2 oldE = e;
                 if (!noEdge)
+                {
                     e = Vector2.Normalize(edges2[j]);
+                }
                 else
+                {
                     e = new Vector2(-oldE.Y, oldE.X);//Vector2.Zero;
+                }
 
                 if ((polygon.EndCorner || j != polygon.Vertices.Count - 1) && (polygon.StartCorner || j != 0))
                 {
@@ -1382,9 +1573,13 @@ namespace BytingLib
                             //check if the distancePoint is not in the prev voroni region
                             pDist = circle.Pos + dir * (float)cDists[k] - polygon.Pos - polygon.Vertices[j];
                             if (j == 0 && !polygon.LastEdgeClosed)
+                            {
                                 pDist_e = Vector2.Dot(pDist, new Vector2(e.Y, -e.X));
+                            }
                             else
+                            {
                                 pDist_e = Vector2.Dot(pDist, oldE);
+                            }
 
                             if (pDist_e > 0) //is pos right (clockwise) from the previous edge?
                             {
@@ -1413,7 +1608,9 @@ namespace BytingLib
                                     }
 
                                     if (cr.Distance.HasValue && cr.DistanceReversed.HasValue)
+                                    {
                                         return cr;
+                                    }
                                 }
                             }
                         }
@@ -1423,7 +1620,9 @@ namespace BytingLib
                 i = j;
 
                 if (i == 0)
+                {
                     break;
+                }
             }
             return cr;
         }
@@ -1435,10 +1634,14 @@ namespace BytingLib
             CollisionResultPolygonExtended cr = new CollisionResultPolygonExtended();
 
             if (dir == Vector2.Zero)
+            {
                 return cr;
+            }
 
             if (polygon.Vertices.Count <= 1) // TODO: check point vs circle, when polygon has 1 vertex?
+            {
                 return cr;
+            }
 
             float? cDist = null;
 
@@ -1472,7 +1675,9 @@ namespace BytingLib
                         bool forward = dir_ne < 0;
                         Vector2 cDir = dir;
                         if (!forward)
+                        {
                             cDir *= -1f;
+                        }
 
                         //if (dir_ne < 0) //dir against ne? (pointing to the top side of the edge)
                         //{
@@ -1512,7 +1717,9 @@ namespace BytingLib
                             }
 
                             if (cr.Distance.HasValue && cr.DistanceReversed.HasValue)
+                            {
                                 return cr;
+                            }
                         }
                         //}
                     }
@@ -1522,11 +1729,15 @@ namespace BytingLib
                 noEdge = false;
                 int j = i + 1;
                 if (j == polygon.Vertices.Count)
+                {
                     j = 0;
+                }
                 else if (j == edges2.Count)
                 {
                     if (!polygon.LastEdgeClosed)//???????is this necessary?
+                    {
                         noEdge = true;
+                    }
                     //else
                     //    j = 0;
                 }
@@ -1536,9 +1747,13 @@ namespace BytingLib
 
                 Vector2 oldE = e;
                 if (!noEdge)
+                {
                     e = Vector2.Normalize(edges2[j]);
+                }
                 else
+                {
                     e = new Vector2(-oldE.Y, oldE.X);//Vector2.Zero;
+                }
 
                 if ((polygon.EndCorner || j != polygon.Vertices.Count - 1) && (polygon.StartCorner || j != 0))
                 {
@@ -1555,9 +1770,13 @@ namespace BytingLib
                             //check if the distancePoint is not in the prev voroni region
                             pDist = circle.Pos + dir * (float)cDists[k] - polygon.Pos - polygon.Vertices[j];
                             if (j == 0 && !polygon.LastEdgeClosed)
+                            {
                                 pDist_e = Vector2.Dot(pDist, new Vector2(e.Y, -e.X));
+                            }
                             else
+                            {
                                 pDist_e = Vector2.Dot(pDist, oldE);
+                            }
 
                             if (pDist_e > 0) //is pos right (clockwise) from the previous edge?
                             {
@@ -1587,7 +1806,9 @@ namespace BytingLib
                                     }
 
                                     if (cr.Distance.HasValue && cr.DistanceReversed.HasValue)
+                                    {
                                         return cr;
+                                    }
                                 }
                             }
                         }
@@ -1597,7 +1818,9 @@ namespace BytingLib
                 i = j;
 
                 if (i == 0)
+                {
                     break;
+                }
             }
             return cr;
         }
@@ -1742,7 +1965,9 @@ namespace BytingLib
             float distLength = (float)Math.Sqrt(dist.X * dist.X + dist.Y * dist.Y);
 
             if (distLength >= circle1.Radius + circle2.Radius)
+            {
                 return new CollisionResult();
+            }
             else
             {
                 CollisionResult cr = new CollisionResult();
@@ -1829,7 +2054,9 @@ namespace BytingLib
                         }
 
                         if (newDist < minDist)
+                        {
                             minDist = newDist;
+                        }
 
                         if (minDist < radiusSquared)
                         {
@@ -1858,9 +2085,13 @@ namespace BytingLib
         public static bool ColTextureShapeTextureShape(TextureShape sprite1, TextureShape sprite2)
         {
             if (sprite1.IsTransformed() || sprite2.IsTransformed())
+            {
                 return ColTextureShapeTextureShapeTransformed(sprite1, sprite2);
+            }
             else
+            {
                 return ColTextureShapeTextureShapeIdentity(sprite1, sprite2);
+            }
         }
 
         public static bool ColTextureShapeTextureShapeIdentity(TextureShape sprite1, TextureShape sprite2)
@@ -1886,7 +2117,9 @@ namespace BytingLib
                         {
                             Color color2 = sprite2.colorData[(y - ydiff) * sprite2.Size.X + (x - xdiff)];
                             if (color2.A != 0)
+                            {
                                 return true;
+                            }
                         }
                     }
                 }
@@ -1953,12 +2186,18 @@ namespace BytingLib
             {
                 Vector2 axis = Vector2.Normalize(new Vector2(-edges[i].Y, edges[i].X));
                 if (axis.X < 0)
+                {
                     axis *= -1f;
+                }
                 else if (axis.X == 0 && axis.Y < 0)
+                {
                     axis.Y *= -1f;
+                }
 
                 if (!axes.Contains(axis))
+                {
                     axes.Add(axis);
+                }
             }
 
             //if only one axis is available (line) make it two dimensional (+normal axis)
@@ -1966,9 +2205,14 @@ namespace BytingLib
             {
                 Vector2 axis = new Vector2(-axes[0].Y, axes[0].X);
                 if (axis.X < 0)
+                {
                     axis *= -1f;
+                }
                 else if (axis.X == 0 && axis.Y < 0)
+                {
                     axis.Y *= -1f;
+                }
+
                 axes.Add(axis);
             }
 
@@ -2018,9 +2262,14 @@ namespace BytingLib
                     else
                     {
                         if (min < projection[0])
+                        {
                             projection[0] = min;
+                        }
+
                         if (max > projection[1])
+                        {
                             projection[1] = max;
+                        }
                     }
                 }
             }
@@ -2032,7 +2281,9 @@ namespace BytingLib
         {
             float discriminant = b * b - 4f * a * c;
             if (discriminant < 0)
+            {
                 return new float?[] { null, null };
+            }
             else
             {
                 float sqrt = MathF.Sqrt(discriminant);

@@ -29,7 +29,9 @@ namespace BytingLib
 
             if (OnStateChanged != null
                 && currentState != previousState)
+            {
                 OnStateChanged?.Invoke(currentState, previousState);
+            }
         }
 
         public bool IsConnected => currentState.IsConnected;
@@ -46,13 +48,25 @@ namespace BytingLib
             {
                 Int2 dir = Int2.Zero;
                 if (currentState.DPad.Left == ButtonState.Pressed)
+                {
                     dir.X--;
+                }
+
                 if (currentState.DPad.Right == ButtonState.Pressed)
+                {
                     dir.X++;
+                }
+
                 if (currentState.DPad.Up == ButtonState.Pressed)
+                {
                     dir.Y--;
+                }
+
                 if (currentState.DPad.Down == ButtonState.Pressed)
+                {
                     dir.Y++;
+                }
+
                 return dir;
             }
         }

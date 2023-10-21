@@ -59,12 +59,16 @@
         public void SetPopupScene(Scene? scene)
         {
             if (PopupScene != null)
+            {
                 RemovePopupScene();
+            }
 
             PopupScene = scene;
 
             if (PopupScene != null)
+            {
                 OnPopupOpen?.Invoke(PopupScene);
+            }
         }
 
         public void RemovePopupScene()

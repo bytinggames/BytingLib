@@ -37,7 +37,9 @@ namespace BytingLib
 
             if (OnStateChanged != null
                 && currentState != previousState)
+            {
                 OnStateChanged?.Invoke(frame, currentState, previousState);
+            }
         }
 
         public bool NumLockActive => currentState.NumLock;
@@ -69,7 +71,9 @@ namespace BytingLib
             for (int i = 0; i < downNow.Length; i++)
             {
                 if (!downPrevious.Contains(downNow[i]))
+                {
                     pressedKeys.Add(downNow[i]);
+                }
             }
             return pressedKeys;
         }
@@ -86,7 +90,9 @@ namespace BytingLib
             for (int i = 0; i < downPrevious.Length; i++)
             {
                 if (!downNow.Contains(downPrevious[i]))
+                {
                     releasedKeys.Add(downPrevious[i]);
+                }
             }
             return releasedKeys;
         }

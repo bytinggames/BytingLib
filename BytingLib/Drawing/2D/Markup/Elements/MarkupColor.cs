@@ -22,7 +22,9 @@
             settings.TextColor = textColor;
 
             foreach (var leaf in base.IterateOverLeaves(settings))
+            {
                 yield return leaf;
+            }
 
             settings.TextColor = temp;
         }

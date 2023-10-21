@@ -50,9 +50,13 @@ namespace BytingLib
         private static T? GetDefault()
         {
             if (typeof(T) == typeof(Matrix))
+            {
                 return (T)(object)Matrix.Identity;
+            }
             else
+            {
                 return default;
+            }
         }
 
         public void Dispose()
@@ -73,11 +77,15 @@ namespace BytingLib
         public void Apply()
         {
             if (!dirty || effectParameter == null)
+            {
                 return;
+            }
             //if (lastAppliedValue == null || !lastAppliedValue.Equals(valueStack.Peek()))
             {
                 if (valueStack.TryPeek(out lastAppliedValue))
+                {
                     effectParameter.SetValueObject(lastAppliedValue!);
+                }
                 else if (typeof(T).IsValueType)
                 {
                     lastAppliedValue = default;
@@ -102,9 +110,13 @@ namespace BytingLib
                 if (d2 != null)
                 {
                     if (d1 != null)
+                    {
                         return new DisposableContainer(d1, d2);
+                    }
                     else
+                    {
                         return d2;
+                    }
                 }
             }
 
@@ -136,17 +148,26 @@ namespace BytingLib
             actionWhile();
 
             if (valChanged)
+            {
                 PopAndSetDirty();
+            }
         }
 
         private bool IsEqualToPeek(T? val)
         {
             if (!valueStack.TryPeek(out T? peek))
+            {
                 return false;
+            }
+
             if (peek == null)
+            {
                 return val == null;
+            }
             else
+            {
                 return peek.Equals(val);
+            }
         }
 
         public IDisposable? Use(Func<T, T> func)

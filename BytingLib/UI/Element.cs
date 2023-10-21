@@ -1,6 +1,4 @@
-﻿using static BytingLib.AnimationData;
-
-namespace BytingLib.UI
+﻿namespace BytingLib.UI
 {
     struct ElementIteration
     {
@@ -52,7 +50,9 @@ namespace BytingLib.UI
             DrawSelf(spriteBatch, style);
 
             for (int i = 0; i < Children.Count; i++)
+            {
                 Children[i].Draw(spriteBatch, style);
+            }
 
             DrawSelfPost(spriteBatch, style);
 
@@ -61,7 +61,9 @@ namespace BytingLib.UI
         public virtual void Update(ElementInput input)
         {
             for (int i = 0; i < Children.Count; i++)
+            {
                 Children[i].Update(input);
+            }
 
             // call update self after children, cause children are drown on top of parent
             UpdateSelf(input);
@@ -88,7 +90,7 @@ namespace BytingLib.UI
         public virtual void UpdateTree(Rect rect)
         {
             AbsoluteRect = rect.CloneRect().Round();
-            
+
             rect = rect.CloneRect();
             Padding?.RemoveFromRect(rect);
             UpdateTreeModifyRect(rect);
@@ -115,9 +117,14 @@ namespace BytingLib.UI
                 for (int d = 0; d < 2; d++)
                 {
                     if (size[d] == 0f && c.Children.Count > 0)
+                    {
                         size[d] = c.GetSizeTopToBottom(d);
+                    }
+
                     if (size[d] < 0)
+                    {
                         size[d] = -size[d] * (d == 0 ? rect.Width : rect.Height);
+                    }
                 }
 
                 Vector2 pos = c.Anchor * rect.Size + rect.Pos;
@@ -135,7 +142,10 @@ namespace BytingLib.UI
             {
                 float pad = Padding == null ? 0f : Padding.Size(d);
                 if (Children.Count == 0)
+                {
                     return pad;
+                }
+
                 float maxSize = Children.Max(f => f.GetSizeTopToBottom(d));
                 if (maxSize > 0)
                 {
@@ -173,7 +183,10 @@ namespace BytingLib.UI
             {
                 var c = children[i];
                 if (c == null)
+                {
                     continue;
+                }
+
                 Children.Add(c);
                 c.Parent = this;
             }

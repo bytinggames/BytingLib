@@ -12,7 +12,10 @@ namespace BytingLib
         public bool IsDistanceBetween0And1()
         {
             if (!Distance.HasValue)
+            {
                 return false;
+            }
+
             return Distance.Value >= 0f && Distance.Value <= 1f;
         }
     }

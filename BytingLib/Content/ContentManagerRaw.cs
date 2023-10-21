@@ -67,7 +67,9 @@ namespace BytingLib
                     }
 
                     if (notFound)
+                    {
                         throw;
+                    }
 
                     T Load(string assetFile)
                     {
@@ -79,7 +81,9 @@ namespace BytingLib
                     }
                 }
                 else
+                {
                     throw;
+                }
             }
             return default!; // just to silence the compiler
         }
@@ -87,7 +91,9 @@ namespace BytingLib
         public override void UnloadAsset(string assetName)
         {
             if (LoadedAssets.TryGetValue(assetName, out object? asset))
+            {
                 AssetDisposer.PreDispose(asset);
+            }
 
             base.UnloadAsset(assetName);
         }

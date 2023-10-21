@@ -14,7 +14,9 @@
         {
             defaultMSPerFrame = defaultElapsedTime.TotalMilliseconds;
             if (defaultMSPerFrame <= 0)
+            {
                 throw new ArgumentException("defaultElapsedTime must be larger than 0");
+            }
         }
 
         public void OnRefresh(GameTime gameTime)

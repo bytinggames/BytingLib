@@ -44,7 +44,9 @@
             settings.TextOutline = new MarkupSettings.Outline(color ?? settings.TextColor, thickness, SizeUnion, quality);
 
             foreach (var leaf in base.IterateOverLeaves(settings))
+            {
                 yield return leaf;
+            }
 
             settings.TextOutline = temp;
         }

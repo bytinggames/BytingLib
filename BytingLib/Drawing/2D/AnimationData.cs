@@ -40,7 +40,9 @@ namespace BytingLib
             {
                 ms -= f.duration;
                 if (ms < 0)
+                {
                     return f.rectangle;
+                }
             }
 
             throw new Exception();
@@ -51,7 +53,9 @@ namespace BytingLib
         public Rectangle GetSourceRectangle(long ms, string? animationTagName)
         {
             if (animationTagName == null)
+            {
                 return GetSourceRectangle(ms);
+            }
 
             var tag = GetFrameTag(animationTagName);
 
@@ -64,7 +68,9 @@ namespace BytingLib
         public Rectangle GetSourceRectangle(long ms, Meta.FrameTag frameTag)
         {
             if (frameTag == null)
+            {
                 return GetSourceRectangle(ms);
+            }
 
             int tagFramesCount = frameTag.to - frameTag.from + 1;
             int tagTotalDuration = frameTag.TotalDuration;
@@ -72,13 +78,17 @@ namespace BytingLib
             ms %= tagTotalDuration;
 
             if (frameTag.direction != "forward")
+            {
                 ms = tagTotalDuration - ms; // reverse time
+            }
 
             foreach (var f in frames!.Values.Skip(frameTag.from).Take(tagFramesCount))
             {
                 ms -= f.duration;
                 if (ms < 0)
+                {
                     return f.rectangle;
+                }
             }
 
             throw new Exception();
@@ -90,25 +100,44 @@ namespace BytingLib
         public Rectangle? GetSourceRectangle(int frameIndex)
         {
             if (frames == null)
+            {
                 return null;
+            }
 
             if (frameIndex < 0)
+            {
                 frameIndex = 0;
+            }
             else
+            {
                 frameIndex %= frames.Count;
+            }
+
             return frames.Values.Skip(frameIndex).First().rectangle;
         }
 
         public Meta.FrameTag GetFrameTag(string animationTagName)
         {
             if (meta == null)
+            {
                 throw new Exception("meta is null");
+            }
+
             if (meta.frameTags == null)
+            {
                 throw new Exception("meta.frameTags is null");
+            }
+
             if (meta.frameTagsDictionary == null)
+            {
                 throw new Exception("meta.frameTagsDictionary is null");
+            }
+
             if (!meta.frameTagsDictionary.TryGetValue(animationTagName, out var tag))
+            {
                 throw new Exception("couldn't find tag " + animationTagName);
+            }
+
             return tag;
         }
 
@@ -191,7 +220,9 @@ namespace BytingLib
         public static AnimationData GetAnimationData(ContentManager content, string assetName)
         {
             if (animationDatas.ContainsKey(assetName))
+            {
                 return animationDatas[assetName];
+            }
 
             string file = Path.Combine(content.RootDirectory, assetName.Replace('/', Path.DirectorySeparatorChar) + ".json");
             string json = File.ReadAllText(file);

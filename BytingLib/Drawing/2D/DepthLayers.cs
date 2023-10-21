@@ -12,7 +12,10 @@ namespace BytingLib
         public float GetDepth()
         {
             if (layersInUse.Count == 0)
+            {
                 return defaultLayer.GetDepth();
+            }
+
             DepthLayer layer = layersInUse.Peek();
             return layer.GetDepth();
         }

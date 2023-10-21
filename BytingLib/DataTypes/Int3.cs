@@ -100,7 +100,10 @@ namespace BytingLib
         public override bool Equals(object? obj)
         {
             if (obj is Int3 f)
+            {
                 return f.X == X && f.Y == Y && f.Z == Z;
+            }
+
             return false;
         }
 
@@ -146,10 +149,14 @@ namespace BytingLib
                     return Math.Sign(X - other.X);
                 }
                 else
+                {
                     return ySign;
+                }
             }
             else
+            {
                 return zSign;
+            }
         }
     }
 }

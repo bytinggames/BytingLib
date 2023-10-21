@@ -27,7 +27,9 @@ namespace BytingLib.Serialization
             writeTypes = new();
 
             foreach (var item in BinaryObjectWriter.WriteFunctions)
+            {
                 writeTypes.Add(item.Key, item.Value);
+            }
 
             foreach (var t in AppDomain.CurrentDomain.GetAssemblies().SelectMany(f => f.GetTypes()))
             {
@@ -62,7 +64,9 @@ namespace BytingLib.Serialization
             Dictionary<(int, int), PropertyInfo> allProperties = new();
 
             foreach (var item in BinaryObjectReader.ReadFunctions)
+            {
                 readTypes.Add(item.Key, item.Value);
+            }
 
             foreach (var t in AppDomain.CurrentDomain.GetAssemblies().SelectMany(f => f.GetTypes()))
             {
@@ -97,7 +101,9 @@ namespace BytingLib.Serialization
                         {
                             int propsCount = br.ReadInt32();
                             if (propsCount == 0)
+                            {
                                 continue;
+                            }
 
                             int currentID = typeIDs.IDs[typeHierarchy[currentLevel]];
                             while (propsCount > 0)
@@ -125,7 +131,9 @@ namespace BytingLib.Serialization
                 : new BytingWriter(stream, writeTypes, typeIDs.IDs))
             {
                 if (obj == null)
+                {
                     bw.Write((byte)0); // obj is null
+                }
                 else
                 {
                     bw.Write((byte)1); // obj is not null
@@ -139,7 +147,10 @@ namespace BytingLib.Serialization
             using (BytingReader br = new BytingReader(stream, readTypes, typeIDs.Types, References))
             {
                 if (br.ReadByte() == 0) // obj is null?
+                {
                     return default;
+                }
+
                 return (T)br.ReadObject(typeof(T));
             }
         }

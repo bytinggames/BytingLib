@@ -29,9 +29,13 @@ namespace BytingLib
             using (Material == null ? null : shaderMaterial?.UseMaterial(Material))
             {
                 if (IndexBuffer == null)
+                {
                     shader.Draw(VertexBuffer);
+                }
                 else
+                {
                     shader.Draw(VertexBuffer, IndexBuffer);
+                }
             }
         }
     }

@@ -39,7 +39,9 @@ namespace BytingLib
 
             Vector2 textSize = Vector2.Zero;
             if (_anchor.origin != Vector2.Zero || underline != null)
+            {
                 textSize = _font.MeasureString(_text);
+            }
 
             Vector2 origin = _anchor.origin * textSize;
             textSize *= scale;
@@ -52,9 +54,13 @@ namespace BytingLib
                 Vector2 drawPos = pos - shift;
 
                 if (roundPositionTo == 1f)
+                {
                     drawPos = (drawPos - new Vector2(0.1f) /* to prevent 0.5 twitching */).GetRound();
+                }
                 else
+                {
                     drawPos = (drawPos / roundPositionTo).GetRound() * roundPositionTo;
+                }
 
                 pos = drawPos + shift;
             }
@@ -123,7 +129,9 @@ namespace BytingLib
         public static string WrapText(string text, float width, float fontScaleX, Func<string, Vector2> measureString, out List<(int Index, int Add)> textLengthChanges)
         {
             if (width <= 0)
+            {
                 throw new BytingException("width must be larger than 0");
+            }
 
             textLengthChanges = new();
 
@@ -139,7 +147,9 @@ namespace BytingLib
                     continue;
                 }
                 else if (i - lastNewLineIndex <= 1) // when we wouldn't split anything away, don't consider splitting
+                {
                     continue;
+                }
 
                 // TODO: this could be improved performance-wise, by only measuring char by char (but I did that, it's not trivial, if you want to have the exact same measurements. The default font measure method must be inspected more in-depth before improving this.
                 float measureWidth = measureString(text.Substring(lastNewLineIndex + 1, i - (lastNewLineIndex + 1))).X;
@@ -161,7 +171,9 @@ namespace BytingLib
                     NewLine(i);
                 }
                 else if (text[i] == ' ')
+                {
                     lastSpaceIndex = i;
+                }
             }
             return text;
 

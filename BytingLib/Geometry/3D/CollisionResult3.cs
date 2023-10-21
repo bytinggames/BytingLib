@@ -35,7 +35,9 @@
                 }
             }
             else
+            {
                 ColPoint = null;
+            }
 
             AxisCol = -AxisCol;
             AxisColReversed = -AxisColReversed;

@@ -106,7 +106,9 @@ namespace BytingLib
         private Rectangle[,] GetSliceRects()
         {
             if (sliceRects != null)
+            {
                 return sliceRects;
+            }
 
             sliceRects = new Rectangle[3, 3];
 
@@ -123,8 +125,12 @@ namespace BytingLib
             };
 
             for (int x = 0; x < 3; x++)
+            {
                 for (int y = 0; y < 3; y++)
+                {
                     sliceRects[x,y] = GetSliceRect(x, y);
+                }
+            }
 
             Rectangle GetSliceRect(int xPatch, int yPatch)
             {

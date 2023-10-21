@@ -57,9 +57,13 @@ namespace BytingLib.Markup
         private Vector2 GetSizeChildUnscaledInternal(MarkupSettings settings)
         {
             if (SourceRectangle == null)
+            {
                 return Texture.Value.GetSize();
+            }
             else
+            {
                 return SourceRectangle.Value.Size.ToVector2();
+            }
         }
 
         protected override void DrawChild(MarkupSettings settings)

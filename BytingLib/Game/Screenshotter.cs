@@ -19,7 +19,10 @@
             int[] backBuffer = new int[w * h];
             gDevice.GetBackBufferData(backBuffer);
             if (screenshotTex == null || screenshotTex.Width != w || screenshotTex.Height != h)
+            {
                 screenshotTex = new Texture2D(gDevice, w, h, false, gDevice.PresentationParameters.BackBufferFormat);
+            }
+
             screenshotTex.SetData(backBuffer);
             string path = randomScreenshot ? paths.GetNewRandomScreenshotPng() : paths.GetNewScreenshotPng();
             screenshotTex.SaveAsPng(path);

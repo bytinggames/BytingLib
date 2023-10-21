@@ -8,7 +8,9 @@
         public static float[] GenerateKernel(int width, float sigma)
         {
             if (width == 0)
+            {
                 return new float[] { 1 };
+            }
 
             float[] kernel = new float[width + 1 + width];
 

@@ -32,9 +32,14 @@ namespace BytingLib
                 textNames += m.Value.StackStr + "    - " + m.Key + "\n";
             }
             if (textNumbers.Length > 0)
+            {
                 textNumbers = textNumbers.Remove(textNumbers.Length - 1);
+            }
+
             if (textNames.Length > 0)
+            {
                 textNames = textNames.Remove(textNames.Length - 1);
+            }
 
             DrawSelf(spriteBatch, textNumbers, textNames);
         }

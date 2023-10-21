@@ -75,9 +75,13 @@
             }
 
             if (onLine < 0) // v lies nearest to Pos
+            {
                 return v - Pos;
+            }
             else // v lies nearest to Pos2
+            {
                 return v - Pos2;
+            }
         }
     }
 }

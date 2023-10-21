@@ -28,9 +28,13 @@
             set
             {
                 if (value < 0f)
+                {
                     _hue = (360f + value) % 360f;
+                }
                 else
+                {
                     _hue = value % 360f;
+                }
             }
         }
 
@@ -40,11 +44,17 @@
             set
             {
                 if (value > 1f)
+                {
                     _saturation = 1f;
+                }
                 else if (value < 0f)
+                {
                     _saturation = 0f;
+                }
                 else
+                {
                     _saturation = value;
+                }
             }
         }
 
@@ -54,11 +64,17 @@
             set
             {
                 if (value > 1f)
+                {
                     _value = 1f;
+                }
                 else if (value < 0f)
+                {
                     _value = 0f;
+                }
                 else
+                {
                     _value = value;
+                }
             }
         }
 

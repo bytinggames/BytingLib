@@ -21,7 +21,9 @@ namespace BytingLib
             var mouseSource = new MouseWithoutOutOfWindowClicks(Mouse.GetState, windowManager);
 
             if (mouseWithActivationClick)
+            {
                 getMouseState = mouseSource.GetState;
+            }
             else
             {
                 MouseWithoutActivationClicks mouseFiltered = new MouseWithoutActivationClicks(mouseSource.GetState, f => game.Activated += f);
@@ -42,7 +44,9 @@ namespace BytingLib
 
             stuff.Add(new UpdateKeyPressed(keys, Keys.Escape, game.Exit));
             if (inputRecordingDir != null)
+            {
                 stuff.Add(new InputRecordingTriggerer<FullInput>(keysDev, inputRecordingManager, inputRecordingDir, f => f() /* naively instantly execute */, true));
+            }
 
             game.Window.AllowUserResizing = true;
             stuff.Add(new UpdateKeyPressed(keys, Keys.F11, windowManager.ToggleFullscreen));
@@ -56,7 +60,9 @@ namespace BytingLib
         {
             string dir = Path.GetDirectoryName(path)!;
             if (!Directory.Exists(dir))
+            {
                 Directory.CreateDirectory(dir);
+            }
 
             FileStream fs = File.Create(path);
             StructStreamWriterCompressed<FullInput> recorder = new(fs, true);

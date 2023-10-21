@@ -38,10 +38,15 @@ namespace BytingLib
             {
                 float second = channels[i].Sampler.KeyFrames.Seconds[0];
                 if (startSecond > second)
+                {
                     startSecond = second;
+                }
+
                 second = channels[i].Sampler.KeyFrames.Seconds[^1];
                 if (endSecond < second)
+                {
                     endSecond = second;
+                }
             }
             AnimationStartSecond = startSecond;
             AnimationEndSecond = endSecond;
@@ -69,7 +74,9 @@ namespace BytingLib
             float samplerSecond = SecondToSamplerSecond(second);
 
             for (int i = 0; i < channels.Length; i++)
+            {
                 channels[i].Apply(samplerSecond, AnimationEndSecondIncludingTransitionToBegin, Looped);
+            }
         }
 
         public void BlendStart(float second)
@@ -77,7 +84,9 @@ namespace BytingLib
             model.AnimationBlend.Begin();
 
             for (int i = 0; i < channels.Length; i++)
+            {
                 model.AnimationBlend.AddChannelfNotAlready(channels[i]);
+            }
 
             UpdateAnimationTime(second);
         }
@@ -85,7 +94,9 @@ namespace BytingLib
         public void BlendAdd(float second, float interpolationAmount)
         {
             if (model.AnimationBlend == null)
+            {
                 throw new Exception("You first need to call BlendStart()");
+            }
 
             float samplerSecond = SecondToSamplerSecond(second);
 
@@ -117,14 +128,19 @@ namespace BytingLib
                     case WrapMode.Mirror:
                         second = second % (AnimationDuration * 2);
                         if (second > AnimationDuration)
+                        {
                             second = AnimationDuration * 2 - second;
+                        }
+
                         break;
                     default:
                         throw new NotImplementedException();
                 }
             }
             else
+            {
                 second = 0f;
+            }
 
             second += AnimationStartSecond;
             return second;

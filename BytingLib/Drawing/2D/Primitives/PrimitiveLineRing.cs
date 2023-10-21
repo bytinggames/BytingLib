@@ -12,7 +12,9 @@
         public PrimitiveLineRing(PrimitiveAreaStrip area)
         {
             if (area.Vertices.Length < 3)
+            {
                 throw new Exception("TriangleStrip with less than 3 vertices is not allowed");
+            }
 
             Vertices = new Vector2[area.Vertices.Length];
             // start edge
@@ -22,10 +24,14 @@
             int i;
             int j;
             for (i = 2, j = 3; j < area.Vertices.Length; i++, j += 2)
+            {
                 Vertices[i] = area.Vertices[j];
+            }
             // top line
             for (j = area.Vertices.Length - 2; j > 0; i++, j -= 2)
+            {
                 Vertices[i] = area.Vertices[j];
+            }
         }
 
         public PrimitiveLineRing(Circle circle, int vertexCount)

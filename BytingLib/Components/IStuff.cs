@@ -13,7 +13,9 @@
         public static void AddRange(this IStuff stuff, params object[] things)
         {
             foreach (var thing in things)
+            {
                 stuff.Add(thing);
+            }
         }
 
         public static void AddRangeMaybeNull(this IStuff stuff, params object?[] things)
@@ -30,7 +32,9 @@
         public static void RemoveRange(this IStuff stuff, params object[] things)
         {
             foreach (var thing in things)
+            {
                 stuff.Remove(thing);
+            }
         }
     }
 }

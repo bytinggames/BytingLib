@@ -27,9 +27,13 @@
                 string json = File.ReadAllText(sessionFile);
                 var d = System.Text.Json.JsonSerializer.Deserialize<FileSessionData>(json);
                 if (d != null)
+                {
                     data = d;
+                }
                 else
+                {
                     throw new BytingException("couldn't deserialize json file " + sessionFile);
+                }
             }
             else
             {
@@ -59,7 +63,9 @@
         public bool Save()
         {
             if (data.CurrentFile == null)
+            {
                 return false;
+            }
 
             SaveAs(data.CurrentFile);
             return true;
@@ -77,7 +83,10 @@
         public bool Open(string file)
         {
             if (data.IsDirty)
+            {
                 return false;
+            }
+
             open(file);
             data.CurrentFile = file;
             data.IsDirty = false;
@@ -97,7 +106,9 @@
         public bool New()
         {
             if (data.IsDirty)
+            {
                 return false;
+            }
 
             newFile();
             data.CurrentFile = null;
@@ -108,7 +119,9 @@
         public void Dispose()
         {
             if (data.IsDirty)
+            {
                 save(unsavedLevelFile);
+            }
 
             SaveFileSession();
         }
@@ -117,7 +130,9 @@
         {
             string json = System.Text.Json.JsonSerializer.Serialize(data);
             using (var stream = File.CreateText(sessionFile))
+            {
                 stream.Write(json);
+            }
         }
 
         class FileSessionData
