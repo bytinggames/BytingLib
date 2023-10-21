@@ -66,19 +66,19 @@ namespace BytingLib.Serialization
             {
                 int typeRead = ReadByte();
 
-                Jau.StructDataType message = (Jau.StructDataType)typeRead;
+                StructStreamDataType message = (StructStreamDataType)typeRead;
 
                 switch (message)
                 {
-                    case Jau.StructDataType.Zeros:
+                    case StructStreamDataType.Zeros:
                         bufferIndex += ReadByte();
                         break;
-                    case Jau.StructDataType.Difference:
+                    case StructStreamDataType.Difference:
                         byte diff = ReadByte();
                         diffBuffer[bufferIndex] = diff;
                         bufferIndex++;
                         break;
-                    case Jau.StructDataType.End:
+                    case StructStreamDataType.End:
                         return; // end
                     default:
                         throw new NotImplementedException();

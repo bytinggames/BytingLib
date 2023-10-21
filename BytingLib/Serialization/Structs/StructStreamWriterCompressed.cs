@@ -65,20 +65,20 @@ namespace BytingLib.Serialization
 
         private void WriteZeros(ref byte zeros)
         {
-            stream.WriteByte((byte)Jau.StructDataType.Zeros);
+            stream.WriteByte((byte)StructStreamDataType.Zeros);
             stream.WriteByte(zeros);
             zeros = 0;
         }
 
         private void WriteDifference(byte change)
         {
-            stream.WriteByte((byte)Jau.StructDataType.Difference);
+            stream.WriteByte((byte)StructStreamDataType.Difference);
             stream.WriteByte(change);
         }
 
         private void WriteEnd()
         {
-            stream.WriteByte((byte)Jau.StructDataType.End);
+            stream.WriteByte((byte)StructStreamDataType.End);
         }
 
         //enum DataType : byte
@@ -87,15 +87,5 @@ namespace BytingLib.Serialization
         //    Difference = 1,
         //}
 
-    }
-
-    public class Jau
-    {
-        public enum StructDataType : byte
-        {
-            Zeros = 0,
-            Difference = 1,
-            End = 2
-        }
     }
 }
