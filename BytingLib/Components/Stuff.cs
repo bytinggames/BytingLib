@@ -158,6 +158,11 @@ namespace BytingLib
             }
         }
 
+        public bool ContainsType(Type type)
+        {
+            return listsOfThings.ContainsKey(type);
+        }
+
         class Iteration
         {
             public Type InterfaceType { get; }
