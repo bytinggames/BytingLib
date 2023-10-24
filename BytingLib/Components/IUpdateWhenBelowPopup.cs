@@ -2,6 +2,6 @@
 {
     public interface IUpdateWhenBelowPopup
     {
-        void UpdateWhenBelowPopup();
+        void UpdateWhenBelowPopup(Scene popup);
     }
 }

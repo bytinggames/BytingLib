@@ -48,7 +48,7 @@
             if (PopupScene != null)
             {
                 PopupScene.Update();
-                ForEach<IUpdateWhenBelowPopup>(f => f.UpdateWhenBelowPopup());
+                ForEach<IUpdateWhenBelowPopup>(f => f.UpdateWhenBelowPopup(PopupScene));
             }
             else
             {
