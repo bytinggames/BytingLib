@@ -9,6 +9,7 @@
         public KeyInput Keys { get; }
         public Action<Element?> SetUpdateCatch { get; }
         public Element? FocusElement { get; set; }
+        public Element? HoverElement { get; set; }
         public GameWindow Window { get; set; }
 
         public ElementInput(MouseInput mouse, KeyInput keys, Action<Element?> setUpdateCatch, GameWindow window)

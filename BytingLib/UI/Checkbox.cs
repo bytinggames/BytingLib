@@ -146,6 +146,8 @@
                         }
                     }
                 }
+
+                UpdateHoverElement(input);
             }
             else
             {

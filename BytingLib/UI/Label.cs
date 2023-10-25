@@ -55,6 +55,11 @@
 
         protected override void UpdateTreeBeginSelf(StyleRoot style)
         {
+            if (setSizeToText)
+            {
+                Width = 0f; // trigger setting size to text
+            }
+
             textToDraw = CreateTextToDraw(style);
 
             if (setSizeToText)

@@ -120,7 +120,8 @@
 
             for (int i = 0; i < Children.Count; i++)
             {
-                Children[i].UpdateTree(rect);
+                Rect childRect = GetChildRect(rect, Children[i]);
+                Children[i].UpdateTree(childRect);
             }
 
             StyleRoot.Pop(Style);
@@ -173,6 +174,8 @@
             {
                 UpdateTree();
             }
+
+            base.UpdateSelf(input);
         }
 
         private void SetDirtyIfResChanged()

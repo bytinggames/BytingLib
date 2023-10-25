@@ -22,6 +22,7 @@
         public float Height { get; set; } = -1f;
         public Padding? Padding { get; set; }
         public Vector2 Anchor { get; set; } = new Vector2(0.5f);
+        public Action<Element>? OnWhileHover { get; set; }
 
         public float Size(int dimension)
         {
@@ -41,7 +42,25 @@
 
         protected virtual void DrawSelf(SpriteBatch spriteBatch, StyleRoot style) { }
         protected virtual void DrawSelfPost(SpriteBatch spriteBatch, StyleRoot style) { }
-        protected virtual void UpdateSelf(ElementInput input) { }
+        protected virtual void UpdateSelf(ElementInput input)
+        {
+            UpdateHoverElement(input);
+        }
+
+        protected void UpdateHoverElement(ElementInput input)
+        {
+            if (OnWhileHover != null
+                && input.HoverElement == null)
+            {
+                //bool alreadyHovering = input.HoverElementForTooltip == this;
+                if (AbsoluteRect.CollidesWith(input.Mouse.Position))
+                {
+                    input.HoverElement = this;
+
+                    OnWhileHover(this);
+                }
+            }
+        }
 
         public virtual void Draw(SpriteBatch spriteBatch, StyleRoot style)
         {
@@ -298,6 +317,18 @@
             {
                 Children[i].LooseFocus();
             }
+        }
+
+        public Element Tooltip(ITooltip tooltip, string text)
+        {
+            OnWhileHover = f => tooltip.OnHover(f, text);
+            return this;
+        }
+
+        public Element Tooltip(ITooltip tooltip, Func<string> getText)
+        {
+            OnWhileHover = f => tooltip.OnHover(f, getText());
+            return this;
         }
     }
 }

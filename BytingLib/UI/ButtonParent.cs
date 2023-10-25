@@ -87,6 +87,8 @@
                     input.SetUpdateCatch(null);
                 }
             }
+
+            base.UpdateSelf(input);
         }
 
         protected override void UpdateTreeModifyRect(Rect rect)
