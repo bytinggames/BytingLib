@@ -26,6 +26,13 @@
             lastMSCursorOrSelectionChanged = updateSpeed.TotalMSF();
         }
 
+        public override void UpdateTree(Rect rect)
+        {
+            base.UpdateTree(rect);
+
+            cursorChanged = true; // force cursor draw update
+        }
+
         protected override void UpdateSelf(ElementInput input)
         {
             if (input.FocusElement == this)
