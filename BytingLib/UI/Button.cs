@@ -14,5 +14,10 @@
         {
             clickAction();
         }
+
+        public void Click()
+        {
+            clickAction();
+        }
     }
 }
