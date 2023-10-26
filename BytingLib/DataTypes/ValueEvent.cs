@@ -24,5 +24,10 @@
         }
 
         public event Action<T>? OnChange;
+
+        public void TriggerOnChange()
+        {
+            OnChange?.Invoke(_value);
+        }
     }
 }
