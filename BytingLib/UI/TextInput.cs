@@ -12,17 +12,18 @@
         private bool drawFocused;
         float lastMSCursorOrSelectionChanged;
         private readonly GameSpeed updateSpeed;
+        private readonly Predicate<char>? validateChar;
         private int? moveCursorVertically;
         public event Func<bool>? OnEnter;
         public KeyInputString.AllowNewLine AllowNewLine { get; }
         private bool doFocus;
 
-        public TextInput(GameSpeed updateSpeed, string text = "", float width = 0, float height = 0, KeyInputString.AllowNewLine allowNewLine = KeyInputString.AllowNewLine.Never)
+        public TextInput(GameSpeed updateSpeed, string text = "", float width = 0, float height = 0, KeyInputString.AllowNewLine allowNewLine = KeyInputString.AllowNewLine.Never, Predicate<char>? validateChar = null)
             : base(text, width, height, false)
         {
             this.updateSpeed = updateSpeed;
             AllowNewLine = allowNewLine;
-
+            this.validateChar = validateChar;
             lastMSCursorOrSelectionChanged = updateSpeed.TotalMSF();
         }
 
@@ -111,6 +112,7 @@
             keyInputString.InputString.OnCursorMoveOrSelectChanged += InputString_OnCursorMoveOrSelectChanged;
             keyInputString.InputString.MoveCursorVertically += MoveCursorVertically;
             keyInputString.OnEnter = () => OnEnter == null ? true : OnEnter();
+            keyInputString.InputString.ValidateChar = validateChar;
 
             InputString_OnTextChange(keyInputString.InputString);
             InputString_OnCursorMoveOrSelectChanged(keyInputString.InputString);

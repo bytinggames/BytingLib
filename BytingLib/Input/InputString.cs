@@ -49,6 +49,7 @@ namespace BytingLib
         public event Action<InputString>? OnCursorMoveOrSelectChanged;
 
         public Action<int>? MoveCursorVertically { get; set; }
+        public Predicate<char>? ValidateChar { get; set; }
 
         public InputString()
         {
@@ -107,8 +108,16 @@ namespace BytingLib
         }
         public void Insert(char c)
         {
-            RemoveSelectIfSelected();
+            bool anyRemoved = RemoveSelectIfSelected();
 
+            if (ValidateChar != null && !ValidateChar(c))
+            {
+                if (anyRemoved)
+                {
+                    OnTextChange?.Invoke(this);
+                }
+                return;
+            }
             text.Insert(Cursor, c);
             Cursor++;
             OnTextChange?.Invoke(this);
@@ -135,6 +144,18 @@ namespace BytingLib
         public void Insert(string str)
         {
             RemoveSelectIfSelected();
+
+            if (ValidateChar != null)
+            {
+                for (int i = 0; i < str.Length; i++)
+                {
+                    if (!ValidateChar(str[i]))
+                    {
+                        str = str.Remove(i) + str.Substring(i + 1);
+                        i--;
+                    }
+                }
+            }
 
             text.Insert(Cursor, str);
             Cursor += str.Length;
