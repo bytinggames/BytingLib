@@ -6,8 +6,14 @@
   <ItemGroup>
     <PackageReference Include="BytingGames.MonoGame.Framework.Content.Pipeline" Version="3.8.1.13-develop" />
     <PackageReference Include="BytingGames.MonoGame.Framework.DesktopGL" Version="3.8.1.11-develop" />
+    <PackageReference Include="QoiSharp" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../BytingLib/BytingLib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="QoiSharp.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

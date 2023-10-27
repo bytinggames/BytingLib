@@ -19,4 +19,10 @@
     <ProjectReference Include="../BytingPipeline/BytingPipeline.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\Image.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
