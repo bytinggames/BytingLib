@@ -30,7 +30,13 @@ namespace BuildTemplates
         void ReadFile(string customFile)
         {
             string customStr = File.ReadAllText(customFile);
+
+            // source: https://stackoverflow.com/a/3524689/6866837
+            customStr = StripComments(customStr);
+
             customStr = customStr.Replace("\r", "");
+
+
             ScriptReader reader = new ScriptReader(customStr);
 
             while (true)
@@ -70,6 +76,26 @@ namespace BuildTemplates
                 if (endReached)
                     break;
             }
+        }
+
+        private static string StripComments(string customStr)
+        {
+            var blockComments = @"/\*(.*?)\*/";
+            var lineComments = @"//(.*?)\r?\n";
+            var strings = @"""((\\[^\n]|[^""\n])*)""";
+            var verbatimStrings = @"@(""[^""]*"")+";
+
+            string noComments = Regex.Replace(customStr,
+                blockComments + "|" + lineComments + "|" + strings + "|" + verbatimStrings,
+                me =>
+                {
+                    if (me.Value.StartsWith("/*") || me.Value.StartsWith("//"))
+                        return me.Value.StartsWith("//") ? Environment.NewLine : "";
+                    // Keep the literal strings
+                    return me.Value;
+                },
+                RegexOptions.Singleline);
+            return noComments;
         }
 
         internal string? GetCustomCode(string localFilePath)

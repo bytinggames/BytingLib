@@ -28,7 +28,7 @@ namespace BuildTemplates.Test
         [DataRow(true)]
         public void TestBuildBytingLibGame(bool loadOnStartup)
         {
-            string contentPath = @"D:\Documents\Visual Studio 2017\Projects\BytingLibGame\BytingLibGame\Content";
+            string contentPath = @"C:\Projects\BytingLibGame\BytingLibGame\Content";
             string nameSpace = "BytingLibGame";
             (string output, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath, nameSpace, new string[0], loadOnStartup, new ContentConverter());
             Assert.IsNotNull(output);
@@ -42,7 +42,7 @@ namespace BuildTemplates.Test
         [DataRow(true)]
         public void TestBuildSE(bool loadOnStartup)
         {
-            string contentPath = @"D:\Documents\Visual Studio 2017\Projects\SE\SE\Content";
+            string contentPath = @"C:\Projects\SE\SE\Content";
             string nameSpace = "SE";
             (string output, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath, nameSpace, new string[0], loadOnStartup, new SEContentConverter());
             Assert.IsNotNull(output);
@@ -56,7 +56,7 @@ namespace BuildTemplates.Test
         [DataRow(true)]
         public void TestBuildPlatformer3D(bool loadOnStartup)
         {
-            string contentPath = @"D:\Documents\Visual Studio 2017\Projects\Platformer3D\Platformer3D\Platformer3D\Content";
+            string contentPath = @"C:\Projects\Platformer3D\Platformer3D\Platformer3D\Content";
             string nameSpace = "Platformer3D";
             (string output, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath, nameSpace, new string[0], loadOnStartup, new Platformer3DContentConverter());
             Assert.IsNotNull(output);
