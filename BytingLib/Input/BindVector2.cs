@@ -6,10 +6,22 @@
         public float? MouseSpeedFactor { get; set; }
         public float? GamePadStickSpeedFactor { get; set; }
         public float? GamePadStickPow { get; set; }
+        public BindKey? Left { get; set; }
+        public BindKey? Right { get; set; }
+        public BindKey? Up { get; set; }
+        public BindKey? Down { get; set; }
 
         public BindVector2(Flag bindFlag)
         {
             BindFlag = bindFlag;
+        }
+        public BindVector2(Flag bindFlag, BindKey left, BindKey right, BindKey up, BindKey down)
+        {
+            BindFlag = bindFlag;
+            Left = left;
+            Right = right;
+            Up = up;
+            Down = down;
         }
 
         public Vector2 GetVector2(AllInput input)
@@ -69,6 +81,23 @@
             if (IsFlag(Flag.GamePadRightStick))
             {
                 AddGamePadStickMovment(ref inputDir, input.GamePad.RightThumbStick);
+            }
+
+            if (Left != null && Left.GetKey(input).Down)
+            {
+                inputDir.X--;
+            }
+            if (Right != null && Right.GetKey(input).Down)
+            {
+                inputDir.X++;
+            }
+            if (Up != null && Up.GetKey(input).Down)
+            {
+                inputDir.Y--;
+            }
+            if (Down != null && Down.GetKey(input).Down)
+            {
+                inputDir.Y++;
             }
 
             return inputDir;
