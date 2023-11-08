@@ -8,6 +8,8 @@
         public event Action<Scene>? OnPopupOpen;
         public event Action? OnPopupClose;
 
+        public bool HideMouse { get; set; }
+
         public Scene(params Type[] extraTypes)
             : base(new Type[] { typeof(IDraw), typeof(IUpdate), typeof(IUpdateWhenBelowPopup), typeof(IDrawBatch) }.Concat(extraTypes).ToArray())
         { }

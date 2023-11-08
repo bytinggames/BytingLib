@@ -8,9 +8,12 @@ namespace BytingLib
         private readonly CreateInputRecorder createInputRecorder;
         private readonly PlayInput playInput;
 
-        private IDisposable? recorder;
-        private bool playing = false;
+        private IDisposable? _recorder;
+        private bool _playing = false;
 
+        /// <summary>Only used for triggering OnStateChanged event.</summary>
+        private InputRecordingState currentStateStored;
+        public event Action<InputRecordingState>? OnStateChanged;
 
         public InputRecordingManager(IStuffDisposable parent, StructSource<T> inputSource, CreateInputRecorder createInputRecorder, PlayInput playInput)
         {
@@ -18,20 +21,48 @@ namespace BytingLib
             this.inputSource = inputSource;
             this.createInputRecorder = createInputRecorder;
             this.playInput = playInput;
+
+            currentStateStored = CurrentState;
         }
 
         public delegate IDisposable CreateInputRecorder(StructSource<T> inputSource, string filePath);
         public delegate void PlayInput(StructSource<T> inputSource, string path, Action onFinish);
 
+        private bool Playing
+        {
+            get => _playing;
+            set
+            {
+                _playing = value;
+                if (currentStateStored != CurrentState)
+                {
+                    currentStateStored = CurrentState;
+                    OnStateChanged?.Invoke(currentStateStored);
+                }
+            }
+        }
+        private IDisposable? Recorder
+        {
+            get => _recorder;
+            set
+            {
+                _recorder = value;
+                if (currentStateStored != CurrentState)
+                {
+                    currentStateStored = CurrentState;
+                    OnStateChanged?.Invoke(currentStateStored);
+                }
+            }
+        }
         public InputRecordingState CurrentState
         {
             get
             {
-                if (playing)
+                if (Playing)
                 {
                     return InputRecordingState.Playing;
                 }
-                else if (recorder != null)
+                else if (Recorder != null)
                 {
                     return InputRecordingState.Recording;
                 }
@@ -56,17 +87,17 @@ namespace BytingLib
 
         public void StartRecording(string filePath)
         {
-            if (playing)
+            if (Playing)
             {
                 StopPlaying();
             }
 
-            if (recorder != null)
+            if (Recorder != null)
             {
                 StopRecording();
             }
 
-            parent.Add(recorder = createInputRecorder(inputSource, filePath));
+            parent.Add(Recorder = createInputRecorder(inputSource, filePath));
         }
 
         public void TogglePlaying(string filePath)
@@ -83,23 +114,23 @@ namespace BytingLib
 
         public void StartPlaying(string filePath)
         {
-            if (recorder != null)
+            if (Recorder != null)
             {
                 StopRecording();
             }
 
-            if (playing)
+            if (Playing)
             {
                 StopPlaying();
             }
 
             if (File.Exists(filePath))
             {
-                playing = true;
-                playInput(inputSource, filePath, () =>
+                Playing = true;
+                playInput(inputSource, filePath, (Action)(() =>
                 {
-                    playing = false;
-                });
+                    this.Playing = false;
+                }));
             }
         }
 
@@ -110,10 +141,10 @@ namespace BytingLib
 
         public void StopRecording()
         {
-            if (recorder != null)
+            if (Recorder != null)
             {
-                parent.Remove(recorder);
-                recorder = null;
+                parent.Remove(Recorder);
+                Recorder = null;
             }
         }
 

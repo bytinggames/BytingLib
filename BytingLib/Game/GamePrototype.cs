@@ -12,6 +12,7 @@ namespace BytingLib
         protected readonly InputStuff input;
         protected readonly DefaultPaths basePaths;
         protected readonly SaveStateManager saveStateManager;
+        protected readonly MouseVisibilityManager mouseVisibilityManager;
 
         private readonly bool randomScreenshots;
         protected readonly Screenshotter screenshotter;
@@ -57,6 +58,8 @@ namespace BytingLib
             InitWindowAndGraphics(vsync);
 
             metaKeys = new KeyInput(Keyboard.GetState);
+
+            mouseVisibilityManager = new MouseVisibilityManager(gameWrapper);
         }
 
         protected virtual void InitWindowAndGraphics(bool vsync)
@@ -163,6 +166,8 @@ namespace BytingLib
             }
 
             UpdateIteration(gameTime);
+
+            mouseVisibilityManager.UpdateEnd(GetTopmostScene());
         }
 
 #if DEBUG
@@ -181,6 +186,8 @@ namespace BytingLib
         protected abstract void UpdateIteration(GameTime gameTime);
         protected abstract void DrawIteration(GameTime gameTime);
 
+        protected abstract Scene? GetTopmostScene();
+
         public override void DrawInactiveOnce()
         {
             //#if DEBUG
@@ -190,6 +197,8 @@ namespace BytingLib
 
         public override void Dispose()
         {
+            mouseVisibilityManager.Dispose();
+
             screenshotter?.Dispose();
 
             input.Dispose();
