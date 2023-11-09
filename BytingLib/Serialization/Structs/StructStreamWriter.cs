@@ -3,10 +3,9 @@
     public abstract class StructStreamWriter<T> : IStructStreamWriter<T> where T : struct
     {
         protected readonly Stream stream;
+        protected T lastState;
+        protected int frame = -1;
         private readonly bool alwaysFlush;
-        T lastState;
-        int frame = -1;
-        protected int Frame => frame;
         private bool isDisposed;
 
         public StructStreamWriter(Stream stream, bool alwaysFlush)

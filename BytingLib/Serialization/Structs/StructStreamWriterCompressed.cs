@@ -4,8 +4,8 @@ namespace BytingLib.Serialization
 {
     public class StructStreamWriterCompressed<T> : StructStreamWriter<T> where T : struct
     {
-        byte[] previousData;
-        int lastFrame;
+        protected byte[] previousData;
+        protected int lastFrame;
 
         public StructStreamWriterCompressed(Stream stream, bool alwaysFlush)
             : base(stream, alwaysFlush)
@@ -15,7 +15,7 @@ namespace BytingLib.Serialization
 
         protected override void WriteFrame()
         {
-            int diff = Frame - lastFrame;
+            int diff = frame - lastFrame;
 
             if (diff >= byte.MinValue && diff < byte.MaxValue)
             {
@@ -28,7 +28,7 @@ namespace BytingLib.Serialization
                 stream.Write(BitConverter.GetBytes(diff));
             }
 
-            lastFrame = Frame;
+            lastFrame = frame;
         }
 
         protected override void WriteStructChange(T currentState, T previousState)
