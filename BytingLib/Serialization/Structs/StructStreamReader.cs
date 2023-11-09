@@ -6,14 +6,13 @@ namespace BytingLib.Serialization
     {
         protected readonly Stream stream;
         private readonly int? startPosition;
-        private int currentFrame;
-        private int frameWithNextStateChange;
+        protected int currentFrame;
+        protected int frameWithNextStateChange;
         protected byte[] intBuffer = new byte[4];
         object IEnumerator.Current => Current;
 
-        public T Current { get; private set; }
-        public bool IsFinished { get; private set; }
-
+        public T Current { get; protected set; }
+        public bool IsFinished { get; protected set; }
         public StructStreamReader(Stream stream, int? startPosition = null)
         {
             this.stream = stream;

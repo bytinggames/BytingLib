@@ -4,8 +4,8 @@ namespace BytingLib.Serialization
 {
     public class StructStreamReaderCompressed<T> : StructStreamReader<T> where T : struct
     {
-        byte[] lastData;
-        int lastFrame;
+        protected byte[] lastData;
+        protected int lastFrame;
 
         public StructStreamReaderCompressed(Stream stream, int? startPosition = null) : base(stream, startPosition)
         {
