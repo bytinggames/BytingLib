@@ -93,6 +93,24 @@
             return PopupScene.GetTopmostScene();
         }
 
+        public IEnumerable<Scene> GetPopupsRecusively(bool includingThis)
+        {
+            if (includingThis)
+            {
+                yield return this;
+            }
+            if (PopupScene == null)
+            {
+                yield break;
+            }
+            yield return PopupScene;
+
+            foreach (var popup in PopupScene.GetPopupsRecusively(false))
+            {
+                yield return popup;
+            }
+        }
+
         public override void Dispose()
         {
             RemovePopupScene();
