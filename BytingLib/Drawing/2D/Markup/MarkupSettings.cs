@@ -7,6 +7,8 @@
         public Ref<SpriteFont> Font { get; set; }
         public Anchor Anchor { get; set; }
         public Color TextColor { get; set; }
+        /// <summary>Makes it impossible to override the TextColor with markup. Used for bold font.</summary>
+        public bool ForceTextColor { get; set; }
         public Color TextureColor { get; set; } = Color.White;
         public float HorizontalAlignInLine { get; set; }
         public float VerticalAlignInLine { get; set; } = 0.5f;

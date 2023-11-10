@@ -18,15 +18,25 @@
 
         public override IEnumerable<ILeaf> IterateOverLeaves(MarkupSettings settings)
         {
-            Color temp = settings.TextColor;
-            settings.TextColor = textColor;
-
-            foreach (var leaf in base.IterateOverLeaves(settings))
+            if (settings.ForceTextColor)
             {
-                yield return leaf;
+                foreach (var leaf in base.IterateOverLeaves(settings))
+                {
+                    yield return leaf;
+                }
             }
+            else
+            {
+                Color temp = settings.TextColor;
+                settings.TextColor = textColor;
 
-            settings.TextColor = temp;
+                foreach (var leaf in base.IterateOverLeaves(settings))
+                {
+                    yield return leaf;
+                }
+
+                settings.TextColor = temp;
+            }
         }
     }
 }

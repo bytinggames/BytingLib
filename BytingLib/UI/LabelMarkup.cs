@@ -45,7 +45,13 @@ namespace BytingLib.UI
             {
                 if (style.FontBoldColor != null && style.FontBold != null)
                 {
-                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale) { RoundPositionTo = style.RoundPositionTo, MinLineHeight = MinLineHeight, TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset });
+                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale)
+                    {
+                        RoundPositionTo = style.RoundPositionTo,
+                        MinLineHeight = MinLineHeight,
+                        TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset,
+                        ForceTextColor = true,
+                    });
                 }
 
                 if (style.FontColor != null)
