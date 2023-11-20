@@ -57,7 +57,7 @@ namespace BytingLib
 
             InitWindowAndGraphics(vsync);
 
-            metaKeys = new KeyInput(Keyboard.GetState);
+            metaKeys = new KeyInput(() => input.CurrentKeyState);
 
             mouseVisibilityManager = new MouseVisibilityManager(gameWrapper);
         }
@@ -76,7 +76,7 @@ namespace BytingLib
 
         public sealed override void UpdateActive(GameTime gameTime)
         {
-            input.UpdateDevInput();
+            input.PreUpdate();
             metaKeys.Update();
 
             int iterations = GetIterations();

@@ -22,17 +22,24 @@ namespace BytingLib
         private int randSeed;
         public int RecordingUpdate { get; private set; } = 0;
 
+        public MouseState CurrentMouseState { get; private set; }
+        public KeyboardState CurrentKeyState { get; private set; }
+
         public Action? OnPlayInput, OnPlayInputFinish;
         private IInputMetaObjectManager? metaObjectManager;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths, Action<Action> startRecordingPlayback, bool startRecordingInstantly, bool enableDevInput, bool controlViaF5 = true)
+        public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths, 
+            Action<Action> startRecordingPlayback, bool startRecordingInstantly, bool enableDevInput, bool controlViaF5 = true)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
+            CurrentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+            CurrentKeyState = Keyboard.GetState();
+
             stuff = new StuffDisposable(typeof(IUpdate));
 
             Func<MouseState> getMouseState;
-            var mouseSource = new MouseWithoutOutOfWindowClicks(Microsoft.Xna.Framework.Input.Mouse.GetState, windowManager);
+            var mouseSource = new MouseWithoutOutOfWindowClicks(() => CurrentMouseState, windowManager);
 
             if (mouseWithActivationClick)
             {
@@ -46,7 +53,7 @@ namespace BytingLib
 
             stuff.Add(inputSource = new StructSource<FullInput>(() =>
                 new FullInput(getMouseState(),
-                Keyboard.GetState(), 
+                CurrentKeyState, 
                 Microsoft.Xna.Framework.Input.GamePad.GetState(0), 
                 new MetaInputState(game.IsActivatedThisFrame()),
                 windowManager.Resolution)));
@@ -56,8 +63,8 @@ namespace BytingLib
 
             if (enableDevInput)
             {
-                KeysDev = new KeyInput(Keyboard.GetState);
-                MouseDev = new MouseInput(Microsoft.Xna.Framework.Input.Mouse.GetState, game.IsActivatedThisFrame);
+                KeysDev = new KeyInput(() => CurrentKeyState);
+                MouseDev = new MouseInput(() => CurrentMouseState, game.IsActivatedThisFrame);
                 GamePadDev = new GamePadInput(() => Microsoft.Xna.Framework.Input.GamePad.GetState(0));
             }
             else
@@ -89,8 +96,11 @@ namespace BytingLib
             stuff.ForEach<IUpdate>(f => f.Update());
         }
 
-        public void UpdateDevInput()
+        public void PreUpdate()
         {
+            CurrentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+            CurrentKeyState = Keyboard.GetState();
+
             KeysDev.Update();
             MouseDev.Update();
             GamePadDev.Update();

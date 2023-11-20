@@ -70,7 +70,7 @@
             {
                 inputDir += input.Mouse.Move * (MouseSpeedFactor ?? 1f);
             }
-            if (IsFlag(Flag.Mouse3D))
+            if (IsFlag(Flag.MouseCustom))
             {
                 inputDir += input.GetCustomMouseMovement() * (MouseSpeedFactor ?? 1f);
             }
@@ -129,7 +129,7 @@
             WASD = 1,
             ArrowKeys = 2,
             Mouse2D = 4,
-            Mouse3D = 8,
+            MouseCustom = 8,
             GamePadLeftStick = 16,
             GamePadRightStick = 32,
         }
