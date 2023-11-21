@@ -14,9 +14,11 @@
         string? lastText;
         string? newText;
         int mouseStillForFrames;
-        public int NoMouseMovementToShowInFrames { get; } = 20;
+        public int NoMouseMovementToShowInFrames { get; } = 15;
         public Vector2 TooltipOffset { get; set; } = new Vector2(0f, 32f);
         public bool ShowBelowMouseOrHoverElement { get; set; } = false;
+
+        static readonly float MaxMouseMoveSquaredConsideredStill = MathF.Pow(8f, 2f);
 
         public Tooltip(Action<string> onUpdateTooltipText)
             : base(0f, 0f)
@@ -27,7 +29,7 @@
 
         protected override void UpdateSelf(ElementInput input)
         {
-            if (input.Mouse.Move != Vector2.Zero
+            if (mouseStillForFrames < NoMouseMovementToShowInFrames && input.Mouse.Move.LengthSquared() > MaxMouseMoveSquaredConsideredStill
                 || newHover == null
                 || lastHover != newHover
                 || newText == null)
