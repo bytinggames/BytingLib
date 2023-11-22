@@ -2,7 +2,6 @@
 
 namespace BytingLib
 {
-
     public class ModelGL : IDisposable
     {
         public int SceneIndex { get; }
@@ -22,8 +21,8 @@ namespace BytingLib
 
         internal AnimationBlend AnimationBlend { get; } = new();
 
-        private readonly Dictionary<string, VertexBuffer> vertexBuffers = new();
-        private readonly Dictionary<int, IndexBuffer> indexBuffers = new();
+        private readonly Dictionary<string, Promise<VertexBuffer>> vertexBuffers = new();
+        private readonly Dictionary<int, Promise<IndexBuffer>> indexBuffers = new();
         private readonly JsonArray? accessorsArr, bufferViewsArr, buffersArr;
         private readonly DisposableContainer disposables = new();
         private readonly IContentCollectorUse? contentCollector;
@@ -121,17 +120,22 @@ namespace BytingLib
             SceneIndex = root["scene"]?.GetValue<int>() ?? 0;
         }
 
-        internal VertexBuffer GetVertexBuffer(string key, JsonObject attributesObj)
+        internal Promise<VertexBuffer> GetVertexBuffer(string key, JsonObject attributesObj)
         {
-            VertexBuffer? vertexBuffer;
+            Promise<VertexBuffer>? vertexBuffer;
             if (vertexBuffers.TryGetValue(key, out vertexBuffer))
             {
                 return vertexBuffer;
             }
 
             byte[] vertexData = GetVertexData(key, attributesObj, out VertexDeclaration vertexDeclaration, out int vertexCount);
-            vertexBuffer = disposables.Use(new VertexBuffer(gDevice, vertexDeclaration, vertexCount, BufferUsage.None));
-            vertexBuffer.SetData(vertexData);
+
+            vertexBuffer = new Promise<VertexBuffer>(() =>
+            {
+                var buff = disposables.Use(new VertexBuffer(gDevice, vertexDeclaration, vertexCount, BufferUsage.None));
+                buff.SetData(vertexData);
+                return buff;
+            });
 
             vertexBuffers.Add(key, vertexBuffer);
             return vertexBuffer;
@@ -208,9 +212,9 @@ namespace BytingLib
             return vertexData;
         }
 
-        public IndexBuffer GetIndexBuffer(int id)
+        public Promise<IndexBuffer> GetIndexBuffer(int id)
         {
-            IndexBuffer? indexBuffer;
+            Promise<IndexBuffer>? indexBuffer;
             if (indexBuffers.TryGetValue(id, out indexBuffer))
             {
                 return indexBuffer;
@@ -218,8 +222,12 @@ namespace BytingLib
 
             byte[] indicesData = GetIndexData(id, out IndexElementSize indexElementSize, out int indicesCount);
 
-            indexBuffer = disposables.Use(new IndexBuffer(gDevice, indexElementSize, indicesCount, BufferUsage.None));
-            indexBuffer.SetData(indicesData);
+            indexBuffer = new Promise<IndexBuffer>(() =>
+            {
+                var buff = disposables.Use(new IndexBuffer(gDevice, indexElementSize, indicesCount, BufferUsage.None));
+                buff.SetData(indicesData);
+                return buff;
+            });
 
             indexBuffers.Add(id, indexBuffer);
             return indexBuffer;
@@ -286,7 +294,7 @@ namespace BytingLib
         {
             if (contentCollector == null)
             {
-                return new Ref<Texture2D>(new Pointer<Texture2D>(), null);
+                return new Ref<Texture2D>(new Promise<Texture2D>((Texture2D)null!), null);
             }
 
             return contentCollector.Use<Texture2D>(ContentHelper.UriToContentFile(imageUri, gltfDirRelativeToContent));

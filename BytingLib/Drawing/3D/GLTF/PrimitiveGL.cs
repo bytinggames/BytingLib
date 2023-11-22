@@ -4,8 +4,11 @@ namespace BytingLib
 {
     public class PrimitiveGL : PrimitiveGLBase
     {
-        public VertexBuffer VertexBuffer { get; }
-        public IndexBuffer? IndexBuffer { get; }
+        private readonly Promise<VertexBuffer> vertexBufferPromise;
+        private readonly Promise<IndexBuffer>? indexBufferPromise;
+
+        public VertexBuffer VertexBuffer => vertexBufferPromise.Value;
+        public IndexBuffer? IndexBuffer => indexBufferPromise?.Value;
 
         public PrimitiveGL(ModelGL model, JsonNode n)
             : base(model, n)
@@ -14,13 +17,13 @@ namespace BytingLib
 
             string key = string.Concat(attributesObj.Select(f => f.Key + f.Value));
 
-            VertexBuffer = model.GetVertexBuffer(key, attributesObj);
+            vertexBufferPromise = model.GetVertexBuffer(key, attributesObj);
 
             JsonNode? t;
             if ((t = n["indices"]) != null)
             {
                 int indicesAccessorIndex = t.GetValue<int>();
-                IndexBuffer = model.GetIndexBuffer(indicesAccessorIndex);
+                indexBufferPromise = model.GetIndexBuffer(indicesAccessorIndex);
             }
         }
 

@@ -36,7 +36,19 @@
             object? assetHolder;
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
             {
-                assetHolder = new AssetHolder<T>(contentRaw.Load<T>(assetName, extendedLoad), assetName, Unuse);
+                if (typeof(T) == typeof(Texture2D))
+                {
+                    // textures need to be loaded on the main thread, so load the asset via a promise here
+                    assetHolder = new AssetHolder<Texture2D>(
+                        new Promise<Texture2D>(() => contentRaw.Load<Texture2D>(assetName, extendedLoad)),
+                        assetName, 
+                        Unuse);
+                }
+                else
+                {
+                    assetHolder = new AssetHolder<T>(contentRaw.Load<T>(assetName, extendedLoad), assetName, Unuse);
+                }
+
                 loadedAssets.Add(assetName, assetHolder);
 
                 if (onLoad.ContainsKey(assetName))

@@ -7,6 +7,7 @@
 
         public event Action<Scene>? OnPopupOpen;
         public event Action? OnPopupClose;
+        public Action? OnShowAsMainScene;
 
         public bool HideMouse { get; set; }
 

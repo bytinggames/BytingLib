@@ -23,19 +23,23 @@ namespace BytingLib
             MinimumPixelsPerUnit = minimumPixelsPerUnit;
         }
 
-        public Ref<Texture2D> UseTexture(string text, Vector3 right, Color backgroundColor, float? verticalSpaceBetweenLines = null)
+        public Promise<Ref<Texture2D>> UseTexture(string text, Vector3 right, Color backgroundColor, float? verticalSpaceBetweenLines = null)
         {
-            var font = fontArray.GetFont(1f, out float actualFontSize);
-            var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.White);
-            markupSettings.VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines;
-            var drawElement = new MarkupRoot(markupCreator, text);
-            Vector2 textSize = drawElement.GetSize(markupSettings);
-            textSize /= actualFontSize;
+            Promise<Ref<Texture2D>> tex = new(() =>
+            {
+                var font = fontArray.GetFont(1f, out float actualFontSize);
+                var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.White);
+                markupSettings.VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines;
+                var drawElement = new MarkupRoot(markupCreator, text);
+                Vector2 textSize = drawElement.GetSize(markupSettings);
+                textSize /= actualFontSize;
 
-            int fontSize = GetRightFontSize(right.Length() * 2f /* because right only measures half the length */, 
-                (int)MathF.Ceiling(textSize.X), MinimumPixelsPerUnit);
+                int fontSize = GetRightFontSize(right.Length() * 2f /* because right only measures half the length */,
+                    (int)MathF.Ceiling(textSize.X), MinimumPixelsPerUnit);
 
-            return CreateTextTexture(text, fontArray.GetFont(fontSize), backgroundColor, fontSize, verticalSpaceBetweenLines);
+                return CreateTextTexture(text, fontArray.GetFont(fontSize), backgroundColor, fontSize, verticalSpaceBetweenLines);
+            });
+            return tex;
         }
 
         private static int GetRightFontSize(float spaceInMeters, int textureWidthOfScale1, float targetPixelsPerCM)
@@ -63,34 +67,41 @@ namespace BytingLib
 
             Vector2 textSize = drawElement.GetSize(markupSettings);
 
-            var gDevice = spriteBatch.GraphicsDevice;
-            RenderTarget2D tex = new RenderTarget2D(gDevice, (int)Math.Ceiling(textSize.X), (int)Math.Ceiling(textSize.Y), false, SurfaceFormat.Color, DepthFormat.None);
+            RenderTarget2D? tex = null;
 
-            var targets = gDevice.GetRenderTargets();
-            gDevice.SetRenderTarget(tex);
-            gDevice.Clear(Color.Transparent);
-
-            using (textEffect.Color.Use(backgroundColor.ToVector4()))
+            Promise<Texture2D> promise = new(() =>
             {
-                textEffect.ApplyParameters();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect);
+                var gDevice = spriteBatch.GraphicsDevice;
+                tex = new RenderTarget2D(gDevice, (int)Math.Ceiling(textSize.X), (int)Math.Ceiling(textSize.Y), false, SurfaceFormat.Color, DepthFormat.None);
 
-                drawElement.Draw(markupSettings);
+                var targets = gDevice.GetRenderTargets();
+                gDevice.SetRenderTarget(tex);
+                gDevice.Clear(Color.Transparent);
 
-                spriteBatch.End();
-            }
+                using (textEffect.Color.Use(backgroundColor.ToVector4()))
+                {
+                    textEffect.ApplyParameters();
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect);
 
-            gDevice.SetRenderTargets(targets);
+                    drawElement.Draw(markupSettings);
 
-            disposables.Use(tex);
-            AssetHolder<Texture2D> assetHolder = new AssetHolder<Texture2D>(tex, tex.Name, _ =>
+                    spriteBatch.End();
+                }
+
+                gDevice.SetRenderTargets(targets);
+
+                disposables.Use(tex);
+                return tex;
+            });
+
+            AssetHolder<Texture2D> assetHolder = new AssetHolder<Texture2D>(promise, "TextToTexture_" + text, _ =>
             {
                 if (!textures.Remove((text, font.Value, backgroundColor, textureScale)))
                 {
                     throw new BytingException("couldn't remove a texture from TextToTexture.textures");
                 }
 
-                tex.Dispose();
+                tex?.Dispose();
             });
 
             textures.Add((text, font.Value, backgroundColor, textureScale), assetHolder);

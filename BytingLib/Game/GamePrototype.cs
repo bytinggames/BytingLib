@@ -1,6 +1,5 @@
 ﻿using BytingLib.Markup;
 using BytingLib.Serialization;
-using Microsoft.Xna.Framework.Input;
 
 namespace BytingLib
 {
@@ -33,6 +32,8 @@ namespace BytingLib
             bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool controlViaF5 = true)
             : base(g, contentModdingOnRelease, contentConverter, clearHotReloadOutputPath)
         {
+            MainThread.Initialize(); // tell the main thread which thread actually is the main thread
+
             if (randomScreenshots)
             {
                 this.randomScreenshots = randomScreenshots;
@@ -113,6 +114,9 @@ namespace BytingLib
                 startRecordingPlayback = null;
                 copy.Invoke();
             }
+
+            double targetMS = gameWrapper.IsFixedTimeStep ? gameWrapper.TargetElapsedTime.TotalMilliseconds - 1 : 15;
+            MainThread.ExecuteActions((int)targetMS);
         }
 
         private int GetIterations()

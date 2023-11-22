@@ -24,12 +24,15 @@
             this.gDevice = gDevice;
             this.growBuffersBy = growBuffersBy;
 
-            instancesAndBuffers.Add(new(Lines, VertexIndexBuffer.GetLine(gDevice)));
-            instancesAndBuffers.Add(new(Triangles, VertexIndexBuffer.GetTriangle(gDevice)));
-            instancesAndBuffers.Add(new(Boxes, VertexIndexBuffer.GetBox(gDevice)));
-            instancesAndBuffers.Add(new(Spheres, VertexIndexBuffer.GetSphere(gDevice)));
-            instancesAndBuffers.Add(new(OpenCylinders, VertexIndexBuffer.GetOpenCylinder(gDevice)));
-            instancesAndBuffers.Add(new(Cylinders, VertexIndexBuffer.GetCylinder(gDevice)));
+            MainThread.Invoke(() =>
+            {
+                instancesAndBuffers.Add(new(Lines, VertexIndexBuffer.GetLine(gDevice)));
+                instancesAndBuffers.Add(new(Triangles, VertexIndexBuffer.GetTriangle(gDevice)));
+                instancesAndBuffers.Add(new(Boxes, VertexIndexBuffer.GetBox(gDevice)));
+                instancesAndBuffers.Add(new(Spheres, VertexIndexBuffer.GetSphere(gDevice)));
+                instancesAndBuffers.Add(new(OpenCylinders, VertexIndexBuffer.GetOpenCylinder(gDevice)));
+                instancesAndBuffers.Add(new(Cylinders, VertexIndexBuffer.GetCylinder(gDevice)));
+            });
         }
 
         protected DynamicVertexBuffer GetInstanceBuffer(int capacity)

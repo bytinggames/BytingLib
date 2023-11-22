@@ -2,14 +2,18 @@
 {
     public class AssetHolder<T>
     {
-        private readonly Pointer<T> assetPointer;
+        private readonly Promise<T> assetPointer;
         private readonly string assetName;
         private readonly Action<string> onUnusedTo0References;
         private readonly List<Ref<T>> assetReferences = new List<Ref<T>>();
 
         public AssetHolder(T asset, string assetName, Action<string> onUnusedTo0References)
+            : this(new Promise<T>(asset), assetName, onUnusedTo0References)
+        { }
+
+        public AssetHolder(Promise<T> asset, string assetName, Action<string> onUnusedTo0References)
         {
-            assetPointer = new Pointer<T>(asset);
+            assetPointer = asset;
             this.assetName = assetName;
             this.onUnusedTo0References = onUnusedTo0References;
         }
