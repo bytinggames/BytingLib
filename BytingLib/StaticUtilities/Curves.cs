@@ -45,19 +45,6 @@
 
         public static float Linear(float x) => x;
         public static float LinearReverse(float x) => 1f - x;
-        public static float LinearSpike(float x)
-        {
-            x *= 2f;
-            x %= 2f;
-            if (x > 1f)
-            {
-                return 2f - x;
-            }
-            else
-            {
-                return x;
-            }
-        }
         public static float One(float _) => 1f;
         public static float Zero(float _) => 0f;
 
@@ -83,6 +70,38 @@
         {
             float pow = 2f * x - 1f;
             return 1f - pow * pow;
+        }
+
+        public static float BounceLinear(float x)
+        {
+            x %= 1f;
+            x *= 2f;
+            if (x > 1f)
+            {
+                return 2f - x;
+            }
+            else
+            {
+                return x;
+            }
+        }
+
+        public static float BounceSine(float x)
+        {
+            return -MathF.Cos(x * MathHelper.TwoPi) * 0.5f + 0.5f;
+        }
+
+        public static float BouncePow(float x, float exponent)
+        {
+            x = BounceLinear(x);
+            x *= 2f;
+            x -= 1f;
+            float sign = MathF.Sign(x);
+            x = MathF.Pow(MathF.Abs(x), exponent);
+            x *= sign;
+            x += 1f;
+            x /= 2f;
+            return x;
         }
     }
 }
