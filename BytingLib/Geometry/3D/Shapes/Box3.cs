@@ -99,7 +99,7 @@
         {
             _transform.Decompose(out Vector3 scale, out _, out _);
             scale = scale.GetAbs();
-            return new AABB3(Vector3.Zero, scale * 2f);
+            return new AABB3(-scale, scale);
         }
 
         public IEnumerable<Triangle3> Triangulate()
