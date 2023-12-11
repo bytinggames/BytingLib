@@ -12,6 +12,7 @@ namespace BytingLib
         public TextureGL? ORMTexture { get; set; }
         public Vector3? EmissiveFactor { get; set; }
         public TextureGL? EmissiveTexture { get; set; }
+        public TextureGL? TransmissionTexture { get; set; }
 
         public MaterialGL(ModelGL model, JsonNode n)
         {
@@ -95,6 +96,7 @@ namespace BytingLib
 
             #endregion
 
+            #region Extras
 
             var extras = n["extras"];
             if (extras != null)
@@ -127,6 +129,23 @@ namespace BytingLib
                     }
                 }
             }
+
+            #endregion
+
+            #region Extensions
+
+            var extensions = n["extensions"];
+            if (extensions != null)
+            {
+                var transmissionTexIndex = extensions["KHR_materials_transmission"]?["transmissionTexture"]?["index"];
+                if (transmissionTexIndex != null)
+                {
+                    int texIndex = transmissionTexIndex.GetValue<int>();
+                    TransmissionTexture = model.Textures!.Get(texIndex)!;
+                }
+            }
+
+            #endregion
         }
 
         public override string ToString() => "Material: " + Name;
