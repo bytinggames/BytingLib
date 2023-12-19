@@ -12,7 +12,9 @@ namespace BytingLib
         public TextureGL? ORMTexture { get; set; }
         public Vector3? EmissiveFactor { get; set; }
         public TextureGL? EmissiveTexture { get; set; }
+        /// <summary>Seems like this texture is not available anymore in the Principled BSDF node in blender 4.0</summary>
         public TextureGL? TransmissionTexture { get; set; }
+        public TextureGL? SpecularTexture { get; set; }
 
         public MaterialGL(ModelGL model, JsonNode n)
         {
@@ -142,6 +144,12 @@ namespace BytingLib
                 {
                     int texIndex = transmissionTexIndex.GetValue<int>();
                     TransmissionTexture = model.Textures!.Get(texIndex)!;
+                }
+                var specularTexIndex = extensions["KHR_materials_specular"]?["specularColorTexture"]?["index"];
+                if (specularTexIndex != null)
+                {
+                    int texIndex = specularTexIndex.GetValue<int>();
+                    SpecularTexture = model.Textures!.Get(texIndex)!;
                 }
             }
 
