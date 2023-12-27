@@ -529,20 +529,10 @@ namespace BytingLib
             // clone sphere so we can rotate the sphere by the box matrix
             sphere = (Sphere3)sphere.Clone();
 
-            // not sure, which method is more precise, but the latter is faster:
-
-            //Matrix t = Matrix.Transpose(box.Transform);
-            //box.Transform.Decompose(out Vector3 scale, out _, out _);
-            //t = Matrix.CreateScale(1f / scale.X, 1f / scale.Y, 1f / scale.Z) * t;
-            //t = Matrix.Invert(t);
-            //sphere.Pos = Vector3.Transform(sphere.Pos, t);
-
-            sphere.Pos = Vector3.Transform(sphere.Pos, Matrix.Transpose(box.TransformInverse)); // transpose, because... it works
-            box.Transform.Decompose(out Vector3 scale, out _, out _);
-            sphere.Pos *= scale; // scale position, so we don't have to scale the sphere
-
-            AABB3 aabb = box.GetAABBWithoutRotationAndTranslation();
-
+            box.Transform.Decompose(out Vector3 scale, out Quaternion rotation, out _);
+            Quaternion rotationInverse = Quaternion.Inverse(rotation);
+            sphere.Pos = Vector3.Transform(sphere.Pos - box.Pos, rotationInverse) + box.Pos;
+            AABB3 aabb = AABB3.FromCenter(box.Pos, scale.GetAbs());
             return ColSphereAABB(sphere, aabb);
         }
 
