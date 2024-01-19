@@ -1,16 +1,15 @@
-﻿
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class AnimationBlender 
     {
         private readonly GameSpeed drawSpeed;
         private readonly Ref<ModelGL> model;
         private LayeredTransitioner<AnimationInstance> transitioner;
-        private bool drawnUpdate = false;
 
         public float CurrentSecond { get; private set; } = 0f;
         public float DefaultTransitionDurationInSeconds { get; set; }
         public float AnimationSpeedFactor { get; set; } = 1f;
+        public AnimationGL.WrapMode Wrap { get; set; } = AnimationGL.WrapMode.Repeat;
 
         public AnimationBlender(GameSpeed drawSpeed, int startAnimation, float defaultTransitionDurationInSeconds, Ref<ModelGL> model)
         {
@@ -58,22 +57,20 @@ namespace BytingLib
             CurrentSecond += deltaSeconds;
 
             transitioner.Update(deltaSeconds);
-
-            drawnUpdate = false;
         }
 
         public void ApplyBlend()
         {
-            if (drawnUpdate)
-            {
-                return;
-            }
-
-            drawnUpdate = true;
+            // doesn't work, when two animated models are rendered two times per frame: A B A B
+            // PERFORMANCE TODO: you would need to check on the model, which AnimationBlender last applied and then skip this, if the AnimationBlender was this AND the last Update() was already rendered
+            //if (drawnUpdate)
+            //{
+            //    return;
+            //}
 
             if (transitioner.TransitionCount == 0)
             {
-                GetAnimation(transitioner.OldestValue.Animation)?.UpdateAnimationTime(CurrentSecond - transitioner.OldestValue.StartTimeStamp);
+                GetAnimation(transitioner.OldestValue.Animation)?.UpdateAnimationTime(CurrentSecond - transitioner.OldestValue.StartTimeStamp, Wrap);
             }
             else
             {
@@ -83,12 +80,12 @@ namespace BytingLib
 
         private void BlendStart(AnimationInstance from)
         {
-            GetAnimation(from.Animation)?.BlendStart(CurrentSecond - from.StartTimeStamp);
+            GetAnimation(from.Animation)?.BlendStart(CurrentSecond - from.StartTimeStamp, Wrap);
         }
 
         private void BlendContinue(AnimationInstance to, float interpolationAmount)
         {
-            GetAnimation(to.Animation)?.BlendAdd(CurrentSecond - to.StartTimeStamp, interpolationAmount);
+            GetAnimation(to.Animation)?.BlendAdd(CurrentSecond - to.StartTimeStamp, interpolationAmount, Wrap);
         }
 
         AnimationGL? GetAnimation(int index)

@@ -11,7 +11,6 @@ namespace BytingLib
         public float AnimationStartSecond { get; set; }
         public float AnimationEndSecond { get; set; }
         public float TransitionSecondsBetweenLastAndFirstFrame { get; set; } = 0f; // TODO: probably pass this value by paramter, instead of storing it in this raw animation representation
-        public WrapMode Wrap { get; set; } = WrapMode.Repeat; // TODO: probably pass this value by paramter, instead of storing it in this raw animation representation
         public bool Looped { get; set; } = true; // TODO: probably pass this value by paramter, instead of storing it in this raw animation representation
         
         public float AnimationDuration => AnimationEndSecond - AnimationStartSecond + TransitionSecondsBetweenLastAndFirstFrame;
@@ -69,9 +68,9 @@ namespace BytingLib
         }
 
         /// <summary>Used, when no transition happens</summary>
-        public void UpdateAnimationTime(float second)
+        public void UpdateAnimationTime(float second, WrapMode wrap)
         {
-            float samplerSecond = SecondToSamplerSecond(second);
+            float samplerSecond = SecondToSamplerSecond(second, wrap);
 
             for (int i = 0; i < channels.Length; i++)
             {
@@ -79,7 +78,7 @@ namespace BytingLib
             }
         }
 
-        public void BlendStart(float second)
+        public void BlendStart(float second, WrapMode wrap)
         {
             model.AnimationBlend.Begin();
 
@@ -88,17 +87,17 @@ namespace BytingLib
                 model.AnimationBlend.AddChannelfNotAlready(channels[i]);
             }
 
-            UpdateAnimationTime(second);
+            UpdateAnimationTime(second, wrap);
         }
 
-        public void BlendAdd(float second, float interpolationAmount)
+        public void BlendAdd(float second, float interpolationAmount, WrapMode wrap)
         {
             if (model.AnimationBlend == null)
             {
                 throw new Exception("You first need to call BlendStart()");
             }
 
-            float samplerSecond = SecondToSamplerSecond(second);
+            float samplerSecond = SecondToSamplerSecond(second, wrap);
 
             model.AnimationBlend.BeginAnimationBlend();
             for (int i = 0; i < channels.Length; i++)
@@ -113,11 +112,11 @@ namespace BytingLib
             model.AnimationBlend.EndAnimationBlend(interpolationAmount);
         }
 
-        private float SecondToSamplerSecond(float second)
+        private float SecondToSamplerSecond(float second, WrapMode wrap)
         {
             if (AnimationDuration > 0)
             {
-                switch (Wrap)
+                switch (wrap)
                 {
                     case WrapMode.Repeat:
                         second = second % AnimationDuration;
