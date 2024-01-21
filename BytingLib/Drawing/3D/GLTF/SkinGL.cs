@@ -25,6 +25,7 @@ namespace BytingLib
             for (int i = 0; i < joints.Length; i++)
             {
                 Joints[i] = model.Nodes!.Get(joints[i], null);
+                Joints[i].IsBone = true;
             }
 
             byte[] inverseBindAccessorData = model.GetBytesFromBuffer(inverseBindMatricesId);
