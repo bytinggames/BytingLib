@@ -17,7 +17,7 @@ ENV DOTNET_URL="https://download.visualstudio.microsoft.com/download/pr/44d08222
 # Needed for d3dcompiler_47.dll
 # This could be installed with wine tricks, but that's still in the test repos on alpine
 ENV FIREFOX_URL="https://download-installer.cdn.mozilla.net/pub/firefox/releases/62.0.3/win64/ach/Firefox%20Setup%2062.0.3.exe"
-
+ENV RCEDIT_URL="https://github.com/electron/rcedit/releases/download/v2.0.0/rcedit-x64.exe"
 ENV PATH="${PATH}:/opt/.dotnet/tools"
 ENV MGFXC_WINE_PATH="/opt/.winemonogame"
 ENV WINEARCH="win64"
@@ -30,6 +30,8 @@ RUN 7z x "./dotnet-sdk.zip" -o"$WINEPREFIX/drive_c/windows/system32/"
 RUN curl $FIREFOX_URL --output "./firefox.exe"
 RUN 7z x "./firefox.exe" -o"./firefox_data/"
 RUN cp -f "./firefox_data/core/d3dcompiler_47.dll" "$WINEPREFIX/drive_c/windows/system32/d3dcompiler_47.dll"
+
+RUN curl -L $RCEDIT_URL --output "/opt/rcedit-x64.exe"
 
 RUN rm -rf "/tmp/deps/"
 
