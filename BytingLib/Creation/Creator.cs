@@ -274,6 +274,7 @@ namespace BytingLib
         /// <summary>"ctorArg1"</summary>
         private object GetParameters(string argStr, Type expectedType)
         {
+            Type? nullableUnderlyingType;
             if (expectedType == typeof(string))
             {
                 return argStr;
@@ -295,6 +296,14 @@ namespace BytingLib
             {
                 ScriptReaderLiteral reader = new ScriptReaderLiteral(argStr);
                 return CreateObject(reader, expectedType);
+            }
+            else if ((nullableUnderlyingType = Nullable.GetUnderlyingType(expectedType)) != null)
+            {
+                if (argStr == "null")
+                {
+                    return Activator.CreateInstance(expectedType)!; // Nullable with null as default
+                }
+                return Convert.ChangeType(argStr, nullableUnderlyingType, CultureInfo.InvariantCulture);
             }
             else
             {
