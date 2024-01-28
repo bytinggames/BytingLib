@@ -100,6 +100,12 @@ namespace BytingLib
             DrawInner(shader, shaderMaterial, shaderSkin, goDown, transform);
         }
 
+        /// <summary>Ignoring parent and local transform of the node.</summary>
+        public void DrawOverrideTransform(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Matrix transform, Predicate<NodeGL>? goDown)
+        {
+            DrawInner(shader, shaderMaterial, shaderSkin, goDown, transform);
+        }
+
         public void DrawSelect(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin, Predicate<NodeGL> select, Matrix nodeTransformPost)
         {
             Matrix transform = localTransform * nodeTransformPost;
