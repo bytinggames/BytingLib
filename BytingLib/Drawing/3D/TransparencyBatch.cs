@@ -2,7 +2,7 @@
 {
     public class TransparencyBatch
     {
-        private readonly SortedList<float, Action> drawLater = new SortedList<float, Action>(new DuplicateKeyComparer<float>());
+        private readonly SortedList<float, Action> drawLater = new SortedList<float, Action>(new DuplicateKeyComparerDescending<float>());
         private readonly Func<Vector3> getViewPos;
         private readonly float fixZOffset;
         private readonly float variableZOffset;
