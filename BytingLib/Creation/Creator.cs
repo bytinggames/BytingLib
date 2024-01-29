@@ -286,7 +286,7 @@ namespace BytingLib
                     return result;
                 }
 
-                return Enum.ToObject(expectedType, 0);
+                throw new ArgumentException("couldn't parse '" + argStr + "' as enum type " + expectedType);
             }
             else if (converters.TryGetValue(expectedType, out var converter))
             {
