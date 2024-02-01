@@ -21,6 +21,8 @@ namespace BytingLib
 
         static readonly Type TPoint3 = typeof(Point3); // uses the same functions Vector3 can use
 
+        private static int reversePrecisionForDistSphereTriangle;
+
         static Collision3()
         {
             // duplicate each collision function and reverse the parameters
@@ -186,6 +188,17 @@ namespace BytingLib
 
             { (TCylinder3, TCapsule3), (a, b, dir) => DistAnyCapsule((IShape3)a, (Capsule3)b, dir) },
         };
+
+        private static bool ReversePrecisionForDistSphereTriangle => reversePrecisionForDistSphereTriangle > 0;
+        /// <summary>
+        /// Use this for when calculating transmissive collision checks with the method <see cref="DistSphereTriangle(Sphere3, Triangle3, Vector3)"/>.
+        /// This does calculate the reversed collision result values for the case, when the sphere exits the triangle.
+        /// </summary>
+        public static IDisposable UseReversePrecisionForDistSphereTriangle()
+        {
+            reversePrecisionForDistSphereTriangle++;
+            return new OnDispose(() => reversePrecisionForDistSphereTriangle--);
+        }
 
         public static bool GetCollision(object shape1, object shape2)
         {
@@ -651,6 +664,14 @@ namespace BytingLib
             return cr;
         }
 
+        /// <summary>
+        /// Warning: reverse distance is not calculated correctly in certain cases when colliding with a line of the triangle. This is only the case,
+        /// when moving out of a triangle. That's why this works for solid collision checking, where the objects never intersect. But it sometimes doesn't work,
+        /// when moving out of a transmissive collision. To support that, you either would have to replace the (side == -2) check with (true) or a more
+        /// performant solution would be to check which edge of the triangle would correspond to the reverse movement and calculate the DistanceReversed
+        /// on that edge.
+        /// EDIT: you can use <see cref="UseReversePrecisionForDistSphereTriangle"/> now to enable correct reverse distance and axis calculation. This is experimental!
+        /// </summary>
         public static CollisionResult3 DistSphereTriangle(Sphere3 sphere, Triangle3 tri, Vector3 dir)
         {
             // LATER: optimization: for triangles that only have one face (-> most)
@@ -661,10 +682,11 @@ namespace BytingLib
             CollisionResult3 cr = DistSpherePlane(sphere, tri.ToPlane(), dir);
             // when not parallel, check if col point is on the plane
             int side = -2; // parallel -> unknown side
+            int sideReversed = -2;
             if (cr.Distance.HasValue)
             {
-                Vector3 spherePosOnCol = sphere.Pos + dir * cr.Distance.Value;
-                side = CheckIfPointOnPlaneIsNextToTriangle(spherePosOnCol, tri);
+                Vector3 spherePosOnCol = sphere.Pos + dir * cr.Distance.Value; // is dir pointing in the wrong direction?
+                (side, sideReversed) = CheckIfPointOnPlaneIsNextToTriangle(spherePosOnCol, tri, dir);
                 if (side == -1) // point on plane
                 {
                     cr.ColTriangleIndex = 6;
@@ -675,7 +697,7 @@ namespace BytingLib
             // check sphere vs triangle line
             if (side == -2)
             {
-                // check all lines
+                 //check all lines
                 cr = new CollisionResult3();
                 for (int i = 0; i < 3; i++)
                 {
@@ -697,7 +719,9 @@ namespace BytingLib
             }
             else
             {
-                // check only one line
+                // check only one line (forward)
+                // if ReversePrecisionForDistSphereTriangle is enabled, also check the reverse line
+                // the third line is skipped -> unnecessary calculation which would cost performance
                 int i = (side + 1) % 3;
                 int j = (i + 1) % 3;
                 cr = DistSphereLine(sphere, Line3.FromTwoPoints(tri[i], tri[j]), dir);
@@ -708,6 +732,15 @@ namespace BytingLib
                 else if (cr.ColTriangleIndex != -1)
                 {
                     cr.ColTriangleIndex += i;
+                }
+
+                if (ReversePrecisionForDistSphereTriangle)
+                {
+                    i = (sideReversed + 1) % 3;
+                    j = (i + 1) % 3;
+                    var crReversed = DistSphereLine(sphere, Line3.FromTwoPoints(tri[i], tri[j]), dir);
+                    cr.AxisColReversed = crReversed.AxisColReversed;
+                    cr.DistanceReversed = crReversed.DistanceReversed;
                 }
 
                 return cr;
@@ -926,10 +959,6 @@ namespace BytingLib
 
         private static bool CheckIfPointOnPlaneIsAlsoOnTriangle(Vector3 colPoint, Triangle3 triangle)
         {
-            return CheckIfPointOnPlaneIsNextToTriangle(colPoint, triangle) == -1;
-        }
-        private static int CheckIfPointOnPlaneIsNextToTriangle(Vector3 colPoint, Triangle3 triangle)
-        {
             for (int a = 0; a < 3; a++)
             {
                 int b = (a + 1) % 3;
@@ -942,10 +971,61 @@ namespace BytingLib
 
                 if (col_a > d)
                 {
-                    return a;
+                    return false;
                 }
             }
-            return -1;
+            return true;
+        }
+
+        private static (int, int) CheckIfPointOnPlaneIsNextToTriangle(Vector3 colPoint, Triangle3 triangle, Vector3 move)
+        {
+            float maxTime = float.MinValue;
+            float minTimeReversed = float.MaxValue;
+            int maxIndex = -1;
+            int maxIndexReversed = -1;
+
+            for (int a = 0; a < 3; a++)
+            {
+                int b = (a + 1) % 3;
+                int c = (a + 2) % 3;
+                Vector3 bc = triangle[c] - triangle[b];
+                Vector3 a_bc = Vector3.Normalize(Vector3.Cross(triangle.N, bc));
+                float d = Vector3.Dot(a_bc, triangle[b] - triangle[a]);
+
+                float col_a = Vector3.Dot(colPoint - triangle[a], a_bc);
+                float distToLine = col_a - d;
+                if (distToLine > 0f)
+                {
+                    float velocityOnAxis = Vector3.Dot(move, a_bc);
+                    float timeUntilBreakingThroughLine = -distToLine / velocityOnAxis;
+
+                    if (timeUntilBreakingThroughLine > maxTime)
+                    {
+                        maxTime = timeUntilBreakingThroughLine;
+                        maxIndex = a;
+                    }
+                    else if (maxIndex == -1) // set this in case timeUntilBreakingThroughLine is infinity because the velocity is parallel to the edge
+                    {
+                        maxIndex = a;
+                    }
+                }
+                else if (ReversePrecisionForDistSphereTriangle)
+                {
+                    float velocityOnAxis = Vector3.Dot(move, a_bc);
+                    float timeUntilBreakingThroughLine = -distToLine / velocityOnAxis;
+
+                    if (timeUntilBreakingThroughLine < minTimeReversed)
+                    {
+                        minTimeReversed = timeUntilBreakingThroughLine;
+                        maxIndexReversed = a;
+                    }
+                    else if (maxIndexReversed == -1) // set this in case timeUntilBreakingThroughLine is infinity because the velocity is parallel to the edge
+                    {
+                        maxIndexReversed = a;
+                    }
+                }
+            }
+            return (maxIndex, maxIndexReversed);
         }
 
         public static bool ColLineAABB(Line3 line, AABB3 aabb)
