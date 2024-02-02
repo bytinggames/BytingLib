@@ -31,6 +31,12 @@
             }
         }
 
+        public static void ToPitchYawRollFromScaled(this Matrix rotationMatrix, out float yaw, out float pitch, out float roll)
+        {
+            rotationMatrix.Decompose(out Vector3 scale, out _, out _);
+            (Matrix.CreateScale(Vector3.One / scale) * rotationMatrix).ToPitchYawRoll(out yaw, out pitch, out roll);
+        }
+
         public static Matrix CreateMatrixRotationFromTo(Vector3 from, Vector3 to)
         {
             if (from == to)
