@@ -58,6 +58,9 @@ namespace BytingLib.UI
         public event Action<int>? OnValueChanged;
         private int valueBeforeMouseClick;
         public event Action<int>? OnValueChangedAfterMouseReleased;
+        public event Action<SliderInt>? OnDragBegin;
+        /// <summary>Also called when disposing this element while the user is still dragging the slider.</summary>
+        public event Action<SliderInt>? OnDragEnd;
 
         private float AbsoluteInnerLeft => AbsoluteRect.Left + KnobWidth / 2f;
         private float AbsoluteInnerRight => AbsoluteRect.Right - KnobWidth / 2f;
@@ -83,6 +86,7 @@ namespace BytingLib.UI
                 input.SetUpdateCatch(this);
                 catched = true;
                 valueBeforeMouseClick = Value;
+                OnDragBegin?.Invoke(this);
             }
 
             if (catched)
@@ -91,6 +95,7 @@ namespace BytingLib.UI
 
                 if (!input.Mouse.Left.Down)
                 {
+                    OnDragEnd?.Invoke(this);
                     input.SetUpdateCatch(null);
                     catched = false;
 
@@ -138,6 +143,17 @@ namespace BytingLib.UI
         {
             float lerp = (float)step / (Steps - 1);
              return new Vector2(AbsoluteInnerLeft + lerp * AbsoluteInnerWidth, AbsoluteRect.Y);
+        }
+
+
+        protected override void DisposeSelf()
+        {
+            if (catched)
+            {
+                OnDragEnd?.Invoke(this);
+            }
+
+            base.DisposeSelf();
         }
     }
 }
