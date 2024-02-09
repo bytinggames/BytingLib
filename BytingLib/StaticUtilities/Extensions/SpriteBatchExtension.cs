@@ -157,7 +157,7 @@
                     spriteBatch.DrawString(spriteFont, lines[i], position + offset, color, rotation, origin, scale, effects, layerDepth, rtl);
                 }
 
-                offset.Y += spriteFont.LineSpacing;
+                offset.Y += spriteFont.LineSpacing * scale.Y;
             }
         }
     }

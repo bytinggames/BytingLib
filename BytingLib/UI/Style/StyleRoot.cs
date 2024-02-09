@@ -16,6 +16,8 @@
         private List<Style> styleOverrides = new();
         public double TotalMilliseconds { get; set; }
 
+        public float LineSpacing => Font.Value.LineSpacing * FontScale.Y;
+
         public StyleRoot(StyleBase baseStyle)
         {
             StyleBase = baseStyle;
@@ -53,6 +55,11 @@
             }
 
             styleOverrides.RemoveAt(styleOverrides.Count - 1);
+        }
+
+        public Vector2 MeasureString(string text)
+        {
+            return Font.Value.MeasureString(text) * FontScale;
         }
     }
 }

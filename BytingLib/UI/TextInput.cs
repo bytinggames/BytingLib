@@ -173,7 +173,7 @@
                 if (textLengthChanges != null)
                 {
                     Vector2 localPos = TextSpaceToLocalSpace(keyInputString!.InputString!.Cursor, style, drawnText, textLengthChanges);
-                    localPos.Y += style.Font.Value.LineSpacing * moveCursorVertically.Value;
+                    localPos.Y += style.LineSpacing * moveCursorVertically.Value;
                     keyInputString!.InputString!.Cursor = DrawSpaceToTextSpace(localPos, style);
                 }
 
@@ -189,17 +189,18 @@
                         string drawnText = CreateTextToDraw(style, out List<(int Index, int Add)>? textLengthChanges);
                         if (textLengthChanges != null)
                         {
-                            float lineSpacing = style.Font.Value.LineSpacing;
+                            float lineSpacing = style.LineSpacing;
 
                             cursorChanged = false;
                             Vector2 cursorDrawPos = TextSpaceToLocalSpace(keyInputString!.InputString!.Cursor, style, drawnText, textLengthChanges);
-                            cursorDrawPos = LocalToGlobalSpace(style, cursorDrawPos);
+                            cursorDrawPos = LocalToGlobalSpace(style, cursorDrawPos, drawnText);
+
                             cursorDraw = new Rect(cursorDrawPos, new Vector2(2, lineSpacing));
 
                             if (keyInputString!.InputString!.SelectStart != null)
                             {
                                 Vector2 selectDrawPos = TextSpaceToLocalSpace(keyInputString!.InputString!.SelectStart.Value, style, drawnText, textLengthChanges);
-                                selectDrawPos = LocalToGlobalSpace(style, selectDrawPos);
+                                selectDrawPos = LocalToGlobalSpace(style, selectDrawPos, drawnText);
 
                                 Vector2 selectPosOnCursorLine = new Vector2(selectDrawPos.X, cursorDrawPos.Y);
                                 if (selectDrawPos.Y < cursorDrawPos.Y)
@@ -274,7 +275,7 @@
             }
 
             // TODO: this is bad scrolling code, improve it. It also only works for Anchor.Y == 0 (which should be most text inputs)
-            Vector2 textSize = style.Font.Value.MeasureString(TextToDraw);
+            Vector2 textSize = style.MeasureString(TextToDraw);
             Vector2 restoreAnchor = Anchor;
             try
             {
@@ -292,13 +293,19 @@
             }
         }
 
-        private Vector2 LocalToGlobalSpace(StyleRoot style, Vector2 relativePos)
+        private Vector2 LocalToGlobalSpace(StyleRoot style, Vector2 relativePos, string drawnText)
         {
-            relativePos += AbsoluteRect.Pos;
-
+            if (Anchor == Vector2.Zero)
+            {
+                relativePos += AbsoluteRect.Pos;
+            }
+            else
+            {
+                relativePos += AbsoluteRect.GetAnchor(Anchor).Rectangle(MeasureString(style, drawnText)).Pos;
+            }
 
             // TODO: this is bad scrolling code, improve it.
-            Vector2 textSize = style.Font.Value.MeasureString(TextToDraw);
+            Vector2 textSize = style.MeasureString(TextToDraw);
             if (textSize.Y > AbsoluteRect.Height)
             {
                 relativePos.Y -= textSize.Y - AbsoluteRect.Height;
@@ -310,13 +317,21 @@
         private Vector2 GlobalToLocalSpace(StyleRoot style, Vector2 absolutePos)
         {
             // TODO: this is bad scrolling code, improve it.
-            Vector2 textSize = style.Font.Value.MeasureString(TextToDraw);
+            Vector2 textSize = style.MeasureString(TextToDraw);
             if (textSize.Y > AbsoluteRect.Height)
             {
                 absolutePos.Y += textSize.Y - AbsoluteRect.Height;
             }
 
-            absolutePos -= AbsoluteRect.Pos;
+            if (Anchor == Vector2.Zero)
+            {
+                absolutePos -= AbsoluteRect.Pos;
+            }
+            else
+            {
+                string drawnText = CreateTextToDraw(style, out _);
+                absolutePos -= AbsoluteRect.GetAnchor(Anchor).Rectangle(MeasureString(style, drawnText)).Pos;
+            }
 
             return absolutePos;
         }
@@ -354,7 +369,7 @@
 
             string drawnTextUntilCursor = drawnText.Remove(cursorPosition);
 
-            Vector2 textPartSize = style.Font.Value.MeasureString(drawnTextUntilCursor);
+            Vector2 textPartSize = style.MeasureString(drawnTextUntilCursor);
             int lastNewLineChar = drawnTextUntilCursor.LastIndexOf('\n');
             float lastLineOfPartWidth;
             if (lastNewLineChar == -1)
@@ -364,10 +379,10 @@
             else
             {
                 string lastLine = drawnTextUntilCursor.Substring(lastNewLineChar + 1);
-                lastLineOfPartWidth = style.Font.Value.MeasureString(lastLine).X;
+                lastLineOfPartWidth = style.MeasureString(lastLine).X;
             }
 
-            return new Vector2(lastLineOfPartWidth, textPartSize.Y - style.Font.Value.LineSpacing);
+            return new Vector2(lastLineOfPartWidth, textPartSize.Y - style.LineSpacing);
         }
 
         private int DrawSpaceToTextSpace(Vector2 localPos, StyleRoot style)
@@ -388,7 +403,7 @@
                 {
                     return cursor;
                 }
-                else if (cursorPos.Y + style.Font.Value.LineSpacing > localPos.Y && cursorPos.X >= localPos.X)
+                else if (cursorPos.Y + style.LineSpacing > localPos.Y && cursorPos.X >= localPos.X)
                 {
                     if (lastCursorPos != null 
                         && Vector2.DistanceSquared(localPos, lastCursorPos.Value)
@@ -411,5 +426,6 @@
         {
             doFocus = true;
         }
+
     }
 }

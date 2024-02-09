@@ -19,7 +19,8 @@
         {
             if (settings.TotalMilliseconds % 1000 < 500)
             {
-                settings.SpriteBatch.DrawRectangle(settings.Anchor.Rectangle(Math.Max(1, settings.Font.Value.LineSpacing / 12), settings.Font.Value.LineSpacing), Color);
+                float lineSpacing = settings.Font.Value.LineSpacing * settings.Scale.Y;
+                settings.SpriteBatch.DrawRectangle(settings.Anchor.Rectangle(Math.Max(1, lineSpacing / 12), lineSpacing), Color);
             }
         }
     }

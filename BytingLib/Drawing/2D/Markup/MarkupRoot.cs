@@ -175,7 +175,7 @@
         }
         public Rect GetRectangleFontBased(MarkupSettings markupSettings)
         {
-            return GetRectangle(markupSettings, markupSettings.Font.Value.LineSpacing - markupSettings.Font.Value.DefaultCharacterHeight);
+            return GetRectangle(markupSettings, (markupSettings.Font.Value.LineSpacing - markupSettings.Font.Value.DefaultCharacterHeight) * markupSettings.Scale.Y);
         }
 
         public void Dispose()
