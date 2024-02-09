@@ -147,6 +147,14 @@
             }
         }
 
+        public void Draw(IShape3Collection shapeCollection, Color color)
+        {
+            foreach (var shape in shapeCollection.ShapesEnumerable)
+            {
+                Draw(shape, color);
+            }
+        }
+
         /// <summary>If you know the type of the shape, consider using the direct draw call to prevent a cast.</summary>
         public void Draw(IShape3 shape, Color color)
         {
@@ -163,6 +171,7 @@
                 case Point3 f: Lines.Draw(f, color, 0.1f); break;
                 case Ray3 f: Lines.Draw(f, color); break;
                 case Shape3Collection f: Draw(f, color); break;
+                case IShape3Collection f: Draw(f, color); break;
                 case Sphere3 f: Spheres.Draw(f, color); break;
                 case Triangle3 f: Triangles.Draw(f, color); break;
                 default: throw new NotImplementedException();
