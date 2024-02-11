@@ -10,6 +10,8 @@ namespace BytingLib.Test.ContentTest
         [TestMethod]
         public void TestDynamicTexturesDisposalResizeAndDelete()
         {
+            MainThread.Initialize(); // tell the main thread which thread actually is the main thread
+
             string enemyPng = @"ContentHot\Textures\Enemy.png";
             Directory.CreateDirectory(Path.GetDirectoryName(enemyPng)!);
             File.Delete(enemyPng);

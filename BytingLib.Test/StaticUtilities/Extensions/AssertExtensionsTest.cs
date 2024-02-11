@@ -1,4 +1,4 @@
-﻿namespace BytingLib.Test.Extensions
+﻿namespace BytingLib.Test.StaticUtilities.Extensions
 {
     [TestClass]
     public class AssertExtensionsTest

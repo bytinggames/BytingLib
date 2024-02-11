@@ -1,5 +1,5 @@
 ﻿
-namespace BytingLib.Test
+namespace BytingLib.Test.StaticUtilities.Extensions
 {
     [TestClass]
     public class FloatExtensionTest
