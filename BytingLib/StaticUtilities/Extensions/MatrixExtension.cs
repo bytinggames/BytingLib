@@ -78,5 +78,31 @@
                 b21 / det, (-a21 * a00 + a01 * a20) / det, (a11 * a00 - a01 * a10) / det, 0,
                 0, 0, 0, 1) ;
         }
+
+        /// <summary>Checks wether the matrix is a result of rotations that are only around the base axes by a multiple of 90 degrees.</summary>
+        public static bool RotatesBaseAxisToParallelBaseAxis(this Matrix m, float precision = 0.0001f)
+        {
+            m.ToPitchYawRoll(out float yaw, out float pitch, out float roll);
+            return RotatesBaseAxisToParallelBaseAxisInner(yaw, pitch, roll, precision);
+        }
+        /// <summary>Checks wether the matrix is a result of rotations that are only around the base axes by a multiple of 90 degrees.</summary>
+        public static bool RotatesBaseAxisToParallelBaseAxisFromScaled(this Matrix m, float precision = 0.0001f)
+        {
+            m.ToPitchYawRollFromScaled(out float yaw, out float pitch, out float roll);
+            return RotatesBaseAxisToParallelBaseAxisInner(yaw, pitch, roll, precision);
+        }
+
+        private static bool RotatesBaseAxisToParallelBaseAxisInner(float yaw, float pitch, float roll, float precision)
+        {
+            float[] toCheck = new float[] { yaw, pitch, roll };
+            foreach (var r in toCheck)
+            {
+                if (MathHelper.PiOver4 - MathF.Abs(MathHelper.PiOver4 - r % MathHelper.PiOver2) > precision)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }
