@@ -519,10 +519,10 @@ namespace BytingLib
             return false;
         }
 
-        public static bool ColSphereAABB(Sphere3 sphere, AABB3 box)
+        public static bool ColSphereAABB(Sphere3 sphere, AABB3 aabb)
         {
             Vector3 nearestInBox;
-            nearestInBox = box.MoveVectorInside(sphere.Pos);
+            nearestInBox = aabb.MoveVectorInside(sphere.Pos);
 
             Vector3 dist = nearestInBox - sphere.Pos;
             if (dist == Vector3.Zero)

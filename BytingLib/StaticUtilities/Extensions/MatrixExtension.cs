@@ -97,7 +97,13 @@
             float[] toCheck = new float[] { yaw, pitch, roll };
             foreach (var r in toCheck)
             {
-                if (MathHelper.PiOver4 - MathF.Abs(MathHelper.PiOver4 - r % MathHelper.PiOver2) > precision)
+                // wrap rotation between 0 and MathHelper.PiOver2
+                float r1 = r % MathHelper.PiOver2;
+                if (r1 < 0f)
+                {
+                    r1 += MathHelper.PiOver2;
+                }
+                if (MathHelper.PiOver4 - MathF.Abs(MathHelper.PiOver4 - r1) > precision)
                 {
                     return false;
                 }
