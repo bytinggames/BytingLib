@@ -7,6 +7,7 @@ namespace BytingLib
         public List<Keys> Keys { get; set; }
         public List<MouseButton> MouseButtons { get; set; }
         public List<Buttons> GamePadButtons { get; set; }
+        public List<Keys[]> KeyCombos { get; set; } = new();
 
         public BindKey(List<Keys>? keys, List<MouseButton>? mouseButtons, List<Buttons>? gamePadButtons)
         {
@@ -42,6 +43,31 @@ namespace BytingLib
             if (GamePadButtons.Count > 0)
             {
                 AddKey(input.GamePad.GetKeyAnyFromIList(GamePadButtons));
+            }
+            if (KeyCombos.Count > 0)
+            {
+                foreach (var combo in KeyCombos)
+                {
+                    if (combo.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    // check if all but the last key are held down
+                    int i;
+                    for (i = 0; i < combo.Length - 1; i++)
+                    {
+                        if (!input.Keys.GetState().IsKeyDown(combo[i]))
+                        {
+                            break;
+                        }
+                    }
+
+                    if (i == combo.Length - 1)
+                    {
+                        AddKey(input.Keys.GetKey(combo.Last()));
+                    }
+                }
             }
 
             if (key == null)
