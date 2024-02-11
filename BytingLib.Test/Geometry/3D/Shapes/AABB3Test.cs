@@ -10,7 +10,7 @@
 
             Box3 box = aabb.ToBox();
             Assert.AreEqual(aabb.Center, box.Pos);
-            box.Transform.Decompose(out Vector3 scale, out _, out _);
+            Vector3 scale = box.Transform.GetScale();
             Assert.AreEqual(aabb.Size, scale);
         }
     }

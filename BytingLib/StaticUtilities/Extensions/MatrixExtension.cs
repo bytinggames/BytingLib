@@ -33,7 +33,7 @@
 
         public static void ToPitchYawRollFromScaled(this Matrix rotationMatrix, out float yaw, out float pitch, out float roll)
         {
-            rotationMatrix.Decompose(out Vector3 scale, out _, out _);
+            Vector3 scale = rotationMatrix.GetScale();
             (Matrix.CreateScale(Vector3.One / scale) * rotationMatrix).ToPitchYawRoll(out yaw, out pitch, out roll);
         }
 
@@ -103,6 +103,21 @@
                 }
             }
             return true;
+        }
+
+        /// <summary>Faster than <see cref="Matrix.Decompose()"/>.</summary>
+        public static Vector3 GetScale(this Matrix m)
+        {
+            // source from Matrix.Decompose()
+            float num = (Math.Sign(m.M11 * m.M12 * m.M13 * m.M14) >= 0) ? 1 : (-1);
+            float num2 = (Math.Sign(m.M21 * m.M22 * m.M23 * m.M24) >= 0) ? 1 : (-1);
+            float num3 = (Math.Sign(m.M31 * m.M32 * m.M33 * m.M34) >= 0) ? 1 : (-1);
+            Vector3 scale;
+            scale.X = num * MathF.Sqrt(m.M11 * m.M11 + m.M12 * m.M12 + m.M13 * m.M13);
+            scale.Y = num2 * MathF.Sqrt(m.M21 * m.M21 + m.M22 * m.M22 + m.M23 * m.M23);
+            scale.Z = num3 * MathF.Sqrt(m.M31 * m.M31 + m.M32 * m.M32 + m.M33 * m.M33);
+
+            return scale;
         }
     }
 }

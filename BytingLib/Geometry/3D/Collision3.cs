@@ -539,14 +539,23 @@ namespace BytingLib
 
         public static bool ColSphereBox(Sphere3 sphere, Box3 box)
         {
-            // clone sphere so we can rotate the sphere by the box matrix
-            sphere = (Sphere3)sphere.Clone();
-
-            box.Transform.Decompose(out Vector3 scale, out Quaternion rotation, out _);
-            Quaternion rotationInverse = Quaternion.Inverse(rotation);
-            sphere.Pos = Vector3.Transform(sphere.Pos - box.Pos, rotationInverse) + box.Pos;
-            AABB3 aabb = AABB3.FromCenter(box.Pos, scale.GetAbs());
-            return ColSphereAABB(sphere, aabb);
+            // remember sphere pos so we can rotate and move the sphere by the box matrix
+            Vector3 rememberSpherePos = sphere.Pos;
+            bool col;
+            try
+            {
+                // move sphere into box space
+                Vector3 scale = box.Transform.GetScale();
+                Matrix invertWithoutScale = Matrix.Invert(Matrix.CreateScale(Vector3.One / scale) * box.Transform);
+                sphere.Pos = Vector3.Transform(sphere.Pos, invertWithoutScale);
+                AABB3 aabb = AABB3.FromCenter(Vector3.Zero, scale.GetAbs());
+                col = ColSphereAABB(sphere, aabb);
+            }
+            finally
+            {
+                sphere.Pos = rememberSpherePos;
+            }
+            return col;
         }
 
         public static CollisionResult3 DistSphereAxis(Sphere3 sphere, Axis3 axis, Vector3 dir)

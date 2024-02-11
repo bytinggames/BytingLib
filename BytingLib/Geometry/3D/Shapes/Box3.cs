@@ -91,13 +91,13 @@
 
         public AABB3 GetAABBWithoutRotation()
         {
-            _transform.Decompose(out Vector3 scale, out _, out _);
+            Vector3 scale = _transform.GetScale();
             scale = scale.GetAbs();
             return new AABB3(Pos, scale * 2f);
         }
         public AABB3 GetAABBWithoutRotationAndTranslation()
         {
-            _transform.Decompose(out Vector3 scale, out _, out _);
+            Vector3 scale = _transform.GetScale();
             scale = scale.GetAbs();
             return new AABB3(-scale, scale);
         }
