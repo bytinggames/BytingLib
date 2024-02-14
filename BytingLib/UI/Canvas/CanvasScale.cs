@@ -9,6 +9,8 @@
         public int DefaultResX => (int)defaultRect.Width;
         public int DefaultResY => (int)defaultRect.Height;
         public Matrix Transform { get; private set; }
+        public Matrix? TransformPre { get; set; }
+        public Matrix? TransformPost { get; set; }
         public float MinAspectRatio { get; set; }
         public float MaxAspectRatio { get; set; }
         public CanvasScaling Scaling { get; set; } = CanvasScaling.Default;
@@ -67,6 +69,14 @@
                 * Matrix.CreateScale(new Vector3(scale, scale, 1f))
                 * Matrix.CreateTranslation(new Vector3(renderRect.Size / 2f, 0f).GetRound());
 
+            if (TransformPre != null)
+            {
+                Transform = TransformPre.Value * Transform;
+            }
+            if (TransformPost != null)
+            {
+                Transform = Transform * TransformPost.Value;
+            }
         }
 
         public override void UpdateTree()
