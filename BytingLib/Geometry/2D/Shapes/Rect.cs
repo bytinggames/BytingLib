@@ -444,7 +444,7 @@
             else
             {
                 float targetWidth = Height * aspectRatio;
-                pos.X += (targetWidth - Width) * anchor.X;
+                pos.X += (Width - targetWidth) * anchor.X;
                 Width = targetWidth;
             }
         }
