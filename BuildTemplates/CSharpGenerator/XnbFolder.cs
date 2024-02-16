@@ -15,7 +15,14 @@ namespace BuildTemplates
 
         public XnbFolder(string folderName, string? customClassName, List<Xnb> xnbs)
         {
-            name = Xnb.ToVariableName(folderName);
+            if (folderName.Length > 0)
+            {
+                name = Xnb.ToVariableName(folderName);
+            }
+            else
+            {
+                name = "";
+            }
             className = customClassName ?? "_" + name;
 
             if (folderName.Length > 0)
