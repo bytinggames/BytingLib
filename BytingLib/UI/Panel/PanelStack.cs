@@ -107,6 +107,10 @@
             {
                 return size;
             }
+            else if (size < 0)
+            {
+                return size;
+            }
 
             GetSize(out _, out _, out Vector2 contentSizePlusPadding);
             if (d == 0)

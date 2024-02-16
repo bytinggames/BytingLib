@@ -157,7 +157,8 @@
 
         public virtual float GetSizeTopToBottom(int d)
         {
-            if (Size(d) == 0)
+            float size = Size(d);
+            if (size == 0)
             {
                 float pad = Padding == null ? 0f : Padding.Size(d);
                 if (Children.Count == 0)
@@ -175,7 +176,7 @@
                     return Children.Min(f => f.GetSizeTopToBottom(d));
                 }
             }
-            return Size(d);
+            return size;
         }
 
         public Element Add(params Element[] children)
