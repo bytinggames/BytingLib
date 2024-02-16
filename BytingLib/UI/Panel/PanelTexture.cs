@@ -2,7 +2,7 @@
 {
     public class PanelTexture : Element
     {
-        public Ref<Texture2D> Texture { get; }
+        public Ref<Texture2D> Texture { get; set; }
         public Color Color { get; set; }
         public bool KeepAspectRatio { get; set; } = false;
 
@@ -24,6 +24,7 @@
         {
             if (KeepAspectRatio)
             {
+                rect = rect.CloneRect();
                 rect.ShrinkToAspectRatio((float)Texture.Value.Width / Texture.Value.Height, Anchor);
             }
 
