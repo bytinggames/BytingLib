@@ -1237,6 +1237,10 @@ namespace BytingLib
             // clip triangle on top and base slab of cylinder. generate a 2d polygon this way (projected in the direction of the cylinder)
             List<Vector2> vertices = ClipTriangle2DUnit(tri, cylinder);
 
+            if (vertices.Count == 0)
+            {
+                return false;
+            }
 
             // do SAT polygon vs circle
             Circle circle = new Circle(Vector2.Zero, 1f);
@@ -1255,6 +1259,13 @@ namespace BytingLib
             Matrix world = Matrix.CreateScale(cylinder.Radius, dirLength, cylinder.Radius)
                 * MatrixExtension.CreateMatrixRotationFromTo(Vector3.Up, cylinder.Length / dirLength) // normalizing here, so no NaN matrix results on parallel vectors
                 * Matrix.CreateTranslation(cylinder.Pos);
+
+            // check if matrix is filled with NaNs. This can be the case if the cylinder length is so small that the precision isn't enough.
+            if (float.IsNaN(world[0]))
+            {
+                return new();
+            }
+
             cylinderToUnit = Matrix.Invert(world);
 
             for (int i = 0; i < v.Count; i++)
