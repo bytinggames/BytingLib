@@ -448,6 +448,15 @@
                 Width = targetWidth;
             }
         }
+
+        public Rectangle ToRectangle()
+        {
+            int left = (int)MathF.Round(X);
+            int top = (int)MathF.Round(Y);
+            int right = (int)MathF.Round(Right);
+            int bottom = (int)MathF.Round(Bottom);
+            return new Rectangle(left, top, right - left, bottom - top);
+        }
     }
 
     public static class RectExtension

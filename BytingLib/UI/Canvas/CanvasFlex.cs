@@ -36,19 +36,23 @@
             }
 
             StyleRoot.Pop(Style);
+
+            base.UpdateTree();
         }
 
         public override void DrawBatch(SpriteBatch spriteBatch)
         {
-            UpdateTree(); // TODO: only update tree when necessary
-
-            if (ClearColor != null)
+            BeforeDraw(spriteBatch);
+            StyleRoot.SpriteBatchBegin = scissorTest =>
             {
-                spriteBatch.GraphicsDevice.Clear(ClearColor.Value);
-            }
+                RasterizerState rs = scissorTest ? rasterizerStateScissor : rasterizerState;
+                spriteBatch.Begin(rasterizerState: rs);
+            };
+            StyleRoot.SpriteBatchBegin(false);
 
-            spriteBatch.Begin();
+            
 
+            StyleRoot.SpriteBatchTransform = Matrix.Identity;
             StyleRoot.Push(Style);
             for (int i = 0; i < Children.Count; i++)
             {
@@ -61,7 +65,10 @@
 
         protected override void UpdateSelf(ElementInput input)
         {
-            UpdateTree(); // TODO: only update tree when necessary
+            if (TreeDirty)
+            {
+                UpdateTree();
+            }
 
             base.UpdateSelf(input);
         }

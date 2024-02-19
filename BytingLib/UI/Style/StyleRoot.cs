@@ -18,6 +18,11 @@
 
         public float LineSpacing => Font.Value.LineSpacing * FontScale.Y;
 
+        public Matrix SpriteBatchTransform { get; internal set; }
+
+        /// <summary>Store the SpriteBatch.Begin() call here, so we can flush all spritebatch calls and make new ones that get cut with a rasterizer scissor rectangle.</summary>
+        internal Action<bool>? SpriteBatchBegin { get; set; }
+
         public StyleRoot(StyleBase baseStyle)
         {
             StyleBase = baseStyle;
@@ -60,6 +65,31 @@
         public Vector2 MeasureString(string text)
         {
             return Font.Value.MeasureString(text) * FontScale;
+        }
+
+        public void ScissorRect(SpriteBatch spriteBatch, Rect rect, Action draw)
+        {
+            if (SpriteBatchBegin == null)
+            {
+                throw new Exception("before using Scissor() you need to set the Begin action of StyleRoot");
+            }
+
+            Rect absoluteRectWindowSpace = rect.GetTransformed(SpriteBatchTransform);
+
+            spriteBatch.End();
+            //spriteBatch.GraphicsDevice.RasterizerState.ScissorTestEnable = true;
+            SpriteBatchBegin(true);
+            bool rememberScissorTest = spriteBatch.GraphicsDevice.RasterizerState.ScissorTestEnable;
+            using (CodeHelper.ChangeVarTemporarily(spriteBatch.GraphicsDevice.ScissorRectangle,
+                f => spriteBatch.GraphicsDevice.ScissorRectangle = f,
+                absoluteRectWindowSpace.ToRectangle()
+                ))
+            {
+                draw();
+                spriteBatch.End();
+            }
+            //spriteBatch.GraphicsDevice.RasterizerState.ScissorTestEnable = rememberScissorTest;
+            SpriteBatchBegin(rememberScissorTest);
         }
     }
 }

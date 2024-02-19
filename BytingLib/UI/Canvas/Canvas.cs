@@ -7,13 +7,31 @@
         protected readonly Func<Rect> getRenderRect;
         public ElementInput Input { get; }
         public StyleRoot StyleRoot { get; set; }
+        private bool treeDirty = true;
+
+        //private bool scissorTest;
+        protected readonly RasterizerState rasterizerState = CreateDefaultRasterizerState();
+        protected readonly RasterizerState rasterizerStateScissor;
 
         public Canvas(Func<Rect> getRenderRect, MouseInput mouse, KeyInput keys, GameWindow window, StyleRoot style)
         {
             this.getRenderRect = getRenderRect;
             StyleRoot = style;
             Input = CreateElementInput(mouse, keys, window);
+
+            rasterizerStateScissor = CreateDefaultRasterizerState();
+            rasterizerStateScissor.ScissorTestEnable = true;
         }
+
+        private static RasterizerState CreateDefaultRasterizerState()
+        {
+            return new RasterizerState()
+            {
+                CullMode = CullMode.None
+            };
+        }
+
+        protected bool TreeDirty => treeDirty;
 
         protected virtual ElementInput CreateElementInput(MouseInput mouse, KeyInput keys, GameWindow window)
         {
@@ -57,6 +75,29 @@
             throw new BytingException("Call DrawBatch() instead");
         }
 
-        public abstract void UpdateTree();
+        public virtual void UpdateTree()
+        {
+            treeDirty = false;
+        }
+
+        protected void BeforeDraw(SpriteBatch spriteBatch)
+        {
+            if (treeDirty)
+            {
+                UpdateTree();
+            }
+
+            if (ClearColor != null)
+            {
+                spriteBatch.GraphicsDevice.Clear(ClearColor.Value);
+            }
+        }
+
+        public override void SetDirty()
+        {
+            treeDirty = true;
+
+            base.SetDirty();
+        }
     }
 }

@@ -15,7 +15,6 @@
         public float MaxAspectRatio { get; set; }
         public CanvasScaling Scaling { get; set; } = CanvasScaling.Default;
         private float scale;
-        private bool treeDirty = true;
         Rect? lastRenderRect;
         // must only be used for non-replay related stuff
         private readonly IResolution graphicsResolution;
@@ -136,21 +135,11 @@
 
             StyleRoot.Pop(Style);
 
-            treeDirty = false;
+            base.UpdateTree();
         }
         public override void DrawBatch(SpriteBatch spriteBatch)
         {
             SetDirtyIfResChanged();
-
-            if (treeDirty)
-            {
-                UpdateTree();
-            }
-
-            if (ClearColor != null)
-            {
-                spriteBatch.GraphicsDevice.Clear(ClearColor.Value);
-            }
 
             SamplerState samplerState = IsScalingPixelated() 
                 && MathF.Abs(0.5f - ((scale + 0.5f) % 1)) < 0.01f // check if scale is roughly a whole number (1, 2, 3, etc.)
@@ -164,8 +153,18 @@
                 transform *= Matrix.CreateScale(graphicsRes.X / lastRenderRect.Width, graphicsRes.Y / lastRenderRect.Height, 1f);
             }
 
-            spriteBatch.Begin(samplerState: samplerState, transformMatrix: transform);
+            BeforeDraw(spriteBatch);
+            StyleRoot.SpriteBatchBegin = scissorTest =>
+            {
+                RasterizerState rs = scissorTest ? rasterizerStateScissor : rasterizerState;
 
+                spriteBatch.Begin(samplerState: samplerState,
+                    transformMatrix: transform,
+                    rasterizerState: rs);
+            };
+            StyleRoot.SpriteBatchBegin(false);
+
+            StyleRoot.SpriteBatchTransform = transform;
             StyleRoot.Push(Style);
             for (int i = 0; i < Children.Count; i++)
             {
@@ -180,7 +179,7 @@
         {
             SetDirtyIfResChanged();
 
-            if (treeDirty)
+            if (TreeDirty)
             {
                 UpdateTree();
             }
@@ -201,13 +200,6 @@
         public bool IsScalingPixelated()
         {
             return Scaling == CanvasScaling.PixelArt || Scaling == CanvasScaling.PixelArtResponsiveCanvas;
-        }
-
-        public override void SetDirty()
-        {
-            treeDirty = true;
-
-            base.SetDirty();
         }
     }
 }
