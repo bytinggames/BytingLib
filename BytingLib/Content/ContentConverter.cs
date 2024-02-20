@@ -15,6 +15,7 @@ namespace BytingLib
             { "ModelProcessor", "Model" },
             { "SoundEffectProcessor", "SoundEffect" },
             { "SongProcessor", "Song" },
+            { "FontTextureProcessor", "SpriteFont" },
             // BytingLib
             { "BytingFontProcessor", "SpriteFont" },
             { "AnimationProcessor", "Animation" },
