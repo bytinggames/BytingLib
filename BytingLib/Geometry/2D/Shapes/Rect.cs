@@ -449,6 +449,22 @@
             }
         }
 
+        public void GrowToAspectRatio(float aspectRatio, Vector2 anchor)
+        {
+            float targetHeight = Width / aspectRatio;
+            if (targetHeight > Height)
+            {
+                pos.Y += (Height - targetHeight) * anchor.Y;
+                Height = targetHeight;
+            }
+            else
+            {
+                float targetWidth = Height * aspectRatio;
+                pos.X += (Width - targetWidth) * anchor.X;
+                Width = targetWidth;
+            }
+        }
+
         public Rectangle ToRectangle()
         {
             int left = (int)MathF.Round(X);
