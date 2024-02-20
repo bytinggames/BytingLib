@@ -16,6 +16,8 @@ namespace BytingLib.UI
                 nullHeight = remainingHeight / autoHeightSum;
             }
 
+			float startY = pos.Y - (Padding == null ? 0f : Padding.Top);
+
             for (int i = 0; i < Children.Count; i++)
             {
                 var c = Children[i];
@@ -25,6 +27,7 @@ namespace BytingLib.UI
 				float width = rect.Width;
                 Rect r = GetChildRect(new Rect(pos.X, pos.Y, width, height), c);
 				//  bit weird, to first calculate the rect and then reset one dimension
+				r.X += Skew * (r.Y - startY);
                 r.Y = pos.Y;
                 r.Height = height;
                 c.UpdateTree(r);
@@ -72,6 +75,8 @@ namespace BytingLib.UI
                 nullWidth = remainingWidth / autoWidthSum;
             }
 
+			float startX = pos.X - (Padding == null ? 0f : Padding.Left);
+
             for (int i = 0; i < Children.Count; i++)
             {
                 var c = Children[i];
@@ -81,6 +86,7 @@ namespace BytingLib.UI
 				float height = rect.Height;
                 Rect r = GetChildRect(new Rect(pos.X, pos.Y, width, height), c);
 				//  bit weird, to first calculate the rect and then reset one dimension
+				r.Y += Skew * (r.X - startX);
                 r.X = pos.X;
                 r.Width = width;
                 c.UpdateTree(r);

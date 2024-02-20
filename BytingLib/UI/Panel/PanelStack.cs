@@ -5,6 +5,7 @@
         public Color? Color { get; set; }
         public bool Vertical { get; set; }
         public float Gap { get; set; }
+        public float Skew { get; set; } = 0f;
 
         public PanelStack(float gap = 0f, bool vertical = true, Padding? padding = null, Vector2? anchor = null, Color? color = null)
         {
