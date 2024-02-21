@@ -45,7 +45,18 @@ namespace BytingLib
 
             var converters = new Dictionary<Type, Func<string, object>>()
             {
-                { typeof(Color), str => ColorExtension.FromHex(str) }
+                { typeof(Color), str => ColorExtension.FromHex(str) },
+                { typeof(Rectangle?), str =>
+                    {
+                        string[] split = str.Split(new char[]{'|' });
+                        if (split.Length != 4)
+                        {
+                            throw new Exception("rectangle arguments must be 4");
+                        }
+
+                        return new Rectangle(int.Parse(split[0]), int.Parse(split[1]), int.Parse(split[2]), int.Parse(split[3]));
+                    }
+                }
             };
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, new object[] { contentCollector }, typeof(MarkupShortcutAttribute), converters);
 
