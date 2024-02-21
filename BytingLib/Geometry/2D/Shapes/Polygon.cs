@@ -434,5 +434,10 @@
         {
             return Collision.DistPolygonCircleExtended(this, circle, dir);
         }
+
+        public Vector2 GetPos(int index)
+        {
+            return Pos + Vertices[index];
+        }
     }
 }
