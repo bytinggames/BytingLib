@@ -71,6 +71,7 @@ namespace BuildTemplates.Test
         public SEContentConverter()
         {
             ProcessorToDataType.Add("CollisionModelProcessor", "CollisionModelBytes");
+            ProcessorToDataType.Add("TextureProcessorDrawn", "Texture2D");
             DataTypeToVarExtension.Add("CollisionModelBytes", "Col");
             //RuntimeTypes.Add("CollisionModelBytes", typeof(CollisionModelBytes));
         }
