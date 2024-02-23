@@ -5,6 +5,7 @@
         private Texture2D? screenshotTex;
         private readonly GraphicsDevice gDevice;
         private readonly DefaultPaths paths;
+        public event Action? OnTakeScreenshot;
 
         public Screenshotter(GraphicsDevice gDevice, DefaultPaths paths)
         {
@@ -26,6 +27,8 @@
             screenshotTex.SetData(backBuffer);
             string path = randomScreenshot ? paths.GetNewRandomScreenshotPng() : paths.GetNewScreenshotPng();
             screenshotTex.SaveAsPng(path);
+
+            OnTakeScreenshot?.Invoke();
         }
 
         public void Dispose()
