@@ -17,9 +17,12 @@ namespace BytingLib
         public NodeGL? Parent { get; private set; }
         /// <summary>For faster checking if this node is a bone. It's a bone, if a skin has this node as a bone. The skin has to be loaded first.</summary>
         public bool IsBone { get; set; }
+        public JsonNode JsonNode { get; }
 
         public NodeGL(ModelGL model, JsonNode n, NodeGL? parent)
         {
+            JsonNode = n;
+
             if (Parent == null)
             {
                 Parent = parent;
