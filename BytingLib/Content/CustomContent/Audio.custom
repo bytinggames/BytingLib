@@ -1,10 +1,10 @@
-^.*\.wav$
+^.*\.(?i)(wav)$
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:{0}
 
-^.*\.ogg$
+^.*\.(?i)(ogg)$
 /importer:OggImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best

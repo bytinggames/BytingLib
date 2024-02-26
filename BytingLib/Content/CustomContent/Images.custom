@@ -1,4 +1,4 @@
-^.*\.(png|jpg|jpeg|exr)$
+^.*\.(?i)(png|jpg|jpeg|exr)$
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
