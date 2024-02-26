@@ -261,8 +261,15 @@ namespace BytingLib
             //Get program output
             string? stdError = null;
             StringBuilder stdOutput = new StringBuilder();
-            process.OutputDataReceived += (sender, args) => stdOutput.Append(args.Data);
-
+            process.OutputDataReceived += (sender, args) =>
+            {
+                stdOutput.Append(args.Data);
+                // add new line
+                if (args.Data != null)
+                {
+                    stdOutput.Append("\n");
+                }
+            };
             try
             {
                 process.Start();
@@ -299,7 +306,7 @@ namespace BytingLib
                 }
 
                 int indexStart = str.IndexOf(success) + success.Length;
-                int indexEnd = str.IndexOf(" failed.Time elapsed");
+                int indexEnd = str.IndexOf(" failed.\n\nTime elapsed");
                 string failedNumberStr = str.Substring(indexStart, indexEnd - indexStart);
                 int failedNumber = int.Parse(failedNumberStr);
 
