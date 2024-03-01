@@ -76,10 +76,9 @@ namespace BytingLib
 
         protected virtual void InitWindowAndGraphics(bool vsync)
         {
-            if (vsync)
+            if (vsync != graphics.SynchronizeWithVerticalRetrace)
             {
-                // enable vsync for disabling stuttering, which probably appears mostly in window mode
-                graphics.SynchronizeWithVerticalRetrace = true;
+                graphics.SynchronizeWithVerticalRetrace = vsync;
                 graphics.ApplyChanges();
             }
             // maximize window
