@@ -56,6 +56,10 @@
         {
             return new PrimitiveAreaStrip(this, thickness, anchorInner);
         }
+        public PrimitiveAreaStrip Thicken(float thickness, float anchorInner, bool fixTooSharpCorners)
+        {
+            return new PrimitiveAreaStrip(this, thickness, anchorInner, fixTooSharpCorners);
+        }
 
         public static PrimitiveLineStrip CreateArc(Vector2 center, float radius, float angleStart, float arc, int vertexCount)
         {

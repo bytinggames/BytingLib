@@ -35,7 +35,7 @@
             Vertices[3] = new Vector2(p2.X, p1.Y);
         }
 
-        public PrimitiveAreaStrip(PrimitiveLineStrip line, float thickness, float anchor = 0f)
+        public PrimitiveAreaStrip(PrimitiveLineStrip line, float thickness, float anchor = 0f, bool fixTooSharpCorners = false)
         {
             if (line.Vertices.Count <= 1)
             {
@@ -45,10 +45,12 @@
 
             Vertices = new Vector2[line.Vertices.Count * 2];
 
-            float t = thickness / 2f;
+            float t_2 = thickness / 2f;
 
             Vector2 a = line.Vertices[1] - line.Vertices[0];
             Vector2 b = default;
+
+            float maxCornerDistanceSquared = MathF.Pow(t_2, 2f);
 
             for (int i = 0; i < line.Vertices.Count; i++)
             {
@@ -62,9 +64,15 @@
                 float angleB = MathF.Atan2(b.Y, b.X);
                 float angleDistHalved = MathExtension.AngleDistance(angleA, angleB) / 2f;
                 float sin = MathF.Sin(angleDistHalved);
-                float x = t / sin;
+                float x = t_2 / sin;
                 float angleToCorner = angleA + angleDistHalved;
-                Vector2 dirToCorner = new Vector2(MathF.Cos(angleToCorner), MathF.Sin(angleToCorner)) * x;
+                Vector2 dirToCorner = x * new Vector2(MathF.Cos(angleToCorner), MathF.Sin(angleToCorner));
+
+                if (fixTooSharpCorners 
+                    && dirToCorner.LengthSquared() > maxCornerDistanceSquared)
+                {
+                    dirToCorner = Vector2.Normalize(dirToCorner) * t_2;
+                }
 
                 Vertices[i * 2] = line.Vertices[i] + dirToCorner * (1f - anchor);
                 Vertices[i * 2 + 1] = line.Vertices[i] + dirToCorner * (-1f - anchor);
