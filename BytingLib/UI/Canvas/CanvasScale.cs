@@ -18,8 +18,16 @@
         Rect? lastRenderRect;
         // must only be used for non-replay related stuff
         private readonly IResolution graphicsResolution;
+        // define custom msaa, if you want the ui to have a anti-aliasing.
+        // If the canvas msaa setting is larger than the backbuffer msaa,
+        // the canvas will render to a rendertarget with msaa first before rendering that to the backbuffer
+        public int? CustomMsaa { get; set; }
+        private RenderTargetBinding? msaaRenderTargetBinding;
 
-        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, IResolution graphicsResolution, MouseInput mouse, KeyInput keys, GameWindow window, StyleRoot style)
+        public event Action<SpriteBatch>? DrawBatchBeforeCanvas;
+
+        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, IResolution graphicsResolution,
+            MouseInput mouse, KeyInput keys, GameWindow window, StyleRoot style)
             : base(getRenderRect, mouse, keys, window, style)
         {
             Width = defaultResX;
@@ -153,6 +161,8 @@
                 transform *= Matrix.CreateScale(graphicsRes.X / lastRenderRect.Width, graphicsRes.Y / lastRenderRect.Height, 1f);
             }
 
+            UpdateMsaaRenderTargetIfNecessary(spriteBatch.GraphicsDevice);
+
             BeforeDraw(spriteBatch);
             StyleRoot.SpriteBatchBegin = scissorTest =>
             {
@@ -162,6 +172,19 @@
                     transformMatrix: transform,
                     rasterizerState: rs);
             };
+
+            RenderTargetBinding[]? rememberBindings = null;
+            if (msaaRenderTargetBinding != null)
+            {
+                rememberBindings = spriteBatch.GraphicsDevice.GetRenderTargets();
+                spriteBatch.GraphicsDevice.SetRenderTargets(msaaRenderTargetBinding.Value);
+                spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            }
+            else
+            {
+                DrawBatchBeforeCanvas?.Invoke(spriteBatch);
+            }
+
             StyleRoot.SpriteBatchBegin(false);
 
             StyleRoot.SpriteBatchTransform = transform;
@@ -173,6 +196,47 @@
             StyleRoot.Pop(Style);
 
             spriteBatch.End();
+
+            if (rememberBindings != null)
+            {
+                spriteBatch.GraphicsDevice.SetRenderTargets(rememberBindings);
+
+                if (msaaRenderTargetBinding != null)
+                {
+                    DrawBatchBeforeCanvas?.Invoke(spriteBatch);
+
+                    spriteBatch.Begin();
+                    spriteBatch.Draw((RenderTarget2D)msaaRenderTargetBinding.Value.RenderTarget, Vector2.Zero, Color.White);
+                    spriteBatch.End();
+                }
+            }
+        }
+
+        private void UpdateMsaaRenderTargetIfNecessary(GraphicsDevice gDevice)
+        {
+            RenderTarget2D? rt = msaaRenderTargetBinding?.RenderTarget as RenderTarget2D;
+
+            if (CustomMsaa != null && CustomMsaa > gDevice.PresentationParameters.MultiSampleCount)
+            {
+                var res = graphicsResolution.Resolution;
+
+                if (rt == null
+                    || rt.Width != res.X
+                    || rt.Height != res.Y
+                    || rt.MultiSampleCount != CustomMsaa.Value)
+                {
+                    // update the msaa render target
+                    rt?.Dispose();
+                    rt = new RenderTarget2D(gDevice, res.X, res.Y, false, 
+                        SurfaceFormat.Color, DepthFormat.None, CustomMsaa.Value, RenderTargetUsage.DiscardContents);
+                    msaaRenderTargetBinding = new(rt);
+                }
+            }
+            else if (rt != null)
+            {
+                rt.Dispose();
+                msaaRenderTargetBinding = null;
+            }
         }
 
         protected override void UpdateSelf(ElementInput input)
