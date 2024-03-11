@@ -5,7 +5,8 @@
     /// </summary>
     public class CanvasFlex : Canvas, IDrawBatch
     {
-        public CanvasFlex(Func<Rect> getRenderRect, MouseInput mouse, KeyInput keys, GameWindow window, StyleRoot style) : base(getRenderRect, mouse, keys, window, style)
+        public CanvasFlex(Func<Rect> getRenderRect, MouseInput mouse, KeyInput keys, GameWindow window, StyleRoot style, IResolution resolution)
+            : base(getRenderRect, mouse, keys, window, style, resolution)
         {
         }
 
@@ -42,12 +43,16 @@
 
         public override void DrawBatch(SpriteBatch spriteBatch)
         {
+            UpdateMsaaRenderTargetIfNecessary(spriteBatch.GraphicsDevice);
+
             BeforeDraw(spriteBatch);
             StyleRoot.SpriteBatchBegin = scissorTest =>
             {
                 RasterizerState rs = scissorTest ? rasterizerStateScissor : rasterizerState;
                 spriteBatch.Begin(rasterizerState: rs);
             };
+
+            RenderTargetBinding[]? rememberBindings = CustomMsaaBegin(spriteBatch);
             StyleRoot.SpriteBatchBegin(false);
 
             
@@ -61,6 +66,7 @@
             StyleRoot.Pop(Style);
 
             spriteBatch.End();
+            CustomMsaaEnd(spriteBatch, rememberBindings);
         }
 
         protected override void UpdateSelf(ElementInput input)

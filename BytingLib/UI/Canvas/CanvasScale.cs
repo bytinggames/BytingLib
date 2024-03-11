@@ -16,19 +16,10 @@
         public CanvasScaling Scaling { get; set; } = CanvasScaling.Default;
         private float scale;
         Rect? lastRenderRect;
-        // must only be used for non-replay related stuff
-        private readonly IResolution graphicsResolution;
-        // define custom msaa, if you want the ui to have a anti-aliasing.
-        // If the canvas msaa setting is larger than the backbuffer msaa,
-        // the canvas will render to a rendertarget with msaa first before rendering that to the backbuffer
-        public int? CustomMsaa { get; set; }
-        private RenderTargetBinding? msaaRenderTargetBinding;
 
-        public event Action<SpriteBatch>? DrawBatchBeforeCanvas;
-
-        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, IResolution graphicsResolution,
+        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, IResolution resolution,
             MouseInput mouse, KeyInput keys, GameWindow window, StyleRoot style)
-            : base(getRenderRect, mouse, keys, window, style)
+            : base(getRenderRect, mouse, keys, window, style, resolution)
         {
             Width = defaultResX;
             Height = defaultResY;
@@ -36,7 +27,6 @@
             float aspectRatio = (float)defaultResX / defaultResY;
             MinAspectRatio = aspectRatio;
             MaxAspectRatio = aspectRatio;
-            this.graphicsResolution = graphicsResolution;
         }
 
         protected override ElementInput CreateElementInput(MouseInput mouse, KeyInput keys, GameWindow window)
@@ -149,12 +139,12 @@
         {
             SetDirtyIfResChanged();
 
-            SamplerState samplerState = IsScalingPixelated() 
+            SamplerState samplerState = IsScalingPixelated()
                 && MathF.Abs(0.5f - ((scale + 0.5f) % 1)) < 0.01f // check if scale is roughly a whole number (1, 2, 3, etc.)
                 ? SamplerState.PointClamp : SamplerState.LinearClamp;
 
             Matrix transform = Transform;
-            Int2 graphicsRes = graphicsResolution.Resolution;
+            Int2 graphicsRes = resolution.Resolution;
             if (lastRenderRect != null && graphicsRes.ToVector2() != lastRenderRect.Size)
             {
                 // custom transform, so that when watching a replay, it still displays the ui wholly independent of viewers and recorders resolution
@@ -172,19 +162,7 @@
                     transformMatrix: transform,
                     rasterizerState: rs);
             };
-
-            RenderTargetBinding[]? rememberBindings = null;
-            if (msaaRenderTargetBinding != null)
-            {
-                rememberBindings = spriteBatch.GraphicsDevice.GetRenderTargets();
-                spriteBatch.GraphicsDevice.SetRenderTargets(msaaRenderTargetBinding.Value);
-                spriteBatch.GraphicsDevice.Clear(Color.Transparent);
-            }
-            else
-            {
-                DrawBatchBeforeCanvas?.Invoke(spriteBatch);
-            }
-
+            RenderTargetBinding[]? rememberBindings = CustomMsaaBegin(spriteBatch);
             StyleRoot.SpriteBatchBegin(false);
 
             StyleRoot.SpriteBatchTransform = transform;
@@ -196,47 +174,7 @@
             StyleRoot.Pop(Style);
 
             spriteBatch.End();
-
-            if (rememberBindings != null)
-            {
-                spriteBatch.GraphicsDevice.SetRenderTargets(rememberBindings);
-
-                if (msaaRenderTargetBinding != null)
-                {
-                    DrawBatchBeforeCanvas?.Invoke(spriteBatch);
-
-                    spriteBatch.Begin();
-                    spriteBatch.Draw((RenderTarget2D)msaaRenderTargetBinding.Value.RenderTarget, Vector2.Zero, Color.White);
-                    spriteBatch.End();
-                }
-            }
-        }
-
-        private void UpdateMsaaRenderTargetIfNecessary(GraphicsDevice gDevice)
-        {
-            RenderTarget2D? rt = msaaRenderTargetBinding?.RenderTarget as RenderTarget2D;
-
-            if (CustomMsaa != null && CustomMsaa > gDevice.PresentationParameters.MultiSampleCount)
-            {
-                var res = graphicsResolution.Resolution;
-
-                if (rt == null
-                    || rt.Width != res.X
-                    || rt.Height != res.Y
-                    || rt.MultiSampleCount != CustomMsaa.Value)
-                {
-                    // update the msaa render target
-                    rt?.Dispose();
-                    rt = new RenderTarget2D(gDevice, res.X, res.Y, false, 
-                        SurfaceFormat.Color, DepthFormat.None, CustomMsaa.Value, RenderTargetUsage.DiscardContents);
-                    msaaRenderTargetBinding = new(rt);
-                }
-            }
-            else if (rt != null)
-            {
-                rt.Dispose();
-                msaaRenderTargetBinding = null;
-            }
+            CustomMsaaEnd(spriteBatch, rememberBindings);
         }
 
         protected override void UpdateSelf(ElementInput input)
