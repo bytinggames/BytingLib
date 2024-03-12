@@ -27,15 +27,42 @@ namespace BuildTemplates
 
         public string GetCustomHeader() => customHeader;
 
-        void ReadFile(string customFile)
+        void ReplaceIncludes(ref string code, string path)
         {
-            string customStr = File.ReadAllText(customFile);
+            const string find = "@include \"";
+            int index = 0;
+            while ((index = code.IndexOf(find, index)) != -1)
+            {
+                index += find.Length;
 
-            // source: https://stackoverflow.com/a/3524689/6866837
+                int endIndex = code.IndexOf('"', index);
+                string includeFile = code.Substring(index, endIndex - index);
+                includeFile = Path.GetFullPath(Path.Combine(path, includeFile));
+
+                string innerCode = GetFileContents(includeFile);
+
+                ReplaceIncludes(ref innerCode, Path.GetDirectoryName(includeFile)!);
+
+                code = code.Remove(index - find.Length) + innerCode + code.Substring(endIndex + 1);
+            }
+        }
+
+        string GetFileContents(string file)
+        {
+            string customStr = File.ReadAllText(file);
+
             customStr = StripComments(customStr);
 
             customStr = customStr.Replace("\r", "");
+            return customStr;
+        }
 
+        void ReadFile(string customFile)
+        {
+            string customStr = GetFileContents(customFile);
+
+            // replace @include "..."
+            ReplaceIncludes(ref customStr, Path.GetDirectoryName(customFile)!);
 
             ScriptReader reader = new ScriptReader(customStr);
 
@@ -51,16 +78,8 @@ namespace BuildTemplates
 
                 if (pattern.StartsWith('@'))
                 {
-                    const string startsWithInclude = "@include \"";
                     const string startsWithHeader = "@header";
-                    if (pattern.StartsWith(startsWithInclude))
-                    {
-                        int endIndex = pattern.IndexOf('"', startsWithInclude.Length);
-                        string includeFile = pattern.Substring(startsWithInclude.Length, endIndex - startsWithInclude.Length);
-                        includeFile = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(customFile)!, includeFile));
-                        ReadFile(includeFile);
-                    }
-                    else if (pattern.StartsWith(startsWithHeader))
+                    if (pattern.StartsWith(startsWithHeader))
                     {
                         customHeader += reader.ReadToStringOrEnd("\n\n", out bool endReached1) + "\n";
 
@@ -80,6 +99,7 @@ namespace BuildTemplates
 
         private static string StripComments(string customStr)
         {
+            // source: https://stackoverflow.com/a/3524689/6866837
             var blockComments = @"/\*(.*?)\*/";
             var lineComments = @"//(.*?)\r?\n";
             var strings = @"""((\\[^\n]|[^""\n])*)""";
