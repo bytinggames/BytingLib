@@ -13,7 +13,7 @@
             this.paths = paths;
         }
 
-        public void TakeScreenshot(bool randomScreenshot)
+        public string TakeScreenshot(bool randomScreenshot)
         {
             int w = gDevice.PresentationParameters.BackBufferWidth;
             int h = gDevice.PresentationParameters.BackBufferHeight;
@@ -29,6 +29,8 @@
             screenshotTex.SaveAsPng(path);
 
             OnTakeScreenshot?.Invoke();
+
+            return path;
         }
 
         public void Dispose()
