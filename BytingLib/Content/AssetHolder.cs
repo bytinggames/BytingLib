@@ -35,10 +35,14 @@
 
         private void Unuse(Ref<T> asset)
         {
-            assetReferences.Remove(asset);
-            if (assetReferences.Count == 0)
+            // check if holding any references. If none, no need to call the onUnusedTo0References event
+            if (assetReferences.Count > 0)
             {
-                onUnusedTo0References?.Invoke(assetName);
+                assetReferences.Remove(asset);
+                if (assetReferences.Count == 0)
+                {
+                    onUnusedTo0References?.Invoke(assetName);
+                }
             }
         }
 

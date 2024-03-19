@@ -14,6 +14,8 @@ namespace BytingLib
         private readonly GraphicsDeviceManager graphics;
         private Rectangle windowRectBeforeFullscreen;
         public event Action<Int2>? OnResolutionChanged;
+        /// <summary>Used for overriding the actual screen size to simulate a bigger screen or make screenshots at a higher resolution.</summary>
+        public Int2? VirtualScreenSize { get; set; }
 
         private const int SW_MAXIMIZE = 3;
         [DllImport("user32.dll", EntryPoint = "FindWindow")]
@@ -92,17 +94,17 @@ namespace BytingLib
                 graphics.PreferredBackBufferWidth = GetScreenWidth();
                 graphics.PreferredBackBufferHeight = GetScreenHeight();
 
-                if (!realFullscreen)
-                {
-                    graphics.ApplyChanges();
-                }
-                else
+                if (realFullscreen)
                 {
 #if !WINDOWS
                     // this is required on linux, otherwise the screen would just turn black and freeze
                     graphics.ApplyChanges();
 #endif
                     graphics.ToggleFullScreen();
+                }
+                else
+                {
+                    graphics.ApplyChanges();
                 }
             }
 
@@ -189,16 +191,29 @@ namespace BytingLib
             }
         }
 
-        private static int GetScreenHeight()
+        private int GetScreenWidth()
         {
-            return GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            if (VirtualScreenSize == null)
+            {
+                return GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            }
+            else
+            {
+                return VirtualScreenSize.Value.X;
+            }
         }
 
-        private static int GetScreenWidth()
+        private int GetScreenHeight()
         {
-            return GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            if (VirtualScreenSize == null)
+            {
+                return GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            }
+            else
+            {
+                return VirtualScreenSize.Value.Y;
+            }
         }
-
 
         /// <summary>Only supported on Windows</summary>
         public void MaximizeWindow()
@@ -207,6 +222,14 @@ namespace BytingLib
             IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);
             ShowWindow(hwnd, SW_MAXIMIZE);
 #endif
+        }
+
+
+        public void SetWindowResolution(Int2 resolution)
+        {
+            graphics.PreferredBackBufferWidth = resolution.X;
+            graphics.PreferredBackBufferHeight = resolution.Y;
+            graphics.ApplyChanges();
         }
     }
 }
