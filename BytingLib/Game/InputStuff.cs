@@ -28,6 +28,9 @@ namespace BytingLib
         public Action? OnPlayInput, OnPlayInputFinish;
         private IInputMetaObjectManager? metaObjectManager;
 
+        public GamePadDeadZone GamePadDeadZoneLeft { get; set; } = GamePadDeadZone.IndependentAxes;
+        public GamePadDeadZone GamePadDeadZoneRight { get; set; } = GamePadDeadZone.IndependentAxes;
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths, 
             Action<Action> startRecordingPlayback, bool startRecordingInstantly, bool enableDevInput, bool controlViaF5 = true)
@@ -65,7 +68,7 @@ namespace BytingLib
             {
                 KeysDev = new KeyInput(() => CurrentKeyState);
                 MouseDev = new MouseInput(() => CurrentMouseState, game.IsActivatedThisFrame);
-                GamePadDev = new GamePadInput(() => Microsoft.Xna.Framework.Input.GamePad.GetState(0));
+                GamePadDev = new GamePadInput(() => Microsoft.Xna.Framework.Input.GamePad.GetState(0, GamePadDeadZoneLeft, GamePadDeadZoneRight));
             }
             else
             {

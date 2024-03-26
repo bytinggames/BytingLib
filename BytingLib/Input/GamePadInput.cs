@@ -22,10 +22,10 @@ namespace BytingLib
             UpdateUsingState(getState());
         }
 
-        private void UpdateUsingState(GamePadState keyboardState)
+        private void UpdateUsingState(GamePadState gamepadState)
         {
             previousState = currentState;
-            currentState = keyboardState;
+            currentState = gamepadState;
 
             if (OnStateChanged != null
                 && currentState != previousState)
