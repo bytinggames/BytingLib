@@ -19,7 +19,7 @@
         {
             if (listeningForDrawCalls || drawLater.Count > 0)
             {
-                throw new Exception("RenderEnd() must be called after RenderBegin()");
+                throw new Exception("TransparencyBatch.End() must be called after TransparencyBatch.Begin()");
             }
 
             listeningForDrawCalls = true;
