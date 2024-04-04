@@ -72,6 +72,7 @@
                 "NORMAL" => VertexElementUsage.Normal,
                 "TEXCOORD_0" or "TEXCOORD_1" => VertexElementUsage.TextureCoordinate,
                 "COLOR_0" => VertexElementUsage.Color,
+                var f when f.StartsWith("_COLOR") => VertexElementUsage.Color,
                 "JOINTS_0" => VertexElementUsage.BlendIndices,
                 "WEIGHTS_0" => VertexElementUsage.BlendWeight,
                 "TANGENT" => VertexElementUsage.Tangent,
