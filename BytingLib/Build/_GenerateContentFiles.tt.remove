@@ -23,8 +23,9 @@
     int start = csproj.LastIndexOf(include, index) + include.Length;
     string path = csproj.Substring(start, index - start);
 	string buildTemplatesProjectPath = Path.Combine(path, "BuildTemplates");
-	path = Path.Combine(buildTemplatesProjectPath, "bin", "Debug", "net6.0", "BuildTemplates");
-
+	path = Path.Combine(buildTemplatesProjectPath, "bin", "Debug", "net8.0", "BuildTemplates");
+	path = Path.GetFullPath(path);
+	
 	bool windows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 	if (windows)
 		path += ".exe";
@@ -36,7 +37,14 @@
 		var currentBuildVersion = FileVersionInfo.GetVersionInfo(path);
         if (currentBuildVersion.ProductVersion != null)
         {
-            Version builtVersion = Version.Parse(currentBuildVersion.ProductVersion);
+			string productVersion = currentBuildVersion.ProductVersion;
+			int plusIndex = productVersion.IndexOf('+');
+			if (plusIndex != -1)
+			{
+				productVersion = productVersion.Remove(plusIndex);
+			}
+			
+            Version builtVersion = Version.Parse(productVersion);
             string buildTemplatesCsproj = File.ReadAllText(Path.Combine(buildTemplatesProjectPath, "BuildTemplates.csproj"));
             string versionStr = "<Version>";
             int indexStart = buildTemplatesCsproj.IndexOf(versionStr) + versionStr.Length;

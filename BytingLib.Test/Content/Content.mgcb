@@ -10,7 +10,7 @@
 
 #-------------------------------- References --------------------------------#
 
-/reference:../../../BytingLib/BytingPipeline/bin/Debug/net6.0/BytingPipeline.dll
+/reference:../../../BytingLib/BytingPipeline/bin/Debug/net8.0/BytingPipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
