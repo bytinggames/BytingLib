@@ -103,5 +103,16 @@
             x /= 2f;
             return x;
         }
+
+        public static float EaseOutElastic(float x)
+        {
+            const float c4 = 2f * MathF.PI / 3f;
+
+            return x <= 0f
+              ? 0f
+              : x >= 1f
+              ? 1f
+              : MathF.Pow(2f, -10f * x) * MathF.Sin((x * 10f - 0.75f) * c4) + 1f;
+        }
     }
 }
