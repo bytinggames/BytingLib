@@ -2,11 +2,11 @@
 {
     public class TransparencyBatch
     {
-        private readonly SortedList<float, Action> drawLater = new SortedList<float, Action>(new DuplicateKeyComparerDescending<float>());
+        private readonly List<SortedList<float, Action>> drawLayers = new();
         private readonly Func<Vector3> getViewPos;
         private readonly float fixZOffset;
         private readonly float variableZOffset;
-        private bool listeningForDrawCalls = false;
+        public int MaxBatchCount { get; set; }
 
         public TransparencyBatch(Func<Vector3> getViewPos, float fixZOffset = 0.001f, float variableZOffset = 0.003f)
         {
@@ -17,31 +17,38 @@
 
         public void Begin()
         {
-            if (listeningForDrawCalls || drawLater.Count > 0)
+            if (drawLayers.Count >= MaxBatchCount)
             {
-                throw new Exception("TransparencyBatch.End() must be called after TransparencyBatch.Begin()");
+                throw new Exception("maximum batch count reached. Either call End() or increase maxBatchCount. maxBatchCount is " + MaxBatchCount);
             }
 
-            listeningForDrawCalls = true;
-
+            drawLayers.Add(new(new DuplicateKeyComparerDescending<float>())); // add a new draw layer
         }
 
         public void End()
         {
-            listeningForDrawCalls = false;
+            if (drawLayers.Count == 0)
+            {
+                throw new Exception("TransparencyBatch.End() must be called after TransparencyBatch.Begin()");
+            }
 
-            foreach (var draw in drawLater)
+            foreach (var draw in drawLayers[0])
             {
                 draw.Value();
             }
 
-            drawLater.Clear();
+            drawLayers.RemoveAt(0);
         }
 
         public void DrawLater(Vector3 centerPosition, Action draw)
         {
+            if (drawLayers.Count == 0)
+            {
+                return; // skip transparency draw call
+            }
+
             float depthSquared = GetDepthSquared(centerPosition);
-            drawLater.Add(depthSquared, draw);
+            drawLayers[^1].Add(depthSquared, draw);
         }
 
         private float GetDepthSquared(Vector3 pos)
