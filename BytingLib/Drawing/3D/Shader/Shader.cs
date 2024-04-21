@@ -128,8 +128,13 @@
 
             return new OnDispose(() => gDevice.BlendState = storeVal);
         }
-        public IDisposable UseDepthStencil(DepthStencilState depthStencilState)
+        public IDisposable? UseDepthStencil(DepthStencilState depthStencilState)
         {
+            if (depthStencilState == gDevice.DepthStencilState)
+            {
+                return null; // otherwise this causes an exception
+            }
+
             var storeVal = gDevice.DepthStencilState;
             gDevice.DepthStencilState = depthStencilState;
 
