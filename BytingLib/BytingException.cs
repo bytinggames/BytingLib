@@ -20,9 +20,5 @@ namespace BytingLib
         public BytingException(string? message, Exception? innerException) : base(message + "\nThis shouldn't happen! Please contact bytinggames.", innerException)
         {
         }
-
-        protected BytingException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }
