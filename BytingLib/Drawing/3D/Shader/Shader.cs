@@ -84,6 +84,15 @@
         {
             DisposableContainer disposables = new();
 
+            ApplyParametersInner(instanced, disposables);
+
+            ApplyParameters();
+
+            return disposables;
+        }
+
+        protected virtual void ApplyParametersInner(bool instanced, DisposableContainer disposables)
+        {
             if (instanced)
             {
                 disposables.UseCheckNull(UseTechnique(TechniqueInstanced));
@@ -93,10 +102,6 @@
             {
                 disposables.UseCheckNull(UseTechnique(TechniqueNonInstanced));
             }
-
-            ApplyParameters();
-
-            return disposables;
         }
 
         #endregion
