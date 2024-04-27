@@ -72,116 +72,110 @@ namespace BytingLib
                 return;
             }
 
-            string head = localizationLines[0];
-            int languageIndex = -1;
-            int nextI = 0;
-            bool foundLanguage = false;
-            for (int i = 0; nextI < head.Length; i = nextI + 1)
+            int languageColumn = 0;
+            while (true)
             {
-                nextI = head.IndexOf(separator, i);
-
-                if (nextI == -1)
+                languageColumn++; // start at column 1
+                string? lan = GetCell(0, languageColumn); // languages reside in column 0
+                if (lan == null)
                 {
-                    nextI = head.Length;
+                    throw new Exception($"language {LanguageKey} not found");
                 }
-
-                languageIndex++;
-                string language = head.Substring(i, nextI - i);
-                if (language == LanguageKey)
+                if (lan == LanguageKey)
                 {
-                    foundLanguage = true;
                     break;
                 }
             }
 
-            if (!foundLanguage)
-            {
-                throw new InvalidDataException("language " + LanguageKey + " not found");
-            }
-
-            List<StackItem> keyStack = new List<StackItem>();
-            keyStack.Add(new StackItem("NONE"));
-
-            string key, value;
+            Stack<StackItem> stack = new();
+            stack.Push(new StackItem(-1, "PLACEHOLDER"));
+            string keyDirectory = "";
             for (int i = 1; i < localizationLines.Length; i++)
             {
-                int indexStart = -1;
-                int indexEnd = -1;
-
-                indexStart = indexEnd + 1;
-
-                bool textMarked;
-
-                indexEnd = GetCell(indexEnd, out textMarked);
-
-                key = GetCellValue(indexStart, indexEnd, textMarked);
-
-                for (int j = 0; j < languageIndex; j++)
+                int lineIndentation = GetIndentation(localizationLines[i]);
+                bool isParent = false;
+                if (i + 1 < localizationLines.Length)
                 {
-                    indexStart = indexEnd + 1;
-
-                    indexEnd = GetCell(indexEnd, out textMarked);
-                }
-
-                value = GetCellValue(indexStart, indexEnd, textMarked);
-
-                int newStackSize;
-                for (newStackSize = 0; newStackSize < key.Length && key[newStackSize] == nestedLevel; newStackSize++)
-                {
-                    ;
-                }
-
-                key = key.Substring(newStackSize);
-                newStackSize++;
-
-                if (key == "")
-                {
-                    continue;
-                }
-
-                if (value == "")
-                {
-                    throw new InvalidDataException("Translation missing for key \"" + key + "\" (localization.csv)");
-                }
-
-                if (newStackSize == keyStack.Count + 1)
-                {
-                    keyStack.Add(new StackItem(key));
-                }
-                else if (newStackSize == keyStack.Count)
-                {
-                    keyStack[keyStack.Count - 1] = new StackItem(key);
-                }
-                else
-                {
-                    // remove keyStack until equal to minusCount
-                    while (keyStack.Count > newStackSize)
+                    if (GetIndentation(localizationLines[i + 1]) > lineIndentation) // TODO: remember next indentation for current indentation
                     {
-                        keyStack.RemoveAt(keyStack.Count - 1);
-                    }
-                    keyStack[keyStack.Count - 1] = new StackItem(key);
-                }
-
-                if (keyStack.Count > 1)
-                {
-                    keyStack[keyStack.Count - 2].subKeyCount++;
-
-                    if (key == "#") // replace # with count
-                    {
-                        keyStack[keyStack.Count - 1].key = (keyStack[keyStack.Count - 2].subKeyCount - 1).ToString();
+                        isParent = true;
                     }
                 }
 
-                key = "";
-                for (int j = 0; j < keyStack.Count; j++)
+                if (lineIndentation < stack.Count - 1) // going back?
                 {
-                    if (j > 0)
-                    {
-                        key += adder;
-                    }
-
-                    key += keyStack[j].key;
+                    ParseParentsUntilIndentation(lineIndentation);
                 }
+
+                if (lineIndentation <= stack.Count - 1) // same level or going back?
+                {
+                    StackItem top = stack.Peek();
+                    top.childIndex++;
+                    string localKey = GetKey(localizationLines[i], lineIndentation, top.childIndex);
+                    top.localKey = localKey;
+                    top.lineIndex = i;
+                }
+                else if (lineIndentation == stack.Count) // one level deeper?
+                {
+                    // add key of top element from stack to keyDirectory
+                    if (keyDirectory.Length > 0)
+                    {
+                        keyDirectory += adder;
+                    }
+                    keyDirectory += stack.Peek().localKey;
+
+                    // add parent
+                    string localKey = GetKey(localizationLines[i], lineIndentation, 0);
+                    stack.Push(new StackItem(i, localKey));
+                }
+                else // going too deep?
+                {
+                    throw new Exception("Indentation cannot exceed the previous line by more than one tab: " + localizationLines[i]);
+                }
+                // parse the current line
+                if (!isParent)
+                {
+                    ParseLine(i, keyDirectory, stack.Peek().localKey);
+                }
+            }
+
+            // don't forget to parse the last parents
+            ParseParentsUntilIndentation(0);
+
+            void ParseParentsUntilIndentation(int lineIndentation)
+            {
+                while (stack.Count - 1 > lineIndentation)
+                {
+                    stack.Pop();
+                    StackItem item = stack.Peek();
+                    int removeAdder = stack.Count > 1 ? -1 : 0;
+                    keyDirectory = keyDirectory.Remove(keyDirectory.Length - item.localKey.Length + removeAdder);
+                    // parse parent now
+                    ParseLine(item.lineIndex, keyDirectory, item.localKey);
+                }
+            }
+
+            void ParseLine(int lineIndex, string keyDirectory, string localKey)
+            {
+                string? value = GetCell(lineIndex, languageColumn);
+
+                if (string.IsNullOrEmpty(value))
+                {
+                    value = GetCell(lineIndex, 1); // fall back to english
+
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        // no translation whatsoever. skip this loca
+                        return;
+                    }
+                }
+
+                string key = keyDirectory;
+                if (key != "")
+                {
+                    key += ".";
+                }
+                key += localKey;
 
                 #region value commands {+}, {:} and {.}
 
@@ -199,8 +193,13 @@ namespace BytingLib
                                 case '}': openBlocksCount--; break;
                                 case '{': openBlocksCount++; break;
                             }
+                        } while (openBlocksCount > 0 && j + 1 < value.Length);
+
+                        if (openBlocksCount > 0)
+                        {
+                            throw new Exception("didn't close all openend brackets: " + value);
                         }
-                        while (openBlocksCount > 0);
+
                         string command = value.Substring(jStart + 1, j - jStart - 1);
                         if (command.Length > 0)
                         {
@@ -208,7 +207,7 @@ namespace BytingLib
                             if (command == "+")
                             {
                                 // use same as language 1 (en)
-                                replacement = GetFirstLanguageCellValue();
+                                replacement = GetCell(lineIndex, 1);
                             }
                             else if (command[0] < '0' || command[0] > '9')
                             {
@@ -216,23 +215,38 @@ namespace BytingLib
                                 if (command[0] == '.')
                                 {
                                     // relative key
-                                    string currentKey = key.Remove(key.Length - keyStack[keyStack.Count - 1].key.Length);
+                                    string currentKey = keyDirectory;
+                                    if (currentKey != "")
+                                    {
+                                        currentKey += ".";
+                                    }
                                     currentKey += command.Substring(1);
                                     replacement = InnerE(currentKey);
                                 }
                                 else if (command[0] == ':')
                                 {
                                     // relative upwards key
-                                    string currentKey = key;
+                                    string currentKey = keyDirectory;
                                     int k;
-                                    currentKey = currentKey.Remove(currentKey.Length - keyStack[keyStack.Count - 1].key.Length);
                                     for (k = 1; k < command.Length && command[k - 1] == ':'; k++)
                                     {
-                                        currentKey = currentKey.Remove(currentKey.Length - keyStack[keyStack.Count - 1 - k].key.Length - 1); // - 1 because of the dot
+                                        currentKey = currentKey.Remove(currentKey.LastIndexOf('.'));
+                                    }
+
+                                    if (currentKey != "")
+                                    {
+                                        currentKey += ".";
                                     }
 
                                     currentKey += command.Substring(k - 1);
 
+                                    replacement = InnerE(currentKey);
+                                }
+                                else if (command[0] == '>')
+                                {
+                                    // relative downwards key (equal to .currentNode.)
+                                    string currentKey = key;
+                                    currentKey += "." + command.Substring(1);
                                     replacement = InnerE(currentKey);
                                 }
                                 else
@@ -278,8 +292,12 @@ namespace BytingLib
                                                 case '}': openBlocksCount--; break;
                                                 case '{': openBlocksCount++; break;
                                             }
+                                        } while (openBlocksCount > 0 && end + 1 < c.Length);
+
+                                        if (openBlocksCount > 0)
+                                        {
+                                            throw new Exception("didn't close all openend brackets: " + c);
                                         }
-                                        while (openBlocksCount > 0);
 
                                         // params inside command detected
                                         parameters.Add(c.Substring(searchIndex, end - searchIndex));
@@ -303,78 +321,50 @@ namespace BytingLib
 
                 value = value.Replace("\\n", "\n");
 
-                if (dictionary.ContainsKey(key))
-                {
-                    throw new InvalidDataException($"The key {key} is defined two or more times in the Localization.csv file.");
-                }
-
                 dictionary.Add(key, value);
-
-                int GetCell(int index, out bool marked)
+            }
+            string? GetCell(int lineIndex, int column)
+            {
+                int index = -1;
+                int previousIndex = -1;
+                while (column >= 0)
                 {
-                    index++; // jump over semicolon
-                    if (localizationLines[i].Length > index && localizationLines[i][index] == textMarker)
+                    previousIndex = index;
+                    index = localizationLines[lineIndex].IndexOf(separator, index + 1);
+
+                    if (index == -1)
                     {
-                        marked = true;
-                        // find marker ending
-                        index++; // jump over first marker
-                        while (true)
+                        // end reached. this is the last column
+                        if (column > 0)
                         {
-                            if (localizationLines[i][index] == textMarker)
-                            {
-                                index++;
-                                if (localizationLines[i].Length == index || localizationLines[i][index] != textMarker)
-                                {
-                                    break;
-                                }
-                            }
-
-                            index++;
-                            if (index >= localizationLines[i].Length)
-                            {
-                                throw new InvalidDataException("End of " + textMarker + " marker not found");
-                            }
+                            return null;
                         }
+                        index = localizationLines[lineIndex].Length;
+                    }
 
-                        if (localizationLines[i].Length < index && localizationLines[i][index] != separator)
-                        {
-                            throw new InvalidDataException("after " + textMarker + " marker, no separator " + separator + " found");
-                        }
+                    column--;
+                }
 
-                        //return (true, KeyedByTypeCollection);
+                previousIndex++; // go over separator
+
+                // trim textMarker?
+                if (localizationLines[lineIndex][previousIndex] == textMarker)
+                {
+                    if (localizationLines[lineIndex][index - 1] == textMarker)
+                    {
+                        // trim textMarker
+                        previousIndex++;
+                        index--;
+
+                        return localizationLines[lineIndex].Substring(previousIndex, index - previousIndex)
+                            .Replace("\"\"", "\"");
                     }
                     else
                     {
-                        marked = false;
-                        index = localizationLines[i].IndexOf(separator, index);
-                    }
-
-                    return index;
-                }
-
-                string GetCellValue(int start, int end, bool marked)
-                {
-                    if (end == -1)
-                    {
-                        end = localizationLines[i].Length;
-                    }
-
-                    if (marked)
-                    {
-                        return localizationLines[i].Substring(start + 1, end - start - 2).Replace("\"\"", "\""); // minus the 2 markers
-                    }
-                    else
-                    {
-                        return localizationLines[i].Substring(start, end - start);
+                        throw new InvalidDataException("End of " + textMarker + " marker not found in line " + (lineIndex + 1));
                     }
                 }
-
-                string GetFirstLanguageCellValue()
-                {
-                    int start = localizationLines[i].IndexOf(separator);
-                    int end = GetCell(start, out bool marked);
-                    return GetCellValue(start + 1, end, marked);
-                }
+                return localizationLines[lineIndex].Substring(previousIndex, index - previousIndex);
             }
         }
 
@@ -440,6 +430,37 @@ namespace BytingLib
         private void TriggerReloadSubs()
         {
             OnLocaReload?.Invoke();
+        }
+
+        private int GetIndentation(string line)
+        {
+            int i;
+            for (i = 0; i < line.Length; i++)
+            {
+                if (line[i] != nestedLevel)
+                {
+                    return i;
+                }
+            }
+            return i;
+        }
+
+        private string GetKey(string line, int indentation, int childIndex)
+        {
+            int separatorIndex = line.IndexOf(separator, indentation);
+            if (separatorIndex != -1)
+            {
+                line = line.Substring(indentation, separatorIndex - indentation);
+            }
+            else
+            {
+                line = line.Substring(indentation);
+            }
+            if (line == "#") // replace # with child index
+            {
+                line = childIndex.ToString();
+            }
+            return line;
         }
 
         public Dictionary<string, string> GetDictionary() => dictionary;
