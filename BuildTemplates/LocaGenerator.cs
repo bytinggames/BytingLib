@@ -52,20 +52,25 @@ namespace BuildTemplates
                 this.parent = parent;
                 string s = className[0].ToString();
                 if (s.ToUpperInvariant() == s.ToLowerInvariant()) // is upper case the same?
+                {
                     this.className = "_" + className;
+                }
                 else
+                {
                     this.className = className[0].ToString().ToUpper() + className.Substring(1);
-
+                }
                 if (parent == null)
+                {
                     codeLines.AddRange(new string[]{
                         "public static Dictionary<string, string> Dict;",
                         "public static Localization L;",
-                        $"static @{this.className}()",
+                        "public static void Initialize(string languageKey)",
                         "{",
-                        TAB + $"L = new Localization(\"Content/{this.className}.loca\", \"en\");",
+                        TAB + $"L = new Localization(\"Content/{this.className}.loca\", languageKey);",
                         TAB + "Dict = L.GetDictionary();",
                         "}"
                     });
+                }
             }
 
             internal Folder GetFolder(List<string> dirSplit)
