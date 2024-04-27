@@ -4,18 +4,19 @@
     {
         class StackItem
         {
-            public string key;
-            public int subKeyCount;
+            public int lineIndex;
+            public string localKey;
+            public int childIndex = 0;
 
-            public StackItem(string key)
+            public StackItem(int lineIndex, string key)
             {
-                this.key = key;
-                this.subKeyCount = 0;
+                this.lineIndex = lineIndex;
+                this.localKey = key;
             }
 
             public override string ToString()
             {
-                return key + " " + subKeyCount;
+                return localKey + " " + childIndex;
             }
         }
     }
