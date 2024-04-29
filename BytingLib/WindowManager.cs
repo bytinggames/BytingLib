@@ -23,6 +23,24 @@ namespace BytingLib
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;        // x position of upper-left corner
+            public int Top;         // y position of upper-left corner
+            public int Right;       // x position of lower-right corner
+            public int Bottom;      // y position of lower-right corner
+        }
+
 
 #if WINDOWS
         string windowCaption = Process.GetCurrentProcess().ProcessName;
@@ -221,6 +239,22 @@ namespace BytingLib
 #if WINDOWS
             IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);
             ShowWindow(hwnd, SW_MAXIMIZE);
+            RECT r = new();
+            GetClientRect(hwnd, out r);
+
+            // make sure graphics.PreferredBackBufferWidth and Height are updated correctly
+            // also apply graphics changes now, because this alters the window position a bit if the window is maximized.
+            // if we do this now, we can fix the position offset right away
+
+            graphics.PreferredBackBufferWidth = r.Right - r.Left;
+            graphics.PreferredBackBufferHeight = r.Bottom - r.Top;
+
+            var rememberPosition = Window.Position;
+
+            graphics.ApplyChanges();
+
+            // fix position offset that may occur because of graphics.ApplyChanges() here
+            Window.Position = rememberPosition;
 #endif
         }
 
