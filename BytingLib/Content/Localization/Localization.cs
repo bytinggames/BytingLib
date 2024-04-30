@@ -32,6 +32,7 @@ namespace BytingLib
             Initialize();
         }
 
+        /// <summary>This does also reload if the languageKey was already the same.</summary>
         public void Reload(string languageKey)
         {
             LanguageKey = languageKey;
