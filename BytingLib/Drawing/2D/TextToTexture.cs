@@ -74,21 +74,20 @@ namespace BytingLib
                 var gDevice = spriteBatch.GraphicsDevice;
                 tex = new RenderTarget2D(gDevice, (int)Math.Ceiling(textSize.X), (int)Math.Ceiling(textSize.Y), false, SurfaceFormat.Color, DepthFormat.None);
 
-                var targets = gDevice.GetRenderTargets();
-                gDevice.SetRenderTarget(tex);
-                gDevice.Clear(Color.Transparent);
-
-                using (textEffect.Color.Use(backgroundColor.ToVector4()))
+                using (gDevice.UseRenderTarget(tex))
                 {
-                    textEffect.ApplyParameters();
-                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect);
+                    gDevice.Clear(Color.Transparent);
 
-                    drawElement.Draw(markupSettings);
+                    using (textEffect.Color.Use(backgroundColor.ToVector4()))
+                    {
+                        textEffect.ApplyParameters();
+                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect);
 
-                    spriteBatch.End();
+                        drawElement.Draw(markupSettings);
+
+                        spriteBatch.End();
+                    }
                 }
-
-                gDevice.SetRenderTargets(targets);
 
                 disposables.Use(tex);
                 return tex;
