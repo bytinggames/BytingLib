@@ -18,6 +18,11 @@ namespace BytingPipeline
 
             QoiTextureContent qoiData = new QoiTextureContent(input);
             var qoiImage = QoiDecoder.Decode(qoiData.Data);
+            if (qoiImage.Channels == QoiSharp.Codec.Channels.Rgb)
+            {
+                throw new System.Exception("QOI RGB loading currently not supported. It is better to use RGBA anyways as the size is the same, if every pixel has 100% alpha. There is no Texture2D RGB format.");
+            }
+
             Texture2D tex = new Texture2D(gDevice, qoiImage.Width, qoiImage.Height);
             tex.SetData(qoiImage.Data);
 

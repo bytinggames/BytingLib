@@ -1,4 +1,5 @@
 ﻿using BytingLib;
+using System.Collections.Generic;
 
 namespace BuildTemplates
 {
@@ -46,26 +47,33 @@ namespace BuildTemplates
             public List<string> codeLines = new();
             public Folder? parent;
             public string className;
+            public int? MaxIndex { get; set; }
+            public string? BaseKeyForIndex { get; set; }
 
             public Folder(Folder? parent, string className)
             {
                 this.parent = parent;
                 string s = className[0].ToString();
                 if (s.ToUpperInvariant() == s.ToLowerInvariant()) // is upper case the same?
+                {
                     this.className = "_" + className;
+                }
                 else
+                {
                     this.className = className[0].ToString().ToUpper() + className.Substring(1);
-
+                }
                 if (parent == null)
+                {
                     codeLines.AddRange(new string[]{
                         "public static Dictionary<string, string> Dict;",
                         "public static Localization L;",
-                        $"static @{this.className}()",
+                        "public static void Initialize(string languageKey)",
                         "{",
-                        TAB + $"L = new Localization(\"Content/{this.className}.loca\", \"en\");",
+                        TAB + $"L = new Localization(\"Content/{this.className}.loca\", languageKey);",
                         TAB + "Dict = L.GetDictionary();",
                         "}"
                     });
+                }
             }
 
             internal Folder GetFolder(List<string> dirSplit)
@@ -91,6 +99,12 @@ namespace BuildTemplates
                 {
                     childOutput += f.Value.Print(tabs + TAB);
                 }
+
+                if (MaxIndex != null)
+                {
+                    codeLines.Add($"public static LocaArray Array {{ get; }} = new(f => Dict[f], \"{BaseKeyForIndex}.\", {MaxIndex + 1});");
+                }
+
                 string output =
 $@"
 {tabs}public class @{className}
@@ -166,9 +180,39 @@ $@"
                     currentFolder.codeLines.Add($"public static string {keyVariable}({parameterStr}) => string.Format(Dict[\"{key}\"], {parameterPass});");
                     //output += $"public string {key}({parameterStr}) => $\"{val}\";\n" + tabs;
                 }
+
+
+                // check if key is an index
+                int? keyAsIndex = GetKeyAsNumber(key, out string? baseKey);
+                if (keyAsIndex != null)
+                {
+                    if (currentFolder.MaxIndex == null
+                        || keyAsIndex > currentFolder.MaxIndex)
+                    {
+                        currentFolder.MaxIndex = keyAsIndex.Value;
+                        currentFolder.BaseKeyForIndex = baseKey;
+                    }
+                }
             }
 
             return root.Print(TAB);
+        }
+
+        private static int? GetKeyAsNumber(string key, out string? baseKey)
+        {
+            int index = key.Length;
+            while (index >= 0 && char.IsNumber(key[--index]))
+            {
+            }
+            if (index >= 0
+                && index < key.Length - 1 
+                && key[index] == '.')
+            {
+                baseKey = key.Remove(index);
+                return int.Parse(key.Substring(index + 1));
+            }
+            baseKey = null;
+            return null;
         }
 
         public static string Generate(string nameSpace, params string[] locaFiles)
@@ -181,11 +225,27 @@ $@"
             }
 
             locaCode =
-$@"using System.Collections.Generic;
-using System.IO;
+$@"using System;
+using System.Collections.Generic;
 
 namespace {nameSpace}
 {{{locaCode}
+
+    public class LocaArray
+    {{
+        private readonly Func<string, string> getLocaValue;
+        private readonly string baseKey;
+        public int Length {{ get; }}
+
+        public LocaArray(Func<string, string> getLocaValue, string baseKey, int length)
+        {{
+            this.getLocaValue = getLocaValue;
+            this.baseKey = baseKey;
+            Length = length;
+        }}
+
+        public string this[int index] => getLocaValue(baseKey + index);
+    }}
 }}";
             return locaCode;
         }

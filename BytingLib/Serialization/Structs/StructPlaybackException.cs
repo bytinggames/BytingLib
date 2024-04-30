@@ -16,9 +16,5 @@ namespace BytingLib.Serialization
         public StructPlaybackException(string? message, Exception? innerException) : base(message, innerException)
         {
         }
-
-        protected StructPlaybackException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

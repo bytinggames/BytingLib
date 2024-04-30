@@ -1,5 +1,6 @@
 ﻿<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ assembly name="System.Core" #>
+<#@ import namespace="System" #>
 <#@ import namespace="System.Diagnostics" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Runtime.InteropServices" #>
@@ -7,7 +8,6 @@
 
 <#
 	const string NAME = "[TODO: set project name here, example: MyCoolGame]";
-	const string DLLS = @"..\..\..\BytingLib\BytingPipeline\bin\Debug\net6.0\BytingPipeline.dll";
 	string csprojName = NAME + ".csproj";
 
 	Stopwatch sw = new Stopwatch();
@@ -23,12 +23,41 @@
     int start = csproj.LastIndexOf(include, index) + include.Length;
     string path = csproj.Substring(start, index - start);
 	string buildTemplatesProjectPath = Path.Combine(path, "BuildTemplates");
-	path = Path.Combine(buildTemplatesProjectPath, "bin", "Debug", "net6.0", "BuildTemplates");
-
+	path = Path.Combine(buildTemplatesProjectPath, "bin", "Debug", "net8.0", "BuildTemplates");
+	path = Path.GetFullPath(path);
+	
 	bool windows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 	if (windows)
 		path += ".exe";
-	if (!File.Exists(path))
+
+    bool builtVersionIsEqualSourceVersion = false;
+	
+	if (File.Exists(path))
+	{        
+		var currentBuildVersion = FileVersionInfo.GetVersionInfo(path);
+        if (currentBuildVersion.ProductVersion != null)
+        {
+			string productVersion = currentBuildVersion.ProductVersion;
+			int plusIndex = productVersion.IndexOf('+');
+			if (plusIndex != -1)
+			{
+				productVersion = productVersion.Remove(plusIndex);
+			}
+			
+            Version builtVersion = Version.Parse(productVersion);
+            string buildTemplatesCsproj = File.ReadAllText(Path.Combine(buildTemplatesProjectPath, "BuildTemplates.csproj"));
+            string versionStr = "<Version>";
+            int indexStart = buildTemplatesCsproj.IndexOf(versionStr) + versionStr.Length;
+            int indexEnd = buildTemplatesCsproj.IndexOf("<", indexStart);
+            Version sourceVersion = Version.Parse(buildTemplatesCsproj.Substring(indexStart, indexEnd - indexStart));
+            if (sourceVersion == builtVersion)
+            {
+                builtVersionIsEqualSourceVersion = true;
+            }
+        }
+	}
+	
+	if (!builtVersionIsEqualSourceVersion)
 	{
 		// build BuildTemplates
 		Process buildProcess;
@@ -58,7 +87,7 @@
     var p = new ProcessStartInfo(path);
     p.CreateNoWindow = true;
     p.WindowStyle = ProcessWindowStyle.Hidden;
-	p.Arguments = NAME + " " + "\"" + DLLS + "\"";
+	p.Arguments = NAME + " loadOnStartup:false processorToDataType:SomeProcessor,SomeC#DataType dataTypeToVarExtension:SomeC#DataType,MyType extensionToDataType:SomeExtension|SomeCSharpType";
     var process = Process.Start(p);
 	process.WaitForExit();
 	

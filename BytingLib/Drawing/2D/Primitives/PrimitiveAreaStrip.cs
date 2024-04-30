@@ -216,7 +216,7 @@
         /// <param name="length">ranging from 0 to 1 to draw only a part of the strip</param>
         public void Draw(SpriteBatch spriteBatch, Color color, float layerDepth, float length)
         {
-            if (length <= 0f)
+            if (length <= 0f || float.IsNaN(length))
             {
                 return;
             }

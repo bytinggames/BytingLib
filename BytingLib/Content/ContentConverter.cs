@@ -12,6 +12,7 @@ namespace BytingLib
             { "FontDescriptionProcessor", "SpriteFont" },
             { "TextureProcessor", "Texture2D" },
             { "QoiProcessor", "Texture2D" },
+            { "QoiBytesProcessor", "Texture2D" },
             { "ModelProcessor", "Model" },
             { "SoundEffectProcessor", "SoundEffect" },
             { "SongProcessor", "Song" },

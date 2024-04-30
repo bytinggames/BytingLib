@@ -23,6 +23,8 @@
         public Padding? Padding { get; set; }
         public Vector2 Anchor { get; set; } = new Vector2(0.5f);
         public Action<Element>? OnWhileHover { get; set; }
+        /// <summary>When invisible, Update is also not called. Not even for the children.</summary>
+        public bool Visible { get; set; } = true;
 
         public float Size(int dimension)
         {
@@ -64,6 +66,11 @@
 
         public virtual void Draw(SpriteBatch spriteBatch, StyleRoot style)
         {
+            if (!Visible)
+            {
+                return;
+            }
+
             style.Push(Style);
 
             DrawSelf(spriteBatch, style);
@@ -79,6 +86,11 @@
         }
         public virtual void Update(ElementInput input)
         {
+            if (!Visible)
+            {
+                return;
+            }
+
             for (int i = 0; i < Children.Count; i++)
             {
                 Children[i].Update(input);
@@ -330,6 +342,16 @@
         {
             OnWhileHover = f => tooltip.OnHover(f, getText());
             return this;
+        }
+
+        public void Show()
+        {
+            Visible = true;
+        }
+
+        public void Hide()
+        {
+            Visible = false;
         }
     }
 }

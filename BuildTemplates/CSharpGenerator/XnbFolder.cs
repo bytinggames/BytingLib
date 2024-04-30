@@ -98,14 +98,16 @@ namespace BuildTemplates
 {{{folderProperties}
 {tab}protected readonly IContentCollector collector;
 {tab}protected readonly DisposableContainer disposables;
+{tab}protected readonly string basePath;
 {tab}public {className}(IContentCollector collector, DisposableContainer disposables)
 {tab}{{
 {tab}{tab}this.collector = collector;
-{tab}{tab}this.disposables = disposables;{fieldInitialize}{folderConstruct}
+{tab}{tab}this.disposables = disposables;
+{tab}{tab}this.basePath = ""{contentDirectory}"";{fieldInitialize}{folderConstruct}
 {tab}}}
-{tab}public Ref<T> Use<T>(string assetName)
+{tab}public Ref<T> Use<T>(string assetNameWithoutDirectory)
 {tab}{{
-{tab}{tab}return disposables.Use(collector.Use<T>(assetName));
+{tab}{tab}return disposables.Use(collector.Use<T>(basePath + assetNameWithoutDirectory));
 {tab}}}{assets}{classes}
 }}";
             return output.Replace("\r\n", "\n") // make consistent among OSs

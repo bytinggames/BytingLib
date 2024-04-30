@@ -14,6 +14,8 @@ namespace BytingLib
         private readonly GraphicsDeviceManager graphics;
         private Rectangle windowRectBeforeFullscreen;
         public event Action<Int2>? OnResolutionChanged;
+        /// <summary>Used for overriding the actual screen size to simulate a bigger screen or make screenshots at a higher resolution.</summary>
+        public Int2? VirtualScreenSize { get; set; }
 
         private const int SW_MAXIMIZE = 3;
         [DllImport("user32.dll", EntryPoint = "FindWindow")]
@@ -21,6 +23,24 @@ namespace BytingLib
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;        // x position of upper-left corner
+            public int Top;         // y position of upper-left corner
+            public int Right;       // x position of lower-right corner
+            public int Bottom;      // y position of lower-right corner
+        }
+
 
 #if WINDOWS
         string windowCaption = Process.GetCurrentProcess().ProcessName;
@@ -92,17 +112,17 @@ namespace BytingLib
                 graphics.PreferredBackBufferWidth = GetScreenWidth();
                 graphics.PreferredBackBufferHeight = GetScreenHeight();
 
-                if (!realFullscreen)
-                {
-                    graphics.ApplyChanges();
-                }
-                else
+                if (realFullscreen)
                 {
 #if !WINDOWS
                     // this is required on linux, otherwise the screen would just turn black and freeze
                     graphics.ApplyChanges();
 #endif
                     graphics.ToggleFullScreen();
+                }
+                else
+                {
+                    graphics.ApplyChanges();
                 }
             }
 
@@ -189,16 +209,29 @@ namespace BytingLib
             }
         }
 
-        private static int GetScreenHeight()
+        private int GetScreenWidth()
         {
-            return GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            if (VirtualScreenSize == null)
+            {
+                return GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            }
+            else
+            {
+                return VirtualScreenSize.Value.X;
+            }
         }
 
-        private static int GetScreenWidth()
+        private int GetScreenHeight()
         {
-            return GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            if (VirtualScreenSize == null)
+            {
+                return GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            }
+            else
+            {
+                return VirtualScreenSize.Value.Y;
+            }
         }
-
 
         /// <summary>Only supported on Windows</summary>
         public void MaximizeWindow()
@@ -206,7 +239,31 @@ namespace BytingLib
 #if WINDOWS
             IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);
             ShowWindow(hwnd, SW_MAXIMIZE);
+            RECT r = new();
+            GetClientRect(hwnd, out r);
+
+            // make sure graphics.PreferredBackBufferWidth and Height are updated correctly
+            // also apply graphics changes now, because this alters the window position a bit if the window is maximized.
+            // if we do this now, we can fix the position offset right away
+
+            graphics.PreferredBackBufferWidth = r.Right - r.Left;
+            graphics.PreferredBackBufferHeight = r.Bottom - r.Top;
+
+            var rememberPosition = Window.Position;
+
+            graphics.ApplyChanges();
+
+            // fix position offset that may occur because of graphics.ApplyChanges() here
+            Window.Position = rememberPosition;
 #endif
+        }
+
+
+        public void SetWindowResolution(Int2 resolution)
+        {
+            graphics.PreferredBackBufferWidth = resolution.X;
+            graphics.PreferredBackBufferHeight = resolution.Y;
+            graphics.ApplyChanges();
         }
     }
 }

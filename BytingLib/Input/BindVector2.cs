@@ -4,12 +4,12 @@
     {
         public Flag BindFlag { get; set; }
         public float? MouseSpeedFactor { get; set; }
-        public float? GamePadStickSpeedFactor { get; set; }
-        public float? GamePadStickPow { get; set; }
         public BindKey? Left { get; set; }
         public BindKey? Right { get; set; }
         public BindKey? Up { get; set; }
         public BindKey? Down { get; set; }
+        public Func<Vector2, Vector2>? ManipulateLeftStick { get; set; }
+        public Func<Vector2, Vector2>? ManipulateRightStick { get; set; }
 
         public BindVector2(Flag bindFlag)
         {
@@ -76,11 +76,11 @@
             }
             if (IsFlag(Flag.GamePadLeftStick))
             {
-                AddGamePadStickMovment(ref inputDir, input.GamePad.LeftThumbStick);
+                AddGamePadStickMovement(ref inputDir, input.GamePad.LeftThumbStick, ManipulateLeftStick);
             }
             if (IsFlag(Flag.GamePadRightStick))
             {
-                AddGamePadStickMovment(ref inputDir, input.GamePad.RightThumbStick);
+                AddGamePadStickMovement(ref inputDir, input.GamePad.RightThumbStick, ManipulateRightStick);
             }
 
             if (Left != null && Left.GetKey(input).Down)
@@ -103,17 +103,12 @@
             return inputDir;
         }
 
-        private void AddGamePadStickMovment(ref Vector2 inputDir, Vector2 move)
+        private void AddGamePadStickMovement(ref Vector2 inputDir, Vector2 move, Func<Vector2, Vector2>? manipulateStick)
         {
-            if (GamePadStickPow != null && GamePadStickPow != 1f)
+            if (manipulateStick != null)
             {
-                move = move.GetSign() * new Vector2(MathF.Pow(move.X, GamePadStickPow.Value), MathF.Pow(move.Y, GamePadStickPow.Value)).GetAbs();
+                move = manipulateStick(move);
             }
-            if (GamePadStickSpeedFactor != null)
-            {
-                move *= GamePadStickSpeedFactor.Value;
-            }
-
             inputDir += move;
         }
 

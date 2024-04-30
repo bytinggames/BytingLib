@@ -66,5 +66,33 @@
             return new Rect(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         }
 
+        public static void Write(this BinaryWriter writer, Matrix m)
+        {
+            for (int i = 0; i < 16; i++)
+            {
+                writer.Write(m[i]);
+            }
+        }
+        public static Matrix ReadMatrix(this BinaryReader reader)
+        {
+            return new Matrix(
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle()
+            );
+        }
     }
 }

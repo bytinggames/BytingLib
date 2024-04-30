@@ -84,6 +84,15 @@
         {
             DisposableContainer disposables = new();
 
+            ApplyParametersInner(instanced, disposables);
+
+            ApplyParameters();
+
+            return disposables;
+        }
+
+        protected virtual void ApplyParametersInner(bool instanced, DisposableContainer disposables)
+        {
             if (instanced)
             {
                 disposables.UseCheckNull(UseTechnique(TechniqueInstanced));
@@ -93,10 +102,6 @@
             {
                 disposables.UseCheckNull(UseTechnique(TechniqueNonInstanced));
             }
-
-            ApplyParameters();
-
-            return disposables;
         }
 
         #endregion
@@ -128,8 +133,13 @@
 
             return new OnDispose(() => gDevice.BlendState = storeVal);
         }
-        public IDisposable UseDepthStencil(DepthStencilState depthStencilState)
+        public IDisposable? UseDepthStencil(DepthStencilState depthStencilState)
         {
+            if (depthStencilState == gDevice.DepthStencilState)
+            {
+                return null; // otherwise this causes an exception
+            }
+
             var storeVal = gDevice.DepthStencilState;
             gDevice.DepthStencilState = depthStencilState;
 

@@ -6,7 +6,7 @@
         public Ref<SpriteFont>? FontBold => GetOverride(f => f.FontBold);
         public Color? FontColor => GetOverride(f => f.FontColor);
         public Color? FontBoldColor => GetOverride(f => f.FontBoldColor);
-        public Vector2 FontScale => GetOverride(f => f.FontScale)!.Value;
+        public Vector2 FontScale => GetOverrideMultiply(f => f.FontScale);
         public Ref<Animation> ButtonAnimation => GetOverride(f => f.ButtonAnimation)!;
         public Padding? ButtonPadding => GetOverride(f => f.ButtonPadding);
         public bool ButtonPaddingToButtonBorder => GetOverride(f => f.ButtonPaddingToButtonBorder)!.Value;
@@ -40,6 +40,20 @@
                 }
             }
             return default;
+        }
+
+        private Vector2 GetOverrideMultiply(Func<Style, Vector2?> get)
+        {
+            Vector2 product = Vector2.One;
+            for (int i = styleOverrides.Count - 1; i >= 0; i--)
+            {
+                Vector2? value = get(styleOverrides[i]);
+                if (value != null)
+                {
+                    product *= value.Value;
+                }
+            }
+            return product;
         }
 
         public void Push(Style? styleOverride)

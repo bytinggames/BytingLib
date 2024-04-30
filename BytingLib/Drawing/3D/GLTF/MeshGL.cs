@@ -44,7 +44,7 @@ namespace BytingLib
 
         public override string ToString() => "Mesh: " + Name;
 
-        public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial)
+        public void Draw(IShader shader, IShaderMaterial? shaderMaterial)
         {
             if (Primitives != null)
             {

@@ -71,15 +71,18 @@ namespace BytingLib
             return dateTime.ToString("yyyy.MM.dd_HH.mm.ss_fff");
         }
 
-        internal string GetNewScreenshotPng()
+        internal string GetNewScreenshotWithoutEnding()
         {
             Directory.CreateDirectory(ScreenshotsDir);
-            return Path.Combine(ScreenshotsDir, GetCurrentDateTimeFilename() + ".png");
+            return Path.Combine(ScreenshotsDir, GetCurrentDateTimeFilename());
         }
-        internal string GetNewRandomScreenshotPng()
+        internal string GetNewRandomScreenshotWithoutEnding()
         {
             Directory.CreateDirectory(RandomScreenshotsDir);
-            return Path.Combine(RandomScreenshotsDir, GetCurrentDateTimeFilename() + ".png");
+            return Path.Combine(RandomScreenshotsDir, GetCurrentDateTimeFilename());
         }
+
+        internal string GetNewScreenshotPng() => GetNewScreenshotWithoutEnding() + ".png";
+        internal string GetNewRandomScreenshotPng() => GetNewRandomScreenshotWithoutEnding() + ".png";
     }
 }

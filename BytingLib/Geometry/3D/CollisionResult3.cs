@@ -8,12 +8,7 @@
         /// </summary>
         public Vector3? ColPoint;
 
-        /// <summary>
-        /// -1: none
-        /// 0,1,2: vertex.
-        /// 3,4,5: edge.
-        /// 6: face</summary>
-        public int ColTriangleIndex = -1;
+        public TriangleColType ColTriangle = TriangleColType.None;
 
         public void AxisInvert()
         {
@@ -63,7 +58,7 @@ DistanceReversed: {DistanceReversed}
 AxisCol: {AxisCol}
 AxisColReversed: {AxisColReversed}
 ColPoint: {ColPoint}
-ColTriangleIndex: {ColTriangleIndex}";
+ColTriangle: {ColTriangle}";
         }
 
         /// <summary>Applies the values of cr to this instance, that result in a larger collision shape.</summary>
@@ -127,7 +122,7 @@ ColTriangleIndex: {ColTriangleIndex}";
             Distance = cr.Distance;
             AxisCol = cr.AxisCol;
             ColPoint = cr.ColPoint;
-            ColTriangleIndex = cr.ColTriangleIndex;
+            ColTriangle = cr.ColTriangle;
         }
 
         private void CopyBackwardValues(CollisionResult3 cr)

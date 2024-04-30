@@ -636,16 +636,16 @@ namespace BytingLib
             if (onLine < 0)
             {
                 cr = DistVectorSphere(line.Pos, sphere, -dir).GetAxisInvert();
-                cr.ColTriangleIndex = 0; // in this context means first vertex
+                cr.ColTriangle = TriangleColType.Vertex0; // in this context means first vertex
                 return cr;
             }
             if (onLine * onLine > line.Dir.LengthSquared())
             {
                 cr = DistVectorSphere(line.Pos2, sphere, -dir).GetAxisInvert();
-                cr.ColTriangleIndex = 1; // in this context means second vertex
+                cr.ColTriangle = TriangleColType.Vertex1; // in this context means second vertex
                 return cr;
             }
-            cr.ColTriangleIndex = 2; // in this context means edge
+            cr.ColTriangle = TriangleColType.Vertex2; // in this context means edge
             return cr;
         }
 
@@ -698,7 +698,7 @@ namespace BytingLib
                 (side, sideReversed) = CheckIfPointOnPlaneIsNextToTriangle(spherePosOnCol, tri, dir);
                 if (side == -1) // point on plane
                 {
-                    cr.ColTriangleIndex = 6;
+                    cr.ColTriangle = TriangleColType.Face;
                     return cr;
                 }
             }
@@ -714,13 +714,13 @@ namespace BytingLib
                     CollisionResult3 cr2 = DistSphereLine(sphere, Line3.FromTwoPoints(tri[i], tri[j]), dir);
                     if (cr.MinResult(cr2))
                     {
-                        if (cr.ColTriangleIndex == 2)
+                        if (cr.ColTriangle == TriangleColType.Vertex2)
                         {
-                            cr.ColTriangleIndex = 3 + i;
+                            cr.ColTriangle = (TriangleColType)(3 + i);
                         }
                         else
                         {
-                            cr.ColTriangleIndex += i;
+                            cr.ColTriangle += i;
                         }
                     }
                 }
@@ -734,13 +734,13 @@ namespace BytingLib
                 int i = (side + 1) % 3;
                 int j = (i + 1) % 3;
                 cr = DistSphereLine(sphere, Line3.FromTwoPoints(tri[i], tri[j]), dir);
-                if (cr.ColTriangleIndex == 2)
+                if (cr.ColTriangle == TriangleColType.Vertex2)
                 {
-                    cr.ColTriangleIndex = 3 + i;
+                    cr.ColTriangle = (TriangleColType)(3 + i);
                 }
-                else if (cr.ColTriangleIndex != -1)
+                else if (cr.ColTriangle != TriangleColType.None)
                 {
-                    cr.ColTriangleIndex += i;
+                    cr.ColTriangle += i;
                 }
 
                 if (ReversePrecisionForDistSphereTriangle)
@@ -1630,11 +1630,11 @@ namespace BytingLib
 
                 if (cr2D.ColVertexIndex % 1 == 0)
                 {
-                    cr.ColTriangleIndex = floor;
+                    cr.ColTriangle = (TriangleColType)floor;
                 }
                 else
                 {
-                    cr.ColTriangleIndex = 3 + floor;
+                    cr.ColTriangle = (TriangleColType)(3 + floor);
                 }
             }
             return cr;

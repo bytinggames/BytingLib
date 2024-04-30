@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    public class ValueEvent<T> where T : struct
+    public class ValueEvent<T> : IValueEvent<T>, IValueGet<T>, IValueSet<T>, IValue<T> where T : struct 
     {
         private T _value;
         public T Value

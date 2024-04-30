@@ -7,7 +7,7 @@ namespace BytingLib
         private readonly Stack<T> valueStack = new();
         private EffectParameter? effectParameter;
         private Func<T, IDisposable?>? useChain = null;
-        private readonly Ref<Effect> effect;
+        private readonly Ref<Effect>? effect; // is null, when this represents a stub
         private readonly string parameterName;
         private T? lastAppliedValue = default;
         private bool dirty;
@@ -47,6 +47,15 @@ namespace BytingLib
             this.useChain = useChain;
         }
 
+        /// <summary>
+        /// stub
+        /// </summary>
+        protected EffectParameterStack()
+        {
+            effect = null;
+            parameterName = "";
+        }
+
         private static T? GetDefault()
         {
             if (typeof(T) == typeof(Matrix))
@@ -61,7 +70,10 @@ namespace BytingLib
 
         public void Dispose()
         {
-            effect.OnReload -= RefreshEffect;
+            if (effect != null)
+            {
+                effect.OnReload -= RefreshEffect;
+            }
         }
 
         public void SetUseChain(Func<T, IDisposable?> useChain)
@@ -123,7 +135,7 @@ namespace BytingLib
             return d1;
         }
 
-        public void Use(T val, Action actionWhile)
+        public virtual void Use(T val, Action actionWhile)
         {
             bool valChanged = false;
             if (!IsEqualToPeek(val))
@@ -170,7 +182,7 @@ namespace BytingLib
             }
         }
 
-        public IDisposable? Use(Func<T, T> func)
+        public virtual IDisposable? Use(Func<T, T> func)
         {
             T val = func(valueStack.Peek());
             return Use(val);

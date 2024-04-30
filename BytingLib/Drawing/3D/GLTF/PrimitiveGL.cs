@@ -27,7 +27,7 @@ namespace BytingLib
             }
         }
 
-        public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial)
+        public void Draw(IShader shader, IShaderMaterial? shaderMaterial)
         {
             using (Material == null ? null : shaderMaterial?.UseMaterial(Material))
             {
