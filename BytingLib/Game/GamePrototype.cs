@@ -17,6 +17,7 @@ namespace BytingLib
         protected readonly Screenshotter screenshotter;
         private readonly int screenshotsRandSecondsOffset;
         private int lastRandomScreenshotMinute;
+        protected bool f11ToToggleFullscreen = true;
 
         private bool pauseUpdate;
 
@@ -25,6 +26,7 @@ namespace BytingLib
         /// <summary>Only used for input that shouldn't be recorded (Fullscreen Toggle for example or Replay interrupt).
         /// The difference to InputStuff.KeysDev</summary>
         protected KeyInput metaKeys;
+
 
         public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter,
             bool mouseWithActivationClick = false, bool contentModdingOnRelease = false,
@@ -169,7 +171,7 @@ namespace BytingLib
 
             input.Update();
 
-            if (metaKeys.F11.Pressed)
+            if (f11ToToggleFullscreen && metaKeys.F11.Pressed)
             {
                 windowManager.ToggleFullscreen();
             }
