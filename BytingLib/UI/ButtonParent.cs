@@ -101,29 +101,23 @@
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch, StyleRoot style)
+        protected override void PushMyStyle(StyleRoot style)
         {
-            if (!Visible)
-            {
-                return;
-            }
+            base.PushMyStyle(style);
 
-            Style? rememberStyle = null;
             if (hover && HoverStyle != null)
             {
-                rememberStyle = Style;
-                Style = HoverStyle;
+                style.Push(HoverStyle);
             }
-            try
+        }
+
+        protected override void PopMyStyle(StyleRoot style)
+        {
+            base.PopMyStyle(style);
+
+            if (hover && HoverStyle != null)
             {
-                base.Draw(spriteBatch, style);
-            }
-            finally
-            {
-                if (hover && HoverStyle != null)
-                {
-                    Style = rememberStyle;
-                }
+                style.Pop(HoverStyle);
             }
         }
 

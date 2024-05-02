@@ -71,7 +71,7 @@
                 return;
             }
 
-            style.Push(Style);
+            PushMyStyle(style);
 
             DrawSelf(spriteBatch, style);
 
@@ -82,8 +82,19 @@
 
             DrawSelfPost(spriteBatch, style);
 
+            PopMyStyle(style);
+        }
+
+        protected virtual void PushMyStyle(StyleRoot style)
+        {
+            style.Push(Style);
+        }
+
+        protected virtual void PopMyStyle(StyleRoot style)
+        {
             style.Pop(Style);
         }
+
         public virtual void Update(ElementInput input)
         {
             if (!Visible)

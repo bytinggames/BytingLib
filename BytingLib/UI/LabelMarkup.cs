@@ -51,6 +51,7 @@ namespace BytingLib.UI
                         MinLineHeight = MinLineHeight,
                         TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset,
                         ForceTextColor = true,
+                        TextureColor = style.TextureColor ?? Color.White // not sure if this should be the default for textures drawn with a bold font
                     });
                 }
 
@@ -73,7 +74,8 @@ namespace BytingLib.UI
             { 
                 RoundPositionTo = style.RoundPositionTo,
                 MinLineHeight = MinLineHeight,
-                TotalMilliseconds = style.TotalMilliseconds
+                TotalMilliseconds = style.TotalMilliseconds,
+                TextureColor = style.TextureColor ?? Color.White
             };
         }
 
