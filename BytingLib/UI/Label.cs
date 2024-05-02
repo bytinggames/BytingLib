@@ -19,6 +19,9 @@
         private string? textToDraw;
         protected string TextToDraw => textToDraw ?? Text;
 
+        /// <summary>Does not affect positioning. Only affects visual rotation</summary>
+        public float Tilt { get; set; } = 0f;
+
         public Label(string text, float width = 0, float height = 0, bool setSizeToText = true)
         {
             _text = text;
@@ -87,12 +90,12 @@
         {
             if (style.FontBoldColor != null)
             {
-                style.FontBold?.Value.Draw(spriteBatch, TextToDraw, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, style.FontScale, roundPositionTo: style.RoundPositionTo);
+                style.FontBold?.Value.Draw(spriteBatch, TextToDraw, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, style.FontScale, Tilt, roundPositionTo: style.RoundPositionTo);
             }
 
             if (style.FontColor != null)
             {
-                style.Font.Value.Draw(spriteBatch, TextToDraw, AbsoluteRect.GetAnchor(Anchor), style.FontColor, style.FontScale, roundPositionTo: style.RoundPositionTo);
+                style.Font.Value.Draw(spriteBatch, TextToDraw, AbsoluteRect.GetAnchor(Anchor), style.FontColor, style.FontScale, Tilt, roundPositionTo: style.RoundPositionTo);
             }
         }
     }

@@ -45,7 +45,7 @@ namespace BytingLib.UI
             {
                 if (style.FontBoldColor != null && style.FontBold != null)
                 {
-                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale)
+                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale, Tilt)
                     {
                         RoundPositionTo = style.RoundPositionTo,
                         MinLineHeight = MinLineHeight,
@@ -61,7 +61,21 @@ namespace BytingLib.UI
             }
         }
 
-        private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style) => new MarkupSettings(spriteBatch, style.Font, AbsoluteRect == null ? new Anchor() : AbsoluteRect.GetAnchor(Anchor), style.FontColor, Anchor.X, style.FontScale) { RoundPositionTo = style.RoundPositionTo, MinLineHeight = MinLineHeight, TotalMilliseconds = style.TotalMilliseconds };
+        private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style)
+        {
+            return new MarkupSettings(spriteBatch, 
+                style.Font,
+                AbsoluteRect == null ? new Anchor() : AbsoluteRect.GetAnchor(Anchor), 
+                style.FontColor, 
+                Anchor.X, 
+                style.FontScale,
+                Tilt)
+            { 
+                RoundPositionTo = style.RoundPositionTo,
+                MinLineHeight = MinLineHeight,
+                TotalMilliseconds = style.TotalMilliseconds
+            };
+        }
 
         protected override void DisposeSelf()
         {
