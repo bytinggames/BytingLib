@@ -22,6 +22,8 @@
 
         private Padding? myPadding;
 
+        public Style? HoverStyle { get; set; }
+
         public ButtonParent(float width = 0f, float height = 0f, Vector2? anchor = null, Padding? padding = null)
         {
             Width = width;
@@ -98,6 +100,33 @@
                 rect.Pos += ChildrenShiftOnDown;
             }
         }
+
+        public override void Draw(SpriteBatch spriteBatch, StyleRoot style)
+        {
+            if (!Visible)
+            {
+                return;
+            }
+
+            Style? rememberStyle = null;
+            if (hover && HoverStyle != null)
+            {
+                rememberStyle = Style;
+                Style = HoverStyle;
+            }
+            try
+            {
+                base.Draw(spriteBatch, style);
+            }
+            finally
+            {
+                if (hover && HoverStyle != null)
+                {
+                    Style = rememberStyle;
+                }
+            }
+        }
+
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
