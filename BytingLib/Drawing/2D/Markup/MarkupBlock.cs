@@ -25,6 +25,8 @@
         /// <summary>No SubAnchorY support for SubSizeUnion yet.</summary>
         public float SubAnchorY { get; set; } = 0.5f;
 
+        public abstract bool ConfinesToLineSpacing { get; }
+
         public void Sub(Creator creator, string text)
         {
             subContainer = new MarkupRoot(creator, text);

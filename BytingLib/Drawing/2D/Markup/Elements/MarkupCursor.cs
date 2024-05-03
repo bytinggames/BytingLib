@@ -5,6 +5,8 @@
     {
         public Color Color { get; set; } = Color.Black;
 
+        public override bool ConfinesToLineSpacing => true;
+
         public override string ToString()
         {
             return "cursor";

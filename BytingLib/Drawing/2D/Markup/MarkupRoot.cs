@@ -23,9 +23,10 @@
 
         public void Draw(MarkupSettings _settings)
         {
-            (Vector2 totalSize, Vector2[] lineSizes) = GetSizes(_settings);
-            Vector2 topLeft = _settings.Anchor.Rectangle(totalSize.X, totalSize.Y).TopLeft;
+            (Vector2 totalSize, Vector2[] lineSizes, float marginTop, float marginBottom) = GetSizes(_settings);
+            Vector2 topLeft = _settings.Anchor.Rectangle(totalSize.X, totalSize.Y + marginTop + marginBottom).TopLeft;
             Vector2 topLeftOfLine = topLeft;
+            topLeftOfLine.Y += marginTop;
             MarkupSettings settings = _settings.CloneMarkupSettings(); // clone to modify the anchor
 
             int lineIndex = 0;
@@ -58,7 +59,8 @@
         public Vector2 GetSize(MarkupSettings settings)
         {
             Vector2 totalSize = new Vector2();
-            foreach (var size in GetLinesSizes(settings))
+            var linesSizes = GetLinesSizes(settings, out float marginTop, out float marginBottom);
+            foreach (var size in linesSizes)
             {
                 totalSize.Y += size.Y;
                 if (size.X > totalSize.X)
@@ -66,13 +68,14 @@
                     totalSize.X = size.X;
                 }
             }
+            totalSize.Y += marginTop + marginBottom;
             return totalSize;
         }
 
-        public (Vector2 totalSize, Vector2[] lineSizes) GetSizes(MarkupSettings settings)
+        public (Vector2 totalSize, Vector2[] lineSizes, float marginTop, float marginBottom) GetSizes(MarkupSettings settings)
         {
             Vector2 totalSize = new Vector2();
-            Vector2[] lineSizes = GetLinesSizes(settings).ToArray();
+            Vector2[] lineSizes = GetLinesSizes(settings, out float marginTop, out float marginBottom).ToArray();
             foreach (var size in lineSizes)
             {
                 totalSize.Y += size.Y;
@@ -81,7 +84,7 @@
                     totalSize.X = size.X;
                 }
             }
-            return (totalSize, lineSizes);
+            return (totalSize, lineSizes, marginTop, marginBottom);
         }
 
         public class LineWithSize
@@ -96,33 +99,78 @@
             }
         }
 
-        public IEnumerable<Vector2> GetLinesSizes(MarkupSettings settings)
+        public List<Vector2> GetLinesSizes(MarkupSettings settings, out float marginTop, out float marginBottom)
         {
+            marginTop = marginBottom = 0;
+
             bool firstLine = true;
+
+            List<Vector2> sizes = new();
+
+            int lineCount = GetLineCount();
+            int lineIndex = 0;
+
             foreach (var line in GetLinesOfLeaves(settings))
             {
-                Vector2 lineSize = new Vector2(0, settings.MinLineHeight);
-                foreach (var element in line)
+                bool lastLine = lineIndex == lineCount - 1;
+
+                sizes.Add(GetLineSize(settings, firstLine, line, out float? cropped));
+
+                if (cropped != null)
                 {
-                    Vector2 size = element.GetSize(settings);
-                    lineSize.X += size.X;
-                    if (size.Y > lineSize.Y)
+                    if (firstLine)
                     {
-                        lineSize.Y = size.Y;
+                        marginTop = cropped.Value * settings.VerticalAlignInLine;
+                    }
+                    if (lastLine)
+                    {
+                        marginBottom = cropped.Value * (1f - settings.VerticalAlignInLine);
                     }
                 }
-
-                if (firstLine)
-                {
-                    firstLine = false;
-                }
-                else
-                {
-                    lineSize.Y += settings.VerticalSpaceBetweenLines;
-                }
-
-                yield return lineSize;
+                firstLine = false;
+                lineIndex++;
             }
+
+            return sizes;
+        }
+
+        private static Vector2 GetLineSize(MarkupSettings settings, bool firstLine, IEnumerable<ILeaf> line, out float? croppedBecauseOfLineHeight)
+        {
+            croppedBecauseOfLineHeight = null;
+
+            Vector2 lineSize = new Vector2(0, settings.MinLineHeight);
+            bool allElementsConfineToLineSpacing = true;
+            foreach (var element in line)
+            {
+                Vector2 size = element.GetSize(settings);
+                lineSize.X += size.X;
+                if (size.Y > lineSize.Y)
+                {
+                    lineSize.Y = size.Y;
+                }
+
+                if (!element.ConfinesToLineSpacing)
+                {
+                    allElementsConfineToLineSpacing = false;
+                }
+            }
+
+            // crop to line spacing, when:
+            if (allElementsConfineToLineSpacing) // all elements in the line support LineSpacing
+            {
+                if (lineSize.Y > settings.Font.Value.LineSpacing)
+                {
+                    croppedBecauseOfLineHeight = lineSize.Y - settings.Font.Value.LineSpacing;
+                    lineSize.Y = settings.Font.Value.LineSpacing;
+                }
+            }
+
+            if (!firstLine)
+            {
+                lineSize.Y += settings.VerticalSpaceBetweenLines;
+            }
+
+            return lineSize;
         }
 
         public IEnumerable<IEnumerable<ILeaf>> GetLinesOfLeaves(MarkupSettings settings)
@@ -147,6 +195,12 @@
                 yield return enumerator.Current;
             }
             while (enumerator.MoveNext());
+        }
+
+        public int GetLineCount()
+        {
+            int newLineCount = root.Children.OfType<MarkupNewLine>().Count();
+            return newLineCount + 1;
         }
 
         public override string ToString()

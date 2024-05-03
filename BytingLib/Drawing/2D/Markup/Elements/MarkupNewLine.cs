@@ -2,6 +2,8 @@
 {
     public class MarkupNewLine : ILeaf
     {
+        public bool ConfinesToLineSpacing => true;
+
         public void Draw(MarkupSettings settings) { }
 
         public Vector2 GetSize(MarkupSettings settings)

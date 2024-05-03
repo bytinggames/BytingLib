@@ -21,6 +21,9 @@ namespace BytingLib.Markup
             set => ScaleXY = new Vector2(value);
         }
 
+        private bool confinesToLineSpacing = false;
+        public override bool ConfinesToLineSpacing => confinesToLineSpacing;
+
         public MarkupTexture(IContentCollector content, string texName)
         {
             SetTexture(content, texName);
@@ -112,6 +115,11 @@ namespace BytingLib.Markup
             Texture.Dispose();
 
             base.Dispose();
+        }
+
+        public void AsTextHeight()
+        {
+            confinesToLineSpacing = true;
         }
     }
 }

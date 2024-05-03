@@ -3,6 +3,7 @@
     public class MarkupText : MarkupBlock
     {
         public string Text { get; }
+        public override bool ConfinesToLineSpacing => true;
 
         public MarkupText(ScriptReaderLiteral reader)
         {
