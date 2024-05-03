@@ -21,7 +21,7 @@
         /// As then, Value is null, but it should never be null.
         /// This constructor exists only for json deserialization</summary>
         [Obsolete]
-        internal ValueEvent()
+        public ValueEvent()
         {
             _value = default!;
         }
