@@ -37,7 +37,7 @@ namespace BytingLib
                 int fontSize = GetRightFontSize(right.Length() * 2f /* because right only measures half the length */,
                     (int)MathF.Ceiling(textSize.X), MinimumPixelsPerUnit);
 
-                return CreateTextTexture(text, fontArray.GetFont(fontSize), backgroundColor, fontSize, verticalSpaceBetweenLines);
+                return CreateTextTexture(text, fontArray.GetFont(fontSize), backgroundColor, fontSize, markupSettings.VerticalSpaceBetweenLines * fontSize);
             });
             return tex;
         }
@@ -88,6 +88,8 @@ namespace BytingLib
                         spriteBatch.End();
                     }
                 }
+
+                //tex.SaveAsPng(@"C:\Users\Julian\Desktop\out\out.png");
 
                 disposables.Use(tex);
                 return tex;
