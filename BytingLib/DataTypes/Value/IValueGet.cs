@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    public interface IValueGet<T> where T : struct
+    public interface IValueGet<T>
     {
         public T Value { get; }
     }

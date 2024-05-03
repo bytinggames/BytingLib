@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    public interface IValueSet<T> where T : struct
+    public interface IValueSet<T>
     {
         public T Value { set; }
     }
