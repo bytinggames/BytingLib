@@ -2,21 +2,16 @@
 {
     public partial class Localization
     {
-        class StackItem
+        class StackItem(int lineIndex, string key, bool isIntendedToBeTranslated)
         {
-            public int lineIndex;
-            public string localKey;
-            public int childIndex = 0;
-
-            public StackItem(int lineIndex, string key)
-            {
-                this.lineIndex = lineIndex;
-                this.localKey = key;
-            }
+            public int LineIndex = lineIndex;
+            public string LocalKey = key;
+            public int ChildIndex = 0;
+            public bool IsIntendedToBeTranslated = isIntendedToBeTranslated;
 
             public override string ToString()
             {
-                return localKey + " " + childIndex;
+                return LocalKey + " " + ChildIndex;
             }
         }
     }

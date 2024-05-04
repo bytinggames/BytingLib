@@ -9,16 +9,18 @@ namespace BytingLib
         private const char adder = '.';
         private const char nestedLevel = '\t';
         private string csvFile;
+        private readonly bool fallbackToFirstLanguage;
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
 
         public event Action? OnLocaReload;
 
         public string LanguageKey { get; private set; }
 
-        public Localization(string csvFile, string languageKey)
+        public Localization(string csvFile, string languageKey, bool fallbackToFirstLanguage = true)
         {
             this.csvFile = csvFile;
             LanguageKey = languageKey;
+            this.fallbackToFirstLanguage = fallbackToFirstLanguage;
             Initialize();
         }
 
@@ -89,7 +91,7 @@ namespace BytingLib
             }
 
             Stack<StackItem> stack = new();
-            stack.Push(new StackItem(-1, "PLACEHOLDER"));
+            stack.Push(new StackItem(-1, "PLACEHOLDER", false));
             string keyDirectory = "";
             for (int i = 1; i < localizationLines.Length; i++)
             {
@@ -97,7 +99,7 @@ namespace BytingLib
                 bool isParent = false;
                 if (i + 1 < localizationLines.Length)
                 {
-                    if (GetIndentation(localizationLines[i + 1]) > lineIndentation) // TODO: remember next indentation for current indentation
+                    if (GetIndentation(localizationLines[i + 1]) > lineIndentation)
                     {
                         isParent = true;
                     }
@@ -108,13 +110,16 @@ namespace BytingLib
                     ParseParentsUntilIndentation(lineIndentation);
                 }
 
+                bool isIntendedToBeTranslated;
+
                 if (lineIndentation <= stack.Count - 1) // same level or going back?
                 {
                     StackItem top = stack.Peek();
-                    top.childIndex++;
-                    string localKey = GetKey(localizationLines[i], lineIndentation, top.childIndex);
-                    top.localKey = localKey;
-                    top.lineIndex = i;
+                    top.ChildIndex++;
+                    string localKey = GetKey(localizationLines[i], lineIndentation, top.ChildIndex, out isIntendedToBeTranslated);
+                    top.IsIntendedToBeTranslated = isIntendedToBeTranslated;
+                    top.LocalKey = localKey;
+                    top.LineIndex = i;
                 }
                 else if (lineIndentation == stack.Count) // one level deeper?
                 {
@@ -123,20 +128,20 @@ namespace BytingLib
                     {
                         keyDirectory += adder;
                     }
-                    keyDirectory += stack.Peek().localKey;
+                    keyDirectory += stack.Peek().LocalKey;
 
                     // add parent
-                    string localKey = GetKey(localizationLines[i], lineIndentation, 0);
-                    stack.Push(new StackItem(i, localKey));
+                    string localKey = GetKey(localizationLines[i], lineIndentation, 0, out isIntendedToBeTranslated);
+                    stack.Push(new StackItem(i, localKey, isIntendedToBeTranslated));
                 }
                 else // going too deep?
                 {
                     throw new Exception("Indentation cannot exceed the previous line by more than one tab: " + localizationLines[i]);
                 }
-                // parse the current line
-                if (!isParent)
+                // parse the current line (if not a parent and if it's even intended to be translated (line contains ';'))
+                if (!isParent && isIntendedToBeTranslated)
                 {
-                    ParseLine(i, keyDirectory, stack.Peek().localKey);
+                    ParseLine(i, keyDirectory, stack.Peek().LocalKey);
                 }
             }
 
@@ -150,9 +155,12 @@ namespace BytingLib
                     stack.Pop();
                     StackItem item = stack.Peek();
                     int removeAdder = stack.Count > 1 ? -1 : 0;
-                    keyDirectory = keyDirectory.Remove(keyDirectory.Length - item.localKey.Length + removeAdder);
-                    // parse parent now
-                    ParseLine(item.lineIndex, keyDirectory, item.localKey);
+                    keyDirectory = keyDirectory.Remove(keyDirectory.Length - item.LocalKey.Length + removeAdder);
+                    if (item.IsIntendedToBeTranslated)
+                    {
+                        // parse parent now
+                        ParseLine(item.LineIndex, keyDirectory, item.LocalKey);
+                    }
                 }
             }
 
@@ -162,12 +170,17 @@ namespace BytingLib
 
                 if (string.IsNullOrEmpty(value))
                 {
-                    value = GetCell(lineIndex, 1); // fall back to english
+                    // fall back to first language (if not already first language)
+                    if (fallbackToFirstLanguage
+                        && languageColumn != 1)
+                    {
+                        value = GetCell(lineIndex, 1);
+                    }
 
                     if (string.IsNullOrEmpty(value))
                     {
-                        // no translation whatsoever. skip this loca
-                        return;
+                        // no translation whatsoever. not even fallback english
+                        throw new Exception($"{keyDirectory}.{localKey} is missing {(fallbackToFirstLanguage ? "any" : "a")} translation at line {lineIndex + 1}.\nIf this key isn't intended to be translated, make sure there is no ';' in that line.");
                     }
                 }
 
@@ -349,7 +362,8 @@ namespace BytingLib
                 previousIndex++; // go over separator
 
                 // trim textMarker?
-                if (localizationLines[lineIndex][previousIndex] == textMarker)
+                if (localizationLines[lineIndex].Length > previousIndex
+                    && localizationLines[lineIndex][previousIndex] == textMarker)
                 {
                     if (localizationLines[lineIndex][index - 1] == textMarker)
                     {
@@ -446,15 +460,17 @@ namespace BytingLib
             return i;
         }
 
-        private string GetKey(string line, int indentation, int childIndex)
+        private string GetKey(string line, int indentation, int childIndex, out bool isIntendedToBeTranslated)
         {
             int separatorIndex = line.IndexOf(separator, indentation);
             if (separatorIndex != -1)
             {
+                isIntendedToBeTranslated = true;
                 line = line.Substring(indentation, separatorIndex - indentation);
             }
             else
             {
+                isIntendedToBeTranslated = false;
                 line = line.Substring(indentation);
             }
             if (line == "#") // replace # with child index
