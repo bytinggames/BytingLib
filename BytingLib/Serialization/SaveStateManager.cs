@@ -6,6 +6,18 @@ namespace BytingLib.Serialization
     {
         private readonly DefaultPaths paths;
 
+        public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions(JsonSerializerOptions.Default)
+        {
+            Converters =
+            {
+                new ValueEventStringJsonConverter(),
+                new ValueEventIntJsonConverter(),
+                new ValueEventFloatJsonConverter(),
+                new ValueEventBoolJsonConverter(),
+                new DateTimeMSJsonConverter(),
+            }
+        };
+
         public SaveStateManager(DefaultPaths paths)
         {
             this.paths = paths;
@@ -31,7 +43,7 @@ namespace BytingLib.Serialization
 
         public void Save<T>(T save, string fileName) where T : notnull
         {
-            string json = JsonSerializer.Serialize(save, save.GetType());
+            string json = JsonSerializer.Serialize(save, save.GetType(), JsonOptions);
             string filePath = GetFilePath(fileName);
             File.WriteAllText(filePath, json);
         }

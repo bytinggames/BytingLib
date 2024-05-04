@@ -1,5 +1,22 @@
-﻿namespace BytingLib
+﻿using System.Text.Json.Serialization;
+using System.Text.Json;
+using System.Globalization;
+
+namespace BytingLib
 {
+    public class DateTimeMSJsonConverter : JsonConverter<DateTimeMS>
+    {
+        public override DateTimeMS Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new DateTimeMS(reader.GetDateTime());
+        }
+
+        public override void Write(Utf8JsonWriter writer, DateTimeMS value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.GetDateTime().ToString("o", CultureInfo.InvariantCulture));
+        }
+    }
+
     public struct DateTimeMS
     {
         public long MS { get; set; }
