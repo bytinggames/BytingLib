@@ -20,7 +20,7 @@
             Padding = padding;
         }
 
-        public override void UpdateTree(Rect rect)
+        protected override void UpdateTreeInner(Rect rect)
         {
             if (KeepAspectRatio)
             {
@@ -28,7 +28,7 @@
                 rect.ShrinkToAspectRatio((float)Texture.Value.Width / Texture.Value.Height, Anchor);
             }
 
-            base.UpdateTree(rect);
+            base.UpdateTreeInner(rect);
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)

@@ -69,6 +69,7 @@
             {
                 SetSizeToText(style);
             }
+            base.UpdateTreeBeginSelf(style);
         }
 
         protected string CreateTextToDraw(StyleRoot style)

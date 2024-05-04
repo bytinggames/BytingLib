@@ -20,7 +20,7 @@
             Height = 0f;
         }
 
-        public override void UpdateTree(Rect parentRect)
+        protected override void UpdateTreeInner(Rect parentRect)
         {
             Vector2 pos = Anchor * parentRect.Size + parentRect.Pos;
             Vector2 fieldSize, contentSizePlusPadding;

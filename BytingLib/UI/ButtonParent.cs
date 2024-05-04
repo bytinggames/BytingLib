@@ -53,6 +53,8 @@
             {
                 Padding = myPadding;
             }
+
+            base.UpdateTreeBeginSelf(style);
         }
 
         protected override void UpdateSelf(ElementInput input)

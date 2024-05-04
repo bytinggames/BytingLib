@@ -26,6 +26,9 @@
         /// <summary>When invisible, Update is also not called. Not even for the children.</summary>
         public bool Visible { get; set; } = true;
 
+        private bool setChildrenWidthToMaxChildWidth = false;
+        private bool setChildrenHeightToMaxChildHeight = false;
+
         public float Size(int dimension)
         {
             return dimension switch
@@ -34,6 +37,28 @@
                 1 => Height,
                 _ => throw new BytingException("dimension of " + dimension + " does not exist")
             }; ;
+        }
+
+        public void SetSize(int dimension, float size)
+        {
+            switch (dimension)
+            {
+                case 0:
+                    if (Width != size)
+                    {
+                        Width = size;
+                        SetDirty();
+                    }
+                    break;
+                case 1:
+                    if (Height != size)
+                    {
+                        Height = size;
+                        SetDirty();
+                    }
+                    break;
+                default: throw new BytingException("dimension of " + dimension + " does not exist");
+            };
         }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -129,7 +154,23 @@
 
         protected virtual void UpdateTreeBeginSelf(StyleRoot style) { }
 
-        public virtual void UpdateTree(Rect rect)
+        public void UpdateTree(Rect rect)
+        {
+            if (setChildrenWidthToMaxChildWidth)
+            {
+                setChildrenWidthToMaxChildWidth = false;
+                SetChildrenSizesToMaxChildSize(0);
+            }
+            if (setChildrenHeightToMaxChildHeight)
+            {
+                setChildrenHeightToMaxChildHeight = false;
+                SetChildrenSizesToMaxChildSize(1);
+            }
+
+            UpdateTreeInner(rect);
+        }
+
+        protected virtual void UpdateTreeInner(Rect rect)
         {
             AbsoluteRect = rect.CloneRect().Round();
 
@@ -363,6 +404,42 @@
         public void Hide()
         {
             Visible = false;
+        }
+
+        public Element SetChildrenWidthToMaxChildWidth()
+        {
+            setChildrenWidthToMaxChildWidth = true; // SetChildrenSizesToMaxChildSize(0);
+            SetDirty();
+            return this;
+        }
+        public Element SetChildrenHeightToMaxChildHeight()
+        {
+            setChildrenHeightToMaxChildHeight = true;//SetChildrenSizesToMaxChildSize(1);
+            SetDirty();
+            return this;
+        }
+        private Element SetChildrenSizesToMaxChildSize(int d)
+        {
+            float maxSize = 0f;
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                float size = Children[i].GetSizeTopToBottom(d);
+                if (size >= 0f)
+                {
+                    if (size > maxSize)
+                    {
+                        maxSize = size;
+                    }
+                }
+            }
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].SetSize(d, maxSize);
+            }
+
+            return this;
         }
     }
 }

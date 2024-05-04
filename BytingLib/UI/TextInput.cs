@@ -27,9 +27,9 @@
             lastMSCursorOrSelectionChanged = updateSpeed.TotalMSF();
         }
 
-        public override void UpdateTree(Rect rect)
+        protected override void UpdateTreeInner(Rect rect)
         {
-            base.UpdateTree(rect);
+            base.UpdateTreeInner(rect);
 
             cursorChanged = true; // force cursor draw update
         }
