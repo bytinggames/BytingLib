@@ -9,6 +9,8 @@ namespace BytingLib.UI
 
         public float MinLineHeight { get; set; }
         public double AnimationMillisecondsOffset { get; set; }
+        /// <summary>see <see cref="MarkupSettings.CropSuperfluousHeightThatIsLargerThanLineHeight"/></summary>
+        public bool CropSuperfluousHeightThatIsLargerThanLineHeight { get; set; } = false;
 
         public LabelMarkup(string text, Creator creator) : base(text)
         {
@@ -51,7 +53,8 @@ namespace BytingLib.UI
                         MinLineHeight = MinLineHeight,
                         TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset,
                         ForceTextColor = true,
-                        TextureColor = style.TextureColor ?? Color.White // not sure if this should be the default for textures drawn with a bold font
+                        TextureColor = style.TextureColor ?? Color.White, // not sure if this should be the default for textures drawn with a bold font
+                        CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight
                     });
                 }
 
@@ -75,7 +78,8 @@ namespace BytingLib.UI
                 RoundPositionTo = style.RoundPositionTo,
                 MinLineHeight = MinLineHeight,
                 TotalMilliseconds = style.TotalMilliseconds,
-                TextureColor = style.TextureColor ?? Color.White
+                TextureColor = style.TextureColor ?? Color.White,
+                CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight
             };
         }
 

@@ -160,7 +160,10 @@
             {
                 if (lineSize.Y > settings.Font.Value.LineSpacing)
                 {
-                    croppedBecauseOfLineHeight = lineSize.Y - settings.Font.Value.LineSpacing;
+                    if (!settings.CropSuperfluousHeightThatIsLargerThanLineHeight)
+                    {
+                        croppedBecauseOfLineHeight = lineSize.Y - settings.Font.Value.LineSpacing;
+                    }
                     lineSize.Y = settings.Font.Value.LineSpacing;
                 }
             }

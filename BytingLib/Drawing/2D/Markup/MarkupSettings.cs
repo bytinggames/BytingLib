@@ -22,6 +22,13 @@
         public Outline? TextOutline { get; set; }
         public Underline? TextUnderline { get; set; }
         public float RoundPositionTo { get; set; } = 1f;
+        /// <summary>
+        /// If you want to make sure the size of your markup actually encloses the drawn surface, 
+        /// then this should be false. If you are fine with a bit of overlapping and prefer a tight 
+        /// fit, set this to true. This only crops the top and the bottom of a text block. If you want
+        /// to crop images as well, you have to use MarkupTexture.AsTextHeight()
+        /// </summary>
+        public bool CropSuperfluousHeightThatIsLargerThanLineHeight { get; set; } = false;
 
         public class Line : ICloneable
         {
