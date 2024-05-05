@@ -63,10 +63,13 @@ namespace BytingLib
 
         private void Window_ClientSizeChanged(object? sender, EventArgs e)
         {
-            OnResolutionChanged?.Invoke(Resolution);
+            if (Rect.Width != ResolutionX || Rect.Height != ResolutionY)
+            {
+                Rect.Width = ResolutionX;
+                Rect.Height = ResolutionY;
 
-            Rect.Width = ResolutionX;
-            Rect.Height = ResolutionY;
+                OnResolutionChanged?.Invoke(Resolution);
+            }
         }
 
         public void ToggleFullscreen()
