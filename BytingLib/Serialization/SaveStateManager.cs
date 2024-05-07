@@ -23,11 +23,12 @@ namespace BytingLib.Serialization
             this.paths = paths;
         }
 
-        public T LoadOrCreate<T>(string saveStateName)
+        public T LoadOrCreate<T>(string saveStateName, out bool createdNewSaveState)
         {
             string filePath = GetFilePath(saveStateName);
             if (!File.Exists(filePath))
             {
+                createdNewSaveState = true;
                 return Activator.CreateInstance<T>();
             }
 
@@ -38,6 +39,7 @@ namespace BytingLib.Serialization
                 throw new BytingException("Couldn't load save file");
             }
 
+            createdNewSaveState = false;
             return save;
         }
 
@@ -48,11 +50,12 @@ namespace BytingLib.Serialization
             File.WriteAllText(filePath, json);
         }
 
-        public T LoadOrCreate<T>(string saveStateName, Migrator<T> migrator)
+        public T LoadOrCreate<T>(string saveStateName, out bool createdNewSaveState, Migrator<T> migrator)
         {
             string filePath = GetFilePath(saveStateName);
             if (!File.Exists(filePath))
             {
+                createdNewSaveState = true;
                 return Activator.CreateInstance<T>();
             }
 
@@ -63,6 +66,7 @@ namespace BytingLib.Serialization
                 throw new BytingException("Couldn't load save file");
             }
 
+            createdNewSaveState = false;
             return save;
         }
 
