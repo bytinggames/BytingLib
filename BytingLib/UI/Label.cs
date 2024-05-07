@@ -15,7 +15,7 @@
                 }
             }
         }
-        private bool setSizeToText;
+        protected bool setSizeToText;
         private string? textToDraw;
         protected string TextToDraw => textToDraw ?? Text;
 
