@@ -133,5 +133,42 @@
             yield return new Triangle3(c[4], c[1], c[5]);
             yield return new Triangle3(c[1], c[4], c[0]);
         }
+
+        public float DistanceTo(Vector3 pos)
+        {
+            return DistanceVectorTo(pos).Length();
+        }
+        public Vector3 DistanceVectorTo(Vector3 pos)
+        {
+            Vector3 playerPosInBoxSpace = Vector3.Transform(pos, TransformInverse);
+
+            if (MathF.Abs(playerPosInBoxSpace.X) < 0.5f)
+            {
+                playerPosInBoxSpace.X = 0f;
+            }
+            else
+            {
+                playerPosInBoxSpace.X -= 0.5f * MathF.Sign(playerPosInBoxSpace.X);
+            }
+            if (MathF.Abs(playerPosInBoxSpace.Y) < 0.5f)
+            {
+                playerPosInBoxSpace.Y = 0f;
+            }
+            else
+            {
+                playerPosInBoxSpace.Y -= 0.5f * MathF.Sign(playerPosInBoxSpace.Y);
+            }
+            if (MathF.Abs(playerPosInBoxSpace.Z) < 0.5f)
+            {
+                playerPosInBoxSpace.Z = 0f;
+            }
+            else
+            {
+                playerPosInBoxSpace.Z -= 0.5f * MathF.Sign(playerPosInBoxSpace.Z);
+            }
+
+            Vector3 playerPosRelative = Vector3.Transform(playerPosInBoxSpace, Transform);
+            return Pos - playerPosRelative;
+        }
     }
 }
