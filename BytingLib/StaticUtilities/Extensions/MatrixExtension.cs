@@ -79,6 +79,15 @@
                 0, 0, 0, 1) ;
         }
 
+        public static Matrix CreateFromBaseAxes(Vector3 translation, Vector3 right, Vector3 up, Vector3 backward)
+        {
+            return new Matrix(new Vector4(right, 0f),
+                new Vector4(up, 0f),
+                new Vector4(backward, 0f),
+                new Vector4(translation, 1f)
+            );
+        }
+
         /// <summary>Checks wether the matrix is a result of rotations that are only around the base axes by a multiple of 90 degrees.</summary>
         public static bool RotatesBaseAxisToParallelBaseAxis(this Matrix m, float precision = 0.0001f)
         {

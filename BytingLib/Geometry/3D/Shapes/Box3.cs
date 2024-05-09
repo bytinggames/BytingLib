@@ -10,6 +10,15 @@
             Transform = transform;
         }
 
+        public Box3(Vector3 positionBottomLeftDown, Vector3 right, Vector3 up, Vector3 backward)
+        {
+            Transform = new Matrix(new Vector4(right, 0f),
+                new Vector4(up, 0f),
+                new Vector4(backward, 0f),
+                new Vector4(positionBottomLeftDown + right / 2f + up / 2f + backward / 2f, 1f)
+            );
+        }
+
         public Matrix Transform
         {
             get => _transform;

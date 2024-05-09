@@ -6,7 +6,7 @@
         protected readonly Ref<Effect> effect;
         protected readonly GraphicsDevice gDevice;
         protected List<IEffectParameterStack> parameters = new();
-        private string currentTechnique;
+        protected string currentTechnique;
 
         protected virtual string TechniqueNonInstanced => "Render";
         protected virtual string TechniqueInstanced => "RenderInstanced";
