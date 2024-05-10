@@ -2,6 +2,8 @@
 {
     public static class MatrixExtension
     {
+        public static readonly Matrix Zero = new Matrix(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
         public static void ToPitchYawRoll(this Matrix rotationMatrix, out float yaw, out float pitch, out float roll)
         {
             // source: https://www.dreamincode.net/forums/topic/349917-convert-from-quaternion-to-euler-angles-vector3/
