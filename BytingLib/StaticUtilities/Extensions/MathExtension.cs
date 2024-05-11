@@ -110,5 +110,11 @@
                 return val + MathF.Sign(dist) * speed;
             }
         }
+        public static float AverageAngle(IList<float> angles)
+        {
+            var x = angles.Sum(MathF.Cos) / angles.Count;
+            var y = angles.Sum(MathF.Sin) / angles.Count;
+            return MathF.Atan2(y, x);
+        }
     }
 }
