@@ -268,5 +268,157 @@ namespace BytingLib
             }
         }
 
+        /// <summary>Can be optimized</summary>
+        public static void ShrinkImage(Color[,] source, Color[,] destination, int shrinkBy)
+        {
+            int shrinkBySquared = shrinkBy * shrinkBy;
+
+            int w = destination.GetLength(0);
+            int h = destination.GetLength(1);
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    int r, g, b, a;
+                    r = g = b = a = 0;
+                    for (int y1 = 0; y1 < shrinkBy; y1++)
+                    {
+                        for (int x1 = 0; x1 < shrinkBy; x1++)
+                        {
+                            r += source[x * shrinkBy + x1, y * shrinkBy + y1].R;
+                            g += source[x * shrinkBy + x1, y * shrinkBy + y1].G;
+                            b += source[x * shrinkBy + x1, y * shrinkBy + y1].B;
+                            a += source[x * shrinkBy + x1, y * shrinkBy + y1].A;
+                        }
+                    }
+                    destination[x, y] = new Color(r / shrinkBySquared, g / shrinkBySquared, b / shrinkBySquared, a / shrinkBySquared);
+                }
+            }
+        }
+
+        /// <summary>Can be optimized</summary>
+        public static void ShrinkImage(Vector4[,] source, Vector4[,] destination, int shrinkBy)
+        {
+            int shrinkBySquared = shrinkBy * shrinkBy;
+
+            int w = destination.GetLength(0);
+            int h = destination.GetLength(1);
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    float r, g, b, a;
+                    r = g = b = a = 0;
+                    for (int y1 = 0; y1 < shrinkBy; y1++)
+                    {
+                        for (int x1 = 0; x1 < shrinkBy; x1++)
+                        {
+                            r += source[x * shrinkBy + x1, y * shrinkBy + y1].X;
+                            g += source[x * shrinkBy + x1, y * shrinkBy + y1].Y;
+                            b += source[x * shrinkBy + x1, y * shrinkBy + y1].Z;
+                            a += source[x * shrinkBy + x1, y * shrinkBy + y1].W;
+                        }
+                    }
+                    destination[x, y] = new Vector4(r / shrinkBySquared, g / shrinkBySquared, b / shrinkBySquared, a / shrinkBySquared);
+                }
+            }
+        }
+
+        /// <summary>Can be optimized</summary>
+        public static void BytesToColors(byte[] bytes, Color[,] colors)
+        {
+            int w = colors.GetLength(0);
+            int h = colors.GetLength(1);
+
+            if (w * h * 4 < bytes.Length)
+            {
+                throw new Exception("colors array size is too small for bytes array");
+            }
+
+            int i = 0;
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    colors[x, y] = new Color(bytes[i++],
+                        bytes[i++],
+                        bytes[i++],
+                        bytes[i++]
+                    );
+                }
+            }
+        }
+
+        /// <summary>Can be optimized</summary>
+        public static void ColorsToBytes(Color[,] colors, byte[] bytes)
+        {
+            int w = colors.GetLength(0);
+            int h = colors.GetLength(1);
+
+            if (bytes.Length < w * h * 4)
+            {
+                throw new Exception("bytes array size is too small for colors array");
+            }
+
+            int i = 0;
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    bytes[i++] = colors[x, y].R;
+                    bytes[i++] = colors[x, y].G;
+                    bytes[i++] = colors[x, y].B;
+                    bytes[i++] = colors[x, y].A;
+                }
+            }
+        }
+        /// <summary>Can be optimized</summary>
+        public static void BytesToColors(byte[] bytes, Vector4[,] colors)
+        {
+            int w = colors.GetLength(0);
+            int h = colors.GetLength(1);
+
+            if (w * h * 4 < bytes.Length)
+            {
+                throw new Exception("colors array size is too small for bytes array");
+            }
+
+            int i = 0;
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    colors[x, y] = new Vector4(bytes[i++] / 255f,
+                        bytes[i++] / 255f,
+                        bytes[i++] / 255f,
+                        bytes[i++] / 255f
+                    );
+                }
+            }
+        }
+
+        /// <summary>Can be optimized</summary>
+        public static void ColorsToBytes(Vector4[,] colors, byte[] bytes)
+        {
+            int w = colors.GetLength(0);
+            int h = colors.GetLength(1);
+
+            if (bytes.Length < w * h * 4)
+            {
+                throw new Exception("bytes array size is too small for colors array");
+            }
+
+            int i = 0;
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    bytes[i++] = (byte)Math.Clamp(colors[x, y].X * 255, 0, 255);
+                    bytes[i++] = (byte)Math.Clamp(colors[x, y].Y * 255, 0, 255);
+                    bytes[i++] = (byte)Math.Clamp(colors[x, y].Z * 255, 0, 255);
+                    bytes[i++] = (byte)Math.Clamp(colors[x, y].W * 255, 0, 255);
+                }
+            }
+        }
     }
 }

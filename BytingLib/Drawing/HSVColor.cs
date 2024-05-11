@@ -27,13 +27,10 @@
             get { return _hue; }
             set
             {
-                if (value < 0f)
+                _hue = value % 360f;
+                if (_hue < 0f)
                 {
-                    _hue = (360f + value) % 360f;
-                }
-                else
-                {
-                    _hue = value % 360f;
+                    _hue += 360f;
                 }
             }
         }
