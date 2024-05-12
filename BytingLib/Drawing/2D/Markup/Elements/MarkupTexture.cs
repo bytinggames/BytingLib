@@ -5,8 +5,6 @@ namespace BytingLib.Markup
     [MarkupShortcut("tex")]
     public class MarkupTexture : MarkupBlock, IDisposable
     {
-        public Rectangle BoundingRectangle { get; }
-
         public Ref<Texture2D> Texture { get; protected set; }
 
         public Color Color { get; set; } = Color.White;
