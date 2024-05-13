@@ -138,6 +138,11 @@
 
         private IEnumerable<Vector2> GetVerticesToLength(float length)
         {
+            if (Vertices.Length < 3)
+            {
+                return Enumerable.Empty<Vector2>();
+            }
+
             if (lengths == null)
             {
                 CalculateLengths();
@@ -153,11 +158,17 @@
             // draw vertices up to i * 2 + 2 newly dynamic vertex
             int vertexCount = i * 2;
 
+            if (vertexCount < 2)
+            {
+                return Enumerable.Empty<Vector2>();
+            }
+
+
             float lerp = 1f - (-length / lengths![i - 1]);
             List<Vector2> endVertices = new List<Vector2>()
             {
-                ((1f - lerp) * Vertices[vertexCount - 2] + lerp * Vertices[vertexCount]),
-                ((1f - lerp) * Vertices[vertexCount - 1] + lerp * Vertices[vertexCount + 1])
+                (1f - lerp) * Vertices[vertexCount - 2] + lerp * Vertices[vertexCount],
+                (1f - lerp) * Vertices[vertexCount - 1] + lerp * Vertices[vertexCount + 1]
             };
 
             vertexCount += 2;
@@ -178,7 +189,8 @@
         {
             if (Vertices.Length <= 2)
             {
-                lengths = new float[0];
+                lengths = [];
+                totalLength = 0f;
                 return;
             }
 
