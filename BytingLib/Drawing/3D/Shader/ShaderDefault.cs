@@ -77,7 +77,7 @@
         /// <summary>only for testing currently</summary>
         public void Draw(VertexBuffer vertexBuffer, IndexBuffer indexBuffer)
         {
-            var e = effect.Value;
+            var e = Effect.Value;
 
             gDevice.Indices = indexBuffer;
             using (Apply(vertexBuffer))

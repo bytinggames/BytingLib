@@ -46,7 +46,8 @@
             StyleRoot.SpriteBatchBegin = scissorTest =>
             {
                 RasterizerState rs = scissorTest ? rasterizerStateScissor : rasterizerState;
-                spriteBatch.Begin(rasterizerState: rs);
+                spriteBatch.Begin(rasterizerState: rs,
+                    effect: Effect?.Value);
             };
             StyleRoot.SpriteBatchBegin(false);
 

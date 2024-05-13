@@ -15,7 +15,7 @@
         public float MaxAspectRatio { get; set; }
         public CanvasScaling Scaling { get; set; } = CanvasScaling.Default;
         private float scale;
-        Rect? lastRenderRect;
+        private Rect? lastRenderRect;
         // must only be used for non-replay related stuff
         private readonly IResolution graphicsResolution;
 
@@ -160,7 +160,8 @@
 
                 spriteBatch.Begin(samplerState: samplerState,
                     transformMatrix: transform,
-                    rasterizerState: rs);
+                    rasterizerState: rs,
+                    effect: Effect?.Value);
             };
             StyleRoot.SpriteBatchBegin(false);
 

@@ -8,6 +8,7 @@
         public ElementInput Input { get; }
         public StyleRoot StyleRoot { get; set; }
         private bool treeDirty = true;
+        public Ref<Effect>? Effect { get; set; }
 
         //private bool scissorTest;
         protected readonly RasterizerState rasterizerState = CreateDefaultRasterizerState();

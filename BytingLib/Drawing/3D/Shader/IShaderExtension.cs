@@ -5,7 +5,7 @@
 
         public static void Draw(this IShader shader, VertexBuffer vertexBuffer)
         {
-            var e = shader.Effect;
+            var e = shader.Effect.Value;
             var gDevice = vertexBuffer.GraphicsDevice;
 
             using (shader.Apply(vertexBuffer))
@@ -21,7 +21,7 @@
 
         public static void Draw(this IShader shader, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, PrimitiveType primitiveType = PrimitiveType.TriangleList)
         {
-            var e = shader.Effect;
+            var e = shader.Effect.Value;
             var gDevice = vertexBuffer.GraphicsDevice;
 
             gDevice.Indices = indexBuffer;
@@ -44,7 +44,7 @@
                 return;
             }
 
-            var e = shader.Effect;
+            var e = shader.Effect.Value;
 
             using (shader.Apply(vertices[0].VertexDeclaration))
             {
@@ -59,7 +59,7 @@
 
         public static void Draw(this IShaderWorld shaderWorld, Model model, IShaderAlbedo? shaderAlbedo)
         {
-            var gDevice = shaderWorld.Effect.GraphicsDevice;
+            var gDevice = shaderWorld.Effect.Value.GraphicsDevice;
 
             foreach (var mesh in model.Meshes)
             {
@@ -80,7 +80,7 @@
                         {
                             using (shaderWorld.Apply(part.VertexBuffer))
                             {
-                                foreach (var pass in shaderWorld.Effect.CurrentTechnique.Passes)
+                                foreach (var pass in shaderWorld.Effect.Value.CurrentTechnique.Passes)
                                 {
                                     pass.Apply();
                                     gDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,

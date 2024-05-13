@@ -20,7 +20,7 @@
         public static void DrawBuffers(IShader shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer,
             VertexBuffer vertexBuffer, IndexBuffer indexBuffer, PrimitiveType primitiveType)
         {
-            DrawBegin(instances, instanceBuffer, shader.Effect);
+            DrawBegin(instances, instanceBuffer, shader.Effect.Value);
 
             int primitiveCount = primitiveType.GetPrimitiveCount(indexBuffer.IndexCount);
 
@@ -38,7 +38,7 @@
         public static void DrawBuffers(IShader shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, 
             VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int vertexOffset, int indexOffset, int primitiveCount, PrimitiveType primitiveType)
         {
-            DrawBegin(instances, instanceBuffer, shader.Effect);
+            DrawBegin(instances, instanceBuffer, shader.Effect.Value);
 
             DrawInstancesInner(shader, instances, instanceBuffer, vertexBuffer, indexBuffer, vertexOffset, indexOffset, primitiveCount, primitiveType);
 
@@ -53,7 +53,7 @@
         public static void DrawMesh<ShaderColorTex>(ShaderColorTex shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, ModelMesh mesh)
             where ShaderColorTex : IShaderAlbedo, IShaderWorld
         {
-            DrawBegin(instances, instanceBuffer, shader.Effect);
+            DrawBegin(instances, instanceBuffer, shader.Effect.Value);
 
             DrawInstancesInner(shader, instances, instanceBuffer, mesh);
 
@@ -62,7 +62,7 @@
 
         public static void DrawModel(IShaderWorld shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, Model model)
         {
-            DrawBegin(instances, instanceBuffer, shader.Effect);
+            DrawBegin(instances, instanceBuffer, shader.Effect.Value);
 
             foreach (var mesh in model.Meshes)
             {
@@ -99,7 +99,7 @@
                 new VertexBufferBinding(vertexBuffer, vertexOffset),
                 new VertexBufferBinding(instanceBuffer, 0, 1)))
             {
-                foreach (var pass in shader.Effect.CurrentTechnique.Passes)
+                foreach (var pass in shader.Effect.Value.CurrentTechnique.Passes)
                 {
                     pass.Apply();
                     gDevice.DrawInstancedPrimitives(primitiveType, 0, indexOffset, primitiveCount, instances.Count);

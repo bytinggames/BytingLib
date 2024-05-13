@@ -2,7 +2,7 @@
 {
     public interface IShader
     {
-        Effect Effect { get; }
+        Ref<Effect> Effect { get; }
 
         IDisposable Apply(params VertexBufferBinding[] vertexBufferBindings);
         IDisposable Apply(VertexBuffer vertexBuffer);

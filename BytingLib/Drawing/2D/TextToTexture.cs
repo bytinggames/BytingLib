@@ -81,7 +81,7 @@ namespace BytingLib
                     using (textEffect.Color.Use(backgroundColor.ToVector4()))
                     {
                         textEffect.ApplyParameters();
-                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect);
+                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect.Value);
 
                         drawElement.Draw(markupSettings);
 

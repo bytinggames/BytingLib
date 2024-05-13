@@ -3,7 +3,7 @@
     public abstract class Shader : IShader, IDisposable
     {
         /// <summary>To change the current technique, use UseTechnique()</summary>
-        protected readonly Ref<Effect> effect;
+        public Ref<Effect> Effect { get; private set; }
         protected readonly GraphicsDevice gDevice;
         protected List<IEffectParameterStack> parameters = new();
         protected string currentTechnique;
@@ -13,12 +13,10 @@
 
         public Shader(Ref<Effect> effect)
         {
-            this.effect = effect;
+            Effect = effect;
             gDevice = effect.Value.GraphicsDevice;
             currentTechnique = effect.Value.CurrentTechnique.Name;
         }
-
-        public Effect Effect => effect.Value;
 
         public void Dispose()
         {
@@ -40,7 +38,7 @@
         public void ApplyParameters()
         {
             // actually apply the current technique
-            effect.Value.CurrentTechnique = effect.Value.Techniques[currentTechnique];
+            Effect.Value.CurrentTechnique = Effect.Value.Techniques[currentTechnique];
 
             for (int i = 0; i < parameters.Count; i++)
             {
