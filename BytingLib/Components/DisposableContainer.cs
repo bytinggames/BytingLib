@@ -25,6 +25,17 @@
             disposables.AddRange(multipleDisposables);
         }
 
+        public void UseRangeMaybeNull(params IDisposable?[] multipleDisposables)
+        {
+            foreach (var d in multipleDisposables)
+            {
+                if (d != null)
+                {
+                    disposables.Add(d);
+                }
+            }
+        }
+
         /// <summary>Same as Use, with the difference, that null can be passed as disposable. In this case this method does nothing.</summary>
         public T? UseCheckNull<T>(T? disposable) where T : IDisposable
         {
