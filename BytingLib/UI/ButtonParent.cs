@@ -2,6 +2,7 @@
 {
     public abstract class ButtonParent : Element
     {
+        /// <summary>Wether the mouse actually hovers over the button</summary>
         protected bool hover;
         private bool down;
         private bool disabled;
@@ -34,6 +35,8 @@
             }
 
             myPadding = padding;
+
+            OnWhileHover += WhileHover;
         }
 
         protected override void UpdateTreeBeginSelf(StyleRoot style)
@@ -64,17 +67,8 @@
                 return;
             }
 
-            hover = AbsoluteRect.CollidesWith(input.Mouse.Position);
-
-            if (hover)
-            {
-                if (input.Mouse.Left.Pressed)
-                {
-                    down = true;
-                    input.SetUpdateCatch(this);
-                    SetDirty();
-                }
-            }
+            // updates hover
+            base.UpdateSelf(input);
 
             if (down)
             {
@@ -91,8 +85,17 @@
                     input.SetUpdateCatch(null);
                 }
             }
+        }
 
-            base.UpdateSelf(input);
+        protected virtual bool WhileHover(Element _, ElementInput input)
+        {
+            if (input.Mouse.Left.Pressed)
+            {
+                down = true;
+                input.SetUpdateCatch(this);
+                SetDirty();
+            }
+            return true;
         }
 
         protected override void UpdateTreeModifyRect(Rect rect)
@@ -106,7 +109,7 @@
         protected override void PushMyStyle(StyleRoot style)
         {
             base.PushMyStyle(style);
-
+            
             if (hover && HoverStyle != null)
             {
                 style.Push(HoverStyle);
@@ -180,5 +183,17 @@
         }
 
         protected abstract void OnClick();
+
+        protected override void UpdateHoverElement(ElementInput input)
+        {
+            if (Disabled)
+            {
+                return;
+            }
+
+            base.UpdateHoverElement(input);
+
+            hover = input.HoverElement == this;
+        }
     }
 }

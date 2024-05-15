@@ -22,7 +22,9 @@
         public float Height { get; set; } = -1f;
         public Padding? Padding { get; set; }
         public Vector2 Anchor { get; set; } = new Vector2(0.5f);
-        public Action<Element>? OnWhileHover { get; set; }
+        /// <summary>Return true, when you don't want parents or siblings get hovered too. Catch the hover event.</summary>
+        public event OnWhileHoverDelegate? OnWhileHover;
+        public delegate bool OnWhileHoverDelegate(Element element, ElementInput input);
         /// <summary>When invisible, Update is also not called. Not even for the children.</summary>
         public bool Visible { get; set; } = true;
 
@@ -74,7 +76,7 @@
             UpdateHoverElement(input);
         }
 
-        protected void UpdateHoverElement(ElementInput input)
+        protected virtual void UpdateHoverElement(ElementInput input)
         {
             if (OnWhileHover != null
                 && input.HoverElement == null)
@@ -82,9 +84,13 @@
                 //bool alreadyHovering = input.HoverElementForTooltip == this;
                 if (AbsoluteRect.CollidesWith(input.Mouse.Position))
                 {
-                    input.HoverElement = this;
-
-                    OnWhileHover(this);
+                    var results = OnWhileHover.GetInvocationList().Select(x => (bool)x.DynamicInvoke(this, input)!);
+                    // if any invocation returned true, catch the hover ability
+                    if (results.ToArray() // to array forces all subscribers to get invoked. Otherwise with .Any() it would stop once true is returned.
+                        .Any(f => f))
+                    {
+                        input.HoverElement = this;
+                    }
                 }
             }
         }
@@ -386,13 +392,13 @@
 
         public Element Tooltip(ITooltip tooltip, string text)
         {
-            OnWhileHover = f => tooltip.OnHover(f, text);
+            OnWhileHover += (f, input) => { tooltip.OnHover(f, text); return false; } ;
             return this;
         }
 
         public Element Tooltip(ITooltip tooltip, Func<string> getText)
         {
-            OnWhileHover = f => tooltip.OnHover(f, getText());
+            OnWhileHover += (f, input) => { tooltip.OnHover(f, getText()); return false; };
             return this;
         }
 

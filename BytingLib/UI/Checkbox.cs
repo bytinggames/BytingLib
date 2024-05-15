@@ -127,31 +127,38 @@
                     return;
                 }
 
-                hover = AbsoluteRect.CollidesWith(input.Mouse.Position);
-
-                if (hover)
-                {
-                    if (input.Mouse.Left.Pressed)
-                    {
-                        input.FocusElement = this;
-                        OnClick();
-                        SetDirty();
-                    }
-                    else if (input.Mouse.Left.Down && input.FocusElement is Checkbox checkboxFocus && checkboxFocus.MultiSelectionID == MultiSelectionID)
-                    {
-                        if (checkboxFocus.Checked != Checked)
-                        {
-                            OnClick();
-                            SetDirty();
-                        }
-                    }
-                }
-
                 UpdateHoverElement(input);
             }
             else
             {
+                // updates hover
                 base.UpdateSelf(input);
+            }
+        }
+
+        protected override bool WhileHover(Element element, ElementInput input)
+        {
+            if (MultiSelectionID != null)
+            {
+                if (input.Mouse.Left.Pressed)
+                {
+                    input.FocusElement = this;
+                    OnClick();
+                    SetDirty();
+                }
+                else if (input.Mouse.Left.Down && input.FocusElement is Checkbox checkboxFocus && checkboxFocus.MultiSelectionID == MultiSelectionID)
+                {
+                    if (checkboxFocus.Checked != Checked)
+                    {
+                        OnClick();
+                        SetDirty();
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                return base.WhileHover(element, input);
             }
         }
     }
