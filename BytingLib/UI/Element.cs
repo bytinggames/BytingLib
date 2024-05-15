@@ -133,7 +133,8 @@
                 return;
             }
 
-            for (int i = 0; i < Children.Count; i++)
+            // start at the last child, as that is the one that gets drawn topmost
+            for (int i = Children.Count - 1; i >= 0; i--)
             {
                 Children[i].Update(input);
             }
