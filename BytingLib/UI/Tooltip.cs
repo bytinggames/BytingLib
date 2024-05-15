@@ -90,8 +90,12 @@
 
         public void OnHover(Element hover, string text)
         {
-            newHover = hover;
-            newText = text;
+            // make sure the first one that raises the tooltip is not overridden by later tries on raising the tooltip
+            if (newHover == null)
+            {
+                newHover = hover;
+                newText = text;
+            }
         }
     }
 }
