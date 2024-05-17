@@ -91,6 +91,12 @@
             return new PrimitiveLineRing(this);
         }
 
+        /// <param name="lengthNormlized">ranging from 0 to 1</param>
+        public PrimitiveAreaStrip Shorten(float lengthNormlized)
+        {
+            return new PrimitiveAreaStrip(GetVerticesToLength(lengthNormlized).ToArray());
+        }
+
         public override void Draw(GraphicsDevice gDevice)
         {
             //var v = new VertexBuffer(gDevice, new VertexDeclaration(new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0)), Vertices.Length, BufferUsage.WriteOnly);
