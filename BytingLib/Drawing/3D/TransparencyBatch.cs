@@ -42,16 +42,21 @@
 
         public void DrawLater(Vector3 centerPosition, Action draw)
         {
+            float depthSquared = GetDepthSquared(centerPosition);
+            DrawLater(depthSquared, draw);
+        }
+
+        public void DrawLater(float depthSquared, Action draw)
+        {
             if (drawLayers.Count == 0)
             {
                 return; // skip transparency draw call
             }
 
-            float depthSquared = GetDepthSquared(centerPosition);
             drawLayers[^1].Add(depthSquared, draw);
         }
 
-        private float GetDepthSquared(Vector3 pos)
+        public float GetDepthSquared(Vector3 pos)
         {
             return (getViewPos() - pos).LengthSquared();
         }
