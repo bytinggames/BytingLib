@@ -2,8 +2,6 @@
 {
     public abstract class ButtonParent : Element
     {
-        /// <summary>Wether the mouse actually hovers over the button</summary>
-        protected bool hover;
         private bool down;
         private bool disabled;
         public bool Disabled
@@ -13,7 +11,7 @@
             {
                 if (value)
                 {
-                    hover = false;
+                    Hover = false;
                     down = false;
                 }
                 disabled = value;
@@ -36,7 +34,7 @@
 
             myPadding = padding;
 
-            OnWhileHover += WhileHover;
+            OnHoverSustain += WhileHover;
         }
 
         protected override void UpdateTreeBeginSelf(StyleRoot style)
@@ -74,9 +72,9 @@
             {
                 if (!input.Mouse.Left.Down)
                 {
-                    if (hover)
+                    if (Hover)
                     {
-                        OnClick();
+                        DoClick();
                     }
 
                     down = false;
@@ -110,7 +108,7 @@
         {
             base.PushMyStyle(style);
             
-            if (hover && HoverStyle != null)
+            if (Hover && HoverStyle != null)
             {
                 style.Push(HoverStyle);
             }
@@ -120,7 +118,7 @@
         {
             base.PopMyStyle(style);
 
-            if (hover && HoverStyle != null)
+            if (Hover && HoverStyle != null)
             {
                 style.Pop(HoverStyle);
             }
@@ -161,7 +159,7 @@
                 {
                     frameIndex = 2;
                 }
-                else if (hover)
+                else if (Hover)
                 {
                     frameIndex = 1;
                 }
@@ -176,13 +174,13 @@
 
         public override void LooseFocus()
         {
-            hover = false;
+            Hover = false;
             down = false;
 
             base.LooseFocus();
         }
 
-        protected abstract void OnClick();
+        protected abstract void DoClick();
 
         protected override void UpdateHoverElement(ElementInput input)
         {
@@ -193,7 +191,7 @@
 
             base.UpdateHoverElement(input);
 
-            hover = input.HoverElement == this;
+            Hover = input.HoverElement == this;
         }
     }
 }

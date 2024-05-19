@@ -1,4 +1,6 @@
-﻿namespace BytingLib.UI
+﻿using YamlDotNet.Core.Tokens;
+
+namespace BytingLib.UI
 {
     struct ElementIteration
     {
@@ -23,13 +25,39 @@
         public Padding? Padding { get; set; }
         public Vector2 Anchor { get; set; } = new Vector2(0.5f);
         /// <summary>Return true, when you don't want parents or siblings get hovered too. Catch the hover event.</summary>
-        public event OnWhileHoverDelegate? OnWhileHover;
+        public event OnWhileHoverDelegate? OnHoverSustain;
+        public event Action? OnHoverEnter;
+        public event Action? OnHoverExit;
         public delegate bool OnWhileHoverDelegate(Element element, ElementInput input);
+        public delegate void ElementAction(Element element);
         /// <summary>When invisible, Update is also not called. Not even for the children.</summary>
         public bool Visible { get; set; } = true;
+        public bool IsHoverEnabled => OnHoverSustain != null || OnHoverEnter != null || OnHoverExit != null;
+        /// <summary>Wether the mouse hovers over the element. This is only updated, when <see cref="IsHoverEnabled"/> is true.</summary>
+        public bool Hover
+        {
+            get => hover;
+            set
+            {
+                if (value != hover)
+                {
+                    hover = value;
+
+                    if (value)
+                    {
+                        OnHoverEnter?.Invoke();
+                    }
+                    else
+                    {
+                        OnHoverExit?.Invoke();
+                    }
+                }
+            }
+        }
 
         private bool setChildrenWidthToMaxChildWidth = false;
         private bool setChildrenHeightToMaxChildHeight = false;
+        private bool hover;
 
         public float Size(int dimension)
         {
@@ -78,13 +106,14 @@
 
         protected virtual void UpdateHoverElement(ElementInput input)
         {
-            if (OnWhileHover != null
-                && input.HoverElement == null)
+            if (input.HoverElement == null
+                && IsHoverEnabled)
             {
                 //bool alreadyHovering = input.HoverElementForTooltip == this;
-                if (AbsoluteRect.CollidesWith(input.Mouse.Position))
+                Hover = AbsoluteRect.CollidesWith(input.Mouse.Position);
+                if (Hover && OnHoverSustain != null)
                 {
-                    var results = OnWhileHover.GetInvocationList().Select(x => (bool)x.DynamicInvoke(this, input)!);
+                    var results = OnHoverSustain.GetInvocationList().Select(x => (bool)x.DynamicInvoke(this, input)!);
                     // if any invocation returned true, catch the hover ability
                     if (results.ToArray() // to array forces all subscribers to get invoked. Otherwise with .Any() it would stop once true is returned.
                         .Any(f => f))
@@ -393,13 +422,13 @@
 
         public Element Tooltip(ITooltip tooltip, string text)
         {
-            OnWhileHover += (f, input) => { tooltip.OnHover(f, text); return false; } ;
+            OnHoverSustain += (f, input) => { tooltip.OnHover(f, text); return false; } ;
             return this;
         }
 
         public Element Tooltip(ITooltip tooltip, Func<string> getText)
         {
-            OnWhileHover += (f, input) => { tooltip.OnHover(f, getText()); return false; };
+            OnHoverSustain += (f, input) => { tooltip.OnHover(f, getText()); return false; };
             return this;
         }
 

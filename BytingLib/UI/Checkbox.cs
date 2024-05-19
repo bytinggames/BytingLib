@@ -72,7 +72,7 @@
             }
         }
 
-        protected override void OnClick()
+        protected override void DoClick()
         {
             Toggle();
         }
@@ -143,14 +143,14 @@
                 if (input.Mouse.Left.Pressed)
                 {
                     input.FocusElement = this;
-                    OnClick();
+                    DoClick();
                     SetDirty();
                 }
                 else if (input.Mouse.Left.Down && input.FocusElement is Checkbox checkboxFocus && checkboxFocus.MultiSelectionID == MultiSelectionID)
                 {
                     if (checkboxFocus.Checked != Checked)
                     {
-                        OnClick();
+                        DoClick();
                         SetDirty();
                     }
                 }
