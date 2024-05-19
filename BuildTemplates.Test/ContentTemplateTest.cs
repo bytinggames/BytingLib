@@ -72,6 +72,7 @@ namespace BuildTemplates.Test
         {
             ProcessorToDataType.Add("CollisionModelProcessor", "CollisionModelBytes");
             ProcessorToDataType.Add("TextureProcessorDrawn", "Texture2D");
+            ProcessorToDataType.Add("TextureStampProcessor", "Texture2D");
             DataTypeToVarExtension.Add("CollisionModelBytes", "Col");
             //RuntimeTypes.Add("CollisionModelBytes", typeof(CollisionModelBytes));
         }
