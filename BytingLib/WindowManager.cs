@@ -45,6 +45,8 @@ namespace BytingLib
         string windowCaption = Process.GetCurrentProcess().ProcessName;
 #endif
 
+        public bool FullScreenPlus1Pixel { get; set; } = false;
+
         public WindowManager(bool realFullscreen, GameWindow window, GraphicsDeviceManager graphics)
         {
             this.realFullscreen = realFullscreen;
@@ -110,7 +112,7 @@ namespace BytingLib
                 }
 
                 graphics.PreferredBackBufferWidth = GetScreenWidth();
-                graphics.PreferredBackBufferHeight = GetScreenHeight();
+                graphics.PreferredBackBufferHeight = GetScreenHeight() + (FullScreenPlus1Pixel ? 1 : 0);
 
                 if (realFullscreen)
                 {
