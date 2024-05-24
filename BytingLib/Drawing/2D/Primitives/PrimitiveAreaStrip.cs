@@ -158,13 +158,21 @@
             length *= totalLength;
             while (length > 0)
             {
-                length -= lengths![i++];
+                if (lengths!.Length > i)
+                {
+                    length -= lengths![i++];
+                }
+                else
+                {
+                    length = 0;
+                    break;
+                }
             }
 
             // draw vertices up to i * 2 + 2 newly dynamic vertex
             int vertexCount = i * 2;
 
-            if (vertexCount < 2)
+            if (i == 0 || vertexCount < 2 || lengths!.Length == 0)
             {
                 return Enumerable.Empty<Vector2>();
             }
