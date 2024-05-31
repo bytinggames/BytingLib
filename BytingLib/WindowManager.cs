@@ -15,6 +15,8 @@ namespace BytingLib
         public event Action<Int2>? OnResolutionChanged;
         /// <summary>Used for overriding the actual screen size to simulate a bigger screen or make screenshots at a higher resolution.</summary>
         public Int2? VirtualScreenSize { get; set; }
+        /// <summary>Used for forcing a certain resolution when switching to window mode.</summary>
+        public Int2? ForceWindowSize { get; set; }
 
         private const int SW_MAXIMIZE = 3;
         [DllImport("user32.dll", EntryPoint = "FindWindow")]
@@ -75,8 +77,8 @@ namespace BytingLib
         {
             if (IsFullscreen())
             {
-                graphics.PreferredBackBufferWidth = windowRectBeforeFullscreen.Width;
-                graphics.PreferredBackBufferHeight = windowRectBeforeFullscreen.Height;
+                graphics.PreferredBackBufferWidth = ForceWindowSize?.X ?? windowRectBeforeFullscreen.Width;
+                graphics.PreferredBackBufferHeight = ForceWindowSize?.Y ?? windowRectBeforeFullscreen.Height;
 
                 if (realFullscreen)
                 {

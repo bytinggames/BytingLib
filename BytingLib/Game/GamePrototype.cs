@@ -83,6 +83,12 @@ namespace BytingLib
                 graphics.SynchronizeWithVerticalRetrace = vsync;
                 graphics.ApplyChanges();
             }
+
+            SetupWindow();
+        }
+
+        protected virtual void SetupWindow()
+        {
             // maximize window
             windowManager.MaximizeWindow();
         }
