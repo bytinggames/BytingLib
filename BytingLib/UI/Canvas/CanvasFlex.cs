@@ -43,15 +43,15 @@
         public override void DrawBatch(SpriteBatch spriteBatch)
         {
             BeforeDraw(spriteBatch);
-            StyleRoot.SpriteBatchBegin = scissorTest =>
+            StyleRoot.SpriteBatchBegin = (scissorTest, effect, sortMode) =>
             {
                 RasterizerState rs = scissorTest ? rasterizerStateScissor : rasterizerState;
-                spriteBatch.Begin(rasterizerState: rs,
-                    effect: Effect?.Value);
+                spriteBatch.Begin(
+                    sortMode: sortMode ?? SpriteSortMode.Deferred,
+                    rasterizerState: rs,
+                    effect: effect ?? Effect?.Value);
             };
-            StyleRoot.SpriteBatchBegin(false);
-
-            
+            StyleRoot.SpriteBatchBegin(false, null, null);
 
             StyleRoot.SpriteBatchTransform = Matrix.Identity;
             StyleRoot.Push(Style);

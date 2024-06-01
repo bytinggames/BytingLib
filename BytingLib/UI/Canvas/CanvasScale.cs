@@ -154,16 +154,18 @@
             }
 
             BeforeDraw(spriteBatch);
-            StyleRoot.SpriteBatchBegin = scissorTest =>
+            StyleRoot.SpriteBatchBegin = (scissorTest, effect, sortMode)  =>
             {
                 RasterizerState rs = scissorTest ? rasterizerStateScissor : rasterizerState;
 
-                spriteBatch.Begin(samplerState: samplerState,
+                spriteBatch.Begin(
+                    sortMode: sortMode ?? SpriteSortMode.Deferred,
+                    samplerState: samplerState,
                     transformMatrix: transform,
                     rasterizerState: rs,
-                    effect: Effect?.Value);
+                    effect: effect ?? Effect?.Value);
             };
-            StyleRoot.SpriteBatchBegin(false);
+            StyleRoot.SpriteBatchBegin(false, null, null);
 
             StyleRoot.SpriteBatchTransform = transform;
             StyleRoot.Push(Style);
