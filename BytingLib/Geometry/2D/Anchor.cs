@@ -2,40 +2,40 @@
 {
     public class Anchor
     {
-        public Vector2 pos;
-        public Vector2 origin;
+        public Vector2 Pos;
+        public Vector2 Origin;
 
-        public float X { get => pos.X; set => pos.X = value; }
-        public float Y { get => pos.Y; set => pos.Y = value; }
+        public float X { get => Pos.X; set => Pos.X = value; }
+        public float Y { get => Pos.Y; set => Pos.Y = value; }
 
-        public float OX { get => origin.X; set => origin.X = value; }
-        public float OY { get => origin.Y; set => origin.Y = value; }
+        public float OX { get => Origin.X; set => Origin.X = value; }
+        public float OY { get => Origin.Y; set => Origin.Y = value; }
 
         public Anchor(float x, float y, float originX, float originY)
         {
-            this.pos = new Vector2(x, y);
-            this.origin = new Vector2(originX, originY);
+            this.Pos = new Vector2(x, y);
+            this.Origin = new Vector2(originX, originY);
         }
         public Anchor(Vector2 pos, Vector2 origin)
         {
-            this.pos = pos;
-            this.origin = origin;
+            this.Pos = pos;
+            this.Origin = origin;
         }
 
         public Anchor(Vector2 pos)
         {
-            this.pos = pos;
-            this.origin = new Vector2(0.5f);
+            this.Pos = pos;
+            this.Origin = new Vector2(0.5f);
         }
         public Anchor(float x, float y)
         {
-            this.pos = new Vector2(x, y);
-            this.origin = new Vector2(0.5f);
+            this.Pos = new Vector2(x, y);
+            this.Origin = new Vector2(0.5f);
         }
         public Anchor()
         {
-            this.pos = new Vector2(0, 0);
-            this.origin = new Vector2(0.5f);
+            this.Pos = new Vector2(0, 0);
+            this.Origin = new Vector2(0.5f);
         }
 
         public static Anchor Center(Vector2 v) => Center(v.X, v.Y);

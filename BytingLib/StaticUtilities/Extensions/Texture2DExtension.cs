@@ -456,12 +456,12 @@
         {
             Vector2 size = _sourceRectangle != null ? _sourceRectangle.Value.Size.ToVector2() : _texture.GetSize();
 
-            Vector2 pos = _anchor.pos;
+            Vector2 pos = _anchor.Pos;
 
             if (roundPositionTo != 0)
             {
-                Vector2 shift = _anchor.origin * size * (_scale ?? Vector2.One);
-                Vector2 drawPos = _anchor.pos - shift;
+                Vector2 shift = _anchor.Origin * size * (_scale ?? Vector2.One);
+                Vector2 drawPos = _anchor.Pos - shift;
 
                 if (roundPositionTo == 1f)
                 {
@@ -476,7 +476,7 @@
             }
 
 
-            spriteBatch.Draw(_texture, pos, _sourceRectangle, _color ?? Color.White, _rotation, _anchor.origin * size, _scale ?? Vector2.One, _effects, depth ?? spriteBatch.DefaultDepth);
+            spriteBatch.Draw(_texture, pos, _sourceRectangle, _color ?? Color.White, _rotation, _anchor.Origin * size, _scale ?? Vector2.One, _effects, depth ?? spriteBatch.DefaultDepth);
         }
         public static void Draw(this Texture2D _texture, SpriteBatch spriteBatch, Rectangle _rectangle, Color? _color = null, Rectangle? _sourceRectangle = null, float _rotation = 0f, SpriteEffects _effects = SpriteEffects.None, float? depth = null)
         {

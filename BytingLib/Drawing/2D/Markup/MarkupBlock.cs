@@ -47,11 +47,11 @@
             }
             else
             {
-                Vector2 temp = settings.Anchor.pos;
-                settings.Anchor.pos.X += (MarginLeft * (1f - settings.Anchor.OX) - MarginRight * settings.Anchor.OX) * settings.Scale.X;
-                settings.Anchor.pos.Y += (MarginTop * (1f - settings.Anchor.OY) - MarginBottom * settings.Anchor.OY) * settings.Scale.Y;
+                Vector2 temp = settings.Anchor.Pos;
+                settings.Anchor.Pos.X += (MarginLeft * (1f - settings.Anchor.OX) - MarginRight * settings.Anchor.OX) * settings.Scale.X;
+                settings.Anchor.Pos.Y += (MarginTop * (1f - settings.Anchor.OY) - MarginBottom * settings.Anchor.OY) * settings.Scale.Y;
                 InnerDraw(settings);
-                settings.Anchor.pos = temp;
+                settings.Anchor.Pos = temp;
             }
         }
         private void InnerDraw(MarkupSettings settings)

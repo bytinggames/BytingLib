@@ -38,15 +38,15 @@ namespace BytingLib
             Vector2 scale = _scale ?? Vector2.One;
 
             Vector2 textSize = Vector2.Zero;
-            if (_anchor.origin != Vector2.Zero || underline != null)
+            if (_anchor.Origin != Vector2.Zero || underline != null)
             {
                 textSize = _font.MeasureString(_text);
             }
 
-            Vector2 origin = _anchor.origin * textSize;
+            Vector2 origin = _anchor.Origin * textSize;
             textSize *= scale;
 
-            Vector2 pos = _anchor.pos;
+            Vector2 pos = _anchor.Pos;
 
             if (roundPositionTo != 0)
             {

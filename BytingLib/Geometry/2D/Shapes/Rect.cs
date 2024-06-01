@@ -340,7 +340,7 @@
 
         public void SetToAnchor(Anchor anchor, bool round = true)
         {
-            pos = anchor.pos - Size * anchor.origin;
+            pos = anchor.Pos - Size * anchor.Origin;
             if (round)
             {
                 pos = pos.GetRound();
@@ -350,7 +350,7 @@
         }
         public void SetToAnchor(Anchor anchor, Vector2 size, bool round = true)
         {
-            pos = anchor.pos - size * anchor.origin;
+            pos = anchor.Pos - size * anchor.Origin;
             if (round)
             {
                 pos = pos.GetRound();
