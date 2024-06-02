@@ -36,6 +36,10 @@ namespace BytingLib
 
         public SamplerGL? DefaultSampler { get; internal set; }
 
+        public ModelGL(string filePath)
+            : this(filePath, "", null, null)
+        {
+        }
         public ModelGL(string filePath, string contentRootDirectory, GraphicsDevice? gDevice, IContentCollectorUse? contentCollector)
             :this(File.ReadAllText(filePath), Path.GetDirectoryName(filePath) ?? "", contentRootDirectory, gDevice, contentCollector)
         {
@@ -326,6 +330,21 @@ namespace BytingLib
         public NodeGL? FindNode(string name)
         {
             return GetNodes()?.FirstOrDefault(f => f.Name == name);
+        }
+        public IEnumerable<NodeGL> GetNodesOfAllScenes()
+        {
+            if (Scenes == null)
+            {
+                yield break;
+            }
+
+            foreach (var scene in Scenes.AsEnumerable())
+            {
+                foreach (var node in scene.GetNodes())
+                {
+                    yield return node;
+                }
+            }
         }
 
         public int? GetAnimationIndex(string name)

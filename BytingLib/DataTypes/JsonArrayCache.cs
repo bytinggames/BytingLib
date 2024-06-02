@@ -73,6 +73,14 @@ namespace BytingLib
             }
         }
 
+        public IEnumerable<TValue> AsEnumerable()
+        {
+            for (int i = 0; i < TotalCount; i++)
+            {
+                yield return Get(i)!;
+            }
+        }
+
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

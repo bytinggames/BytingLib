@@ -5,7 +5,7 @@ namespace BytingLib
     public class AnimationGL
     {
         private readonly ModelGL model;
-        private readonly Channel[] channels;
+        public Channel[] Channels { get; }
 
         public string? Name { get; }
         public float AnimationStartSecond { get; set; }
@@ -28,20 +28,20 @@ namespace BytingLib
             this.model = model;
             Name = n["name"]?.GetValue<string>();
             var samplersArr = n["samplers"]!.AsArray();
-            channels = n["channels"]!.AsArray().Select(c => GetChannel(c!, model, samplersArr)).ToArray();
+            Channels = n["channels"]!.AsArray().Select(c => GetChannel(c!, model, samplersArr)).ToArray();
 
             // get animation start and end second
             float startSecond = float.MaxValue;
             float endSecond = float.MinValue;
-            for (int i = 0; i < channels.Length; i++)
+            for (int i = 0; i < Channels.Length; i++)
             {
-                float second = channels[i].Sampler.KeyFrames.Seconds[0];
+                float second = Channels[i].Sampler.KeyFrames.Seconds[0];
                 if (startSecond > second)
                 {
                     startSecond = second;
                 }
 
-                second = channels[i].Sampler.KeyFrames.Seconds[^1];
+                second = Channels[i].Sampler.KeyFrames.Seconds[^1];
                 if (endSecond < second)
                 {
                     endSecond = second;
@@ -72,9 +72,9 @@ namespace BytingLib
         {
             float samplerSecond = SecondToSamplerSecond(second, wrap);
 
-            for (int i = 0; i < channels.Length; i++)
+            for (int i = 0; i < Channels.Length; i++)
             {
-                channels[i].Apply(samplerSecond, AnimationEndSecondIncludingTransitionToBegin, Looped);
+                Channels[i].Apply(samplerSecond, AnimationEndSecondIncludingTransitionToBegin, Looped);
             }
         }
 
@@ -82,9 +82,9 @@ namespace BytingLib
         {
             model.AnimationBlend.Begin();
 
-            for (int i = 0; i < channels.Length; i++)
+            for (int i = 0; i < Channels.Length; i++)
             {
-                model.AnimationBlend.AddChannelfNotAlready(channels[i]);
+                model.AnimationBlend.AddChannelfNotAlready(Channels[i]);
             }
 
             UpdateAnimationTime(second, wrap);
@@ -100,14 +100,14 @@ namespace BytingLib
             float samplerSecond = SecondToSamplerSecond(second, wrap);
 
             model.AnimationBlend.BeginAnimationBlend();
-            for (int i = 0; i < channels.Length; i++)
+            for (int i = 0; i < Channels.Length; i++)
             {
-                if (model.AnimationBlend.AddChannelfNotAlready(channels[i]))
+                if (model.AnimationBlend.AddChannelfNotAlready(Channels[i]))
                 {
                     // new blend, so start blending from default
-                    channels[i].ApplyDefault();
+                    Channels[i].ApplyDefault();
                 }
-                channels[i].BlendTo(samplerSecond, interpolationAmount, AnimationEndSecondIncludingTransitionToBegin, Looped);
+                Channels[i].BlendTo(samplerSecond, interpolationAmount, AnimationEndSecondIncludingTransitionToBegin, Looped);
             }
             model.AnimationBlend.EndAnimationBlend(interpolationAmount);
         }
@@ -147,7 +147,7 @@ namespace BytingLib
 
         public void ApplyDefault()
         {
-            channels.ForEvery(f => f.ApplyDefault());
+            Channels.ForEvery(f => f.ApplyDefault());
         }
 
         abstract class Channel<T> : Channel
