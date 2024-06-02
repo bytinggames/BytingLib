@@ -15,6 +15,7 @@ namespace BytingLib
         public JsonArrayCache<ImageGL>? Images { get; }
         public JsonArrayCache<SkinGL>? Skins { get; }
         public JsonArrayCache<AnimationGL>? Animations { get; }
+        public JsonArrayCache<CameraGL>? Cameras { get; }
         internal DictionaryCacheChannelTargets ChannelTargets { get; }
         internal DictionaryCacheKeyFrames? KeyFrames { get; }
         public SceneGL? CurrentScene => Scenes?.Get(SceneIndex);
@@ -23,7 +24,7 @@ namespace BytingLib
 
         private readonly Dictionary<string, Promise<VertexBuffer>> vertexBuffers = new();
         private readonly Dictionary<int, Promise<IndexBuffer>> indexBuffers = new();
-        private readonly JsonArray? accessorsArr, bufferViewsArr, buffersArr;
+        private readonly JsonArray? accessorsArr, bufferViewsArr, buffersArr, camerasJsonArray;
         private readonly DisposableContainer disposables = new();
         private readonly IContentCollectorUse? contentCollector;
         private readonly string gltfDirRelativeToContent;
@@ -111,6 +112,11 @@ namespace BytingLib
             {
                 animationsJsonArray = n.AsArray();
                 Animations = new(animationsJsonArray, n => new(this, n));
+            }
+            if ((n = root["cameras"]) != null)
+            {
+                camerasJsonArray = n.AsArray();
+                Cameras = new(camerasJsonArray, n => new(n));
             }
             if ((n = root["accessors"]) != null)
             {
