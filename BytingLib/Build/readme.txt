@@ -32,5 +32,5 @@ also: add this to the csproj:
 
 
 also: add
-	<Import Project="../../BytingLib/BytingLib/Targets.targets" />
+	<Import Project="../BytingLib/BytingLib/Build/Targets.targets" />
 to your csproj, if you haven't already
