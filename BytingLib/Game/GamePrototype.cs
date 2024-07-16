@@ -26,6 +26,8 @@ namespace BytingLib
         /// <summary>Only used for input that shouldn't be recorded (Fullscreen Toggle for example or Replay interrupt).
         /// The difference to InputStuff.KeysDev</summary>
         protected KeyInput metaKeys;
+        public event Action? OnFrameBeforeScreenshot;
+        private int takeScreenshotNextFrame = -1;
 
 
         public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter,
@@ -107,9 +109,19 @@ namespace BytingLib
 
             ScreenshotType screenshot = ScreenshotType.None;
 
-            if (metaKeys.F12.Pressed)
+            if (metaKeys.F12.Pressed && !metaKeys.Control.Down)
             {
-                screenshot = ScreenshotType.ByUser;
+                OnFrameBeforeScreenshot?.Invoke();
+                takeScreenshotNextFrame = metaKeys.Shift.Down ? 5 : 1;
+            }
+            else if (takeScreenshotNextFrame != -1)
+            {
+                takeScreenshotNextFrame--;
+                if (takeScreenshotNextFrame == 0)
+                {
+                    takeScreenshotNextFrame = -1;
+                    screenshot = ScreenshotType.ByUser;
+                }
             }
             else if (randomScreenshots)
             {

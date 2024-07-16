@@ -42,6 +42,11 @@
 
         public override void DrawBatch(SpriteBatch spriteBatch)
         {
+            if (!Visible)
+            {
+                return;
+            }
+
             BeforeDraw(spriteBatch);
             StyleRoot.SpriteBatchBegin = (scissorTest, effect, sortMode) =>
             {

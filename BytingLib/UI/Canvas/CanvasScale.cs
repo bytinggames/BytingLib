@@ -18,6 +18,7 @@
         private Rect? lastRenderRect;
         // must only be used for non-replay related stuff
         private readonly IResolution graphicsResolution;
+        private string? takeUIScreenshot;
 
         public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, IResolution graphicsResolution, MouseInput mouse, KeyInput keys, GameWindow window, StyleRoot style)
             : base(getRenderRect, mouse, keys, window, style)
@@ -139,6 +140,36 @@
         }
         public override void DrawBatch(SpriteBatch spriteBatch)
         {
+            if (!Visible)
+            {
+                return;
+            }
+
+            RenderTarget2D? rtUIScreenshot = null;
+            IDisposable? useRtUIScreenshot = null;
+            if (takeUIScreenshot != null)
+            {
+                var rts = spriteBatch.GraphicsDevice.GetRenderTargets();
+                int msaa;
+                Int2 res;
+                if (rts.Length > 0 && rts[0].RenderTarget is RenderTarget2D rtCurrent)
+                {
+                    msaa = rtCurrent.MultiSampleCount;
+                    res = new(rtCurrent.Width, rtCurrent.Height);
+                }
+                else
+                {
+                    msaa = spriteBatch.GraphicsDevice.PresentationParameters.MultiSampleCount;
+                    res = new(spriteBatch.GraphicsDevice.PresentationParameters.BackBufferWidth,
+                        spriteBatch.GraphicsDevice.PresentationParameters.BackBufferHeight);
+                }
+
+                rtUIScreenshot = new RenderTarget2D(spriteBatch.GraphicsDevice, res.X, res.Y, 
+                    false, SurfaceFormat.Color, DepthFormat.None, msaa, RenderTargetUsage.DiscardContents);
+                useRtUIScreenshot = spriteBatch.GraphicsDevice.UseRenderTarget(rtUIScreenshot);
+                spriteBatch.GraphicsDevice.Clear(Color.Transparent);
+            }
+
             SetDirtyIfResChanged();
 
             SamplerState samplerState = IsScalingPixelated() 
@@ -176,6 +207,17 @@
             StyleRoot.Pop(Style);
 
             spriteBatch.End();
+
+            if (takeUIScreenshot != null 
+                && rtUIScreenshot != null
+                && useRtUIScreenshot != null)
+            {
+                useRtUIScreenshot.Dispose(); // unuse rendertarget
+                rtUIScreenshot.SaveAsPng(takeUIScreenshot);
+                rtUIScreenshot.Dispose();
+
+                takeUIScreenshot = null;
+            }
         }
 
         protected override void UpdateSelf(ElementInput input)
@@ -203,6 +245,11 @@
         public bool IsScalingPixelated()
         {
             return Scaling == CanvasScaling.PixelArt || Scaling == CanvasScaling.PixelArtResponsiveCanvas;
+        }
+
+        public void TakeUIScreenshot(string outputPngFile)
+        {
+            takeUIScreenshot = outputPngFile;
         }
     }
 }

@@ -71,7 +71,7 @@ namespace BytingLib
             return dateTime.ToString("yyyy.MM.dd_HH.mm.ss_fff");
         }
 
-        internal string GetNewScreenshotWithoutEnding()
+        public string GetNewScreenshotWithoutEnding()
         {
             Directory.CreateDirectory(ScreenshotsDir);
             return Path.Combine(ScreenshotsDir, GetCurrentDateTimeFilename());
@@ -82,7 +82,7 @@ namespace BytingLib
             return Path.Combine(RandomScreenshotsDir, GetCurrentDateTimeFilename());
         }
 
-        internal string GetNewScreenshotPng() => GetNewScreenshotWithoutEnding() + ".png";
+        public string GetNewScreenshotPng() => GetNewScreenshotWithoutEnding() + ".png";
         internal string GetNewRandomScreenshotPng() => GetNewRandomScreenshotWithoutEnding() + ".png";
     }
 }
