@@ -156,17 +156,20 @@ namespace BytingLib
 
                 if (measureWidth > width)
                 {
-                    i--; // we already are above the allowed width, so go back to the last char
+                    if (i - lastNewLineIndex > 2) // only do this if at least two characters are in this line
+                    {
+                        i--; // when we add a '-', then we already are above the allowed width, so go back to the last char
+                    }
                     if (lastSpaceIndex != -1)
                     {
-                        i = lastSpaceIndex;
-                        i++; // skip this space
+                        i = lastSpaceIndex; 
                     }
                     else
                     {
                         // insert -
-                        Insert(i - 1, "-", ref textLengthChanges);
+                        Insert(i, "-", ref textLengthChanges);
                     }
+                    i++; // skip this space or "-"
                     Insert(i, "\n", ref textLengthChanges);
                     NewLine(i);
                 }
