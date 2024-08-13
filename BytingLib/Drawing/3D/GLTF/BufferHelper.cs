@@ -76,7 +76,7 @@
                 "JOINTS_0" => VertexElementUsage.BlendIndices,
                 "WEIGHTS_0" => VertexElementUsage.BlendWeight,
                 "TANGENT" => VertexElementUsage.Tangent,
-                _ => throw new NotImplementedException()
+                _ => throw new VertexAttributeNotSupportedExeption("attribute name " + attributeName + " not supported!")
             };
         }
 

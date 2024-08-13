@@ -36,7 +36,15 @@ namespace BytingLib
                     }
                     else
                     {
-                        PrimitivesContent!.Add(new PrimitiveGLContent(model, primitivesArr[i]!));
+
+                        try
+                        {
+                            PrimitivesContent!.Add(new PrimitiveGLContent(model, primitivesArr[i]!));
+                        }
+                        catch (VertexAttributeNotSupportedExeption e)
+                        {
+                            throw new VertexAttributeNotSupportedExeption(e.Message + " in mesh " + Name + ". This mesh might only exist in the .export.blend file that was generated when baking.", e);
+                        }
                     }
                 }
             }
