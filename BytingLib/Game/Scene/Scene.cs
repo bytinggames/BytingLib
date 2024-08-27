@@ -20,6 +20,11 @@
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         }
 
+        protected virtual void End(SpriteBatch spriteBatch)
+        {
+            spriteBatch.End();
+        }
+
         protected virtual void DrawLoop(SpriteBatch spriteBatch)
         {
             ForEach<IDraw>(f => f.Draw(spriteBatch));
@@ -41,7 +46,7 @@
 
             DrawLoop(spriteBatch);
 
-            spriteBatch.End();
+            End(spriteBatch);
 
             ForEach<IDrawBatch>(f => f.DrawBatch(spriteBatch));
         }
