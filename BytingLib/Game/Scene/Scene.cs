@@ -15,9 +15,14 @@
             : base(new Type[] { typeof(IDraw), typeof(IUpdate), typeof(IUpdateWhenBelowPopup), typeof(IDrawBatch) }.Concat(extraTypes).ToArray())
         { }
 
-        protected virtual void Begin(SpriteBatch spriteBatch)
+        protected virtual void DrawBegin(SpriteBatch spriteBatch)
         {
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        }
+
+        protected virtual void DrawEnd(SpriteBatch spriteBatch)
+        {
+            spriteBatch.End();
         }
 
         protected virtual void DrawLoop(SpriteBatch spriteBatch)
@@ -37,11 +42,11 @@
 
         protected virtual void DrawBatchInner(SpriteBatch spriteBatch)
         {
-            Begin(spriteBatch);
+            DrawBegin(spriteBatch);
 
             DrawLoop(spriteBatch);
 
-            spriteBatch.End();
+            DrawEnd(spriteBatch);
 
             ForEach<IDrawBatch>(f => f.DrawBatch(spriteBatch));
         }
