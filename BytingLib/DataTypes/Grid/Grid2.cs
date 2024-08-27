@@ -2,7 +2,7 @@
 {
     public class Grid2<T> where T : IBoundingRect
     {
-        public float FieldSize { get; private set; }
+        public Vector2 FieldSize { get; private set; }
         public Dictionary<Int2, List<T>> Lists { get; private set; } = new Dictionary<Int2, List<T>>();
 
         public bool BoundsSet { get; private set; } = false;
@@ -18,6 +18,11 @@
         private Int2 Max => new Int2(maxX, maxY);
 
         public Grid2(float fieldSize)
+        {
+            FieldSize = new Vector2(fieldSize);
+        }
+
+        public Grid2(Vector2 fieldSize)
         {
             FieldSize = fieldSize;
         }
@@ -124,10 +129,10 @@
 
         public IEnumerable<Int2> GetCoords(Rect boundingBox)
         {
-            int x1 = (int)Math.Floor(boundingBox.Left / FieldSize);
-            int y1 = (int)Math.Floor(boundingBox.Top / FieldSize);
-            int x2 = (int)Math.Ceiling(boundingBox.Right / FieldSize);
-            int y2 = (int)Math.Ceiling(boundingBox.Bottom / FieldSize);
+            int x1 = (int)Math.Floor(boundingBox.Left / FieldSize.X);
+            int y1 = (int)Math.Floor(boundingBox.Top / FieldSize.Y);
+            int x2 = (int)Math.Ceiling(boundingBox.Right / FieldSize.X);
+            int y2 = (int)Math.Ceiling(boundingBox.Bottom / FieldSize.Y);
 
             Int2 c = new Int2(x1, y1);
             for (; c.Y < y2; c.Y++)
@@ -213,8 +218,8 @@
 
         public IEnumerable<Int2> GetCoords(Vector2 rayOrigin, Vector2 rayDirection)
         {
-            float x = rayOrigin.X / FieldSize;
-            float y = rayOrigin.Y / FieldSize;
+            float x = rayOrigin.X / FieldSize.X;
+            float y = rayOrigin.Y / FieldSize.Y;
             float dx = rayDirection.X;
             float dy = rayDirection.Y;
             float dxAbs = Math.Abs(rayDirection.X);
@@ -269,10 +274,10 @@
         /// <summary>rayDirection must not be normalized.</summary>
         public IEnumerable<Int2> GetCoords(Vector2 rayOrigin, Vector2 rayDirection, float rayLength = float.MaxValue)
         {
-            float x = rayOrigin.X / FieldSize;
-            float y = rayOrigin.Y / FieldSize;
-            float dx = rayDirection.X / FieldSize;
-            float dy = rayDirection.Y / FieldSize;
+            float x = rayOrigin.X / FieldSize.X;
+            float y = rayOrigin.Y / FieldSize.Y;
+            float dx = rayDirection.X / FieldSize.X;
+            float dy = rayDirection.Y / FieldSize.Y;
             float dxAbs = Math.Abs(dx);
             float dyAbs = Math.Abs(dy);
 
@@ -392,6 +397,13 @@
                     }
                 }
             }
+        }
+
+        public void Clear()
+        {
+            Lists.Clear();
+            BoundsSet = false;
+            minX = minY = maxX = maxY = 0;
         }
     }
 }

@@ -8,6 +8,11 @@ namespace BytingLib
         {
         }
 
+        public Grid2List(Vector2 fieldSize)
+            : base(fieldSize)
+        {
+        }
+
         public List<T> Entities { get; private set; } = new List<T>();
 
         public override void Add(T entity)
