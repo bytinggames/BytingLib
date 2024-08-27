@@ -16,9 +16,5 @@ namespace BytingLib
         public VertexAttributeNotSupportedExeption(string? message, Exception? innerException) : base(message, innerException)
         {
         }
-
-        protected VertexAttributeNotSupportedExeption(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Svg;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Drawing;
 
 namespace BytingPipeline
 {
@@ -13,6 +14,11 @@ namespace BytingPipeline
     public class SvgImporter : ContentImporter<TextureContent>
     {
         public override TextureContent Import(string filename, ContentImporterContext context)
+        {
+            return Import(filename, context, out _);
+        }
+
+        public TextureContent Import(string filename, ContentImporterContext context, out Bitmap bmp)
         {
             var output = new Texture2DContent { Identity = new ContentIdentity(filename) };
 
@@ -23,8 +29,7 @@ namespace BytingPipeline
             var width = (int)MathF.Ceiling(mySvg.Width.Value);
             var height = (int)MathF.Ceiling(mySvg.Height.Value);
 
-            var bmp = mySvg.Draw(width, height);
-            System.Drawing.ImageConverter converter = new System.Drawing.ImageConverter();
+            bmp = mySvg.Draw(width, height);
 
             var bitmapData = bmp.LockBits(new System.Drawing.Rectangle(0,0,width, height), 
                 System.Drawing.Imaging.ImageLockMode.ReadOnly,
@@ -42,7 +47,7 @@ namespace BytingPipeline
             Console.WriteLine(bytes.Length);
             Console.WriteLine("bytes.Length");
 
-            face = new PixelBitmapContent<Color>(width, height);
+            face = new PixelBitmapContent<Microsoft.Xna.Framework.Color>(width, height);
 
             for (int i = 0; i < bytes.Length; i += 4)
             {
@@ -55,7 +60,6 @@ namespace BytingPipeline
             face.SetPixelData(bytesConverted);
             output.Faces[0].Add(face);
             return output;
-            
         }
     }
 }
