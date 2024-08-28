@@ -1,7 +1,6 @@
-﻿
-namespace BytingLib
+﻿namespace BytingLib
 {
-    public class DepthLayer
+    public class DepthLayer : IDepthLayer
     {
         private float depth;
         private readonly DepthLayers parent;

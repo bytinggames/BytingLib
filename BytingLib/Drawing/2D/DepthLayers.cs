@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace BytingLib
 {
@@ -6,17 +7,17 @@ namespace BytingLib
     {
         private PropertyInfo[] properties;
 
-        DepthLayer defaultLayer;
-        Stack<DepthLayer> layersInUse = new Stack<DepthLayer>();
+        protected IDepthLayer defaultLayer;
+        Stack<IDepthLayer> layersInUse = new Stack<IDepthLayer>();
 
-        public float GetDepth()
+        public virtual float GetDepth()
         {
             if (layersInUse.Count == 0)
             {
                 return defaultLayer.GetDepth();
             }
 
-            DepthLayer layer = layersInUse.Peek();
+            IDepthLayer layer = layersInUse.Peek();
             return layer.GetDepth();
         }
 
@@ -24,6 +25,19 @@ namespace BytingLib
         {
             defaultLayer = new DepthLayer(0f, this);
 
+            Initialize();
+        }
+
+        public DepthLayers(IDepthLayer defaultLayer)
+        {
+            this.defaultLayer = defaultLayer;
+
+            Initialize();
+        }
+
+        [MemberNotNull(nameof(properties))]
+        private void Initialize()
+        {
             properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty);
 
             ResetLayers();
@@ -41,7 +55,7 @@ namespace BytingLib
             layersInUse.Clear();
         }
 
-        internal void OnUseLayer(DepthLayer layer)
+        internal void OnUseLayer(IDepthLayer layer)
         {
             layersInUse.Push(layer);
         }
