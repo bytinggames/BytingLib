@@ -64,5 +64,7 @@ namespace BytingLib
         {
             layersInUse.Pop();
         }
+
+        public float GetRangePerLayer() => 1f / properties.Length;
     }
 }
