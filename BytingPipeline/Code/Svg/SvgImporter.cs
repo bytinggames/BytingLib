@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using System.IO;
 using System;
-using Microsoft.Xna.Framework;
 using Svg;
 using System.Text;
 using System.Runtime.InteropServices;
@@ -13,6 +12,20 @@ namespace BytingPipeline
     [ContentImporter(".svg", DisplayName = "SvgImporter", DefaultProcessor = "TextureProcessor")]
     public class SvgImporter : ContentImporter<TextureContent>
     {
+        static SvgImporter()
+        {
+            // load all fonts from Content/Fonts/Svg directory
+            string svgFontDir = Path.Combine(Environment.CurrentDirectory, "Fonts", "Svg");
+            if (Directory.Exists(svgFontDir))
+            {
+                string[] fonts = Directory.GetFiles(svgFontDir, "*.ttf");
+                foreach (var font in fonts)
+                {
+                    SvgFontManager.PrivateFontPathList.Add(font);
+                }
+            }
+        }
+
         public override TextureContent Import(string filename, ContentImporterContext context)
         {
             return Import(filename, context, out _);
@@ -42,10 +55,6 @@ namespace BytingPipeline
             // Copy bitmap to byte[]
             Marshal.Copy(bitmapData.Scan0, bytes, 0, length);
             bmp.UnlockBits(bitmapData);
-
-
-            Console.WriteLine(bytes.Length);
-            Console.WriteLine("bytes.Length");
 
             face = new PixelBitmapContent<Microsoft.Xna.Framework.Color>(width, height);
 
