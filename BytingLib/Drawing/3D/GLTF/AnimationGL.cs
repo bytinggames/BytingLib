@@ -150,7 +150,7 @@ namespace BytingLib
             Channels.ForEvery(f => f.ApplyDefault());
         }
 
-        abstract class Channel<T> : Channel
+        public abstract class Channel<T> : Channel
         {
             protected Sampler<T> samplerT;
 
@@ -192,7 +192,7 @@ namespace BytingLib
             }
         }
 
-        class ChannelRotation : Channel<Quaternion>
+        public class ChannelRotation : Channel<Quaternion>
         {
             public ChannelRotation(ModelGL model, JsonNode n, JsonArray samplersArr)
                 : base(model, n,
@@ -208,7 +208,7 @@ namespace BytingLib
 
             protected override Quaternion GetDefaultValue() => Target.Node.JointTransform!.RotationDefault;
         }
-        class ChannelTranslation : Channel<Vector3>
+        public class ChannelTranslation : Channel<Vector3>
         {
             public ChannelTranslation(ModelGL model, JsonNode n, JsonArray samplersArr)
                 : base(model, n,
@@ -224,7 +224,7 @@ namespace BytingLib
 
             protected override Vector3 GetDefaultValue() => Target.Node.JointTransform!.TranslationDefault;
         }
-        class ChannelScale : Channel<Vector3>
+        public class ChannelScale : Channel<Vector3>
         {
             public ChannelScale(ModelGL model, JsonNode n, JsonArray samplersArr)
                 : base(model, n,
