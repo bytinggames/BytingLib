@@ -178,5 +178,16 @@
             }
             return this;
         }
+
+        public PrimitiveLineStrip SkewX(float angle)
+        {
+            Polygon.SkewX(Vertices, angle);
+            return this;
+        }
+        public PrimitiveLineStrip SkewY(float angle)
+        {
+            Polygon.SkewY(Vertices, angle);
+            return this;
+        }
     }
 }
