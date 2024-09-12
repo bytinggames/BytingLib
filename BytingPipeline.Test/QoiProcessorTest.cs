@@ -1,15 +1,11 @@
 using Microsoft.Xna.Framework.Content.Pipeline;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
-using Microsoft.Xna.Framework.Content.Pipeline.Processors;
-using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate;
-using System.Xml;
 
 namespace BytingPipeline.Test
 {
     [TestClass]
     public class QoiProcessorTest
     {
-        static string imageFile = "Resources\\Image.png";
+        static string imageFile = Path.Combine("Resources", "Image.png");
 
         [TestMethod]
         public void Test()

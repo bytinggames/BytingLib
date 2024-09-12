@@ -3,6 +3,7 @@
     public abstract class SamplerOutput<T>
     {
         protected T[]? values;
+        public T[]? Values => values;
 
         public virtual T GetValue(int frame) => values![frame];
         public virtual T GetValueLinear(int frame0, int frame1, float interpolationAmount)

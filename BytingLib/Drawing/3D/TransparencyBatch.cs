@@ -25,19 +25,29 @@
             drawLayers.Add(new(new DuplicateKeyComparerDescending<float>())); // add a new draw layer
         }
 
-        public void End()
+        public void End(int index = 0)
         {
             if (drawLayers.Count == 0)
             {
                 throw new Exception("TransparencyBatch.End() must be called after TransparencyBatch.Begin()");
             }
 
-            foreach (var draw in drawLayers[0])
+            if (index >= drawLayers.Count)
+            {
+                throw new Exception($"TransparencyBatch.End() index {index} is out of range of drawLayers.Count {drawLayers.Count}");
+            }
+
+            foreach (var draw in drawLayers[index])
             {
                 draw.Value();
             }
 
-            drawLayers.RemoveAt(0);
+            drawLayers.RemoveAt(index);
+        }
+
+        public void EndLastLayer()
+        {
+            End(drawLayers.Count - 1);
         }
 
         public void DrawLater(Vector3 centerPosition, Action draw)
