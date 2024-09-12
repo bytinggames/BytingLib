@@ -146,7 +146,7 @@
             }
         }
 
-        private int GetFrameIndex()
+        protected int GetFrameIndex()
         {
             int frameIndex;
             if (Disabled)
