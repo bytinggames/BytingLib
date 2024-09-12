@@ -12,7 +12,7 @@ namespace BytingPipeline.Test
     [TestClass]
     public class SvgImporterTest
     {
-        static string imageFile = "Resources\\Logo.svg";
+        static string imageFile = Path.Combine("Resources", "Logo.svg");
 
         [TestMethod]
         public void Test()
