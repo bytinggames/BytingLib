@@ -73,5 +73,16 @@
         {
             return Vertices.Concat(Vertices.Take(2));
         }
+
+        public PrimitiveAreaRing SkewX(float angle)
+        {
+            Polygon.SkewX(Vertices, angle);
+            return this;
+        }
+        public PrimitiveAreaRing SkewY(float angle)
+        {
+            Polygon.SkewY(Vertices, angle);
+            return this;
+        }
     }
 }

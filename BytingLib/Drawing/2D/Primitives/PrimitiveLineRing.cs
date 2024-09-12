@@ -46,13 +46,13 @@
 
         public PrimitiveLineRing(Rect rect)
         {
-            Vertices = new Vector2[]
-            {
+            Vertices =
+            [
                 rect.BottomRight,
                 rect.BottomLeft,
                 rect.TopLeft,
                 rect.TopRight,
-            };
+            ];
         }
 
         public PrimitiveAreaRing Thicken(float thickness)
@@ -70,6 +70,22 @@
         public PrimitiveAreaRing Thicken(float thickness, float anchorInner)
         {
             return new PrimitiveAreaRing(this, thickness, anchorInner);
+        }
+
+        public PrimitiveLineRing SkewX(float angle)
+        {
+            Polygon.SkewX(Vertices, angle);
+            return this;
+        }
+        public PrimitiveLineRing SkewY(float angle)
+        {
+            Polygon.SkewY(Vertices, angle);
+            return this;
+        }
+
+        public Polygon ToPolygon()
+        {
+            return new Polygon(Vector2.Zero, Vertices);
         }
     }
 }

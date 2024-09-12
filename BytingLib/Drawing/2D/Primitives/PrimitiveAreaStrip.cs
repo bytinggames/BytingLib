@@ -272,5 +272,16 @@
                     .Select(f => new VertexPositionColorTexture(new Vector3(f.X, f.Y, depth), (toggle = !toggle) ? color1 : color2, Vector2.Zero))
                     .ToArray();
         }
+
+        public PrimitiveAreaStrip SkewX(float angle)
+        {
+            Polygon.SkewX(Vertices, angle);
+            return this;
+        }
+        public PrimitiveAreaStrip SkewY(float angle)
+        {
+            Polygon.SkewY(Vertices, angle);
+            return this;
+        }
     }
 }
