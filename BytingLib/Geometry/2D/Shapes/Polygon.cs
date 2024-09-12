@@ -439,5 +439,72 @@
         {
             return Pos + Vertices[index];
         }
+
+        public void SkewX(float angle)
+        {
+            SkewX(Vertices, angle);
+        }
+        public void SkewY(float angle)
+        {
+            SkewY(Vertices, angle);
+        }
+
+        public static void SkewX(IList<Vector2> vertices, float angle)
+        {
+            if (vertices.Count == 0)
+            {
+                return;
+            }
+            Vector2 center;
+            float shift;
+            SkewInit(vertices, angle, out center, out shift);
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                Vector2 offset = vertices[i] - center;
+                vertices[i] = center + new Vector2(offset.X - offset.Y * shift, offset.Y);
+            }
+        }
+        public static void SkewY(IList<Vector2> vertices, float angle)
+        {
+            if (vertices.Count == 0)
+            {
+                return;
+            }
+            Vector2 center;
+            float shift;
+            SkewInit(vertices, angle, out center, out shift);
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                Vector2 offset = vertices[i] - center;
+                vertices[i] = center + new Vector2(offset.X, offset.Y - offset.X * shift);
+            }
+        }
+
+        private static void SkewInit(IList<Vector2> vertices, float angle, out Vector2 center, out float shift)
+        {
+            Vector2 min = vertices[0], max = vertices[0];
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                if (vertices[i].X > max.X)
+                {
+                    max.X = vertices[i].X;
+                }
+                else if (vertices[i].X < min.X)
+                {
+                    min.X = vertices[i].X;
+                }
+
+                if (vertices[i].Y > max.Y)
+                {
+                    max.Y = vertices[i].Y;
+                }
+                else if (vertices[i].Y < min.Y)
+                {
+                    min.Y = vertices[i].Y;
+                }
+            }
+            center = (min + max) / 2f;
+            shift = MathF.Sin(angle);
+        }
     }
 }

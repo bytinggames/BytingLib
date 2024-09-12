@@ -97,5 +97,10 @@
                 newText = text;
             }
         }
+
+        public bool IsTooltipStartShowingThisFrame()
+        {
+            return mouseStillForFrames == NoMouseMovementToShowInFrames;
+        }
     }
 }

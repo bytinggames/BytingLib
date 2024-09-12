@@ -90,5 +90,16 @@
             v[0].Color = color1;
             return v;
         }
+
+        public PrimitiveAreaFan SkewX(float angle)
+        {
+            Polygon.SkewX(Vertices, angle);
+            return this;
+        }
+        public PrimitiveAreaFan SkewY(float angle)
+        {
+            Polygon.SkewY(Vertices, angle);
+            return this;
+        }
     }
 }
