@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate;
 using Microsoft.Xna.Framework.Graphics;
+using SkiaSharp;
 using System.Drawing;
 using System.Xml;
 
@@ -21,11 +22,11 @@ namespace BytingPipeline.Test
             var contextProcessor = new TestProcessorContext(TargetPlatform.DesktopGL, "OutputImage.xnb");
 
             SvgImporter importer = new SvgImporter();
-            var svgContent = importer.Import(imageFile, importerContext, out Bitmap bmp);
+            var svgContent = importer.Import(imageFile, importerContext, out SKBitmap? bmp);
             TextureProcessor processor = new TextureProcessor();
             processor.Process(svgContent, contextProcessor);
 
-            bmp.Save("Logo.png");
+            //bmp!...Save("Logo.png");
         }
     }
 }

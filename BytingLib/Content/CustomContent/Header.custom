@@ -2,10 +2,10 @@
 $if Configuration=Debug
 /reference:../../BytingLib/BytingPipeline/bin/Debug/net8.0/BytingPipeline.dll
 /reference:../../BytingLib/BytingPipeline/bin/Debug/net8.0/QoiSharp.dll
-/reference:../../BytingLib/BytingPipeline/bin/Debug/net8.0/Svg.dll
+/reference:../../BytingLib/BytingPipeline/bin/Debug/net8.0/SkiaSharp.dll
 $endif
 $if Configuration=Release
 /reference:../../BytingLib/BytingPipeline/bin/Release/net8.0/BytingPipeline.dll
 /reference:../../BytingLib/BytingPipeline/bin/Release/net8.0/QoiSharp.dll
-/reference:../../BytingLib/BytingPipeline/bin/Release/net8.0/Svg.dll
+/reference:../../BytingLib/BytingPipeline/bin/Release/net8.0/SkiaSharp.dll
 $endif
