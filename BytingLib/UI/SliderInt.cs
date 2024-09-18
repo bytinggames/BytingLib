@@ -111,7 +111,7 @@ namespace BytingLib.UI
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
-            if (style.FontColor != null)
+            if (style.FontColor.IsNotTransparent())
             {
                 lineRect.Pos = new Vector2(AbsoluteInnerLeft, AbsoluteRect.Y + AbsoluteRect.Height / 2f);
                 lineRect.Y -= LineHeight / 2f;

@@ -180,7 +180,7 @@
                 moveCursorVertically = null;
             }
 
-            if (style.FontColor != null)
+            if (style.FontColor.IsNotTransparent())
             {
                 if (drawFocused)
                 {

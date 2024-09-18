@@ -89,12 +89,12 @@
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
-            if (style.FontBoldColor != null)
+            if (style.FontBoldColor.IsNotTransparent())
             {
                 style.FontBold?.Value.Draw(spriteBatch, TextToDraw, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, style.FontScale, Tilt, roundPositionTo: style.RoundPositionTo);
             }
 
-            if (style.FontColor != null)
+            if (style.FontColor.IsNotTransparent())
             {
                 style.Font.Value.Draw(spriteBatch, TextToDraw, AbsoluteRect.GetAnchor(Anchor), style.FontColor, style.FontScale, Tilt, roundPositionTo: style.RoundPositionTo);
             }

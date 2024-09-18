@@ -45,7 +45,7 @@ namespace BytingLib.UI
         {
             if (markup != null)
             {
-                if (style.FontBoldColor != null && style.FontBold != null)
+                if (style.FontBoldColor.IsNotTransparent() && style.FontBold != null)
                 {
                     markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale, Tilt)
                     {
@@ -58,7 +58,7 @@ namespace BytingLib.UI
                     });
                 }
 
-                if (style.FontColor != null)
+                if (style.FontColor.IsNotTransparent())
                 {
                     markup.Draw(GetDefaultSetting(spriteBatch, style));
                 }
