@@ -96,5 +96,14 @@ namespace BytingLib.UI
             markup?.Dispose();
             markup = new MarkupRoot(creator, TextToDraw);
         }
+
+        public Vector2 MeasureSize(StyleRoot style)
+        {
+            if (style.FontBold != null && style.FontBoldColor.IsNotTransparent())
+            {
+                return style.FontBold.Value.MeasureString(Text) * style.FontScale;
+            }
+            return style.Font.Value.MeasureString(Text) * style.FontScale;
+        }
     }
 }
