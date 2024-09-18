@@ -71,6 +71,8 @@
 
         protected override void UpdateSelf(ElementInput input)
         {
+            SetDirtyIfResChanged();
+
             if (TreeDirty)
             {
                 UpdateTree();

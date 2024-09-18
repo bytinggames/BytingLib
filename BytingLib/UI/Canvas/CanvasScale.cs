@@ -15,7 +15,6 @@
         public float MaxAspectRatio { get; set; }
         public CanvasScaling Scaling { get; set; } = CanvasScaling.Default;
         private float scale;
-        private Rect? lastRenderRect;
         // must only be used for non-replay related stuff
         private readonly IResolution graphicsResolution;
         private string? takeUIScreenshot;
@@ -178,10 +177,10 @@
 
             Matrix transform = Transform;
             Int2 graphicsRes = graphicsResolution.Resolution;
-            if (lastRenderRect != null && graphicsRes.ToVector2() != lastRenderRect.Size)
+            if (LastRenderRect != null && graphicsRes.ToVector2() != LastRenderRect.Size)
             {
                 // custom transform, so that when watching a replay, it still displays the ui wholly independent of viewers and recorders resolution
-                transform *= Matrix.CreateScale(graphicsRes.X / lastRenderRect.Width, graphicsRes.Y / lastRenderRect.Height, 1f);
+                transform *= Matrix.CreateScale(graphicsRes.X / LastRenderRect.Width, graphicsRes.Y / LastRenderRect.Height, 1f);
             }
 
             BeforeDraw(spriteBatch);
@@ -230,16 +229,6 @@
             }
 
             base.UpdateSelf(input);
-        }
-
-        private void SetDirtyIfResChanged()
-        {
-            Rect newRenderRect = getRenderRect();
-            if (!lastRenderRect.EqualValue(newRenderRect))
-            {
-                SetDirty();
-                lastRenderRect = newRenderRect;
-            }
         }
 
         public bool IsScalingPixelated()

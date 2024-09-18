@@ -9,6 +9,7 @@
         public StyleRoot StyleRoot { get; set; }
         private bool treeDirty = true;
         public Ref<Effect>? Effect { get; set; }
+        protected Rect? LastRenderRect { get; private set; }
 
         //private bool scissorTest;
         protected readonly RasterizerState rasterizerState = CreateDefaultRasterizerState();
@@ -99,6 +100,16 @@
             treeDirty = true;
 
             base.SetDirty();
+        }
+
+        protected void SetDirtyIfResChanged()
+        {
+            Rect newRenderRect = getRenderRect();
+            if (!LastRenderRect.EqualValue(newRenderRect))
+            {
+                SetDirty();
+                LastRenderRect = newRenderRect;
+            }
         }
     }
 }
