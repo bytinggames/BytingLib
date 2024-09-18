@@ -193,12 +193,12 @@
             if (setChildrenWidthToMaxChildWidth)
             {
                 setChildrenWidthToMaxChildWidth = false;
-                SetChildrenSizesToMaxChildSize(0);
+                SetChildrenSizesToMaxChildSize(0, rect.Size);
             }
             if (setChildrenHeightToMaxChildHeight)
             {
                 setChildrenHeightToMaxChildHeight = false;
-                SetChildrenSizesToMaxChildSize(1);
+                SetChildrenSizesToMaxChildSize(1, rect.Size);
             }
 
             UpdateTreeInner(rect);
@@ -235,7 +235,7 @@
                 {
                     if (size[d] == 0f && c.Children.Count > 0)
                     {
-                        size[d] = c.GetSizeTopToBottom(d);
+                        size[d] = c.GetSizeTopToBottom(d, rect.Size);
                     }
 
                     if (size[d] < 0)
@@ -253,7 +253,7 @@
             return myRect;
         }
 
-        public virtual float GetSizeTopToBottom(int d)
+        public virtual float GetSizeTopToBottom(int d, Vector2 parentContainerSize)
         {
             float size = Size(d);
             if (size == 0)
@@ -264,14 +264,14 @@
                     return pad;
                 }
 
-                float maxSize = Children.Max(f => f.GetSizeTopToBottom(d));
+                float maxSize = Children.Max(f => f.GetSizeTopToBottom(d, parentContainerSize));
                 if (maxSize > 0)
                 {
                     return maxSize + pad;
                 }
                 else // no positive values
                 {
-                    return Children.Min(f => f.GetSizeTopToBottom(d));
+                    return Children.Min(f => f.GetSizeTopToBottom(d, parentContainerSize));
                 }
             }
             return size;
@@ -452,13 +452,13 @@
             SetDirty();
             return this;
         }
-        private Element SetChildrenSizesToMaxChildSize(int d)
+        private Element SetChildrenSizesToMaxChildSize(int d, Vector2 parentContainerSize)
         {
             float maxSize = 0f;
 
             for (int i = 0; i < Children.Count; i++)
             {
-                float size = Children[i].GetSizeTopToBottom(d);
+                float size = Children[i].GetSizeTopToBottom(d, parentContainerSize);
                 if (size >= 0f)
                 {
                     if (size > maxSize)

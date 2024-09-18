@@ -4,7 +4,6 @@
     {
         public Ref<Texture2D> Texture { get; set; }
         public Color Color { get; set; }
-        public bool KeepAspectRatio { get; set; } = false;
 
         public PanelTexture(Ref<Texture2D> texture, float? width = null, float? height = null, Color? color = null, Vector2? anchor = null, Padding? padding = null)
         {
@@ -20,17 +19,6 @@
             Padding = padding;
         }
 
-        protected override void UpdateTreeInner(Rect rect)
-        {
-            if (KeepAspectRatio)
-            {
-                rect = rect.CloneRect();
-                rect.ShrinkToAspectRatio((float)Texture.Value.Width / Texture.Value.Height, Anchor);
-            }
-
-            base.UpdateTreeInner(rect);
-        }
-
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
             Texture.Value.Draw(spriteBatch, AbsoluteRect, Color);
@@ -43,12 +31,13 @@
             return this;
         }
 
-        public PanelTexture ScaleToAspectRatio()
+        public PanelAspectRatio ScaleToAspectRatio(bool takeFullWidthOrHeight = false)
         {
-            KeepAspectRatio = true;
             Width = -1f;
             Height = -1f;
-            return this;
+            return (PanelAspectRatio)new PanelAspectRatio(Texture.Value.GetSize().AspectRatio(), takeFullWidthOrHeight).Add(
+                this
+            );
         }
     }
 }

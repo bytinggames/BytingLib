@@ -5,10 +5,10 @@
         public float AspectRatio { get; }
         public Color? Color { get; set; }
 
-        public PanelAspectRatio(float aspectRatio = 1f, Color? color = null, Vector2? anchor = null, Padding? padding = null)
+        public PanelAspectRatio(float aspectRatio = 1f, bool takeFullWidthOrHeight = false, Color? color = null, Vector2? anchor = null, Padding? padding = null)
         {
-            Width = -1f;
-            Height = -1f;
+            Width = takeFullWidthOrHeight ? -1f : 0f;
+            Height = takeFullWidthOrHeight ? 0f : -1f;
             AspectRatio = aspectRatio;
             Color = color;
             if (anchor != null)
@@ -19,12 +19,43 @@
             Padding = padding;
         }
 
-        protected override void UpdateTreeInner(Rect rect)
+        protected override void UpdateTreeBeginSelf(StyleRoot style)
         {
-            rect = rect.CloneRect();
-            rect.ShrinkToAspectRatio(AspectRatio, Anchor);
+            base.UpdateTreeBeginSelf(style);
+        }
 
-            base.UpdateTreeInner(rect);
+        protected override void UpdateTreeModifyRect(Rect rect)
+        {
+            base.UpdateTreeModifyRect(rect);
+        }
+
+        public override float GetSizeTopToBottom(int d, Vector2 parentContainerSize)
+        {
+            float parentContainerAspectRatio = parentContainerSize.X / parentContainerSize.Y;
+            if (AspectRatio > parentContainerAspectRatio)
+            {
+                // width is equal to parent width
+                if (d == 0)
+                {
+                    return parentContainerSize.X;
+                }
+                else
+                {
+                    return parentContainerSize.X / AspectRatio;
+                }
+            }
+            else
+            {
+                // height is equal to parent height
+                if (d == 0)
+                {
+                    return parentContainerSize.Y * AspectRatio;
+                }
+                else
+                {
+                    return parentContainerSize.Y;
+                }
+            }
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)

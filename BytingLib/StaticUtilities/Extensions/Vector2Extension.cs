@@ -110,6 +110,7 @@
             return MathExtension.AngleDistance(vec1.ToAngle(), vec2.ToAngle());
         }
         public static float Average(this Vector2 v) => (v.X + v.Y) / 2f;
+        public static float AspectRatio(this Vector2 v) => v.X / v.Y;
 
         public static Vector2 GetSqrt(this Vector2 v)
         {

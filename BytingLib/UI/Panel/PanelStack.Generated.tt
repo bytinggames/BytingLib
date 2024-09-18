@@ -31,7 +31,7 @@ namespace BytingLib.UI
             if (anyUnknown<#=Height#>)
             {
                 float auto<#=Height#>Sum = Children.Sum(f => -MathF.Min(0, f.<#=Height#>));
-                float fixed<#=Height#> = GetFixed<#=Height#>();
+                float fixed<#=Height#> = GetFixed<#=Height#>(rect.Size);
                 float remaining<#=Height#> = contentSize.<#=Y#> - fixed<#=Height#>;
                 null<#=Height#> = remaining<#=Height#> / auto<#=Height#>Sum;
             }
@@ -41,7 +41,7 @@ namespace BytingLib.UI
             for (int i = 0; i < Children.Count; i++)
             {
                 var c = Children[i];
-                float <#=height#> = c.GetSizeTopToBottom(<#=d#>);
+                float <#=height#> = c.GetSizeTopToBottom(<#=d#>, rect.Size);
 				if (<#=height#> < 0)
 					<#=height#> = null<#=Height#> * -<#=height#>;
 				float <#=width#> = rect.<#=Width#>;
@@ -55,14 +55,14 @@ namespace BytingLib.UI
             }
         }
 
-        private float GetFixed<#=Height#>()
+        private float GetFixed<#=Height#>(Vector2 parentContainerSize)
         {
-            return Children.Sum(f => MathF.Max(0f, f.GetSizeTopToBottom(<#=d#>))) + Gap * (Children.Count - 1);
+            return Children.Sum(f => MathF.Max(0f, f.GetSizeTopToBottom(<#=d#>, parentContainerSize))) + Gap * (Children.Count - 1);
         }
 
-        private Vector2 GetContentSize<#=Vertical#>(out bool anyUnknown<#=Height#>)
+        private Vector2 GetContentSize<#=Vertical#>(out bool anyUnknown<#=Height#>, Vector2 parentContainerSize)
         {
-            float <#=width#> = Children.Count == 0 ? 0 : Children.Max(f => f.GetSizeTopToBottom(1 - <#=d#>));
+            float <#=width#> = Children.Count == 0 ? 0 : Children.Max(f => f.GetSizeTopToBottom(1 - <#=d#>, parentContainerSize));
             float <#=height#>;
 
             if (Children.Any(f => f.<#=Height#> < 0))
@@ -73,12 +73,12 @@ namespace BytingLib.UI
             }
             else
             {
-                <#=height#> = GetFixed<#=Height#>();
+                <#=height#> = GetFixed<#=Height#>(parentContainerSize);
                 anyUnknown<#=Height#> = false;
             }
 			
             if (<#=width#> < 0)
-                <#=width#> = Children.Min(f => f.GetSizeTopToBottom(1 - <#=d#>));
+                <#=width#> = Children.Min(f => f.GetSizeTopToBottom(1 - <#=d#>, parentContainerSize));
 
             return new Vector2(width, height);
         }

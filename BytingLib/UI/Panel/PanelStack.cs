@@ -27,7 +27,7 @@
             Vector2 pos = Anchor * parentRect.Size + parentRect.Pos;
             bool anyUnknownSize;
             Vector2 contentSize, contentSizePlusPadding;
-            GetSize(out anyUnknownSize, out contentSize, out contentSizePlusPadding);
+            GetSize(out anyUnknownSize, out contentSize, out contentSizePlusPadding, parentRect.Size);
             PercentageToPixels(ref contentSizePlusPadding, ref contentSize, parentRect);
 
             if (Width != 0)
@@ -78,9 +78,9 @@
             }
         }
 
-        private void GetSize(out bool anyUnknownSize, out Vector2 contentSize, out Vector2 contentSizePlusPadding)
+        private void GetSize(out bool anyUnknownSize, out Vector2 contentSize, out Vector2 contentSizePlusPadding, Vector2 parentContainerSize)
         {
-            contentSize = Vertical ? GetContentSizeVertical(out anyUnknownSize) : GetContentSizeHorizontal(out anyUnknownSize);
+            contentSize = Vertical ? GetContentSizeVertical(out anyUnknownSize, parentContainerSize) : GetContentSizeHorizontal(out anyUnknownSize, parentContainerSize);
             contentSizePlusPadding = contentSize;
             if (contentSize.X >= 0)
             {
@@ -101,7 +101,7 @@
             }
         }
 
-        public override float GetSizeTopToBottom(int d)
+        public override float GetSizeTopToBottom(int d, Vector2 parentContainerSize)
         {
             float size = Size(d);
             if (size > 0)
@@ -113,7 +113,7 @@
                 return size;
             }
 
-            GetSize(out _, out _, out Vector2 contentSizePlusPadding);
+            GetSize(out _, out _, out Vector2 contentSizePlusPadding, parentContainerSize);
             if (d == 0)
             {
                 return contentSizePlusPadding.X;

@@ -25,7 +25,7 @@
             Vector2 pos = Anchor * parentRect.Size + parentRect.Pos;
             Vector2 fieldSize, contentSizePlusPadding;
 
-            GetSize(out fieldSize, out contentSizePlusPadding);
+            GetSize(out fieldSize, out contentSizePlusPadding, parentRect.Size);
 
             if (contentSizePlusPadding.X < 0)
             {
@@ -120,9 +120,9 @@
             }
         }
 
-        private void GetSize(out Vector2 fieldSize, out Vector2 contentSizePlusPadding)
+        private void GetSize(out Vector2 fieldSize, out Vector2 contentSizePlusPadding, Vector2 parentContainerSize)
         {
-            fieldSize = GetMaxChildSize();
+            fieldSize = GetMaxChildSize(parentContainerSize);
             int columnsTaken = Math.Min(Columns, Children.Count);
             int rowsTaken = GetRowsTaken();
             Vector2 contentSize = new Vector2(
@@ -146,7 +146,7 @@
             return (int)MathF.Ceiling((float)Children.Count / Columns);
         }
 
-        private Vector2 GetMaxChildSize()
+        private Vector2 GetMaxChildSize(Vector2 parentContainerSize)
         {
             float[] max = new float[2];
             bool[] allSizeNegative = new[] { true, true };
@@ -155,7 +155,7 @@
             {
                 for (int d = 0; d < 2; d++)
                 {
-                    float size = Children[i].GetSizeTopToBottom(d);
+                    float size = Children[i].GetSizeTopToBottom(d, parentContainerSize);
                     if (size >= max[d])
                     {
                         max[d] = size;
@@ -178,9 +178,9 @@
             return new Vector2(max[0], max[1]);
         }
 
-        public override float GetSizeTopToBottom(int d)
+        public override float GetSizeTopToBottom(int d, Vector2 parentContainerSize)
         {
-            GetSize(out _, out Vector2 contentSizePlusPadding);
+            GetSize(out _, out Vector2 contentSizePlusPadding, parentContainerSize);
             if (d == 0)
             {
                 return contentSizePlusPadding.X;
