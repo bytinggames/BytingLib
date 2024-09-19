@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    public class TextureQuadRenderer
+    public class TextureQuadRenderer : IDisposable
     {
         private readonly VertexBuffer vertexBuffer;
         private readonly IndexBuffer indexBuffer;
@@ -34,7 +34,7 @@
         {
             UpdateSourceRectUV(texture, sourceRect);
 
-            using (shader.World.Use(world))
+            using (shader.World.Use(f => world * f))
             using (shader.AlbedoTex.Use(texture))
             {
                 shader.Draw(vertexBuffer, indexBuffer, PrimitiveType.TriangleStrip);
@@ -94,6 +94,12 @@
 
             DrawStretch(shader, center, right, up, texture, sourceRect);
         }
+        public void DrawKeepAspectRatioBothSidesMirrored<S>(S shader, Vector3 center, Vector3 right, Vector3 up, Texture2D texture, Rectangle? sourceRect = null)
+            where S : IShaderWorld, IShaderAlbedo
+        {
+            DrawKeepAspectRatio(shader, center, right, up, texture, sourceRect);
+            DrawKeepAspectRatio(shader, center, -right, up, texture, sourceRect);
+        }
 
         public void DrawStretch<S>(S shader, Vector3 center, Vector3 right, Vector3 up, Texture2D texture, Rectangle? sourceRect = null)
             where S : IShaderWorld, IShaderAlbedo
@@ -131,6 +137,12 @@
             Matrix rotation = new Matrix(new Vector4(x, 0f), new Vector4(y, 0f), new Vector4(z, 0f), Vector4.UnitW);
             Matrix world = Matrix.CreateScale(right.Length(), up.Length(), 1f) * rotation * Matrix.CreateTranslation(center);
             return world;
+        }
+
+        public void Dispose()
+        {
+            vertexBuffer.Dispose();
+            indexBuffer.Dispose();
         }
     }
 }
