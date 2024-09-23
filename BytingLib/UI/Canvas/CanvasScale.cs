@@ -8,7 +8,6 @@
         private Rect defaultRect;
         public int DefaultResX => (int)defaultRect.Width;
         public int DefaultResY => (int)defaultRect.Height;
-        public Matrix Transform { get; private set; }
         public Matrix? TransformPre { get; set; }
         public Matrix? TransformPost { get; set; }
         public float MinAspectRatio { get; set; }

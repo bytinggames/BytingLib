@@ -10,6 +10,7 @@
         private bool treeDirty = true;
         public Ref<Effect>? Effect { get; set; }
         protected Rect? LastRenderRect { get; private set; }
+        public Matrix Transform { get; protected set; } = Matrix.Identity;
 
         //private bool scissorTest;
         protected readonly RasterizerState rasterizerState = CreateDefaultRasterizerState();
