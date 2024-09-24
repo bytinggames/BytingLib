@@ -7,7 +7,11 @@ namespace BytingLib
         private readonly Action<Ref<T>>? onDispose;
         public event Action<Ref<T>>? OnReload;
 
-        public T Value => pointerToValue.Value!;
+        public T Value
+        {
+            get => pointerToValue.Value!;
+            set => pointerToValue.Value = value;
+        }
 
         public Ref(Promise<T> pointerToValue, Action<Ref<T>>? onDispose)
         {

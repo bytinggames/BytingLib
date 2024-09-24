@@ -2,7 +2,7 @@
 {
     public class PanelAspectRatio : Element
     {
-        public float AspectRatio { get; }
+        public float AspectRatio { get; set; }
         public Color? Color { get; set; }
 
         public PanelAspectRatio(float aspectRatio = 1f, bool takeFullWidthOrHeight = false, Color? color = null, Vector2? anchor = null, Padding? padding = null)
