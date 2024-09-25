@@ -44,7 +44,13 @@
         public void Update()
         {
             Input.Mouse.Update();
-            Input.HoverElement = null; // reset hover element
+
+            // reset hover element
+            if (Input.HoverElement != null)
+            {
+                Input.HoverElement.Hover = false;
+            }
+            Input.HoverElement = null;
 
             if (updateCatch != null)
             {

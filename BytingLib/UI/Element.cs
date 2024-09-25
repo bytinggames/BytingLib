@@ -166,7 +166,7 @@
                 Children[i].Update(input);
             }
 
-            // call update self after children, cause children are drown on top of parent
+            // call update self after children, cause children are drawn on top of parent
             UpdateSelf(input);
         }
 
