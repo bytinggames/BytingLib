@@ -174,6 +174,8 @@
                 && MathF.Abs(0.5f - ((scale + 0.5f) % 1)) < 0.01f // check if scale is roughly a whole number (1, 2, 3, etc.)
                 ? SamplerState.PointClamp : SamplerState.LinearClamp;
 
+            BeforeDraw(spriteBatch); // this also updates the Transform. So it must be executed before using the Transform.
+
             Matrix transform = Transform;
             Int2 graphicsRes = graphicsResolution.Resolution;
             if (LastRenderRect != null && graphicsRes.ToVector2() != LastRenderRect.Size)
@@ -182,7 +184,6 @@
                 transform *= Matrix.CreateScale(graphicsRes.X / LastRenderRect.Width, graphicsRes.Y / LastRenderRect.Height, 1f);
             }
 
-            BeforeDraw(spriteBatch);
             StyleRoot.SpriteBatchBegin = (scissorTest, effect, sortMode)  =>
             {
                 RasterizerState rs = scissorTest ? rasterizerStateScissor : rasterizerState;
