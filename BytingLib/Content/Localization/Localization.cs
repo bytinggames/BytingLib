@@ -344,7 +344,20 @@ namespace BytingLib
                 while (column >= 0)
                 {
                     previousIndex = index;
-                    index = localizationLines[lineIndex].IndexOf(separator, index + 1);
+
+                    // is this cell embedded in "?
+                    bool embeddedInQuotes = localizationLines[lineIndex][index + 1] == textMarker;
+
+                    if (embeddedInQuotes)
+                    {
+                        index++; // skip over "
+                        index = localizationLines[lineIndex].IndexOf(textMarker.ToString() + separator, index + 1);
+                        index++; // skip over "
+                    }
+                    else
+                    {
+                        index = localizationLines[lineIndex].IndexOf(separator, index + 1);
+                    }
 
                     if (index == -1)
                     {
