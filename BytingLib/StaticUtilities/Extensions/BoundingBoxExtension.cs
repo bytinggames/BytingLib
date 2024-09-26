@@ -34,10 +34,31 @@
             return box;
         }
 
-        public static float DistanceSquaredToVector(this BoundingBox box, Vector3 v)
+        public static float DistanceSquaredTo(this BoundingBox box, Vector3 v)
         {
             Vector3 inside = MoveVectorInside(box, v);
             return Vector3.DistanceSquared(v, inside);
+        }
+
+        public static float DistanceSquaredTo(this BoundingBox box1, BoundingBox box2)
+        {
+            Vector3 centerDist = box2.GetCenter() - box1.GetCenter();
+            Vector3 collectiveSize = box1.Max - box1.Min + box2.Max - box2.Min;
+            Vector3 distSign = centerDist.GetSign();
+            centerDist -= distSign * collectiveSize * 0.5f;
+            if (MathF.Sign(centerDist.X) != distSign.X)
+            {
+                centerDist.X = 0f;
+            }
+            if (MathF.Sign(centerDist.Y) != distSign.Y)
+            {
+                centerDist.Y = 0f;
+            }
+            if (MathF.Sign(centerDist.Z) != distSign.Z)
+            {
+                centerDist.Z = 0f;
+            }
+            return centerDist.LengthSquared();
         }
 
         public static Vector3 MoveVectorInside(this BoundingBox box, Vector3 pos)
