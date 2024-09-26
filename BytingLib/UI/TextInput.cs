@@ -17,6 +17,7 @@
         public event Func<bool>? OnEnter;
         public KeyInputString.AllowNewLine AllowNewLine { get; }
         private bool doFocus;
+        private bool doSelectAllOnClick;
 
         public TextInput(GameSpeed updateSpeed, string text = "", float width = 0, float height = 0, KeyInputString.AllowNewLine allowNewLine = KeyInputString.AllowNewLine.Never, Predicate<char>? validateChar = null)
             : base(text, width, height, false)
@@ -158,6 +159,12 @@
                 Vector2 relativeMousePos = GlobalToLocalSpace(style, mousePos);
                 keyInputString!.InputString!.Cursor = DrawSpaceToTextSpace(relativeMousePos, style);
                 keyInputString!.InputString!.SelectStart = null;
+
+                if (doSelectAllOnClick && keyInputString?.InputString != null)
+                {
+                    doSelectAllOnClick = false;
+                    keyInputString?.InputString.SelectAll();
+                }
             }
             if (mouseHold)
             {
@@ -301,7 +308,9 @@
             }
             else
             {
-                relativePos += AbsoluteRect.GetAnchor(Anchor).Rectangle(MeasureString(style, drawnText)).Pos;
+                Vector2 stringSize = MeasureString(style, drawnText);
+                stringSize.Y = MathF.Max(stringSize.Y, style.Font.Value.LineSpacing);
+                relativePos += AbsoluteRect.GetAnchor(Anchor).Rectangle(stringSize).Pos;
             }
 
             // TODO: this is bad scrolling code, improve it.
@@ -427,5 +436,10 @@
             doFocus = true;
         }
 
+        public void FocusAndSelectAll()
+        {
+            doFocus = true;
+            doSelectAllOnClick = true;
+        }
     }
 }
