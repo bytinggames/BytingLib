@@ -14,11 +14,12 @@ namespace BytingLib
         private readonly DirectorySupervisor dirSupervisor;
         private readonly IConfigurationRoot configRoot;
         private readonly DefaultPaths paths;
+        private readonly string[] programArgs;
 
-        public SettingsManager(DefaultPaths paths)
+        public SettingsManager(DefaultPaths paths, string[]? programArgs)
         {
             this.paths = paths;
-
+            this.programArgs = programArgs ?? [];
             configRoot = new ConfigurationBuilder()
                 .AddYamlFile(paths.SettingsFile, true)
 #if DEBUG
@@ -65,6 +66,15 @@ namespace BytingLib
             }
 #endif
             return files.ToArray();
+        }
+
+        public bool ShouldExampleYamlFileBeCreated()
+        {
+#if DEBUG
+            return true;
+#else
+            return programArgs.Contains("example_settings");
+#endif
         }
 
         public void CreateExampleYamlFileIfNotExisting(string? cSharpFile)
