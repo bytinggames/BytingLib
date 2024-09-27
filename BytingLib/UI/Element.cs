@@ -120,6 +120,10 @@
                     }
                 }
             }
+            else if (input.HoverElement != this)
+            {
+                Hover = false;
+            }
         }
 
         public virtual void Draw(SpriteBatch spriteBatch, StyleRoot style)
