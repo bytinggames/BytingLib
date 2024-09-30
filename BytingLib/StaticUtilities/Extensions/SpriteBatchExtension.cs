@@ -93,6 +93,21 @@
             DrawLine(spriteBatch, pos1, pos2, color, thickness);
         }
 
+        public static void DrawArrow(this SpriteBatch spriteBatch, Vector2 pos1, Vector2 pos2, Color color, float thickness = 1f, float headLength = 32f, float headAngleRange = MathHelper.PiOver4)
+        {
+            Vector2 distance = pos2 - pos1;
+            float angle = MathF.Atan2(distance.Y, distance.X);
+            DrawLineRounded(spriteBatch, pos1, pos2, color, thickness);
+
+            angle -= headAngleRange / 2f;
+            pos1 = pos2 - new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * headLength;
+            DrawLineRounded(spriteBatch, pos1, pos2, color, thickness);
+
+            angle += headAngleRange;
+            pos1 = pos2 - new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * headLength;
+            DrawLineRounded(spriteBatch, pos1, pos2, color, thickness);
+        }
+
         public static Texture2D GetPixel(this SpriteBatch spriteBatch)
         {
             return GetExtended(spriteBatch).PixelTex;
