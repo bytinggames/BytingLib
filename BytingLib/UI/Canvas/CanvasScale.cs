@@ -32,8 +32,8 @@
 
         protected override ElementInput CreateElementInput(MouseInput mouse, KeyInput keys, GameWindow window)
         {
-            MouseTransformed mouseTransformed = new MouseTransformed(mouse.GetState, GetTransform);
-            MouseInput mouseNew = new MouseInput(mouseTransformed.GetState, () => mouse.IsActivatedThisFrame);
+            MouseTransformed mouseTransformed = new MouseTransformed(mouse.GetState, GetTransform, mouse.SetPosition);
+            MouseInput mouseNew = new MouseInput(mouseTransformed.GetState, () => mouse.IsActivatedThisFrame, mouseTransformed.SetPosition);
 
             return new ElementInput(mouseNew, keys, SetUpdateCatch, window);
         }

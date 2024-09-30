@@ -38,7 +38,8 @@ namespace BytingLib
 #else
             stuff.Add(keysDev = new KeyInput(() => default));
 #endif
-            stuff.Add(mouse = new MouseInput(() => inputSource.Current.MouseState, () => inputSource.Current.MetaState.IsActivatedThisUpdate));
+            void SetMousePosition(Vector2 pos) => Mouse.SetPosition((int)MathF.Round(pos.X), (int)MathF.Round(pos.Y));
+            stuff.Add(mouse = new MouseInput(() => inputSource.Current.MouseState, () => inputSource.Current.MetaState.IsActivatedThisUpdate, SetMousePosition));
             stuff.Add(gamePad = new GamePadInput(() => inputSource.Current.GamePadState));
             stuff.Add(inputRecordingManager = new InputRecordingManager<FullInput>(stuff, inputSource, CreateInputRecorder, PlayInput));
 

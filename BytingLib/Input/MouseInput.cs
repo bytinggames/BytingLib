@@ -6,6 +6,7 @@ namespace BytingLib
     {
         private readonly Func<MouseState> getState;
         private readonly Func<bool> getIsActivatedThisFrame;
+        private readonly Action<Vector2> setPosition;
         private MouseState previousState;
         private MouseState currentState;
 
@@ -17,10 +18,11 @@ namespace BytingLib
 
         public bool IsActivatedThisFrame { get; private set; }
 
-        public MouseInput(Func<MouseState> getState, Func<bool> getIsActivatedThisFrame)
+        public MouseInput(Func<MouseState> getState, Func<bool> getIsActivatedThisFrame, Action<Vector2> setPosition)
         {
             this.getState = getState;
             this.getIsActivatedThisFrame = getIsActivatedThisFrame;
+            this.setPosition = setPosition;
         }
 
         public void Update()
@@ -184,5 +186,9 @@ namespace BytingLib
             }
         }
 
+        public void SetPosition(Vector2 mousePos)
+        {
+            setPosition(mousePos);
+        }
     }
 }
