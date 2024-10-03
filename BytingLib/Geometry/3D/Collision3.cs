@@ -200,6 +200,13 @@ namespace BytingLib
             return new OnDispose(() => reversePrecisionForDistSphereTriangle--);
         }
 
+        private static IDisposable UseReversePrecisionForDistSphereTriangle(bool forceSetTo)
+        {
+            int remember = reversePrecisionForDistSphereTriangle;
+            reversePrecisionForDistSphereTriangle = forceSetTo ? 1 : 0;
+            return new OnDispose(() => reversePrecisionForDistSphereTriangle = remember);
+        }
+
         public static bool GetCollision(object shape1, object shape2)
         {
             Type t1 = (shape1 is IShape3 s1) ? s1.GetCollisionType() : shape1.GetType();
@@ -679,7 +686,8 @@ namespace BytingLib
         /// when moving out of a transmissive collision. To support that, you either would have to replace the (side == -2) check with (true) or a more
         /// performant solution would be to check which edge of the triangle would correspond to the reverse movement and calculate the DistanceReversed
         /// on that edge.
-        /// EDIT: you can use <see cref="UseReversePrecisionForDistSphereTriangle"/> now to enable correct reverse distance and axis calculation. This is experimental!
+        /// EDIT: You can use <see cref="UseReversePrecisionForDistSphereTriangle"/> now to enable correct reverse distance and axis calculation. This is experimental!
+        /// EDIT: This method also doesn't calculate reverse distance correctly in the case, where the sphere would collide with the face of the tri, but would leave the triangle with the last collision being an edge or vertex. Use <see cref="UseReversePrecisionForDistSphereTriangle"/> for correct reverse calculation.
         /// </summary>
         public static CollisionResult3 DistSphereTriangle(Sphere3 sphere, Triangle3 tri, Vector3 dir)
         {
@@ -688,7 +696,8 @@ namespace BytingLib
             //    return new CollisionResult3();
 
             // check sphere vs triangle face
-            CollisionResult3 cr = DistSpherePlane(sphere, tri.ToPlane(), dir);
+            Plane3 plane = tri.ToPlane();
+            CollisionResult3 cr = DistSpherePlane(sphere, plane, dir);
             // when not parallel, check if col point is on the plane
             int side = -2; // parallel -> unknown side
             int sideReversed = -2;
@@ -699,6 +708,34 @@ namespace BytingLib
                 if (side == -1) // point on plane
                 {
                     cr.ColTriangle = TriangleColType.Face;
+
+                    if (ReversePrecisionForDistSphereTriangle)
+                    {
+                        // when the sphere collides against the face of the triangle, we need to recalculate the reverse collision,
+                        // because it may be that the sphere doesn't come out of the triangle from its face, but from its edges or vertices.
+                        // Currently we have a reverse distance, but that is only correct if we would have come out of the face of the triangle
+
+                        // so we first check if we come out of the face of the triangle
+                        Vector3 dirN = Vector3.Normalize(dir);
+                        Vector3 distUntilCenterOfSphereCollidesWithPlane = dirN / (MathF.Abs(Vector3.Dot(dirN, plane.Normal)) / sphere.Radius);
+                        Vector3 spherePosBehindFace = spherePosOnCol + distUntilCenterOfSphereCollidesWithPlane * 2f; // * 2 because we want to sphere not be on the triangle but right behind it (for distance reversed)
+                        if (CheckIfPointOnPlaneIsAlsoOnTriangle(spherePosBehindFace, tri))
+                        {
+                            // case: collision begins and ends on face
+                            cr.AxisColReversed = -cr.AxisCol;
+                        }
+                        else
+                        {
+                            // case: collision begins on face, but does not end on face
+                            using (UseReversePrecisionForDistSphereTriangle(false)) // makes sure to not calculate the reverse of the reverse, which we already have.
+                            {
+                                var crReverse = DistSphereTriangle(sphere, tri, -dir); // TODO: this could be optimized, as it repeats some of the steps already calculated above.
+                                cr.DistanceReversed = -crReverse.Distance;
+                                cr.AxisColReversed = crReverse.AxisCol;
+                            }
+                        }
+                    }
+
                     return cr;
                 }
             }
