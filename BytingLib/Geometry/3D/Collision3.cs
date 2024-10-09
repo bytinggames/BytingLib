@@ -41,7 +41,7 @@ namespace BytingLib
             {
                 if (key.Item1 != key.Item2) // if they are the same, no need to swap them
                 {
-                    distanceFunctions.Add((key.Item2, key.Item1), (a, b, dir) => distanceFunctions[key](b, a, -dir).GetAxisInvert());
+                    distanceFunctions.Add((key.Item2, key.Item1), (a, b, dir) => distanceFunctions[key](b, a, -dir).GetAxisInvert(-dir));
                 }
             }
 
@@ -253,10 +253,25 @@ namespace BytingLib
                 return shape.DistanceTo(capsule.Spheres[0], dir);
             }
 
-            CollisionResult3 cr;
+            CollisionResult3 cr = DistAnyCapsuleInner(shape, capsule, dir);
+            if (ReversePrecisionForDistSphereTriangle)
+            {
+                // instead of relying on the Reversed values of our cr, calculate the Reversed values by reversing the dir
+                // this helps for cases, where when doing the forward collision check, the shape collides with the cylinder,
+                // but the backward collision would collide with a sphere.
+                // Previously it would have been assumed, that the backward collision type is the same as the forward one
+                // (still the case when not using ReversePrecisionForDistSphereTriangle)
+                CollisionResult3 crBackward = DistAnyCapsuleInner(shape, capsule, -dir);
+                cr.AxisColReversed = -crBackward.AxisCol;
+                cr.DistanceReversed = -crBackward.Distance;
+            }
+            return cr;
+        }
 
+        private static CollisionResult3 DistAnyCapsuleInner(IShape3 shape, Capsule3 capsule, Vector3 dir)
+        {
             // calculate distance to cylinder
-            cr = shape.DistanceTo(capsule.AxisRadius, dir);
+            CollisionResult3 cr = shape.DistanceTo(capsule.AxisRadius, dir);
             // if collision is between both sphere origins, return it
             if (cr.ColPoint.HasValue)
             {
@@ -1557,7 +1572,7 @@ namespace BytingLib
             // check distance for each corner of triangle2 with the triangle1 face
             for (int i = 0; i < 3; i++)
             {
-                CollisionResult3 cr1 = DistVectorTriangle(tri2[i], tri1, -dir).GetAxisInvert(); // invert dir, cause we check the other way around
+                CollisionResult3 cr1 = DistVectorTriangle(tri2[i], tri1, -dir).GetAxisInvert(-dir); // invert dir, cause we check the other way around
                 cr.ApplyUnionTakeNormalAsReversed(cr1);
             }
 
@@ -1663,7 +1678,7 @@ namespace BytingLib
                 }
 
                 cr.ColPoint = Vector3.LerpPrecise(tri[triToPolyIndex[floor]], tri[triToPolyIndex[ceil]], lerpAmount)
-                            + dir * cr2D.Distance.Value;
+                    + dir * cr2D.Distance.Value;
 
                 if (cr2D.ColVertexIndex % 1 == 0)
                 {

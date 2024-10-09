@@ -5,6 +5,7 @@
         public Vector3 AxisCol, AxisColReversed;
         /// <summary>
         /// is calculated by letting one shape move towards another shape, that does not move.
+        /// This is calculated by letting object A move to object B, not the other way around!
         /// </summary>
         public Vector3? ColPoint;
 
@@ -20,18 +21,16 @@
         public void AxisInvert(Vector3 newDir)
         {
             // set colPoint to the collision of the other shape
-            if (Distance.HasValue)
+            if (ColPoint.HasValue)
             {
-                if (ColPoint.HasValue)
+                if (Distance.HasValue)
                 {
-#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
                     ColPoint += newDir * Distance.Value;
-#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
                 }
-            }
-            else
-            {
-                ColPoint = null;
+                else
+                {
+                    ColPoint = null;
+                }
             }
 
             AxisCol = -AxisCol;
