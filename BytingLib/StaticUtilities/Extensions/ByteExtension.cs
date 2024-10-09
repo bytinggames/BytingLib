@@ -56,6 +56,17 @@ namespace BytingLib
         public static T ByteArrayToStruct<T>(byte[] bytes, int dataOffset) where T : struct
             => ByteArrayToStruct<T>(bytes, dataOffset, Marshal.SizeOf<T>());
 
+        public static byte[] StructArrayToByteArray<T>(T[] structs, int structSize) where T : struct
+        {
+            byte[] t = new byte[structs.Length * structSize];
+            //IntPtr mPtr = Marshal.UnsafeAddrOfPinnedArrayElement(t, 0);
+            IntPtr structsPtr = Marshal.UnsafeAddrOfPinnedArrayElement(structs, 0);
+            Marshal.Copy(structsPtr, t, 0, t.Length);
+            return t;
+        }
+        public static byte[] StructArrayToByteArray<T>(T[] structs) where T : struct
+            => StructArrayToByteArray(structs, Marshal.SizeOf<T>());
+
         public static byte[] HexToBytes(string hex)
         {
             if (hex.Length % 2 == 1)
