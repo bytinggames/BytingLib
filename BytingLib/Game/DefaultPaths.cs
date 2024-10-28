@@ -14,7 +14,7 @@ namespace BytingLib
         public string SettingsExampleFile { get; }
         public string CrashLogFile { get; }
 
-        public DefaultPaths(bool appdataNextToExe = false)
+        public DefaultPaths(bool appdataNextToExe = false, string? customAppdataPath = null)
         {
             string? gameName = Assembly.GetEntryAssembly()?.GetName().Name;
             if (gameName == null)
@@ -33,14 +33,21 @@ namespace BytingLib
             Directory.CreateDirectory(appDataDir);
             GameAppDataDir = Path.Combine(appDataDir, gameName);
 #else
-            if (appdataNextToExe)
+            if (customAppdataPath != null)
             {
-                GameAppDataDir = Path.Combine(AppContext.BaseDirectory, "UserData");
+                GameAppDataDir = customAppdataPath;
             }
             else
             {
-                string appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                GameAppDataDir = Path.Combine(appDataDir, gameName);
+                if (appdataNextToExe)
+                {
+                    GameAppDataDir = Path.Combine(AppContext.BaseDirectory, "UserData");
+                }
+                else
+                {
+                    string appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                    GameAppDataDir = Path.Combine(appDataDir, gameName);
+                }
             }
 #endif
             InputRecordingsDir = Path.Combine(GameAppDataDir, "input-recordings");
