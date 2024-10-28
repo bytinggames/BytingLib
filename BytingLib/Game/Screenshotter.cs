@@ -34,6 +34,22 @@ namespace BytingLib
             return path;
         }
 
+        public void TakeScreenshot(string outputFile)
+        {
+            CaptureScreenshotAsTexture();
+
+            bool pngOrJpeg = outputFile.EndsWith(".png");
+
+            if (pngOrJpeg)
+            {
+                screenshotTex.SaveAsPng(outputFile);
+            }
+            else
+            {
+                screenshotTex.SaveAsJpeg(outputFile);
+            }
+        }
+
         /// <summary>
         /// No need to dispose the texture. It is reused by the <see cref="Screenshotter"/>
         /// </summary>

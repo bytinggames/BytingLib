@@ -8,6 +8,7 @@
         private readonly int? msaaSamples;
         private bool previousUpdateWasActive = true;
         private bool previousDrawWasActive = true;
+        public bool IsExited { get; private set; }
 
         /// <summary>Is set by Activated and Deactivated events. Maybe this is more precise than base.IsActive. Needs testing.</summary>
         public new bool IsActive { get; private set; }
@@ -128,6 +129,13 @@
         public bool IsActivatedThisFrame()
         {
             return IsActive && !previousUpdateWasActive;
+        }
+
+        public new void Exit()
+        {
+            base.Exit();
+
+            IsExited = true;
         }
     }
 }

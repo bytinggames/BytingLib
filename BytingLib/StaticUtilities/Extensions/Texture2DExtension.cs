@@ -323,6 +323,21 @@
             }
         }
 
+        public static void SaveAsRawRGB(this Texture2D tex, string file)
+        {
+            var colors = tex.ToColor();
+            using (var fs = File.Create(file, colors.Length * 3))
+            using (var writer = new BinaryWriter(fs))
+            {
+                for (int i = 0; i < colors.Length; i++)
+                {
+                    writer.Write(colors[i].R);
+                    writer.Write(colors[i].G);
+                    writer.Write(colors[i].B);
+                }
+            }
+        }
+
         /// <summary>ONUSE: this method needs to be tested for cases, where some edges can't be trimmed</summary>
         public static Texture2D GetTrimmed(this Texture2D tex)
         {
