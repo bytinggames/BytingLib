@@ -53,7 +53,7 @@
 
         public void Update()
         {
-            float deltaSeconds = drawSpeed.DeltaMS / 1000f * AnimationSpeedFactor;
+            float deltaSeconds = 60f / 2.6f / 1000f;// drawSpeed.DeltaMS / 1000f * AnimationSpeedFactor;
             CurrentSecond += deltaSeconds;
 
             transitioner.Update(deltaSeconds);
