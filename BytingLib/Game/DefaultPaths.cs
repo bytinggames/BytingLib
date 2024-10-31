@@ -10,6 +10,7 @@ namespace BytingLib
         public string ScreenshotsDir { get; }
         public string RandomScreenshotsDir { get; }
         public string SettingsFile { get; }
+        public string SettingsBaseFile { get; }
         public string SettingsDebugFile { get; }
         public string SettingsExampleFile { get; }
         public string CrashLogFile { get; }
@@ -56,6 +57,7 @@ namespace BytingLib
             ScreenshotsDir = Path.Combine(GameAppDataDir, "screenshots");
             RandomScreenshotsDir = Path.Combine(GameAppDataDir, "screenshots-random");
             SettingsFile = Path.Combine(GameAppDataDir, "settings.yaml");
+            SettingsBaseFile = Path.Combine(GameAppDataDir, "settings_base.yaml");
             SettingsDebugFile = Path.Combine(GameAppDataDir, "settings.debug.yaml");
             SettingsExampleFile = Path.Combine(GameAppDataDir, "settings.example.yaml");
             CrashLogFile = Path.Combine(GameAppDataDir, "crash.log");

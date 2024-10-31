@@ -21,6 +21,7 @@ namespace BytingLib
             this.paths = paths;
             this.programArgs = programArgs ?? [];
             configRoot = new ConfigurationBuilder()
+                .AddYamlFile(paths.SettingsBaseFile, true)
                 .AddYamlFile(paths.SettingsFile, true)
 #if DEBUG
                 .AddYamlFile(paths.SettingsDebugFile, true)
