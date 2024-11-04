@@ -331,7 +331,7 @@ namespace BytingLib
 
             if (reader.Peek(-1) != Close)
             {
-                throw new Exception($"close expected, but {reader.Peek(-1)} read instead");
+                throw new Exception($"close char '{Close}' expected, but {reader.Peek(-1)} read instead: {reader.GetString()} at position {reader.Position - 1}");
             }
 
             return splits.ToArray();

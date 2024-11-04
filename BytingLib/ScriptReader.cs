@@ -10,6 +10,7 @@ namespace BytingLib
     {
         protected string str;
         protected int i;
+        public int Position => i;
 
         public ScriptReader(string str)
         {
@@ -275,6 +276,8 @@ namespace BytingLib
         }
 
         protected virtual bool SkipIfLiteral(char value) => false;
+
+        public string GetString() => str;
     }
 
     // example: "#span(example:) @*this doesn't interpret characters like # ( ) and @, it ignores everything except the character specified after the @, in this case the literal string ends here: * #span(span is recognized again)"
