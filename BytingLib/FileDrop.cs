@@ -3,12 +3,12 @@
     public class FileDrop : IDisposable
     {
         private readonly GameWindow window;
-        private readonly Action<string> droppedFile;
+        private readonly Action<string[]> droppedFiles;
 
-        public FileDrop(GameWindow window, Action<string> droppedFile)
+        public FileDrop(GameWindow window, Action<string[]> droppedFiles)
         {
             this.window = window;
-            this.droppedFile = droppedFile;
+            this.droppedFiles = droppedFiles;
             window.FileDrop += Window_FileDrop;
         }
 
@@ -19,10 +19,13 @@
 
         private void Window_FileDrop(object? sender, FileDropEventArgs e)
         {
-            if (e.Files?.Length > 0)
+            if (e.Files == null
+                || e.Files.Length == 0)
             {
-                droppedFile.Invoke(e.Files[0]);
+                return;
             }
+
+            droppedFiles.Invoke(e.Files);
         }
     }
 }
