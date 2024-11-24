@@ -2,9 +2,13 @@
 {
     public class CrashLogger
     {
-        public static void Catch(Exception e, string crashLogFilePath, string fontAssetName)
+        public static void Catch(Exception exception, string crashLogFilePath, string fontAssetName)
         {
-            string message = DateTime.Now.ToString("dd.MM.yyy HH:mm:ss") + ": Game crashed!\n" + e;
+            Catch(exception.ToString(), crashLogFilePath, fontAssetName);
+        }
+        public static void Catch(string message, string crashLogFilePath, string fontAssetName)
+        {
+            message = DateTime.Now.ToString("dd.MM.yyy HH:mm:ss") + ": Game crashed.\n" + message;
             AppendLog(crashLogFilePath, message);
 
             try
