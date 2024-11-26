@@ -50,13 +50,12 @@ namespace BytingLib.Serialization
             File.WriteAllText(filePath, json);
         }
 
-        public T LoadOrCreate<T>(string saveStateName, out bool createdNewSaveState, Migrator<T> migrator)
+        public T? Load<T>(string saveStateName, Migrator<T> migrator)
         {
             string filePath = GetFilePath(saveStateName);
             if (!File.Exists(filePath))
             {
-                createdNewSaveState = true;
-                return Activator.CreateInstance<T>();
+                return default;
             }
 
             string json = File.ReadAllText(filePath);
@@ -65,9 +64,20 @@ namespace BytingLib.Serialization
             {
                 throw new BytingException("Couldn't load save file");
             }
+            return save;
+        }
+
+        public T LoadOrCreate<T>(string saveStateName, out bool createdNewSaveState, Migrator<T> migrator)
+        {
+            T? saveState = Load(saveStateName, migrator);
+            if (saveState == null)
+            {
+                createdNewSaveState = true;
+                return Activator.CreateInstance<T>();
+            }
 
             createdNewSaveState = false;
-            return save;
+            return saveState;
         }
 
         public void Save<T>(T save, string fileName, Migrator<T> migrator)
