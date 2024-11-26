@@ -108,7 +108,7 @@
                 && IsHoverEnabled)
             {
                 //bool alreadyHovering = input.HoverElementForTooltip == this;
-                Hover = input.CanHover(AbsoluteRect);
+                Hover = input.CanHover(AbsoluteRect, this);
                 if (Hover && OnHoverSustain != null)
                 {
                     var results = OnHoverSustain.GetInvocationList().Select(x => (bool)x.DynamicInvoke(this, input)!);

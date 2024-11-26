@@ -79,7 +79,7 @@ namespace BytingLib.UI
 
         protected override void UpdateSelf(ElementInput input)
         {
-            hover = input.CanHover(AbsoluteRect);
+            hover = input.CanHover(AbsoluteRect, this);
             if (input.Mouse.Left.Pressed
                 && hover)
             {

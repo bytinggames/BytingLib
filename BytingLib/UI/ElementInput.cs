@@ -37,9 +37,9 @@
             }
         }
 
-        public bool CanHover(Rect rect)
+        public bool CanHover(Rect rect, Element element)
         {
-            if (HoverElement == null)
+            if (HoverElement == null || element == HoverElement)
             {
                 return rect.CollidesWith(Mouse.Position);
             }

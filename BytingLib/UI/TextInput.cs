@@ -56,7 +56,7 @@
 
             if (input.Mouse.Left.Pressed || doFocus)
             {
-                bool hover = doFocus || input.CanHover(AbsoluteRect);
+                bool hover = doFocus || input.CanHover(AbsoluteRect, this);
                 doFocus = false;
                 if (input.FocusElement == this)
                 {
