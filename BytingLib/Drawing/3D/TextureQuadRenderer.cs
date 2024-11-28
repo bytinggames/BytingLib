@@ -131,8 +131,8 @@
 
         private Matrix CalculateTransform(Vector3 center, Vector3 right, Vector3 up)
         {
-            Vector3 x = Vector3.Normalize(right);
-            Vector3 y = Vector3.Normalize(up);
+            Vector3 x = right == Vector3.Zero ? Vector3.UnitX * 0.001f : Vector3.Normalize(right);
+            Vector3 y = up == Vector3.Zero ? Vector3.UnitY * 0.001f : Vector3.Normalize(up);
             Vector3 z = Vector3.Cross(x, y);
             Matrix rotation = new Matrix(new Vector4(x, 0f), new Vector4(y, 0f), new Vector4(z, 0f), Vector4.UnitW);
             Matrix world = Matrix.CreateScale(right.Length(), up.Length(), 1f) * rotation * Matrix.CreateTranslation(center);
