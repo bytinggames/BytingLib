@@ -257,6 +257,13 @@ namespace BytingLib
 
             if (deleted)
             {
+                // make sure the built file is also deleted (example: for pngs it's the xnb files)
+                // Otherwise it would reload this xnb file.
+                string builtFile = Path.Combine(TempContentRaw.RootDirectory, assetName + ".xnb");
+                if (File.Exists(builtFile))
+                {
+                    File.Delete(builtFile);
+                }
                 // when deleted, force reload from the base content
                 content.ReloadLoadedAsset(assetHolder);
             }
