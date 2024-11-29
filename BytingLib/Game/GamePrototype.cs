@@ -29,6 +29,9 @@ namespace BytingLib
         public event Action? OnFrameBeforeScreenshot;
         private int takeScreenshotNextFrame = -1;
 
+        /// <summary>Only used for easy access on frames for when debugging.</summary>
+        public static Func<int> DebugGetFrame { get; set; } = () => 0;
+        public static int DebugFrame => DebugGetFrame();
 
         public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter,
             bool mouseWithActivationClick = false, bool contentModdingOnRelease = false,
