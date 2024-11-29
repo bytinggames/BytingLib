@@ -33,11 +33,11 @@ namespace BytingLib
         public static Func<int> DebugGetFrame { get; set; } = () => 0;
         public static int DebugFrame => DebugGetFrame();
 
-        public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter,
-            bool mouseWithActivationClick = false, bool contentModdingOnRelease = false,
+        public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter, HotReloadType hotReloadType,
+            bool mouseWithActivationClick = false,
             bool vsync = true, bool startRecordingInstantly = true, bool enableDevKeys = false,
             bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool controlViaF5 = true)
-            : base(g, contentModdingOnRelease, contentConverter, clearHotReloadOutputPath)
+            : base(g, hotReloadType, contentConverter, clearHotReloadOutputPath)
         {
             MainThread.Initialize(); // tell the main thread which thread actually is the main thread
 

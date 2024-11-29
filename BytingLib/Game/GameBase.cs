@@ -13,7 +13,7 @@
 
         public HotReloadContent? HotReloadContent { get; }
 
-        public GameBase(GameWrapper g, bool contentModdingOnRelease, ContentConverter contentConverter, bool clearHotReloadOutputPath = true)
+        public GameBase(GameWrapper g, HotReloadType hotReloadType, ContentConverter contentConverter, bool clearHotReloadOutputPath = true)
         {
             gameWrapper = g;
             gDevice = g.GraphicsDevice;
@@ -27,20 +27,22 @@
             contentRawPipe = Use(new ContentManagerRawPipe(new ContentManagerRaw(g.Services, "Content")));
             contentCollector = new ContentCollector(contentRawPipe, g.GraphicsDevice);
 
-#if DEBUG
-            HotReloadContent = new HotReloadContent(g.Services,
-                contentCollector,
-                Path.Combine("..", "..", "..", "Content"),
-                contentConverter,
-                clearHotReloadOutputPath);
-            contentRawPipe.ContentManagers.Insert(0, HotReloadContent.TempContentRaw);
-#else
-            if (contentModdingOnRelease)
+
+            switch (hotReloadType)
             {
-                HotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod", contentConverter);
-                contentRawPipe.ContentManagers.Insert(0, HotReloadContent.TempContentRaw);
+                case HotReloadType.Modding:
+                    HotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod", contentConverter);
+                    contentRawPipe.ContentManagers.Insert(0, HotReloadContent.TempContentRaw);
+                    break;
+                case HotReloadType.Debug:
+                    HotReloadContent = new HotReloadContent(g.Services,
+                        contentCollector,
+                        Path.Combine("..", "..", "..", "Content"),
+                        contentConverter,
+                        clearHotReloadOutputPath);
+                    contentRawPipe.ContentManagers.Insert(0, HotReloadContent.TempContentRaw);
+                    break;
             }
-#endif
 
 
 #if WINDOWS
