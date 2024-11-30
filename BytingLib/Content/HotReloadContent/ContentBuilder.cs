@@ -144,7 +144,12 @@ namespace BytingLib
         private static string AdaptReferences(string sourceHeader)
         {
 
-            // alter references, so that they point to the directory of the exe (Environment.CurrentDirectory)
+            // alter references, so that they point to the directory of the libraries (Environment.CurrentDirectory or deeper in /libraries if it's a published build)
+            string libsDirectory = Environment.CurrentDirectory;
+            if (Directory.Exists("libraries"))
+            {
+                libsDirectory = Path.Combine(libsDirectory, "libraries");
+            }
             // you need to supply that directory with all the required content dlls
             int referenceIndex = 0;
             const string refStr = "/reference:";
@@ -161,7 +166,7 @@ namespace BytingLib
                         reference = reference.Substring(lastSlashIndex + 1);
                     }
 
-                    string referenceDll = Environment.CurrentDirectory + "/" + reference;
+                    string referenceDll = libsDirectory + "/" + reference;
                     sourceHeader = sourceHeader.Remove(referenceIndex) + referenceDll + sourceHeader.Substring(endLineIndex);
                     referenceIndex += referenceDll.Length;
                 }
