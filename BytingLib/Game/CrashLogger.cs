@@ -8,7 +8,7 @@
         }
         public static void Catch(string message, string crashLogFilePath, string fontAssetName)
         {
-            message = DateTime.UtcNow.ToString("dd.MM.yyy HH:mm:ss") + " UTC: Game crashed.\n" + message;
+            message = DateTime.UtcNow.ToString("dd.MM.yyyy HH:mm:ss") + " UTC: Game crashed.\n" + message;
             AppendLog(crashLogFilePath, message);
 
             try
@@ -38,7 +38,7 @@
             }
             catch (Exception e)
             {
-                string message = DateTime.UtcNow.ToString("dd.MM.yyy HH:mm:ss") + " UTC: Game crashed!\n" + e;
+                string message = DateTime.UtcNow.ToString("dd.MM.yyyy HH:mm:ss") + " UTC: Game crashed!\n" + e;
                 AppendLog(crashLogFilePath, message);
 
                 try
