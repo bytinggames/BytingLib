@@ -4,7 +4,7 @@ namespace BytingLib.Serialization
 {
     public class SaveStateManager
     {
-        private readonly DefaultPaths paths;
+        private readonly string saveStateDir;
 
         public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions(JsonSerializerOptions.Default)
         {
@@ -18,9 +18,9 @@ namespace BytingLib.Serialization
             }
         };
 
-        public SaveStateManager(DefaultPaths paths)
+        public SaveStateManager(string saveStateDir)
         {
-            this.paths = paths;
+            this.saveStateDir = saveStateDir;
         }
 
         public T LoadOrCreate<T>(string saveStateName, out bool createdNewSaveState)
@@ -33,7 +33,7 @@ namespace BytingLib.Serialization
             }
 
             string json = File.ReadAllText(filePath);
-            T? save = JsonSerializer.Deserialize<T>(json);
+            T? save = JsonSerializer.Deserialize<T>(json, JsonOptions);
             if (save == null)
             {
                 throw new BytingException("Couldn't load save file");
@@ -89,7 +89,7 @@ namespace BytingLib.Serialization
 
         public string GetFilePath(string saveStateName)
         {
-            return Path.Combine(paths.SaveStateDir, saveStateName + ".json");
+            return Path.Combine(saveStateDir, saveStateName + ".json");
         }
     }
 }

@@ -70,7 +70,7 @@ namespace BytingLib
             input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, enableDevKeys, controlViaF5);
 
             basePaths = paths;
-            saveStateManager = new SaveStateManager(paths);
+            saveStateManager = new SaveStateManager(paths.SaveStateDir);
 
             screenshotter = new Screenshotter(gDevice, paths);
 

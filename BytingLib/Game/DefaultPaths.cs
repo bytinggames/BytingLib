@@ -14,6 +14,8 @@ namespace BytingLib
         public string SettingsDebugFile { get; }
         public string SettingsExampleFile { get; }
         public string CrashLogFile { get; }
+        public string AccountStatsFile { get; }
+        public string AnonymousKeyFile { get; }
 
         public DefaultPaths(bool appdataNextToExe = false, string? customAppdataPath = null)
         {
@@ -54,6 +56,8 @@ namespace BytingLib
             InputRecordingsDir = Path.Combine(GameAppDataDir, "input-recordings");
             SaveStateDir = Path.Combine(GameAppDataDir, "saves");
             Directory.CreateDirectory(SaveStateDir);
+            AccountStatsFile = Path.Combine(SaveStateDir, "global_stats.json");
+            AnonymousKeyFile = Path.Combine(SaveStateDir, "anonymous_key.bin");
             ScreenshotsDir = Path.Combine(GameAppDataDir, "screenshots");
             RandomScreenshotsDir = Path.Combine(GameAppDataDir, "screenshots-random");
             SettingsFile = Path.Combine(GameAppDataDir, "settings.yaml");
