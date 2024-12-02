@@ -22,11 +22,12 @@
         public Matrix SpriteBatchTransform { get; internal set; }
         private readonly Stack<Effect> customEffects = new();
         private readonly Stack<SpriteSortMode> customSortModes = new();
+        private readonly Stack<BlendState> customBlendStates = new();
 
         /// <summary>Store the SpriteBatch.Begin() call here, so we can flush all spritebatch calls and make new ones that get cut with a rasterizer scissor rectangle.</summary>
         internal BatchBeginAction? SpriteBatchBegin { get; set; }
 
-        internal delegate void BatchBeginAction(bool scissorTest, Effect? customEffect, SpriteSortMode? sortMode);
+        internal delegate void BatchBeginAction(bool scissorTest, Effect? customEffect, SpriteSortMode? sortMode, BlendState? blendState);
 
         public StyleRoot(StyleBase baseStyle)
         {
@@ -97,7 +98,7 @@
 
             spriteBatch.End();
             //spriteBatch.GraphicsDevice.RasterizerState.ScissorTestEnable = true;
-            SpriteBatchBegin(true, null, null);
+            SpriteBatchBegin(true, null, null, null);
             bool rememberScissorTest = spriteBatch.GraphicsDevice.RasterizerState.ScissorTestEnable;
             using (CodeHelper.ChangeVarTemporarily(spriteBatch.GraphicsDevice.ScissorRectangle,
                 f => spriteBatch.GraphicsDevice.ScissorRectangle = f,
@@ -108,10 +109,10 @@
                 spriteBatch.End();
             }
             //spriteBatch.GraphicsDevice.RasterizerState.ScissorTestEnable = rememberScissorTest;
-            SpriteBatchBegin(rememberScissorTest, null, null);
+            SpriteBatchBegin(rememberScissorTest, null, null, null);
         }
 
-        public void UseEffect(SpriteBatch spriteBatch, Effect effect, SpriteSortMode? sortMode, Action draw)
+        public void CustomBatch(SpriteBatch spriteBatch, Effect? effect, SpriteSortMode? sortMode, BlendState? blendState, Action draw)
         {
             if (SpriteBatchBegin == null)
             {
@@ -119,24 +120,31 @@
             }
 
             spriteBatch.End();
-            customEffects.Push(effect);
+            if (effect != null)
+            {
+                customEffects.Push(effect);
+            }
             if (sortMode != null)
             {
                 customSortModes.Push(sortMode.Value);
             }
-            SpriteBatchBegin(spriteBatch.GraphicsDevice.RasterizerState.ScissorTestEnable, effect, sortMode);
+            SpriteBatchBegin(spriteBatch.GraphicsDevice.RasterizerState.ScissorTestEnable, effect, sortMode, blendState);
             
             draw();
 
             spriteBatch.End();
-            customEffects.Pop();
+            if (effect != null)
+            {
+                customEffects.Pop();
+            }
             if (sortMode != null)
             {
                 customSortModes.Pop();
             }
             SpriteBatchBegin(spriteBatch.GraphicsDevice.RasterizerState.ScissorTestEnable,
                 customEffects.Count == 0 ? null : customEffects.Peek(),
-                customSortModes.Count == 0 ? null : customSortModes.Peek()
+                customSortModes.Count == 0 ? null : customSortModes.Peek(),
+                customBlendStates.Count == 0 ? null : customBlendStates.Peek()
                 );
         }
     }

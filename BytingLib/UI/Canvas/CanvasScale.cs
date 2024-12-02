@@ -184,18 +184,19 @@
                 transform *= Matrix.CreateScale(graphicsRes.X / LastRenderRect.Width, graphicsRes.Y / LastRenderRect.Height, 1f);
             }
 
-            StyleRoot.SpriteBatchBegin = (scissorTest, effect, sortMode)  =>
+            StyleRoot.SpriteBatchBegin = (scissorTest, effect, sortMode, blendState)  =>
             {
                 RasterizerState rs = scissorTest ? rasterizerStateScissor : rasterizerState;
 
                 spriteBatch.Begin(
                     sortMode: sortMode ?? SpriteSortMode.Deferred,
+                    blendState: blendState,
                     samplerState: samplerState,
                     transformMatrix: transform,
                     rasterizerState: rs,
                     effect: effect ?? Effect?.Value);
             };
-            StyleRoot.SpriteBatchBegin(false, null, null);
+            StyleRoot.SpriteBatchBegin(false, null, null, null);
 
             StyleRoot.SpriteBatchTransform = transform;
             StyleRoot.Push(Style);
