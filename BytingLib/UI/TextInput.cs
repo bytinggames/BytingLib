@@ -18,6 +18,7 @@
         public KeyInputString.AllowNewLine AllowNewLine { get; }
         private bool doFocus;
         private bool doSelectAllOnClick;
+        public int? MaxTextLength { get; set; }
 
         public TextInput(GameSpeed updateSpeed, string text = "", float width = 0, float height = 0, KeyInputString.AllowNewLine allowNewLine = KeyInputString.AllowNewLine.Never, Predicate<char>? validateChar = null)
             : base(text, width, height, false)
@@ -108,6 +109,7 @@
         {
             keyInputString = new KeyInputString(input.Window, AllowNewLine);
             keyInputString.InputString = new InputString();
+            keyInputString.InputString.MaxStringLength = MaxTextLength;
             keyInputString.InputString.Text = Text;
             keyInputString.InputString.OnTextChange += InputString_OnTextChange;
             keyInputString.InputString.OnCursorMoveOrSelectChanged += InputString_OnCursorMoveOrSelectChanged;

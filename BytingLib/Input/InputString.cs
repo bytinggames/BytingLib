@@ -51,6 +51,8 @@ namespace BytingLib
         public Action<int>? MoveCursorVertically { get; set; }
         public Predicate<char>? ValidateChar { get; set; }
 
+        public int? MaxStringLength { get; set; }
+
         public InputString()
         {
             text = new StringBuilder();
@@ -118,6 +120,11 @@ namespace BytingLib
                 }
                 return;
             }
+            if (MaxStringLength != null && text.Length >= MaxStringLength)
+            {
+                // max length reached
+                return;
+            }
             text.Insert(Cursor, c);
             Cursor++;
             OnTextChange?.Invoke(this);
@@ -157,6 +164,15 @@ namespace BytingLib
                 }
             }
 
+            if (MaxStringLength != null && text.Length + str.Length > MaxStringLength)
+            {
+                // max length reached
+                if (text.Length >= MaxStringLength)
+                {
+                    return;
+                }
+                str = str.Remove(MaxStringLength.Value - text.Length);
+            }
             text.Insert(Cursor, str);
             Cursor += str.Length;
             OnTextChange?.Invoke(this);
