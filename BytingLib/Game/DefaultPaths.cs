@@ -7,6 +7,7 @@ namespace BytingLib
         public string GameAppDataDir { get; }
         public string InputRecordingsDir { get; }
         public string SaveStateDir { get; }
+        public string StatsDir { get; }
         public string ScreenshotsDir { get; }
         public string RandomScreenshotsDir { get; }
         public string SettingsFile { get; }
@@ -56,8 +57,10 @@ namespace BytingLib
             InputRecordingsDir = Path.Combine(GameAppDataDir, "input-recordings");
             SaveStateDir = Path.Combine(GameAppDataDir, "saves");
             Directory.CreateDirectory(SaveStateDir);
-            AccountStatsFile = Path.Combine(SaveStateDir, "global_stats.json");
-            AnonymousKeyFile = Path.Combine(SaveStateDir, "anonymous_key.bin");
+            StatsDir = Path.Combine(SaveStateDir, "stats");
+            Directory.CreateDirectory(StatsDir);
+            AccountStatsFile = Path.Combine(StatsDir, "global_stats.json");
+            AnonymousKeyFile = Path.Combine(StatsDir, "anonymous_key.bin");
             ScreenshotsDir = Path.Combine(GameAppDataDir, "screenshots");
             RandomScreenshotsDir = Path.Combine(GameAppDataDir, "screenshots-random");
             SettingsFile = Path.Combine(GameAppDataDir, "settings.yaml");
