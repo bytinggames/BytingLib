@@ -56,11 +56,17 @@
 
         private string GetNewRecordingFile()
         {
+            Directory.CreateDirectory(inputRecordingDir);
+
             return Path.Combine(inputRecordingDir, DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss_fff") + ".inr");
         }
 
         private string? GetLastRecordingFile()
         {
+            if (!Directory.Exists(inputRecordingDir))
+            {
+                return null;
+            }
             string[] files = Directory.GetFiles(inputRecordingDir, "*.inr");
             if (files.Length == 0)
             {
