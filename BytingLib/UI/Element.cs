@@ -105,7 +105,8 @@
         protected virtual void UpdateHoverElement(ElementInput input)
         {
             if (input.HoverElement == null
-                && IsHoverEnabled)
+                && IsHoverEnabled
+                && AbsoluteRect != null)
             {
                 //bool alreadyHovering = input.HoverElementForTooltip == this;
                 Hover = input.CanHover(AbsoluteRect, this);
