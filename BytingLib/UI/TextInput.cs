@@ -20,13 +20,16 @@
         private bool doSelectAllOnClick;
         public int? MaxTextLength { get; set; }
 
-        public TextInput(GameSpeed updateSpeed, string text = "", float width = 0, float height = 0, KeyInputString.AllowNewLine allowNewLine = KeyInputString.AllowNewLine.Never, Predicate<char>? validateChar = null)
-            : base(text, width, height, false)
+        public TextInput(GameSpeed updateSpeed, string text = "", float width = 0, float height = 0, 
+            KeyInputString.AllowNewLine allowNewLine = KeyInputString.AllowNewLine.Never, Predicate<char>? validateChar = null,
+            int? maxTextLength = null)
+            : base(maxTextLength == null || text.Length <= maxTextLength.Value ? text : text.Remove(maxTextLength.Value), width, height, false)
         {
             this.updateSpeed = updateSpeed;
             AllowNewLine = allowNewLine;
             this.validateChar = validateChar;
             lastMSCursorOrSelectionChanged = updateSpeed.TotalMSF();
+            MaxTextLength = maxTextLength;
         }
 
         protected override void UpdateTreeInner(Rect rect)
