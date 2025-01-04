@@ -214,6 +214,13 @@
             return colors;
         }
 
+        public static Color[] ToColor(this Texture2D tex, Rectangle rect)
+        {
+            Color[] colors = new Color[rect.Width * rect.Height];
+            tex.GetData(0, rect, colors, 0, colors.Length);
+            return colors;
+        }
+
         public static Texture2D ToTexture(this Color[] colors, int w, GraphicsDevice gDevice)
         {
             Texture2D tex = new Texture2D(gDevice, w, colors.Length / w);
