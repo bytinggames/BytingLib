@@ -125,7 +125,14 @@ namespace BuildTemplates
             {
                 string? process = customContent.GetCustomCode(contentDirectory + FullName);
                 if (process == null)
+                {
                     return null;
+                }
+
+                if (process.StartsWith("\n@ignore"))
+                {
+                    return null;
+                }
 
                 return $@"#begin {contentDirectory}{FullName}{process}
 
