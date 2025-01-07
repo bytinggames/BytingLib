@@ -423,15 +423,15 @@
             }
         }
 
-        public Element Tooltip(ITooltip tooltip, string text)
+        public Element Tooltip(ITooltip tooltip, string text, bool showInstantlyWhileMoving = false)
         {
-            OnHoverSustain += (f, input) => { tooltip.OnHover(f, text); return false; } ;
+            OnHoverSustain += (f, input) => { tooltip.OnHover(f, text, showInstantlyWhileMoving); return false; } ;
             return this;
         }
 
-        public Element Tooltip(ITooltip tooltip, Func<string> getText)
+        public Element Tooltip(ITooltip tooltip, Func<string> getText, bool showInstantlyWhileMoving = false)
         {
-            OnHoverSustain += (f, input) => { tooltip.OnHover(f, getText()); return false; };
+            OnHoverSustain += (f, input) => { tooltip.OnHover(f, getText(), showInstantlyWhileMoving); return false; };
             return this;
         }
 

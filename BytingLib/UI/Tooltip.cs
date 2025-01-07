@@ -2,7 +2,7 @@
 {
     public interface ITooltip
     {
-        void OnHover(Element hover, string text);
+        void OnHover(Element hover, string text, bool showInstantlyWhileMoving);
     }
 
     public class Tooltip : Panel, ITooltip
@@ -13,10 +13,13 @@
         Element? newHover;
         string? lastText;
         string? newText;
+        bool showInstantlyWhileMoving;
+        /// <summary>This variable might have been fast forwarded, if showInstantlyWhileMoving is set</summary>
         int mouseStillForFrames;
-        public int NoMouseMovementToShowInFrames { get; } = 15;
+        public int NoMouseMovementToShowInFrames { get; set; } = 15;
         public Vector2 TooltipOffset { get; set; } = new Vector2(0f, 32f);
         public bool ShowBelowMouseOrHoverElement { get; set; } = false;
+        bool appearedThisUpdate;
 
         static readonly float MaxMouseMoveSquaredConsideredStill = MathF.Pow(8f, 2f);
 
@@ -29,7 +32,10 @@
 
         protected override void UpdateSelf(ElementInput input)
         {
-            if (mouseStillForFrames < NoMouseMovementToShowInFrames && input.Mouse.Move.LengthSquared() > MaxMouseMoveSquaredConsideredStill
+            appearedThisUpdate = false;
+
+            bool mouseConsideredMoved = mouseStillForFrames < NoMouseMovementToShowInFrames && input.Mouse.Move.LengthSquared() > MaxMouseMoveSquaredConsideredStill;
+            if (mouseConsideredMoved && !showInstantlyWhileMoving
                 || newHover == null
                 || lastHover != newHover
                 || newText == null)
@@ -39,7 +45,20 @@
             else
             {
                 mouseStillForFrames++;
+            }
 
+            if (showInstantlyWhileMoving && mouseStillForFrames < NoMouseMovementToShowInFrames)
+            {
+                mouseStillForFrames = NoMouseMovementToShowInFrames;
+            }
+
+
+            if (newText == null) // if no one hovers right now, reset showInstantlyWhileMoving. Otherwise tooltip won't disappear
+            {
+                showInstantlyWhileMoving = false;
+            }
+            else
+            {
                 if (mouseStillForFrames >= NoMouseMovementToShowInFrames)
                 {
                     if (newText != lastText)
@@ -88,17 +107,18 @@
             }
         }
 
-        public void OnHover(Element hover, string text)
+        public void OnHover(Element hover, string text, bool showInstantlyWhileMoving)
         {
             // make sure the first one that raises the tooltip is not overridden by later tries on raising the tooltip
             if (newHover == null)
             {
                 newHover = hover;
                 newText = text;
+                this.showInstantlyWhileMoving = showInstantlyWhileMoving;
             }
         }
 
-        public bool IsTooltipStartShowingThisFrame()
+        public bool IsTooltipStartShowingThisUpdate()
         {
             return mouseStillForFrames == NoMouseMovementToShowInFrames;
         }
