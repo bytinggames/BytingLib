@@ -436,12 +436,18 @@
             return this;
         }
 
-        private void SetTooltipAction(OnWhileHoverDelegate tooltipAction)
+        public void RemoveTooltip()
         {
             if (currentTooltipAction != null)
             {
                 OnHoverSustain -= currentTooltipAction;
+                currentTooltipAction = null;
             }
+        }
+
+        private void SetTooltipAction(OnWhileHoverDelegate tooltipAction)
+        {
+            RemoveTooltip();
             currentTooltipAction = tooltipAction;
             OnHoverSustain += currentTooltipAction;
         }
