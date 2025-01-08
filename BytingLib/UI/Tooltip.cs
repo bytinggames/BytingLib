@@ -86,12 +86,10 @@
                 if (NeedsPositionBeUpdated())
                 {
                     UpdatePosition();
-                    lastOriginPos = GetOriginPos();
+                    UpdateTreeBegin(style);
+                    UpdateTree(AbsoluteRect);
                 }
             }
-
-            UpdateTreeBegin(style);
-            UpdateTree(AbsoluteRect);
 
             base.DrawSelf(spriteBatch, style);
         }
@@ -143,11 +141,14 @@
                     }
                 }
             }
+
+            lastOriginPos = GetOriginPos();
         }
 
         private bool NeedsPositionBeUpdated()
         {
-            return lastOriginPos == null || GetOriginPos() != lastOriginPos.Value;
+            return AbsoluteRect != null
+                && (lastOriginPos == null || GetOriginPos() != lastOriginPos.Value);
         }
 
         private void UpdatePositionInner()
@@ -195,6 +196,13 @@
         public bool IsTooltipStartShowingThisUpdate()
         {
             return mouseStillForFrames == NoMouseMovementToShowInFrames;
+        }
+
+        protected override void UpdateTreeModifyRect(Rect rect)
+        {
+            lastOriginPos = null;
+
+            base.UpdateTreeModifyRect(rect);
         }
     }
 }
