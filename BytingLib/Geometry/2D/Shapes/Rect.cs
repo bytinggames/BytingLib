@@ -473,6 +473,14 @@
             int bottom = (int)MathF.Round(Bottom);
             return new Rectangle(left, top, right - left, bottom - top);
         }
+
+        public bool IsEnclosedIn(Rect rect)
+        {
+            return X >= rect.X
+                && Y >= rect.Y
+                && Right <= rect.Right
+                && Bottom <= rect.Bottom;
+        }
     }
 
     public static class RectExtension

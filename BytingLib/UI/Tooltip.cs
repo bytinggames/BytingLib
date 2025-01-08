@@ -16,24 +16,25 @@
         bool showInstantlyWhileMoving;
         /// <summary>This variable might have been fast forwarded, if showInstantlyWhileMoving is set</summary>
         int mouseStillForFrames;
+        Vector2? lastOriginPos;
         public int NoMouseMovementToShowInFrames { get; set; } = 15;
-        public Vector2 TooltipOffset { get; set; } = new Vector2(0f, 32f);
+        public float TooltipOffset { get; set; } = 32f;
         public bool ShowBelowMouseOrHoverElement { get; set; } = false;
-        bool appearedThisUpdate;
 
         static readonly float MaxMouseMoveSquaredConsideredStill = MathF.Pow(8f, 2f);
+
+        /// <summary>Falls back to this anchor, if the tooltip would be shown on screen this way. If it would leak out of the screen, the anchor will be reversed</summary>
+        public Vector2 PreferredAnchor { get; set; } = new Vector2(0.5f, 0f);
 
         public Tooltip(Action<string> onUpdateTooltipText)
             : base(0f, 0f)
         {
             this.onUpdateTooltipText = onUpdateTooltipText;
-            Anchor = new Vector2(0.5f, 0f);
+            Anchor = PreferredAnchor = new Vector2(0.5f, 0f);
         }
 
         protected override void UpdateSelf(ElementInput input)
         {
-            appearedThisUpdate = false;
-
             bool mouseConsideredMoved = mouseStillForFrames < NoMouseMovementToShowInFrames && input.Mouse.Move.LengthSquared() > MaxMouseMoveSquaredConsideredStill;
             if (mouseConsideredMoved && !showInstantlyWhileMoving
                 || newHover == null
@@ -41,13 +42,14 @@
                 || newText == null)
             {
                 mouseStillForFrames = 0;
+                lastOriginPos = null;
             }
             else
             {
                 mouseStillForFrames++;
             }
 
-            if (showInstantlyWhileMoving && mouseStillForFrames < NoMouseMovementToShowInFrames)
+            if (showInstantlyWhileMoving && mouseStillForFrames < NoMouseMovementToShowInFrames && newHover != null)
             {
                 mouseStillForFrames = NoMouseMovementToShowInFrames;
             }
@@ -79,6 +81,85 @@
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
+            if (Visible)
+            {
+                if (NeedsPositionBeUpdated())
+                {
+                    UpdatePosition();
+                    lastOriginPos = GetOriginPos();
+                }
+            }
+
+            UpdateTreeBegin(style);
+            UpdateTree(AbsoluteRect);
+
+            base.DrawSelf(spriteBatch, style);
+        }
+
+        private void UpdatePosition()
+        {
+            // 1. try to position the tooltip like intended with the PreferredAnchor
+            // 2. if outside of screen, reverse anchor and try again
+            // 3. if still outside of screen, use PreferredAnchor and push inside screen
+            Anchor = PreferredAnchor;
+            for (int i = 0; i < 2; i++)
+            {
+                UpdatePositionInner();
+
+                if (Parent == null)
+                {
+                    break;
+                }
+                else
+                {
+                    if (i == 2)
+                    {
+                        AbsoluteRect.PushIntoRectangle(Parent.AbsoluteRect);
+                        break; // now we are definetely on screen
+                    }
+                    else if (AbsoluteRect.IsEnclosedIn(Parent.AbsoluteRect))
+                    {
+                        // we're on screen
+                        break;
+                    }
+                    else
+                    {
+                        if (i == 0)
+                        {
+                            // is only overlapping at the right or left of the screen?
+                            // then just shift inside of the screen
+                            if (AbsoluteRect.Bottom <= Parent.AbsoluteRect.Bottom)
+                            {
+                                AbsoluteRect.PushIntoRectangle(Parent.AbsoluteRect);
+                                break;
+                            }
+                            Anchor = Vector2.One - PreferredAnchor;
+                        }
+                        else
+                        {
+                            AbsoluteRect.PushIntoRectangle(Parent.AbsoluteRect);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool NeedsPositionBeUpdated()
+        {
+            return lastOriginPos == null || GetOriginPos() != lastOriginPos.Value;
+        }
+
+        private void UpdatePositionInner()
+        {
+            Vector2 originPos = GetOriginPos();
+            Vector2 offset = Anchor == new Vector2(0.5f) ? Vector2.Zero
+                : TooltipOffset * Vector2.Normalize(new Vector2(0.5f) - Anchor);
+            AbsoluteRect.SetPosByOriginNormalized(originPos + offset, Anchor);
+        }
+
+        private Vector2 GetOriginPos()
+        {
             Vector2 originPos;
             if (ShowBelowMouseOrHoverElement || lastHover == null)
             {
@@ -86,17 +167,10 @@
             }
             else
             {
-                originPos = lastHover.AbsoluteRect.BottomV;
+                originPos = lastHover.AbsoluteRect.GetPos(Vector2.One - Anchor);
             }
-            AbsoluteRect.SetPosByOriginNormalized(originPos + TooltipOffset, Anchor);
-            if (Parent != null)
-            {
-                AbsoluteRect.PushIntoRectangle(Parent.AbsoluteRect);
-            }
-            UpdateTreeBegin(style);
-            UpdateTree(AbsoluteRect);
 
-            base.DrawSelf(spriteBatch, style);
+            return originPos;
         }
 
         public override void Draw(SpriteBatch spriteBatch, StyleRoot style)
