@@ -56,6 +56,7 @@
         private bool setChildrenWidthToMaxChildWidth = false;
         private bool setChildrenHeightToMaxChildHeight = false;
         private bool hover;
+        private OnWhileHoverDelegate? currentTooltipAction;
 
         public float Size(int dimension)
         {
@@ -425,14 +426,24 @@
 
         public Element Tooltip(ITooltip tooltip, string text, bool showInstantlyWhileMoving = false)
         {
-            OnHoverSustain += (f, input) => { tooltip.OnHover(f, text, showInstantlyWhileMoving); return false; } ;
+            SetTooltipAction((f, input) => { tooltip.OnHover(f, text, showInstantlyWhileMoving); return false; });
             return this;
         }
 
         public Element Tooltip(ITooltip tooltip, Func<string> getText, bool showInstantlyWhileMoving = false)
         {
-            OnHoverSustain += (f, input) => { tooltip.OnHover(f, getText(), showInstantlyWhileMoving); return false; };
+            SetTooltipAction((f, input) => { tooltip.OnHover(f, getText(), showInstantlyWhileMoving); return false; });
             return this;
+        }
+
+        private void SetTooltipAction(OnWhileHoverDelegate tooltipAction)
+        {
+            if (currentTooltipAction != null)
+            {
+                OnHoverSustain -= currentTooltipAction;
+            }
+            currentTooltipAction = tooltipAction;
+            OnHoverSustain += currentTooltipAction;
         }
 
         public void Show()
