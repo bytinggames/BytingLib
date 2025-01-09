@@ -337,6 +337,14 @@ namespace BytingLib
         {
             return GetNodes()?.FirstOrDefault(f => f.Name == name);
         }
+        public NodeGL? FindNode(Func<string, bool> queryByName)
+        {
+            return GetNodes()?.FirstOrDefault(f => f.Name != null && queryByName(f.Name));
+        }
+        public NodeGL? FindNode(Func<NodeGL, bool> query)
+        {
+            return GetNodes()?.FirstOrDefault(query);
+        }
         public IEnumerable<NodeGL> GetNodesOfAllScenes()
         {
             if (Scenes == null)
