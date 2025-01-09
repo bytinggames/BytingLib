@@ -22,6 +22,7 @@
         private Padding? myPadding;
 
         public Style? HoverStyle { get; set; }
+        public Style? DisabledStyle { get; set; }
 
         public ButtonParent(float width = 0f, float height = 0f, Vector2? anchor = null, Padding? padding = null)
         {
@@ -107,10 +108,20 @@
         protected override void PushMyStyle(StyleRoot style)
         {
             base.PushMyStyle(style);
-            
-            if (Hover && HoverStyle != null)
+
+            if (Disabled)
             {
-                style.Push(HoverStyle);
+                if (DisabledStyle != null)
+                {
+                    style.Push(DisabledStyle);
+                }
+            }
+            else if (Hover)
+            {
+                if (HoverStyle != null)
+                {
+                    style.Push(HoverStyle);
+                }
             }
         }
 
@@ -118,9 +129,19 @@
         {
             base.PopMyStyle(style);
 
-            if (Hover && HoverStyle != null)
+            if (Disabled)
             {
-                style.Pop(HoverStyle);
+                if (DisabledStyle != null)
+                {
+                    style.Pop(DisabledStyle);
+                }
+            }
+            else if (Hover)
+            {
+                if (HoverStyle != null)
+                {
+                    style.Pop(HoverStyle);
+                }
             }
         }
 
