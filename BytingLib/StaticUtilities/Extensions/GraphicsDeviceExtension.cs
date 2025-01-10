@@ -10,7 +10,15 @@
         public static IDisposable UseRenderTargets(this GraphicsDevice gDevice, params RenderTargetBinding[] bindings)
         {
             var rememberBindings = gDevice.GetRenderTargets();
-            gDevice.SetRenderTargets(bindings);
+            try
+            {
+                gDevice.SetRenderTargets(bindings);
+            }
+            catch (InvalidOperationException)
+            {
+                // somehow sometimes this throws an error that not all bound images have the same sample count. Although they should.
+                throw;
+            }
 
             return new OnDispose(() => gDevice.SetRenderTargets(rememberBindings));
         }
