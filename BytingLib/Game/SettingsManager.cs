@@ -15,6 +15,7 @@ namespace BytingLib
         private readonly IConfigurationRoot configRoot;
         private readonly DefaultPaths paths;
         private readonly string[] programArgs;
+        public event Action? OnSettingsReload;
 
         public SettingsManager(DefaultPaths paths, string[]? programArgs)
         {
@@ -39,6 +40,7 @@ namespace BytingLib
         {
             configRoot.Reload();
             Settings = CreateSettings();
+            OnSettingsReload?.Invoke();
         }
 
         public void UpdateCheckChanges()
