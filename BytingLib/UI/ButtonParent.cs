@@ -3,18 +3,18 @@
     public abstract class ButtonParent : Element
     {
         private bool down;
-        private bool disabled;
-        public bool Disabled
+        private bool enabled = true;
+        public bool Enabled
         {
-            get => disabled;
+            get => enabled;
             set
             {
-                if (value)
+                if (!value)
                 {
                     Hover = false;
                     down = false;
                 }
-                disabled = value;
+                enabled = value;
             }
         }
         public Vector2 ChildrenShiftOnDown { get; set; } = Vector2.One;
@@ -61,7 +61,7 @@
 
         protected override void UpdateSelf(ElementInput input)
         {
-            if (Disabled)
+            if (!Enabled)
             {
                 return;
             }
@@ -109,7 +109,7 @@
         {
             base.PushMyStyle(style);
 
-            if (Disabled)
+            if (!Enabled)
             {
                 if (DisabledStyle != null)
                 {
@@ -129,7 +129,7 @@
         {
             base.PopMyStyle(style);
 
-            if (Disabled)
+            if (!Enabled)
             {
                 if (DisabledStyle != null)
                 {
@@ -170,7 +170,7 @@
         protected int GetFrameIndex()
         {
             int frameIndex;
-            if (Disabled)
+            if (!Enabled)
             {
                 frameIndex = 3;
             }
@@ -205,7 +205,7 @@
 
         protected override void UpdateHoverElement(ElementInput input)
         {
-            if (Disabled)
+            if (!Enabled)
             {
                 return;
             }

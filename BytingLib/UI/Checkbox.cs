@@ -122,7 +122,7 @@
         {
             if (MultiSelectionID != null)
             {
-                if (Disabled)
+                if (!Enabled)
                 {
                     return;
                 }
