@@ -75,20 +75,7 @@ namespace BytingLib
                 return;
             }
 
-            int languageColumn = 0;
-            while (true)
-            {
-                languageColumn++; // start at column 1
-                string? lan = GetCell(0, languageColumn); // languages reside in column 0
-                if (lan == null)
-                {
-                    throw new Exception($"language {LanguageKey} not found");
-                }
-                if (lan == LanguageKey)
-                {
-                    break;
-                }
-            }
+            int languageColumn = GetLanguageColumn();
 
             Stack<StackItem> stack = new();
             stack.Push(new StackItem(-1, "PLACEHOLDER", false));
@@ -393,6 +380,43 @@ namespace BytingLib
                     }
                 }
                 return localizationLines[lineIndex].Substring(previousIndex, index - previousIndex);
+            }
+
+            int GetLanguageColumn()
+            {
+                string? defaultLanguage = null;
+                int languageColumn = 0;
+                int defaultLanguageColumn = -1;
+                while (true)
+                {
+                    languageColumn++; // start at column 1
+                    string? lan = GetCell(0, languageColumn); // languages reside in column 0
+
+                    if (lan != null && defaultLanguage == null)
+                    {
+                        defaultLanguage = lan;
+                        defaultLanguageColumn = languageColumn;
+                    }
+
+                    if (lan == null)
+                    {
+                        if (LanguageKey != defaultLanguage && defaultLanguage != null)
+                        {
+                            // language {LanguageKey} not found
+                            // fallback to default language
+                            LanguageKey = defaultLanguage;
+                            return defaultLanguageColumn;
+                        }
+                        else
+                        {
+                            throw new Exception($"language {LanguageKey} not found and no fallback language provided");
+                        }
+                    }
+                    if (lan == LanguageKey)
+                    {
+                        return languageColumn;
+                    }
+                }
             }
         }
 
