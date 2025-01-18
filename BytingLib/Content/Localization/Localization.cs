@@ -4,6 +4,7 @@ namespace BytingLib
 {
     public partial class Localization : ILocaChanger
     {
+            static Random rand = new();
         private const char separator = ';';
         private const char textMarker = '"';
         private const char adder = '.';
@@ -334,6 +335,32 @@ namespace BytingLib
                 #endregion
 
                 value = value.Replace("\\n", "\n");
+
+                string[] split = value.Split('\n');
+
+                value = "";
+
+                for (int splitIndex = 0; splitIndex < split.Length; splitIndex++)
+                {
+                    string? s = split[splitIndex];
+                    int count = s.Length / 3;
+
+                    if (count <= 0)
+                    {
+                        count = 1;
+                    }
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        value += (char)rand.Next(19968, 40959);
+                    }
+                    if (splitIndex + 1 < split.Length)
+                    {
+                        value += "\n";
+                    }
+                }
+
+                //value = "t选项";
 
                 dictionary.Add(key, value);
             }
