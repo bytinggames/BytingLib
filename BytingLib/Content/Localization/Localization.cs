@@ -9,22 +9,31 @@ namespace BytingLib
         private const char adder = '.';
         private const char nestedLevel = '\t';
         private string csvFile;
+        private readonly string defaultLanguage;
         private readonly bool fallbackToFirstLanguage;
+        private readonly bool resolveValues;
+        private readonly bool skipPluses;
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
+        private int defaultLanguageIndex;
 
         public event Action? OnLocaReload;
 
         public string LanguageKey { get; private set; }
 
-        public Localization(string csvFile, string languageKey, bool fallbackToFirstLanguage = true)
+
+        public Localization(string csvFile, string languageKey, string defaultLanguage = "en", bool fallbackToFirstLanguage = true, bool resolveValues = true, bool skipPluses = false)
         {
             this.csvFile = csvFile;
             LanguageKey = languageKey;
+            this.defaultLanguage = defaultLanguage;
             this.fallbackToFirstLanguage = fallbackToFirstLanguage;
+            this.resolveValues = resolveValues;
+            this.skipPluses = skipPluses;
+
             Initialize();
         }
 
-        private string[] CsvFileToLines(string file)
+        private static string[] CsvFileToLines(string file)
         {
             return File.ReadAllLines(file, Encoding.UTF8); // file.Replace("\r", "").Split(new char[] { '\n' });
         }
@@ -75,7 +84,7 @@ namespace BytingLib
                 return;
             }
 
-            int languageColumn = GetLanguageColumn();
+            int languageColumn = GetLanguageColumn(out defaultLanguageIndex);
 
             Stack<StackItem> stack = new();
             stack.Push(new StackItem(-1, "PLACEHOLDER", false));
@@ -153,18 +162,27 @@ namespace BytingLib
 
             void ParseLine(int lineIndex, string keyDirectory, string localKey)
             {
+                if (skipPluses && localizationLines[lineIndex].EndsWith("{+}"))
+                {
+                    return;
+                }
+
                 string? value = GetCell(lineIndex, languageColumn);
 
                 if (string.IsNullOrEmpty(value))
                 {
                     // fall back to first language (if not already first language)
                     if (fallbackToFirstLanguage
-                        && languageColumn != 1)
+                        && languageColumn != defaultLanguageIndex)
                     {
-                        value = GetCell(lineIndex, 1);
+                        value = GetCell(lineIndex, defaultLanguageIndex);
                     }
 
-                    if (string.IsNullOrEmpty(value))
+                    if (!resolveValues)
+                    {
+                        value = ""; // if not given, simply use "" to refer to not translated yet
+                    }
+                    else if (string.IsNullOrEmpty(value))
                     {
                         // no translation whatsoever. not even fallback english
                         throw new Exception($"{keyDirectory}.{localKey} is missing {(fallbackToFirstLanguage ? "any" : "a")} translation at line {lineIndex + 1}.\nIf this key isn't intended to be translated, make sure there is no ';' in that line.");
@@ -178,150 +196,161 @@ namespace BytingLib
                 }
                 key += localKey;
 
-                #region value commands {+}, {:} and {.}
-
-                for (int j = 0; j < value.Length; j++)
+                if (resolveValues)
                 {
-                    if (value[j] == '{')
+                    #region value commands {+}, {:} and {.}
+
+                    for (int j = 0; j < value.Length; j++)
                     {
-                        int jStart = j;
-                        int openBlocksCount = 1;
-                        do
+                        if (value[j] == '{')
                         {
-                            j++;
-                            switch (value[j])
+                            int jStart = j;
+                            int openBlocksCount = 1;
+                            do
                             {
-                                case '}': openBlocksCount--; break;
-                                case '{': openBlocksCount++; break;
+                                j++;
+                                switch (value[j])
+                                {
+                                    case '}': openBlocksCount--; break;
+                                    case '{': openBlocksCount++; break;
+                                }
+                            } while (openBlocksCount > 0 && j + 1 < value.Length);
+
+                            if (openBlocksCount > 0)
+                            {
+                                throw new Exception("didn't close all openend brackets: " + value);
                             }
-                        } while (openBlocksCount > 0 && j + 1 < value.Length);
 
-                        if (openBlocksCount > 0)
-                        {
-                            throw new Exception("didn't close all openend brackets: " + value);
-                        }
-
-                        string command = value.Substring(jStart + 1, j - jStart - 1);
-                        if (command.Length > 0)
-                        {
-                            string? replacement = null;
-                            if (command == "+")
+                            string command = value.Substring(jStart + 1, j - jStart - 1);
+                            if (command.Length > 0)
                             {
-                                // use same as language 1 (en)
-                                replacement = GetCell(lineIndex, 1);
-                            }
-                            else if (command[0] < '0' || command[0] > '9')
-                            {
-                                // loca key
-                                if (command[0] == '.')
+                                string? replacement = null;
+                                if (command == "+")
                                 {
-                                    // relative key
-                                    string currentKey = keyDirectory;
-                                    if (currentKey != "")
-                                    {
-                                        currentKey += ".";
-                                    }
-                                    currentKey += command.Substring(1);
-                                    replacement = InnerE(currentKey);
+                                    // use same as language defaultLanguageIndex (en)
+                                    replacement = GetCell(lineIndex, defaultLanguageIndex);
                                 }
-                                else if (command[0] == ':')
+                                else if (command[0] < '0' || command[0] > '9')
                                 {
-                                    // relative upwards key
-                                    string currentKey = keyDirectory;
-                                    int k;
-                                    for (k = 1; k < command.Length && command[k - 1] == ':'; k++)
+                                    // loca key
+                                    if (command[0] == '.')
                                     {
-                                        currentKey = currentKey.Remove(currentKey.LastIndexOf('.'));
-                                    }
-
-                                    if (currentKey != "")
-                                    {
-                                        currentKey += ".";
-                                    }
-
-                                    currentKey += command.Substring(k - 1);
-
-                                    replacement = InnerE(currentKey);
-                                }
-                                else if (command[0] == '>')
-                                {
-                                    // relative downwards key (equal to .currentNode.)
-                                    string currentKey = key;
-                                    currentKey += "." + command.Substring(1);
-                                    replacement = InnerE(currentKey);
-                                }
-                                else
-                                {
-                                    // absolute key
-                                    replacement = InnerE(command);
-                                }
-
-                                string InnerE(string c)
-                                {
-                                    if (c.Length == 0)
-                                    {
-                                        return "";
-                                    }
-
-                                    if (c[c.Length - 1] != '}')
-                                    {
-                                        return Localize(c);
-                                    }
-
-                                    int searchIndex = 0;
-                                    List<string> parameters = new List<string>();
-
-                                    string? realKey = null;
-
-                                    while ((searchIndex = c.IndexOf('{', searchIndex)) != -1)
-                                    {
-                                        if (realKey == null)
+                                        // relative key
+                                        string currentKey = keyDirectory;
+                                        if (currentKey != "")
                                         {
-                                            realKey = c.Remove(searchIndex);
+                                            currentKey += ".";
+                                        }
+                                        currentKey += command.Substring(1);
+                                        replacement = InnerE(currentKey);
+                                    }
+                                    else if (command[0] == ':')
+                                    {
+                                        // relative upwards key
+                                        string currentKey = keyDirectory;
+                                        int k;
+                                        for (k = 1; k < command.Length && command[k - 1] == ':'; k++)
+                                        {
+                                            currentKey = currentKey.Remove(currentKey.LastIndexOf('.'));
                                         }
 
-                                        searchIndex++;
-
-
-                                        int openBlocksCount = 1;
-                                        int end = searchIndex - 1;
-                                        do
+                                        if (currentKey != "")
                                         {
-                                            end++;
-                                            switch (c[end])
+                                            currentKey += ".";
+                                        }
+
+                                        currentKey += command.Substring(k - 1);
+
+                                        replacement = InnerE(currentKey);
+                                    }
+                                    else if (command[0] == '>')
+                                    {
+                                        // relative downwards key (equal to .currentNode.)
+                                        string currentKey = key;
+                                        currentKey += "." + command.Substring(1);
+                                        replacement = InnerE(currentKey);
+                                    }
+                                    else
+                                    {
+                                        // absolute key
+                                        replacement = InnerE(command);
+                                    }
+
+                                    string InnerE(string c)
+                                    {
+                                        if (c.Length == 0)
+                                        {
+                                            return "";
+                                        }
+
+                                        if (c[c.Length - 1] != '}')
+                                        {
+                                            return Localize(c);
+                                        }
+
+                                        int searchIndex = 0;
+                                        List<string> parameters = new List<string>();
+
+                                        string? realKey = null;
+
+                                        while ((searchIndex = c.IndexOf('{', searchIndex)) != -1)
+                                        {
+                                            if (realKey == null)
                                             {
-                                                case '}': openBlocksCount--; break;
-                                                case '{': openBlocksCount++; break;
+                                                realKey = c.Remove(searchIndex);
                                             }
-                                        } while (openBlocksCount > 0 && end + 1 < c.Length);
 
-                                        if (openBlocksCount > 0)
-                                        {
-                                            throw new Exception("didn't close all openend brackets: " + c);
+                                            searchIndex++;
+
+
+                                            int openBlocksCount = 1;
+                                            int end = searchIndex - 1;
+                                            do
+                                            {
+                                                end++;
+                                                switch (c[end])
+                                                {
+                                                    case '}': openBlocksCount--; break;
+                                                    case '{': openBlocksCount++; break;
+                                                }
+                                            } while (openBlocksCount > 0 && end + 1 < c.Length);
+
+                                            if (openBlocksCount > 0)
+                                            {
+                                                throw new Exception("didn't close all openend brackets: " + c);
+                                            }
+
+                                            // params inside command detected
+                                            parameters.Add(c.Substring(searchIndex, end - searchIndex));
+                                            searchIndex = end + 1;
                                         }
 
-                                        // params inside command detected
-                                        parameters.Add(c.Substring(searchIndex, end - searchIndex));
-                                        searchIndex = end + 1;
+                                        return Get(realKey!, parameters.ToArray());
                                     }
-
-                                    return Get(realKey!, parameters.ToArray());
                                 }
-                            }
 
-                            if (replacement != null)
-                            {
-                                value = value.Remove(jStart) + replacement + value.Substring(j + 1);
-                                j = jStart - 1;
+                                if (replacement != null)
+                                {
+                                    value = value.Remove(jStart) + replacement + value.Substring(j + 1);
+                                    j = jStart - 1;
+                                }
                             }
                         }
                     }
+
+                    #endregion
+
+                    value = value.Replace("\\n", "\n");
                 }
+                else
+                {
+                    value = GetCell(lineIndex, languageColumn);
 
-                #endregion
-
-                value = value.Replace("\\n", "\n");
-
+                    if (value == null)
+                    {
+                        value = "";
+                    }
+                }
                 dictionary.Add(key, value);
             }
             string? GetCell(int lineIndex, int column)
@@ -333,7 +362,7 @@ namespace BytingLib
                     previousIndex = index;
 
                     // is this cell embedded in "?
-                    bool embeddedInQuotes = localizationLines[lineIndex][index + 1] == textMarker;
+                    bool embeddedInQuotes = resolveValues && localizationLines[lineIndex][index + 1] == textMarker;
 
                     if (embeddedInQuotes)
                     {
@@ -362,61 +391,77 @@ namespace BytingLib
                 previousIndex++; // go over separator
 
                 // trim textMarker?
-                if (localizationLines[lineIndex].Length > previousIndex
-                    && localizationLines[lineIndex][previousIndex] == textMarker)
+                if (resolveValues)
                 {
-                    if (localizationLines[lineIndex][index - 1] == textMarker)
+                    if (localizationLines[lineIndex].Length > previousIndex
+                        && localizationLines[lineIndex][previousIndex] == textMarker)
                     {
-                        // trim textMarker
-                        previousIndex++;
-                        index--;
+                        if (localizationLines[lineIndex][index - 1] == textMarker)
+                        {
+                            // trim textMarker
+                            previousIndex++;
+                            index--;
 
-                        return localizationLines[lineIndex].Substring(previousIndex, index - previousIndex)
-                            .Replace("\"\"", "\"");
-                    }
-                    else
-                    {
-                        throw new InvalidDataException("End of " + textMarker + " marker not found in line " + (lineIndex + 1));
+                            return localizationLines[lineIndex].Substring(previousIndex, index - previousIndex)
+                                .Replace("\"\"", "\"");
+                        }
+                        else
+                        {
+                            throw new InvalidDataException("End of " + textMarker + " marker not found in line " + (lineIndex + 1));
+                        }
                     }
                 }
                 return localizationLines[lineIndex].Substring(previousIndex, index - previousIndex);
             }
 
-            int GetLanguageColumn()
+            int GetLanguageColumn(out int defaultLanguageColumn)
             {
-                string? defaultLanguage = null;
-                int languageColumn = 0;
-                int defaultLanguageColumn = -1;
+                int i = 0;
+                int languageColumn = -1;
+                defaultLanguageColumn = -1;
                 while (true)
                 {
-                    languageColumn++; // start at column 1
-                    string? lan = GetCell(0, languageColumn); // languages reside in column 0
+                    i++; // start at column 1
+                    string? lan = GetCell(0, i); // languages reside in column 0
 
-                    if (lan != null && defaultLanguage == null)
+                    if (lan == defaultLanguage)
                     {
-                        defaultLanguage = lan;
-                        defaultLanguageColumn = languageColumn;
+                        defaultLanguageColumn = i;
                     }
 
                     if (lan == null)
                     {
-                        if (LanguageKey != defaultLanguage && defaultLanguage != null)
+                        // last column reached
+                        if (languageColumn == -1)
                         {
-                            // language {LanguageKey} not found
-                            // fallback to default language
-                            LanguageKey = defaultLanguage;
-                            return defaultLanguageColumn;
+                            if (LanguageKey != defaultLanguage && defaultLanguage != null)
+                            {
+                                // language {LanguageKey} not found
+                                // fallback to default language
+                                LanguageKey = defaultLanguage;
+                                languageColumn = defaultLanguageColumn;
+                                if (defaultLanguageColumn == -1)
+                                {
+                                    throw new Exception("defaultLanguageColumn == -1 shouldn't happen");
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                throw new Exception($"language {LanguageKey} not found and no fallback language provided");
+                            }
                         }
                         else
                         {
-                            throw new Exception($"language {LanguageKey} not found and no fallback language provided");
+                            break;
                         }
                     }
                     if (lan == LanguageKey)
                     {
-                        return languageColumn;
+                        languageColumn = i;
                     }
                 }
+                return languageColumn;
             }
         }
 
@@ -518,5 +563,41 @@ namespace BytingLib
         }
 
         public Dictionary<string, string> GetDictionary() => dictionary;
+
+        record CsvExportRow(string SourceValue, string TargetValue, string Comment);
+
+        public static string CsvExportForTranslator(string locaFile, string[] columns, string defaultLanguageKey = "en")
+        {
+            Localization[] locas = new Localization[columns.Length];
+
+            for (int i = 0; i < locas.Length; i++)
+            {
+                locas[i] = new(locaFile, columns[i], defaultLanguageKey, false, false, true);
+            }
+
+            string[] keys = locas[0].dictionary.Keys.ToArray();
+
+            // first row (csv head / columns)
+            string csv = "key";
+            for (int i = 0; i < columns.Length; i++)
+            {
+                csv += separator + columns[i];
+            }
+
+            // rows
+            for (int i = 1; i < keys.Length; i++)
+            {
+                csv += "\r\n";
+
+                var key = keys[i];
+                csv += key;
+                for (int j = 0; j < locas.Length; j++)
+                {
+                    csv += separator + locas[j].dictionary[key];
+                }
+            }
+
+            return csv;
+        }
     }
 }
