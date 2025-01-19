@@ -13,15 +13,17 @@ namespace BytingLib
         private readonly bool fallbackToFirstLanguage;
         private readonly bool resolveValues;
         private readonly bool skipPluses;
+        private readonly Localization? locaOverride;
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
         private int defaultLanguageIndex;
 
         public event Action? OnLocaReload;
 
         public string LanguageKey { get; private set; }
+        public string[]? CsvOutput { get; private set; }
 
 
-        public Localization(string csvFile, string languageKey, string defaultLanguage = "en", bool fallbackToFirstLanguage = true, bool resolveValues = true, bool skipPluses = false)
+        public Localization(string csvFile, string languageKey, string defaultLanguage = "en", bool fallbackToFirstLanguage = true, bool resolveValues = true, bool skipPluses = false, Localization? locaOverride = null)
         {
             this.csvFile = csvFile;
             LanguageKey = languageKey;
@@ -29,7 +31,7 @@ namespace BytingLib
             this.fallbackToFirstLanguage = fallbackToFirstLanguage;
             this.resolveValues = resolveValues;
             this.skipPluses = skipPluses;
-
+            this.locaOverride = locaOverride;
             Initialize();
         }
 
@@ -67,6 +69,11 @@ namespace BytingLib
         private void InitializeInner()
         {
             string[] localizationLines = CsvFileToLines(csvFile);
+
+            if (locaOverride != null)
+            {
+                CsvOutput = localizationLines;
+            }
 
             if (dictionary != null)
             {
@@ -167,7 +174,7 @@ namespace BytingLib
                     return;
                 }
 
-                string? value = GetCell(lineIndex, languageColumn);
+                string? value = GetCell(lineIndex, languageColumn, localizationLines);
 
                 if (string.IsNullOrEmpty(value))
                 {
@@ -175,7 +182,7 @@ namespace BytingLib
                     if (fallbackToFirstLanguage
                         && languageColumn != defaultLanguageIndex)
                     {
-                        value = GetCell(lineIndex, defaultLanguageIndex);
+                        value = GetCell(lineIndex, defaultLanguageIndex, localizationLines);
                     }
 
                     if (!resolveValues)
@@ -228,7 +235,7 @@ namespace BytingLib
                                 if (command == "+")
                                 {
                                     // use same as language defaultLanguageIndex (en)
-                                    replacement = GetCell(lineIndex, defaultLanguageIndex);
+                                    replacement = GetCell(lineIndex, defaultLanguageIndex, localizationLines);
                                 }
                                 else if (command[0] < '0' || command[0] > '9')
                                 {
@@ -344,7 +351,7 @@ namespace BytingLib
                 }
                 else
                 {
-                    value = GetCell(lineIndex, languageColumn);
+                    value = GetCell(lineIndex, languageColumn, localizationLines);
 
                     if (value == null)
                     {
@@ -352,66 +359,18 @@ namespace BytingLib
                     }
                 }
                 dictionary.Add(key, value);
-            }
-            string? GetCell(int lineIndex, int column)
-            {
-                int index = -1;
-                int previousIndex = -1;
-                while (column >= 0)
+
+                if (locaOverride != null)
                 {
-                    previousIndex = index;
-
-                    // is this cell embedded in "?
-                    bool embeddedInQuotes = resolveValues && localizationLines[lineIndex][index + 1] == textMarker;
-
-                    if (embeddedInQuotes)
+                    if (locaOverride.dictionary.TryGetValue(key, out string? val))
                     {
-                        index++; // skip over "
-                        index = localizationLines[lineIndex].IndexOf(textMarker.ToString() + separator, index + 1);
-                        index++; // skip over "
-                    }
-                    else
-                    {
-                        index = localizationLines[lineIndex].IndexOf(separator, index + 1);
-                    }
-
-                    if (index == -1)
-                    {
-                        // end reached. this is the last column
-                        if (column > 0)
+                        locaOverride.dictionary.Remove(key);
+                        if (val != null)
                         {
-                            return null;
-                        }
-                        index = localizationLines[lineIndex].Length;
-                    }
-
-                    column--;
-                }
-
-                previousIndex++; // go over separator
-
-                // trim textMarker?
-                if (resolveValues)
-                {
-                    if (localizationLines[lineIndex].Length > previousIndex
-                        && localizationLines[lineIndex][previousIndex] == textMarker)
-                    {
-                        if (localizationLines[lineIndex][index - 1] == textMarker)
-                        {
-                            // trim textMarker
-                            previousIndex++;
-                            index--;
-
-                            return localizationLines[lineIndex].Substring(previousIndex, index - previousIndex)
-                                .Replace("\"\"", "\"");
-                        }
-                        else
-                        {
-                            throw new InvalidDataException("End of " + textMarker + " marker not found in line " + (lineIndex + 1));
+                            SetCell(lineIndex, languageColumn, localizationLines, val);
                         }
                     }
                 }
-                return localizationLines[lineIndex].Substring(previousIndex, index - previousIndex);
             }
 
             int GetLanguageColumn(out int defaultLanguageColumn)
@@ -422,7 +381,7 @@ namespace BytingLib
                 while (true)
                 {
                     i++; // start at column 1
-                    string? lan = GetCell(0, i); // languages reside in column 0
+                    string? lan = GetCell(0, i, localizationLines); // languages reside in column 0
 
                     if (lan == defaultLanguage)
                     {
@@ -463,6 +422,100 @@ namespace BytingLib
                 }
                 return languageColumn;
             }
+        }
+
+        void SetCell(int lineIndex, int column, string[] localizationLines, string value)
+        {
+            var indices = GetCellIndices(lineIndex, ref column, localizationLines);
+            if (indices == null)
+            {
+                while (column > 0)
+                {
+                    localizationLines[lineIndex] += separator;
+                    column--;
+                }
+                localizationLines[lineIndex] += value;
+
+                return;
+            }
+            localizationLines[lineIndex] = localizationLines[lineIndex].Remove(indices.Value.previousIndex)
+                + value
+                + localizationLines[lineIndex].Substring(indices.Value.index);
+        }
+        string? GetCell(int lineIndex, int column, string[] localizationLines)
+        {
+            var indices = GetCellIndices(lineIndex, ref column, localizationLines);
+            if (indices == null)
+            {
+                return null;
+            }
+
+            int previousIndex = indices.Value.previousIndex;
+            int index = indices.Value.index;
+
+            // trim textMarker?
+            if (resolveValues)
+            {
+                if (localizationLines[lineIndex].Length > previousIndex
+                    && localizationLines[lineIndex][previousIndex] == textMarker)
+                {
+                    if (localizationLines[lineIndex][index - 1] == textMarker)
+                    {
+                        // trim textMarker
+                        previousIndex++;
+                        index--;
+
+                        return localizationLines[lineIndex].Substring(previousIndex, index - previousIndex)
+                            .Replace("\"\"", "\"");
+                    }
+                    else
+                    {
+                        throw new InvalidDataException("End of " + textMarker + " marker not found in line " + (lineIndex + 1));
+                    }
+                }
+            }
+
+            return localizationLines[lineIndex].Substring(indices.Value.previousIndex, index - previousIndex);
+        }
+
+        private (int index, int previousIndex)? GetCellIndices(int lineIndex, ref int column, string[] localizationLines)
+        {
+            int index = -1;
+            int previousIndex = -1;
+            while (column >= 0)
+            {
+                previousIndex = index;
+
+                // is this cell embedded in "?
+                bool embeddedInQuotes = localizationLines[lineIndex][index + 1] == textMarker;
+
+                if (embeddedInQuotes)
+                {
+                    index++; // skip over "
+                    index = localizationLines[lineIndex].IndexOf(textMarker.ToString() + separator, index + 1);
+                    index++; // skip over "
+                }
+                else
+                {
+                    index = localizationLines[lineIndex].IndexOf(separator, index + 1);
+                }
+
+                if (index == -1)
+                {
+                    // end reached. this is the last column
+                    if (column > 0)
+                    {
+                        return null;
+                    }
+                    index = localizationLines[lineIndex].Length;
+                }
+
+                column--;
+            }
+
+            previousIndex++; // go over separator
+
+            return (index, previousIndex);
         }
 
         public string Get(string key, params object[] args)
@@ -529,7 +582,7 @@ namespace BytingLib
             OnLocaReload?.Invoke();
         }
 
-        private int GetIndentation(string line)
+        private static int GetIndentation(string line)
         {
             int i;
             for (i = 0; i < line.Length; i++)
@@ -599,5 +652,32 @@ namespace BytingLib
 
             return csv;
         }
+
+        public static void CsvImportFromTranslator(string locaFile, string translatorFile, int targetLanguageColumnIndex = 2, string defaultLanguageKey = "en")
+        {
+            // either:
+            // put back into tabbed csv
+            //      + probably fastest method to implement right now
+            //      + instantly visible if translation is missing
+            //      + don't need to sync
+            //      - big file, could be messy to look at or edit
+            // keep translated csvs separated?
+            //      +-? seperation keeps it more organized
+
+
+            string[] translatedLines = File.ReadAllLines(translatorFile, Encoding.UTF8);
+            string[] columns = translatedLines[0].Split([separator]);
+            string targetLanguage = columns[targetLanguageColumnIndex];
+
+            Localization translated = new(translatorFile, targetLanguage, defaultLanguageKey, false, false, true);
+
+            Localization loca = new(locaFile, targetLanguage, defaultLanguageKey, false, false, true, translated);
+
+            if (loca.CsvOutput != null)
+            {
+                File.WriteAllLines(locaFile, loca.CsvOutput);
+            }
+        }
+
     }
 }
