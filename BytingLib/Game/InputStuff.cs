@@ -16,7 +16,7 @@ namespace BytingLib
         public KeyInput KeysDev { get; }
         public MouseInput MouseDev { get; }
         public GamePadInput GamePadDev { get; }
-        public Random Rand { get; private set; } // is directly initialized with CreateInputRecorder
+        public Random Rand { get; private set; } = new Random(); // is directly initialized with CreateInputRecorder. This random initialization is just a fallback
         public Int2 Resolution => inputSource.Current.WindowResolution;
         public Int2 GetResolution() => inputSource.Current.WindowResolution;
         private int randSeed;
@@ -31,10 +31,8 @@ namespace BytingLib
         public GamePadDeadZone GamePadDeadZoneLeft { get; set; } = GamePadDeadZone.IndependentAxes;
         public GamePadDeadZone GamePadDeadZoneRight { get; set; } = GamePadDeadZone.IndependentAxes;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths, 
             Action<Action> startRecordingPlayback, bool startRecordingInstantly, bool enableDevInput, bool controlViaF5 = true)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             CurrentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
             CurrentKeyState = Keyboard.GetState();
