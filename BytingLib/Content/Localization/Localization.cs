@@ -142,7 +142,8 @@ namespace BytingLib
                     throw new Exception("Indentation cannot exceed the previous line by more than one tab: " + localizationLines[i]);
                 }
                 // parse the current line (if not a parent and if it's even intended to be translated (line contains ';'))
-                if (!isParent && isIntendedToBeTranslated)
+                if ((!isParent || !resolveValues) // only parse children, except we don't resolve values, then also parse parents
+                    && isIntendedToBeTranslated)
                 {
                     ParseLine(i, keyDirectory, stack.Peek().LocalKey);
                 }
@@ -162,7 +163,10 @@ namespace BytingLib
                     if (item.IsIntendedToBeTranslated)
                     {
                         // parse parent now
-                        ParseLine(item.LineIndex, keyDirectory, item.LocalKey);
+                        if (resolveValues) // if resolving values, we parse parents directly, when iterating them, not after having iterated over all of their children
+                        {
+                            ParseLine(item.LineIndex, keyDirectory, item.LocalKey);
+                        }
                     }
                 }
             }
