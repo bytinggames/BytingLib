@@ -615,6 +615,11 @@
             //return currentNode.GetChar(index[level]);
         }
 
+        public bool IsEqual(MarkupIndex index)
+        {
+            return indexInString == index.indexInString
+                && selectedNodeHierarchy.SequenceEqual(index.selectedNodeHierarchy);
+        }
     }
 
 }

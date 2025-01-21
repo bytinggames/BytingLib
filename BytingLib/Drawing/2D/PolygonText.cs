@@ -413,10 +413,6 @@ namespace BytingLib
             overflow = 0f;
 
             float lastMeasuredWidth = -1f;
-            //while (text.Iterate())
-            //{
-
-            //}
             for (int textIndex = 0; textIndex < text.Length; textIndex++)
             {
                 if (text[textIndex] == '\n')
@@ -696,7 +692,7 @@ namespace BytingLib
                 //Vector2 move = newStart - lastSegmentEnd;
                 lastSegmentStartPos = newStart;
 
-                if (anchor.X != 0f)
+                if (anchor.X != 0f && !segmentStart.IsEqual(measureWidthUntil))
                 {
                     float textSegmentWidth = markup.GetSize(settings, segmentStart, measureWidthUntil == null ? null : (measureWidthUntil - 1)).X;
                     lastSegmentStartPos.X += (currentSegmentWidth - textSegmentWidth) * anchor.X;
