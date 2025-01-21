@@ -575,7 +575,7 @@ namespace BytingLib
             Vector2 lastSegmentStartPos = new Vector2(segmentsPerLine[i][j].Left, textTop);
             //Rect lastSegmentStartPos = new Rect(segmentsPerLine[i][j].Left, textTop, segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left, lineSpacing /* todo */);
 
-            for (MarkupIndex textIndex = segmentStart.Clone(); !(textIndex + 1).EndReached(); textIndex++)
+            for (MarkupIndex textIndex = segmentStart.Clone(); !textIndex.EndReached(); textIndex++)
             {
                 //if (markup[textIndex] == '\n') // not sure if this is necessary. aren't \ns replaced with MarkupNewLine()
                 //{

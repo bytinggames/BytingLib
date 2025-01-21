@@ -394,7 +394,7 @@
                 int childIndex = parent.Children.IndexOf(text);
 
                 MarkupText newText;
-                var newCollection  = new MarkupCollection(
+                var newCollection = new MarkupCollection(
                     text,
                     new MarkupJump(jump),
                     newText = new MarkupText(text.Text.Substring(index.indexInString))
@@ -420,6 +420,13 @@
                     }
                 }
             }
+            else
+            {
+                // insert jump before current index
+                MarkupCollection parent = (index.selectedNodeHierarchy[^2] as MarkupCollection)!;
+                int childIndex = parent.Children.IndexOf(index.CurrentNode);
+                parent.Children.Insert(childIndex, new MarkupJump(jump));
+            }
         }
     }
 
@@ -427,7 +434,7 @@
     {
         public List<INode> selectedNodeHierarchy;
         public int indexInString;
-        public INode CurrentNode => selectedNodeHierarchy[^1];
+        public INode? CurrentNode => selectedNodeHierarchy.Count == 0 ? null :  selectedNodeHierarchy[^1];
         public MarkupIndex(INode root)
         {
             selectedNodeHierarchy = new() { root };
@@ -529,7 +536,7 @@
                     var parent = a.selectedNodeHierarchy[^2] as MarkupCollection;
                     int indexOfCurrentChild = parent.Children.IndexOf(a.CurrentNode);
                     indexOfCurrentChild--;
-                    if (indexOfCurrentChild > 0)
+                    if (indexOfCurrentChild >= 0)
                     {
                         a.selectedNodeHierarchy[^1] = parent.Children[indexOfCurrentChild];
                         break;
