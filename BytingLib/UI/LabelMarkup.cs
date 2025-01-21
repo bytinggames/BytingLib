@@ -43,11 +43,22 @@ namespace BytingLib.UI
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
+            if (FillPolygon != null)
+            {
+                string? updateMarkupText = FillPolygon.UpdateMarkup(style, creator);
+                if (updateMarkupText != null)
+                {
+                    markup?.Dispose();
+                    markup = new MarkupRoot(creator, updateMarkupText);
+
+                }
+            }
+
             if (markup != null)
             {
                 if (style.FontBoldColor.IsNotTransparent() && style.FontBold != null)
                 {
-                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale, Tilt)
+                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, GetFontScale(style), Tilt)
                     {
                         RoundPositionTo = style.RoundPositionTo,
                         MinLineHeight = MinLineHeight,
@@ -65,14 +76,19 @@ namespace BytingLib.UI
             }
         }
 
+        private Vector2 GetFontScale(StyleRoot style)
+        {
+            return FillPolygon?.PolygonText?.FontScale ?? style.FontScale;
+        }
+
         private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style)
         {
             return new MarkupSettings(spriteBatch, 
                 style.Font,
                 AbsoluteRect == null ? new Anchor() : AbsoluteRect.GetAnchor(Anchor), 
                 style.FontColor, 
-                Anchor.X, 
-                style.FontScale,
+                Anchor.X,
+                GetFontScale(style),
                 Tilt)
             { 
                 RoundPositionTo = style.RoundPositionTo,
@@ -93,8 +109,27 @@ namespace BytingLib.UI
         {
             base.UpdateTreeBeginSelf(style);
 
+            if (FillPolygon == null)
+            {
+                UpdateMarkup();
+            }
+        }
+
+        private void UpdateMarkup()
+        {
             markup?.Dispose();
-            markup = new MarkupRoot(creator, TextToDraw);
+            markup = new MarkupRoot(creator, TextToDraw); // TODO
+        }
+
+        protected override void UpdateTreeInner(Rect rect)
+        {
+            base.UpdateTreeInner(rect);
+
+            //if (FillPolygon != null)
+            //{
+            //    textToDraw = FillPolygon.MarkupTextOutput;
+            //    UpdateMarkup();
+            //}
         }
 
         public Vector2 MeasureSize(StyleRoot style)
