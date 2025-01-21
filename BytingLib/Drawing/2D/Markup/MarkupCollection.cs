@@ -37,6 +37,11 @@
             }
         }
 
+        public MarkupCollection(params INode[] children)
+        {
+            Children = children.ToList();
+        }
+
         private static INode? ReadElement(Creator creator, ScriptReaderLiteral reader)
         {
             char? peek = reader.Peek();

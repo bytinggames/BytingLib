@@ -45,11 +45,14 @@ namespace BytingLib.UI
         {
             if (FillPolygon != null)
             {
-                string? updateMarkupText = FillPolygon.UpdateMarkup(style, creator);
-                if (updateMarkupText != null)
+                FillPolygon.DrawPolygon(spriteBatch);
+                FillPolygon.PolygonText?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
+
+                MarkupRoot? newMarkup = FillPolygon.UpdateMarkup(style, creator);
+                if (newMarkup != null)
                 {
                     markup?.Dispose();
-                    markup = new MarkupRoot(creator, updateMarkupText);
+                    markup = newMarkup;
 
                 }
             }

@@ -70,7 +70,7 @@ namespace BytingLib.Markup
             SourceRectangle = new Rectangle(bounds.x, bounds.y, bounds.w, bounds.h);
         }
 
-        protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings)
+        protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings, int start, int end)
         {
             if (SourceRectangle == null)
             {

@@ -12,7 +12,7 @@
             return "cursor";
         }
 
-        protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings)
+        protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings, int start, int end)
         {
             return Vector2.Zero;
         }

@@ -10,6 +10,7 @@ namespace BytingLib
     {
         public Vector2 FontScale { get; private set; }
         private readonly List<string> segmentedText;
+        public MarkupRoot? SegmentedMarkup { get; } = null;
         private readonly List<List<Segment>> unifiedSegmentsPerLine;
         private readonly float textTop;
         private readonly Rect containerRect;
@@ -38,7 +39,7 @@ namespace BytingLib
             lineSpacing = font.Value.LineSpacing * FontScale.Y;
             int lines = (int)MathF.Floor(containerRect.Height / lineSpacing);
 
-            for (int iteration = 0; iteration < 10 || overflow > 0f; iteration++)
+            for (int iteration = 0; iteration < 1/*0*/ || overflow > 0f; iteration++)
             {
                 if (incrementedLines)
                 {
@@ -235,20 +236,25 @@ namespace BytingLib
                 }
 
                 //IText myText;
-                //if (creator == null)
-                //{
-                //    myText = new MyString(text);
-                //}
-                //else
-                //{
-                //    MarkupRoot? markup = null;
-                //    // replace text with markup
-                //    markup = new MarkupRoot(creator, text);
-                //    myText = new MyMarkup(markup);
-                //}
+                if (creator == null)
+                {
+                    segmentedText = SplitTextBySegments(text, str => font.Value.MeasureString(str).X * FontScale.X, splitMethod,
+                            lineSpacing, textTop, unifiedSegmentsPerLine, out overflow);
+                }
+                else
+                {
+                    // replace text with markup
+                    SegmentedMarkup = new MarkupRoot(creator, text);
+                    //myText = new MyMarkup(markup);
+                    MarkupSettings settings = new(null, font, new Anchor(Vector2.Zero, anchor), Color.White, anchor.X, FontScale);
+                    SplitMarkupBySegments(SegmentedMarkup, settings, splitMethod,
+                            lineSpacing, textTop, unifiedSegmentsPerLine, out overflow);
 
-                segmentedText = SplitTextBySegments(text, str => font.Value.MeasureString(creator == null ? str : str.Replace("#c(f00|", "").Replace(")", "")).X * FontScale.X, splitMethod,
-                        lineSpacing, textTop, unifiedSegmentsPerLine, out overflow);
+                    // find indices of spaces and \ns and seperations between f.ex. text and images
+                    //markup.Root.Children
+
+                }
+
                 totalSegmentsWidth = unifiedSegmentsPerLine.Sum(f => f.Sum(g => g.Right - g.Left));
             }
 
@@ -543,6 +549,183 @@ namespace BytingLib
             }
         }
 
+        private void SplitMarkupBySegments(MarkupRoot markup, MarkupSettings settings, PolygonTextSplit splitMethod, float lineSpacing, float textTop, List<List<Segment>> segmentsPerLine, out float overflow)
+        {
+            MarkupIndex segmentStart = new(markup.Root);
+            int i = 0, j = 0;
+
+            // find first segment
+            while (segmentsPerLine[i].Count == 0)
+            {
+                i++;
+                if (i >= segmentsPerLine.Count)
+                {
+                    // no segments at all
+                    // let the markup as it is
+                    overflow = markup.GetSize(settings).X;
+                    return;
+                }
+            }
+
+            float currentSegmentWidth = segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left;
+            MarkupIndex? lastSpaceIndex = null;
+            overflow = 0f;
+
+            float lastMeasuredWidth = -1f;
+            Vector2 lastSegmentStartPos = new Vector2(segmentsPerLine[i][j].Left, textTop);
+            //Rect lastSegmentStartPos = new Rect(segmentsPerLine[i][j].Left, textTop, segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left, lineSpacing /* todo */);
+
+            for (MarkupIndex textIndex = segmentStart.Clone(); !(textIndex + 1).EndReached(); textIndex++)
+            {
+                //if (markup[textIndex] == '\n') // not sure if this is necessary. aren't \ns replaced with MarkupNewLine()
+                //{
+                //    markup.InsertMove(segmentStart, GetMoveVector());
+                //    segmentStart = textIndex + 1; // after \n
+                //    j++; // next segment
+
+                //    // skip all segments in the current line
+                //    while (j < segmentsPerLine[i].Count)
+                //    {
+                //        segmentedText.Add("");
+                //        j++;
+                //    }
+
+                //    if (!NextLine(ref overflow))
+                //    {
+                //        return;
+                //    }
+                //    currentSegmentWidth = segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left;
+                //    continue;
+                //}
+                //else 
+                if (markup[textIndex] == ' ')
+                {
+                    lastSpaceIndex = textIndex.Clone(); // clone if not a struct
+                    continue;
+                }
+                int segmentCharCount = 0;// segmentStart.CharacterCountTo(textIndex + 1);
+                lastMeasuredWidth = markup.GetSize(settings, segmentStart, textIndex + 1).X;
+                if (lastMeasuredWidth > currentSegmentWidth)
+                {
+                    bool splitMidWord = splitMethod == PolygonTextSplit.AlwaysMidWord;
+                    if (!splitMidWord)
+                    {
+                        if (lastSpaceIndex == null)
+                        {
+                            if (splitMethod == PolygonTextSplit.AllowMidWordIfSpaceNotPossible && segmentCharCount > 1)
+                            {
+                                splitMidWord = true;
+                            }
+                            else
+                            {
+                                // skip this section, as there's no space in the segment
+                                markup.InsertJump(segmentStart, GetJumpVector(segmentStart), textIndex);
+                                // back to the start of the text segment
+                            }
+                        }
+                        else
+                        {
+                            markup.InsertJump(segmentStart, GetJumpVector(lastSpaceIndex + 1), lastSpaceIndex, textIndex);
+                            segmentStart = lastSpaceIndex + 1; // next segment starts after the last space
+                            lastSpaceIndex = null;
+                        }
+                    }
+                    if (splitMidWord)
+                    {
+                        lastSpaceIndex = null;
+                        markup.InsertJump(segmentStart, GetJumpVector(textIndex), textIndex);
+                        segmentStart = textIndex.Clone();
+                    }
+
+                    textIndex = segmentStart - 1; // -1 because we add +1 add the end of the for loop
+                    j++;
+                    while (j >= segmentsPerLine[i].Count)
+                    {
+                        if (!NextLine(ref overflow))
+                        {
+                            return;
+                        }
+                    }
+
+                    currentSegmentWidth = segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left;
+                }
+            }
+
+            markup.InsertJump(segmentStart, GetJumpVector(null));
+
+            // underflow
+            if (lastMeasuredWidth != -1f)
+            {
+                float underflow = currentSegmentWidth - lastMeasuredWidth;
+
+                if (i < segmentsPerLine.Count)
+                {
+                    while (true)
+                    {
+                        j++;
+                        if (j >= segmentsPerLine[i].Count)
+                        {
+                            j = 0;
+                            i++;
+                            if (i >= segmentsPerLine.Count)
+                            {
+                                break;
+                            }
+                        }
+
+                        if (j < segmentsPerLine[i].Count)
+                        {
+                            underflow += segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left;
+                        }
+                    }
+                }
+                overflow = -underflow;
+            }
+
+            Vector2 GetJumpVector(MarkupIndex? measureWidthUntil)
+            {
+                // figure out where last segment left off
+                //Vector2 lastSegmentEnd = lastSegmentStartPos + new Vector2(lastMeasuredWidth, 0f);
+                // figure out where new segment starts
+                Vector2 newStart = new Vector2(segmentsPerLine[i][j].Left, textTop + i * lineSpacing);
+                //Vector2 move = newStart - lastSegmentEnd;
+                lastSegmentStartPos = newStart;
+
+
+                //Rect newStart = new Rect(segmentsPerLine[i][j].Left, textTop + i * lineSpacing /* todo */, segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left, lineSpacing /* todo */);
+                //Vector2 move = newStart - lastSegmentEnd;
+                lastSegmentStartPos = newStart;
+
+                if (anchor.X != 0f)
+                {
+                    float textSegmentWidth = markup.GetSize(settings, segmentStart, measureWidthUntil == null ? null : (measureWidthUntil - 1)).X;
+                    lastSegmentStartPos.X += (currentSegmentWidth - textSegmentWidth) * anchor.X;
+                }
+                return lastSegmentStartPos;
+                //return new Vector2(segmentsPerLine[i][j].Left, textTop);
+            }
+
+            bool NextLine(ref float overflow)
+            {
+                lastSpaceIndex = null;
+                j = 0;
+                i++;
+                if (i >= segmentsPerLine.Count)
+                {
+                    // we filled all segments, but there's still text missing
+                    // simply append to the last segment
+                    if (!segmentStart.AtStart() && !(segmentStart - 1).EndReached() && markup[segmentStart - 1] == ' ')
+                    {
+                        segmentStart--;
+                    }
+
+                    overflow = markup.GetSize(settings, segmentStart).X;
+                    return false;
+                }
+                return true;
+            }
+        }
+
         static List<Segment> GetEnclosedSegments(float y, List<List<Vector2>> concavePolygons, bool onlyAllowTextWhenAllPolygonsOverlaps = false)
         {
             List<float> left = new();
@@ -689,33 +872,33 @@ namespace BytingLib
             return cursorTop;
         }
 
-        internal string GetSegmentedMarkupText()
-        {
-            float cursorTop;
-            int segmentedTextIndex = 0;
-            cursorTop = textTop;
-            string text = "";
-            Vector2 offset = Vector2.Zero;
-            for (int i = 0; i < unifiedSegmentsPerLine.Count; i++)
-            {
-                for (int j = 0; j < unifiedSegmentsPerLine[i].Count; j++)
-                {
-                    var s = unifiedSegmentsPerLine[i][j];
+        //internal string GetSegmentedMarkupText()
+        //{
+        //    float cursorTop;
+        //    int segmentedTextIndex = 0;
+        //    cursorTop = textTop;
+        //    string text = "";
+        //    Vector2 offset = Vector2.Zero;
+        //    for (int i = 0; i < unifiedSegmentsPerLine.Count; i++)
+        //    {
+        //        for (int j = 0; j < unifiedSegmentsPerLine[i].Count; j++)
+        //        {
+        //            var s = unifiedSegmentsPerLine[i][j];
 
-                    Int2 jump = new Int2((int)MathF.Round(offset.X + s.Left), (int)MathF.Round(cursorTop)); // round so no weird pixel smoothing happens on 0.5 (though sometimes this could be wanted. If so, make this optional)
-                    text += $"#jump({jump.X}|{jump.Y})" + segmentedText[segmentedTextIndex];
+        //            Int2 jump = new Int2((int)MathF.Round(offset.X + s.Left), (int)MathF.Round(cursorTop)); // round so no weird pixel smoothing happens on 0.5 (though sometimes this could be wanted. If so, make this optional)
+        //            text += $"#jump({jump.X}|{jump.Y})" + segmentedText[segmentedTextIndex];
 
-                    segmentedTextIndex++;
-                    if (segmentedTextIndex >= segmentedText.Count)
-                    {
-                        return text;
-                    }
-                }
-                cursorTop += lineSpacing;
-            }
+        //            segmentedTextIndex++;
+        //            if (segmentedTextIndex >= segmentedText.Count)
+        //            {
+        //                return text;
+        //            }
+        //        }
+        //        cursorTop += lineSpacing;
+        //    }
 
-            return text;
-        }
+        //    return text;
+        //}
 
         public class Segment(float left, float right)
         {

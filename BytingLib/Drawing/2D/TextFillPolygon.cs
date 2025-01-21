@@ -1,4 +1,5 @@
-﻿using BytingLib.UI;
+﻿using BytingLib.Markup;
+using BytingLib.UI;
 
 namespace BytingLib
 {
@@ -80,7 +81,7 @@ namespace BytingLib
 
             }
         }
-        public void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
+        public void DrawPolygon(SpriteBatch spriteBatch)
         {
             if (polygonsTransformed != null)
             {
@@ -92,6 +93,14 @@ namespace BytingLib
                         spriteBatch.DrawLine(polygon[i], polygon[j], Color.Green, 1f);
                     }
                 }
+            }
+        }
+
+        public void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
+        {
+            if (polygonsTransformed != null)
+            {
+                DrawPolygon(spriteBatch);
 
                 if (PolygonText == null)
                 {
@@ -111,14 +120,15 @@ namespace BytingLib
             }
         }
 
-        internal string? UpdateMarkup(StyleRoot style, Creator creator)
+        internal MarkupRoot? UpdateMarkup(StyleRoot style, Creator creator)
         {
             if (PolygonText == null)
             {
                 UpdateText(style.Font, creator);
                 if (PolygonText != null)
                 {
-                    return PolygonText.GetSegmentedMarkupText();
+                    return PolygonText.SegmentedMarkup;
+                    //return PolygonText.GetSegmentedMarkupText();
                     //throw new NotImplementedException();
                     //return string.Join('\n', flexText.segmentedText);// "test #move(10|10)#c(f00|red)";
                 }
