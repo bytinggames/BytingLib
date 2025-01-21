@@ -127,7 +127,7 @@ namespace BytingLib
 
                 List<List<Segment>> segmentsPerLine = new();
 
-                for (int line = 0; line <= lines; line++)
+                while (cursorTop < containerRect.Bottom)
                 {
                     var segments = GetEnclosedSegments(cursorTop, polygons, onlyAllowTextWhenAllPolygonsOverlaps);
 
@@ -145,7 +145,7 @@ namespace BytingLib
                 }
 
                 // use segments to insert blocks
-                for (int line = 0; line < lines; line++)
+                for (int line = 0; line < segmentsPerLine.Count - 1; line++)
                 {
                     List<Segment> unifiedSegments = new();
                     unifiedSegmentsPerLine.Add(unifiedSegments);
