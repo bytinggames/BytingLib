@@ -48,7 +48,7 @@
 
                 float emptyHorizontalSpace = totalSize.X - lineSize.X;
                 Rect lineBounds = new Rect(topLeftOfLine.X + settings.HorizontalAlignInLine * emptyHorizontalSpace, topLeftOfLine.Y, lineSize.X, lineSize.Y);
-                settings.Anchor = new Anchor(lineBounds.X, lineBounds.Y + settings.VerticalAlignInLine * lineSize.Y, settings.HorizontalAlignInLine, settings.VerticalAlignInLine);
+                settings.Anchor = new Anchor(lineBounds.X, lineBounds.Y + settings.VerticalAlignInLine * lineSize.Y, 0f, settings.VerticalAlignInLine);
                 foreach (var element in line)
                 {
                     element.Draw(settings);
