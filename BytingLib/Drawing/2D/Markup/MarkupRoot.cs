@@ -21,6 +21,11 @@
             unsubscribeOnDispose += () => loca.OnLocaReload -= a;
         }
 
+        public MarkupRoot(MarkupCollection root)
+        {
+            Root = root;
+        }
+
         public void Draw(MarkupSettings _settings)
         {
             (Vector2 totalSize, Vector2[] lineSizes, float marginTop, float marginBottom) = GetSizes(_settings);

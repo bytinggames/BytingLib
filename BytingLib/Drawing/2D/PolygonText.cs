@@ -106,23 +106,20 @@ namespace BytingLib
                 textTop = anchorPos.Y - totalTextHeight * anchor.Y;
                 float textBottom = textTop + totalTextHeight;
 
+
                 if (creator == null)
                 {
-                    //segmentedText = SplitTextBySegments(text, str => font.Value.MeasureString(str).X * FontScale.X, splitMethod,
-                    //        lineHeights, textTop, segmentedLines, out overflow);
+                    SegmentedMarkup = new MarkupRoot(new MarkupCollection(new MarkupText(text)));
                 }
                 else
                 {
                     // replace text with markup
                     SegmentedMarkup = new MarkupRoot(creator, text);
-                    //myText = new MyMarkup(markup);
-                    MarkupSettings settings = new(null, font, new Anchor(Vector2.Zero, anchor), Color.White, anchor.X, FontScale);
-                    segments = SplitMarkupBySegments(SegmentedMarkup, settings, splitMethod,
-                            defaultLineHeight, textTop, textBottom, polygons, out overflowFract, borderLeft ? containerRect.Left : null, borderRight ? containerRect.Right : null);
-
-                    // find indices of spaces and \ns and seperations between f.ex. text and images
-                    //markup.Root.Children
                 }
+
+                MarkupSettings settings = new(null, font, new Anchor(Vector2.Zero, anchor), Color.White, anchor.X, FontScale);
+                segments = SplitMarkupBySegments(SegmentedMarkup, settings, splitMethod,
+                        defaultLineHeight, textTop, textBottom, polygons, out overflowFract, borderLeft ? containerRect.Left : null, borderRight ? containerRect.Right : null);
             }
 
             CreateAnchors(font);

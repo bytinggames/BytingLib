@@ -118,7 +118,7 @@ namespace BytingLib
             }
         }
 
-        internal MarkupRoot? UpdateMarkup(StyleRoot style, Creator creator)
+        internal MarkupRoot? GetMarkupIfUpdated(StyleRoot style, Creator? creator)
         {
             if (PolygonText == null)
             {

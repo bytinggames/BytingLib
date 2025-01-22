@@ -1,4 +1,6 @@
-﻿namespace BytingLib.UI
+﻿using BytingLib.Markup;
+
+namespace BytingLib.UI
 {
     public class Label : Element
     {
@@ -21,19 +23,6 @@
 
         /// <summary>Does not affect positioning. Only affects visual rotation</summary>
         public float Tilt { get; set; } = 0f;
-
-        private TextFillPolygon? fillPolygon;
-        public TextFillPolygon? FillPolygon
-        {
-            get => fillPolygon;
-            set
-            {
-                fillPolygon = value;
-                setSizeToText = false;
-                Width = -1f;
-                Height = -1f;
-            }
-        }
 
         public Label(string text, float width = 0, float height = 0, bool setSizeToText = true)
         {
@@ -71,11 +60,6 @@
 
         protected override void UpdateTreeBeginSelf(StyleRoot style)
         {
-            if (fillPolygon != null)
-            {
-                return; // fillPolygon updates in UpdateTreeInner()
-            }
-
             if (setSizeToText)
             {
                 Width = 0f; // trigger setting size to text
@@ -90,14 +74,6 @@
             base.UpdateTreeBeginSelf(style);
         }
 
-        protected override void UpdateTreeInner(Rect rect)
-        {
-            base.UpdateTreeInner(rect);
-
-            fillPolygon?.UpdateTreeInner(rect);
-            fillPolygon?.SetDirty(Text, Anchor); // trigger reloading
-        }
-
         protected string CreateTextToDraw(StyleRoot style)
         {
             return CreateTextToDraw(style, out _);
@@ -105,13 +81,6 @@
 
         protected virtual string CreateTextToDraw(StyleRoot style, out List<(int Index, int Add)>? textLengthChanges)
         {
-            if (fillPolygon != null)
-            {
-                // a simple string doesn't suffice to draw the text in multiple parts. a string array is needed. So we don't use this method anymore
-                textLengthChanges = null;
-                return "";
-            }
-
             if (Width > 0)
             {
                 return SpriteFontExtension.WrapText(Text, Width, style.FontScale.X, str => MeasureString(style, str), out textLengthChanges);
@@ -124,12 +93,6 @@
         {
             if (AbsoluteRect == null)
             {
-                return;
-            }
-
-            if (fillPolygon != null)
-            {
-                fillPolygon.DrawSelf(spriteBatch, style);
                 return;
             }
 

@@ -12,6 +12,19 @@ namespace BytingLib.UI
         /// <summary>see <see cref="MarkupSettings.CropSuperfluousHeightThatIsLargerThanLineHeight"/></summary>
         public bool CropSuperfluousHeightThatIsLargerThanLineHeight { get; set; } = false;
 
+        private TextFillPolygon? fillPolygon;
+        public TextFillPolygon? FillPolygon
+        {
+            get => fillPolygon;
+            set
+            {
+                fillPolygon = value;
+                setSizeToText = false;
+                Width = -1f;
+                Height = -1f;
+            }
+        }
+
         public LabelMarkup(string text, Creator creator) : base(text)
         {
             this.creator = creator;
@@ -48,7 +61,7 @@ namespace BytingLib.UI
                 FillPolygon.DrawPolygon(spriteBatch);
                 FillPolygon.PolygonText?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
 
-                MarkupRoot? newMarkup = FillPolygon.UpdateMarkup(style, creator);
+                MarkupRoot? newMarkup = FillPolygon.GetMarkupIfUpdated(style, creator);
                 if (newMarkup != null)
                 {
                     markup?.Dispose();
@@ -110,6 +123,11 @@ namespace BytingLib.UI
 
         protected override void UpdateTreeBeginSelf(StyleRoot style)
         {
+            if (fillPolygon != null)
+            {
+                return; // fillPolygon updates in UpdateTreeInner()
+            }
+
             base.UpdateTreeBeginSelf(style);
 
             if (FillPolygon == null)
@@ -118,21 +136,18 @@ namespace BytingLib.UI
             }
         }
 
-        private void UpdateMarkup()
-        {
-            markup?.Dispose();
-            markup = new MarkupRoot(creator, TextToDraw); // TODO
-        }
-
         protected override void UpdateTreeInner(Rect rect)
         {
             base.UpdateTreeInner(rect);
 
-            //if (FillPolygon != null)
-            //{
-            //    textToDraw = FillPolygon.MarkupTextOutput;
-            //    UpdateMarkup();
-            //}
+            fillPolygon?.UpdateTreeInner(rect);
+            fillPolygon?.SetDirty(Text, Anchor); // trigger reloading
+        }
+
+        private void UpdateMarkup()
+        {
+            markup?.Dispose();
+            markup = new MarkupRoot(creator, TextToDraw); // TODO
         }
 
         public Vector2 MeasureSize(StyleRoot style)
