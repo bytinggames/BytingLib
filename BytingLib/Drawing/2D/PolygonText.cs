@@ -550,135 +550,123 @@ namespace BytingLib
             Rect segment = new Rect(minX, topY,0,0);
             List<Rect> previousSegmentsThisLine = new();
             MarkupIndex? lastPossibleBreakIndex = null;
-            bool isLastPossibleBreakASpace = false;
+            bool isBreakChar = false;
             overflow = 0f;
             Vector2 previousTextSize = Vector2.Zero; // 0 0 means unset
             bool endOfContainerReached = false;
+            bool lastSegmentInLine = false;
 
             for (MarkupIndex textIndex = segmentStart.Clone(); !endOfContainerReached && !textIndex.EndReached(); textIndex++)
             {
-                //if (markup[textIndex] == '\n') // not sure if this is necessary. aren't \ns replaced with MarkupNewLine()
-                //{
-                //    markup.InsertMove(segmentStart, GetMoveVector());
-                //    segmentStart = textIndex + 1; // after \n
-                //    j++; // next segment
+                bool manualNewLine = textIndex.CurrentNode is MarkupNewLine;
+                Vector2 textSize = Vector2.Zero;
 
-                //    // skip all segments in the current line
-                //    while (j < segmentsPerLine[i].Count)
-                //    {
-                //        segmentedText.Add("");
-                //        j++;
-                //    }
-
-                //    if (!NextLine(ref overflow))
-                //    {
-                //        return;
-                //    }
-                //    currentSegmentSize.X = segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left;
-                //    continue;
-                //}
-                //else 
-                if (markup[textIndex] == ' ')
+                if (manualNewLine)
                 {
                     lastPossibleBreakIndex = textIndex.Clone();
-                    isLastPossibleBreakASpace = true;
-                    continue;
+                    isBreakChar = true;
                 }
-                if (allowBreakBetweenTextAndTexture
-                    && textIndex.CurrentNode is MarkupTexture 
-                    && !textIndex.IsEqual(segmentStart))
+                else
                 {
-                    lastPossibleBreakIndex = textIndex.Clone();
-                    isLastPossibleBreakASpace = false;
-                }
-                int segmentCharCount = 0;// segmentStart.CharacterCountTo(textIndex + 1);
-                Vector2 textSize = markup.GetSize(settings, segmentStart, textIndex + 1);
-
-                if (previousTextSize != Vector2.Zero && textSize.Y > previousTextSize.Y)
-                {
-                    // text size increased!
-                    // check if we can extend all segments in the current line downwards
-
-                    List<Rect> segmentsThisLine = previousSegmentsThisLine.ToList();
-                    segmentsThisLine.Add(segment);
-                    float grow = textSize.Y - previousTextSize.Y;
-                    bool allCanGrow = true;
-                    foreach (var s in segmentsThisLine)
+                    if (markup[textIndex] == ' ')
                     {
-                        if (!CanGrow(s, grow))
-                        {
-                            allCanGrow = false;
-                            break;
-                        }
-
-                        bool CanGrow(Rect segment, float grow)
-                        {
-                            return false;
-                        }
+                        lastPossibleBreakIndex = textIndex.Clone();
+                        isBreakChar = true;
+                        continue;
                     }
-
-                    if (allCanGrow)
+                    if (allowBreakBetweenTextAndTexture
+                        && textIndex.CurrentNode is MarkupTexture
+                        && !textIndex.IsEqual(segmentStart))
                     {
-                        // grow all
+                        lastPossibleBreakIndex = textIndex.Clone();
+                        isBreakChar = false;
+                    }
+                    textSize = markup.GetSize(settings, segmentStart, textIndex + 1);
+
+                    if (previousTextSize != Vector2.Zero && textSize.Y > previousTextSize.Y)
+                    {
+                        // text size increased!
+                        // check if we can extend all segments in the current line downwards
+
+                        List<Rect> segmentsThisLine = previousSegmentsThisLine.ToList();
+                        segmentsThisLine.Add(segment);
+                        float grow = textSize.Y - previousTextSize.Y;
+                        bool allCanGrow = true;
                         foreach (var s in segmentsThisLine)
                         {
-                            s.Height = textSize.Y;
+                            if (!CanGrow(s, grow))
+                            {
+                                allCanGrow = false;
+                                break;
+                            }
+
+                            bool CanGrow(Rect segment, float grow)
+                            {
+                                return false;
+                            }
                         }
-                        // TODO: also somehow grow the Jump() markups. This would require a new kind of JumpIntoRectangle markup?
-                    }
-                    else
-                    {
-                        // reposition with higher height or break to new segment
-                        // remember beforehand
-                        Rect rememberSegment = segment.CloneRect();
-                        segment.Size = textSize;
-                        if (!GetNextSegment())
+
+                        if (allCanGrow)
                         {
-                            // revert back to previous segment with to shallow size -> this will trigger a segment break
-                            segment.Pos = rememberSegment.Pos;
-                            segment.Size = rememberSegment.Size;
-                        }
-                    }
-
-                }
-                previousTextSize = textSize;
-
-                if (segment.Width == 0f)// is unset?
-                {
-                    while (true)
-                    {
-                        // find current segment
-                        // TODO: implement a border for minDistX in case of more than one segments per line (replace -9999999f)
-                        segment.Size = textSize;
-
-                        if (GetNextSegment())
-                        {
-                            break;
+                            // grow all
+                            foreach (var s in segmentsThisLine)
+                            {
+                                s.Height = textSize.Y;
+                            }
+                            // TODO: also somehow grow the Jump() markups. This would require a new kind of JumpIntoRectangle markup?
                         }
                         else
                         {
-                            // end reached?
-                            if (segment.Y + defaultLineHeight > bottomY)
+                            // reposition with higher height or break to new segment
+                            // remember beforehand
+                            Rect rememberSegment = segment.CloneRect();
+                            segment.Size = textSize;
+                            if (!GetNextSegment())
                             {
-                                endOfContainerReached = true;
+                                // revert back to previous segment with to shallow size -> this will trigger a segment break
+                                segment.Pos = rememberSegment.Pos;
+                                segment.Size = rememberSegment.Size;
+                            }
+                        }
+
+                    }
+                    previousTextSize = textSize;
+
+                    if (segment.Width == 0f)// is unset?
+                    {
+                        while (!endOfContainerReached)
+                        {
+                            // find current segment
+                            // TODO: implement a border for minDistX in case of more than one segments per line (replace -9999999f)
+                            segment.Size = textSize;
+
+                            if (GetNextSegment())
+                            {
                                 break;
+                            }
+                            else
+                            {
+                                NewLine();
                             }
                         }
                     }
                 }
 
-                if (textSize.X > segment.Width || textSize.Y > segment.Height)
+                if (manualNewLine 
+                    || textSize.X > segment.Width 
+                    || textSize.Y > segment.Height)
                 {
                     bool splitMidWord = splitMethod == PolygonTextSplit.AlwaysMidWord;
                     if (!splitMidWord)
                     {
                         if (lastPossibleBreakIndex == null)
                         {
-                            if (splitMethod == PolygonTextSplit.AllowMidWordIfSpaceNotPossible && segmentCharCount > 1)
-                            {
-                                splitMidWord = true;
-                            }
-                            else
+                            // TODO
+                            //if (splitMethod == PolygonTextSplit.AllowMidWordIfSpaceNotPossible) // TODO: && segmentCharCount > 1)
+                            //{
+                            //    splitMidWord = true;
+                            //}
+                            //else
                             {
                                 // skip this section, as there's no space in the segment
                                 markup.InsertJump(segmentStart, GetJumpVector(segmentStart), textIndex);
@@ -689,7 +677,7 @@ namespace BytingLib
                         {
 
                             markup.InsertJump(segmentStart, GetJumpVector(lastPossibleBreakIndex), lastPossibleBreakIndex, textIndex);
-                            if (isLastPossibleBreakASpace)
+                            if (isBreakChar)
                             {
                                 lastPossibleBreakIndex++;
                             }
@@ -705,6 +693,11 @@ namespace BytingLib
                     }
 
                     CloseCurrentSegment();
+
+                    if (manualNewLine || lastSegmentInLine)
+                    {
+                        NewLine();
+                    }
                 }
             }
 
@@ -744,6 +737,22 @@ namespace BytingLib
             //    overflow = -underflow;
             //}
 
+            void NewLine()
+            {
+                // no fitting segment found
+                // try next line
+                previousSegmentsThisLine.Clear();
+                segment.Y += minimumLineHeightForThisLine;
+                minimumLineHeightForThisLine = defaultLineHeight;
+                segment.X = minX;
+
+                // end reached?
+                if (segment.Y + defaultLineHeight > bottomY)
+                {
+                    endOfContainerReached = true;
+                }
+            }
+
             Vector2 GetJumpVector(MarkupIndex? measureWidthUntil)
             {
                 Vector2 jumpTo = segment.Pos;
@@ -759,7 +768,6 @@ namespace BytingLib
 
             void CloseCurrentSegment()
             {
-                // TODO: if we know that was the last segment in line, directly go to next line
                 var cloneSegment = segment.CloneRect();
                 previousSegmentsThisLine.Add(cloneSegment);
                 segments.Add(cloneSegment);
@@ -947,16 +955,12 @@ namespace BytingLib
                 // remember to reuse left openX and closeX for next segment in current line (if line height doesn't change)
                 if (openX.Count == 0)
                 {
-                    // no fitting segment found
-                    // try next line
-                    previousSegmentsThisLine.Clear();
-                    segment.Y += minimumLineHeightForThisLine;
-                    minimumLineHeightForThisLine = defaultLineHeight;
-                    segment.X = minX;
                     return false;
                 }
                 else
                 {
+                    lastSegmentInLine = openX.Count == 1;
+
                     float closeX1 = closeX.Count == 0 ? maxX : closeX[0];
 
                     segment.Width = closeX1 - openX[0];
