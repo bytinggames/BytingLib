@@ -25,7 +25,7 @@ namespace BytingLib
             segmentedLines = new();
             segmentedText = new();
 
-            float overflow = float.PositiveInfinity;
+            float overflowFract = float.PositiveInfinity;
             float totalSegmentsWidth = 0f;
             Vector2? minFontScale = null;
             Vector2? maxFontScale = null;
@@ -35,24 +35,24 @@ namespace BytingLib
             float defaultLineHeight = font.Value.LineSpacing * FontScale.Y;
             //int lines = (int)MathF.Floor(containerRect.Height / lineHeights);
 
-            for (int iteration = 0; iteration < 1/*0*/ || overflow > 0f; iteration++)
+            for (int iteration = 0; iteration < 5/*0*/ || overflowFract > 0f; iteration++)
             {
                 if (incrementedLines)
                 {
                     break;
                 }
 
-                if (overflow != float.PositiveInfinity)
+                if (overflowFract != float.PositiveInfinity)
                 {
-                    if (iteration == 0 && overflow > 0f)
-                    {
-                        iteration--; // retry
-                    }
+                    //if (iteration == 0 && overflowFract > 0f)
+                    //{
+                    //    iteration--; // retry
+                    //}
 
                     //if (iteration < 0)
                     {
                         // try font scaling
-                        if (overflow < 0f)
+                        if (overflowFract < 0f)
                         {
                             minFontScale = FontScale;
                         }
@@ -61,9 +61,7 @@ namespace BytingLib
                             maxFontScale = FontScale;
                         }
 
-                        float textUsage = totalSegmentsWidth + overflow;
-                        float usage = textUsage / totalSegmentsWidth;
-                        float scaleFontBy = 1f / usage;
+                        float scaleFontBy = 1f / (1f + overflowFract);
                         scaleFontBy = MathF.Sqrt(scaleFontBy); // because font is scaled in x and y direction
                         scaleFontBy *= 0.99f; // go a bit smaller, underflowing is better than overflowing, as we can take that underflowed output
                         FontScale *= scaleFontBy;
@@ -244,15 +242,13 @@ namespace BytingLib
                     SegmentedMarkup = new MarkupRoot(creator, text);
                     //myText = new MyMarkup(markup);
                     MarkupSettings settings = new(null, font, new Anchor(Vector2.Zero, anchor), Color.White, anchor.X, FontScale);
-                    SplitMarkupBySegments(SegmentedMarkup, settings, splitMethod,
-                            defaultLineHeight, textTop, textBottom, polygons, out overflow);
+                    segments = SplitMarkupBySegments(SegmentedMarkup, settings, splitMethod,
+                            defaultLineHeight, textTop, textBottom, polygons, out overflowFract);
 
                     // find indices of spaces and \ns and seperations between f.ex. text and images
                     //markup.Root.Children
 
                 }
-
-                //totalSegmentsWidth = segmentedLines.Sum(f => f.Sum(g => g.Right - g.Left));
             }
 
             CreateAnchors(font);
@@ -542,16 +538,17 @@ namespace BytingLib
             }
         }
 
-        private void SplitMarkupBySegments(MarkupRoot markup, MarkupSettings settings, PolygonTextSplit splitMethod, float defaultLineHeight, 
-            float topY, float bottomY, List<List<Vector2>> polygons, out float overflow, float minX = -99999f, float maxX = 99999f, bool allowBreakBetweenTextAndTexture = true)
+        private List<Rect> SplitMarkupBySegments(MarkupRoot markup, MarkupSettings settings, PolygonTextSplit splitMethod, float defaultLineHeight, 
+            float topY, float bottomY, List<List<Vector2>> polygons, out float overflowFract, float minX = -99999f, float maxX = 99999f, bool allowBreakBetweenTextAndTexture = true)
         {
+            List<Rect> segments = new List<Rect>();
             MarkupIndex segmentStart = new(markup.Root);
             float minimumLineHeightForThisLine = defaultLineHeight;
             Rect segment = new Rect(minX, topY,0,0);
             List<Rect> previousSegmentsThisLine = new();
             MarkupIndex? lastPossibleBreakIndex = null;
             bool isBreakChar = false;
-            overflow = 0f;
+            overflowFract = 0f;
             Vector2 previousTextSize = Vector2.Zero; // 0 0 means unset
             bool endOfContainerReached = false;
             bool lastSegmentInLine = false;
@@ -708,34 +705,25 @@ namespace BytingLib
                 markup.InsertJump(segmentStart, GetJumpVector(null));
             }
 
-            //// underflow
-            //if (lastMeasuredWidth != -1f)
-            //{
-            //    float underflow = currentSegmentSize.X - lastMeasuredWidth;
+            // check overflow / underflow
+            if (endOfContainerReached)
+            {
+                // overflow
+                // measure current line size
+                Vector2 textSize = markup.GetSize(settings, segmentStart);
+                float overflowWidth = textSize.X - segment.Width;
 
-            //    if (i < segmentsPerLine.Count)
-            //    {
-            //        while (true)
-            //        {
-            //            j++;
-            //            if (j >= segmentsPerLine[i].Count)
-            //            {
-            //                j = 0;
-            //                i++;
-            //                if (i >= segmentsPerLine.Count)
-            //                {
-            //                    break;
-            //                }
-            //            }
+                float totalSegmentsWidth = segments.Sum(f => f.Width);
+                overflowFract = overflowWidth / totalSegmentsWidth;
+            }
+            else
+            {
+                // underflow
+                float heightTakenUpFract = (segment.Bottom - topY) / (bottomY - topY);
+                overflowFract = heightTakenUpFract - 1f;
+            }
 
-            //            if (j < segmentsPerLine[i].Count)
-            //            {
-            //                underflow += segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left;
-            //            }
-            //        }
-            //    }
-            //    overflow = -underflow;
-            //}
+            return segments;
 
             void NewLine()
             {
