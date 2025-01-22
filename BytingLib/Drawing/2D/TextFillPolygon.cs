@@ -14,7 +14,6 @@ namespace BytingLib
         private PolygonTextSplit splitMethod;
         private Rect? AbsoluteRect;
 
-        public bool OnlyAllowTextWhenAllPolygonsOverlaps { get; set; }
         public bool GlobalAnchor { get; set; } = true;
         public Vector2 Anchor { get; set; } // TODO: update
         public string Text { get; set; } // TODO: update
@@ -107,7 +106,6 @@ namespace BytingLib
                     UpdateText(style.Font, null);
                 }
 
-                PolygonText?.Draw(spriteBatch, style);
                 PolygonText?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
             }
         }
@@ -116,7 +114,7 @@ namespace BytingLib
         {
             if (polygonsTransformed != null && AbsoluteRect != null)
             {
-                PolygonText = new PolygonText(Text, font, AbsoluteRect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, OnlyAllowTextWhenAllPolygonsOverlaps, borderLeft, borderRight, creator);
+                PolygonText = new PolygonText(Text, font, AbsoluteRect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, borderLeft, borderRight, creator);
             }
         }
 
