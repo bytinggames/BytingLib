@@ -243,7 +243,7 @@ namespace BytingLib
                     //myText = new MyMarkup(markup);
                     MarkupSettings settings = new(null, font, new Anchor(Vector2.Zero, anchor), Color.White, anchor.X, FontScale);
                     segments = SplitMarkupBySegments(SegmentedMarkup, settings, splitMethod,
-                            defaultLineHeight, textTop, textBottom, polygons, out overflowFract);
+                            defaultLineHeight, textTop, textBottom, polygons, out overflowFract, borderLeft ? containerRect.Left : null, borderRight ? containerRect.Right : null);
 
                     // find indices of spaces and \ns and seperations between f.ex. text and images
                     //markup.Root.Children
@@ -539,12 +539,12 @@ namespace BytingLib
         }
 
         private List<Rect> SplitMarkupBySegments(MarkupRoot markup, MarkupSettings settings, PolygonTextSplit splitMethod, float defaultLineHeight, 
-            float topY, float bottomY, List<List<Vector2>> polygons, out float overflowFract, float minX = -99999f, float maxX = 99999f, bool allowBreakBetweenTextAndTexture = true)
+            float topY, float bottomY, List<List<Vector2>> polygons, out float overflowFract, float? minX, float? maxX, bool allowBreakBetweenTextAndTexture = true)
         {
             List<Rect> segments = new List<Rect>();
             MarkupIndex segmentStart = new(markup.Root);
             float minimumLineHeightForThisLine = defaultLineHeight;
-            Rect segment = new Rect(minX, topY,0,0);
+            Rect segment = new Rect(-float.MaxValue, topY,0,0);
             List<Rect> previousSegmentsThisLine = new();
             MarkupIndex? lastPossibleBreakIndex = null;
             bool isBreakChar = false;
@@ -732,7 +732,7 @@ namespace BytingLib
                 previousSegmentsThisLine.Clear();
                 segment.Y += minimumLineHeightForThisLine;
                 minimumLineHeightForThisLine = defaultLineHeight;
-                segment.X = minX;
+                segment.X = -float.MaxValue;
 
                 // end reached?
                 if (segment.Y + defaultLineHeight > bottomY)
@@ -883,6 +883,10 @@ namespace BytingLib
                                 }
                             }
 
+                            if (minX.HasValue && xCollision < minX.Value)
+                            {
+                                xCollision = minX.Value;
+                            }
                             if (xCollision >= segment.X)
                             {
                                 openX.Add(xCollision);
@@ -941,7 +945,7 @@ namespace BytingLib
                     }
                 }
                 // remember to reuse left openX and closeX for next segment in current line (if line height doesn't change)
-                if (openX.Count == 0)
+                if (openX.Count == 0 || (closeX.Count == 0 && maxX == null))
                 {
                     return false;
                 }
@@ -949,7 +953,7 @@ namespace BytingLib
                 {
                     lastSegmentInLine = openX.Count == 1;
 
-                    float closeX1 = closeX.Count == 0 ? maxX : closeX[0];
+                    float closeX1 = closeX.Count == 0 ? maxX!.Value : closeX[0];
 
                     segment.Width = closeX1 - openX[0];
                     return true;
