@@ -239,6 +239,11 @@
                 {
                     Vector2 size;
 
+                    if (element == end?.CurrentNode && end.indexInString == 0)
+                    {
+                        break;
+                    }
+
                     size = element.GetSize(settings,
                         start.CurrentNode == element ? start.indexInString : 0,
                         end != null && end.CurrentNode == element ? end.indexInString : -1);
@@ -623,6 +628,15 @@
             }
             return indexInString == index.indexInString
                 && selectedNodeHierarchy.SequenceEqual(index.selectedNodeHierarchy);
+        }
+
+        public override string ToString()
+        {
+            if (CurrentNode is MarkupText text)
+            {
+                return text.Text.Insert(indexInString, "|");
+            }
+            return CurrentNode?.GetType().ToString() ?? "no node";
         }
     }
 

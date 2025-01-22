@@ -1,8 +1,5 @@
 ﻿using BytingLib.Markup;
 using BytingLib.UI;
-using Microsoft.Xna.Framework.Graphics;
-using YamlDotNet.Core;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BytingLib
 {
@@ -11,22 +8,21 @@ namespace BytingLib
         public Vector2 FontScale { get; private set; }
         private readonly List<string> segmentedText;
         public MarkupRoot? SegmentedMarkup { get; } = null;
-        private readonly List<List<Segment>> unifiedSegmentsPerLine;
+        private readonly List<SegmentedLine> segmentedLines;
         private readonly float textTop;
-        private readonly Rect containerRect;
         private readonly Vector2 anchor;
         private readonly bool globalAnchor;
-        private readonly float lineSpacing;
+        //private readonly float lineSpacing;
+        List<Rect> segments = new();
 
         public PolygonText(string text, Ref<SpriteFont> font, Rect containerRect, Vector2 anchor, bool globalAnchor, List<List<Vector2>> polygons, PolygonTextSplit splitMethod,
             bool onlyAllowTextWhenAllPolygonsOverlaps = false, bool borderLeft = true, bool borderRight = true, Creator? creator = null)
         {
-            this.containerRect = containerRect;
             this.anchor = anchor;
             this.globalAnchor = globalAnchor;
             FontScale = Vector2.One;
             textTop = 0f;
-            unifiedSegmentsPerLine = new();
+            segmentedLines = new();
             segmentedText = new();
 
             float overflow = float.PositiveInfinity;
@@ -36,8 +32,8 @@ namespace BytingLib
 
             bool incrementedLines = false;
 
-            lineSpacing = font.Value.LineSpacing * FontScale.Y;
-            int lines = (int)MathF.Floor(containerRect.Height / lineSpacing);
+            float defaultLineHeight = font.Value.LineSpacing * FontScale.Y;
+            //int lines = (int)MathF.Floor(containerRect.Height / lineHeights);
 
             for (int iteration = 0; iteration < 1/*0*/ || overflow > 0f; iteration++)
             {
@@ -95,8 +91,8 @@ namespace BytingLib
                             }
                         }
 
-                        lineSpacing = font.Value.LineSpacing * FontScale.Y;
-                        lines = (int)MathF.Floor(containerRect.Height / lineSpacing);
+                        defaultLineHeight = font.Value.LineSpacing * FontScale.Y;
+                        //lines = (int)MathF.Floor(containerRect.Height / lineHeights);
                     }
                     //else
                     //{
@@ -113,7 +109,7 @@ namespace BytingLib
                     //}
                 }
 
-                unifiedSegmentsPerLine.Clear();
+                segmentedLines.Clear();
                 segmentedText.Clear();
 
                 Vector2 anchorPos = containerRect.GetPos(anchor);
@@ -121,125 +117,126 @@ namespace BytingLib
 
                 //spriteBatch.DrawLine(new Vector2(minX, anchorPos.Y), new Vector2(maxX, anchorPos.Y), Color.Red);
 
-                float totalTextHeight = lineSpacing * lines;
+                float totalTextHeight = containerRect.Height; /* for now simply use entire height *///lineSpacing * lines;
                 textTop = anchorPos.Y - totalTextHeight * anchor.Y;
+                float textBottom = textTop + totalTextHeight;
                 float cursorTop = textTop;
 
-                List<List<Segment>> segmentsPerLine = new();
+                //List<List<Segment>> segmentsPerLine = new();
 
-                while (cursorTop < containerRect.Bottom)
-                {
-                    var segments = GetEnclosedSegments(cursorTop, polygons, onlyAllowTextWhenAllPolygonsOverlaps);
+                //while (cursorTop < containerRect.Bottom)
+                //{
+                //    var segments = GetEnclosedSegments(cursorTop, polygons, onlyAllowTextWhenAllPolygonsOverlaps);
 
-                    if (borderLeft)
-                    {
-                        CropSegmentsToBorder(segments, true, containerRect.Left);
-                    }
-                    if (borderRight)
-                    {
-                        CropSegmentsToBorder(segments, false, containerRect.Right);
-                    }
+                //    if (borderLeft)
+                //    {
+                //        CropSegmentsToBorder(segments, true, containerRect.Left);
+                //    }
+                //    if (borderRight)
+                //    {
+                //        CropSegmentsToBorder(segments, false, containerRect.Right);
+                //    }
 
-                    segmentsPerLine.Add(segments);
-                    cursorTop += lineSpacing;
-                }
+                //    segmentsPerLine.Add(segments);
+                //    cursorTop += lineHeights;
+                //}
 
-                // use segments to insert blocks
-                for (int line = 0; line < segmentsPerLine.Count - 1; line++)
-                {
-                    List<Segment> unifiedSegments = new();
-                    unifiedSegmentsPerLine.Add(unifiedSegments);
+                //// use segments to insert blocks
+                //for (int line = 0; line < segmentsPerLine.Count - 1; line++)
+                //{
+                //    List<Segment> unifiedSegments = new();
+                //    segmentedLines.Add(unifiedSegments);
 
-                    var currentSegments = segmentsPerLine[line];
-                    var nextSegments = segmentsPerLine[line + 1];
-                    int i = 0;
-                    int j = 0;
-                    float left, right;
+                //    var currentSegments = segmentsPerLine[line];
+                //    var nextSegments = segmentsPerLine[line + 1];
+                //    int i = 0;
+                //    int j = 0;
+                //    float left, right;
 
-                    while (i < currentSegments.Count && j < nextSegments.Count)
-                    {
-                        var c = currentSegments[i];
-                        var n = nextSegments[j];
-                        if (c.Left >= n.Left)
-                        {
-                            // upper line starts further to the right
-                            //    ---
-                            // ---
+                //    while (i < currentSegments.Count && j < nextSegments.Count)
+                //    {
+                //        var c = currentSegments[i];
+                //        var n = nextSegments[j];
+                //        if (c.Left >= n.Left)
+                //        {
+                //            // upper line starts further to the right
+                //            //    ---
+                //            // ---
 
-                            // check if lower lines segment includes the start of the upper line
-                            if (c.Left <= n.Right)
-                            {
-                                //  --
-                                // ---
-                                left = c.Left;
+                //            // check if lower lines segment includes the start of the upper line
+                //            if (c.Left <= n.Right)
+                //            {
+                //                //  --
+                //                // ---
+                //                left = c.Left;
 
-                                if (c.Right <= n.Right)
-                                {
-                                    //  --
-                                    // ----
-                                    right = c.Right;
-                                    i++;
-                                }
-                                else
-                                {
-                                    //  --
-                                    // --
-                                    right = n.Right;
-                                    j++;
-                                }
+                //                if (c.Right <= n.Right)
+                //                {
+                //                    //  --
+                //                    // ----
+                //                    right = c.Right;
+                //                    i++;
+                //                }
+                //                else
+                //                {
+                //                    //  --
+                //                    // --
+                //                    right = n.Right;
+                //                    j++;
+                //                }
 
-                                unifiedSegments.Add(new(left, right));
-                            }
-                            else
-                            {
-                                //    --
-                                // --
-                                j++;
-                            }
-                        }
-                        else
-                        {
-                            // upper line starts further to the left
-                            // ---
-                            //    ---
+                //                unifiedSegments.Add(new(left, right));
+                //            }
+                //            else
+                //            {
+                //                //    --
+                //                // --
+                //                j++;
+                //            }
+                //        }
+                //        else
+                //        {
+                //            // upper line starts further to the left
+                //            // ---
+                //            //    ---
 
-                            if (c.Right >= n.Left)
-                            {
-                                // ---
-                                //  --
-                                left = n.Left;
+                //            if (c.Right >= n.Left)
+                //            {
+                //                // ---
+                //                //  --
+                //                left = n.Left;
 
-                                if (c.Right >= n.Right)
-                                {
-                                    // ----
-                                    //  --
-                                    right = n.Right;
-                                    j++;
-                                }
-                                else
-                                {
-                                    // --
-                                    //  --
-                                    right = c.Right;
-                                    i++;
-                                }
-                                unifiedSegments.Add(new(left, right));
-                            }
-                            else
-                            {
-                                // --
-                                //    --
-                                i++;
-                            }
-                        }
-                    }
-                }
+                //                if (c.Right >= n.Right)
+                //                {
+                //                    // ----
+                //                    //  --
+                //                    right = n.Right;
+                //                    j++;
+                //                }
+                //                else
+                //                {
+                //                    // --
+                //                    //  --
+                //                    right = c.Right;
+                //                    i++;
+                //                }
+                //                unifiedSegments.Add(new(left, right));
+                //            }
+                //            else
+                //            {
+                //                // --
+                //                //    --
+                //                i++;
+                //            }
+                //        }
+                //    }
+                //}
 
                 //IText myText;
                 if (creator == null)
                 {
-                    segmentedText = SplitTextBySegments(text, str => font.Value.MeasureString(str).X * FontScale.X, splitMethod,
-                            lineSpacing, textTop, unifiedSegmentsPerLine, out overflow);
+                    //segmentedText = SplitTextBySegments(text, str => font.Value.MeasureString(str).X * FontScale.X, splitMethod,
+                    //        lineHeights, textTop, segmentedLines, out overflow);
                 }
                 else
                 {
@@ -248,14 +245,14 @@ namespace BytingLib
                     //myText = new MyMarkup(markup);
                     MarkupSettings settings = new(null, font, new Anchor(Vector2.Zero, anchor), Color.White, anchor.X, FontScale);
                     SplitMarkupBySegments(SegmentedMarkup, settings, splitMethod,
-                            lineSpacing, textTop, unifiedSegmentsPerLine, out overflow);
+                            defaultLineHeight, textTop, textBottom, polygons, out overflow);
 
                     // find indices of spaces and \ns and seperations between f.ex. text and images
                     //markup.Root.Children
 
                 }
 
-                totalSegmentsWidth = unifiedSegmentsPerLine.Sum(f => f.Sum(g => g.Right - g.Left));
+                //totalSegmentsWidth = segmentedLines.Sum(f => f.Sum(g => g.Right - g.Left));
             }
 
             CreateAnchors(font);
@@ -263,50 +260,50 @@ namespace BytingLib
 
         private void CreateAnchors(Ref<SpriteFont> font)
         {
-            // create anchors for drawing later on
-            int segmentedTextIndex = 0;
-            float cursorTop1 = textTop;
-            for (int i = 0; i < unifiedSegmentsPerLine.Count; i++)
-            {
-                for (int j = 0; j < unifiedSegmentsPerLine[i].Count; j++)
-                {
-                    var s = unifiedSegmentsPerLine[i][j];
-                    Anchor drawAnchor;
-                    if (globalAnchor)
-                    {
-                        // ---XXXXX|X---  
-                        // -> (when using global anchor of x=0.5)
-                        // ----XXX|XXX---
-                        float anchorXPos = containerRect.GetPos(anchor.X, 0f).X;
-                        float textWidth = font.Value.MeasureString(segmentedText[segmentedTextIndex]).X * FontScale.X;
-                        if (anchorXPos + textWidth * (1f - anchor.X) > s.Right)
-                        {
-                            drawAnchor = new Anchor(s.Right, cursorTop1, 1f, 0f);
-                        }
-                        else if (anchorXPos - textWidth * anchor.X < s.Left)
-                        {
-                            drawAnchor = new Anchor(s.Left, cursorTop1, 0f, 0f);
+            //// create anchors for drawing later on
+            //int segmentedTextIndex = 0;
+            //float cursorTop1 = textTop;
+            //for (int i = 0; i < segmentedLines.Count; i++)
+            //{
+            //    for (int j = 0; j < segmentedLines[i].Count; j++)
+            //    {
+            //        var s = segmentedLines[i][j];
+            //        Anchor drawAnchor;
+            //        if (globalAnchor)
+            //        {
+            //            // ---XXXXX|X---  
+            //            // -> (when using global anchor of x=0.5)
+            //            // ----XXX|XXX---
+            //            float anchorXPos = containerRect.GetPos(anchor.X, 0f).X;
+            //            float textWidth = font.Value.MeasureString(segmentedText[segmentedTextIndex]).X * FontScale.X;
+            //            if (anchorXPos + textWidth * (1f - anchor.X) > s.Right)
+            //            {
+            //                drawAnchor = new Anchor(s.Right, cursorTop1, 1f, 0f);
+            //            }
+            //            else if (anchorXPos - textWidth * anchor.X < s.Left)
+            //            {
+            //                drawAnchor = new Anchor(s.Left, cursorTop1, 0f, 0f);
 
-                        }
-                        else
-                        {
-                            drawAnchor = new Anchor(anchorXPos, cursorTop1, anchor.X, 0f);
-                        }
-                    }
-                    else
-                    {
-                        drawAnchor = new Rect(s.Left, cursorTop1, s.Right - s.Left, lineSpacing).GetAnchor(anchor.X, 0f);
-                    }
-                    s.Anchor = drawAnchor;
+            //            }
+            //            else
+            //            {
+            //                drawAnchor = new Anchor(anchorXPos, cursorTop1, anchor.X, 0f);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            drawAnchor = new Rect(s.Left, cursorTop1, s.Right - s.Left, lineHeights).GetAnchor(anchor.X, 0f);
+            //        }
+            //        s.Anchor = drawAnchor;
 
-                    segmentedTextIndex++;
-                    if (segmentedTextIndex >= segmentedText.Count)
-                    {
-                        return;
-                    }
-                }
-                cursorTop1 += lineSpacing;
-            }
+            //        segmentedTextIndex++;
+            //        if (segmentedTextIndex >= segmentedText.Count)
+            //        {
+            //            return;
+            //        }
+            //    }
+            //    cursorTop1 += lineHeights;
+            //}
         }
 
         private void CropSegmentsToBorder(List<Segment> segments, bool left, float x)
@@ -545,33 +542,20 @@ namespace BytingLib
             }
         }
 
-        private void SplitMarkupBySegments(MarkupRoot markup, MarkupSettings settings, PolygonTextSplit splitMethod, float lineSpacing, float textTop, List<List<Segment>> segmentsPerLine, out float overflow)
+        private void SplitMarkupBySegments(MarkupRoot markup, MarkupSettings settings, PolygonTextSplit splitMethod, float defaultLineHeight, 
+            float topY, float bottomY, List<List<Vector2>> polygons, out float overflow, float minX = -99999f, float maxX = 99999f, bool allowBreakBetweenTextAndTexture = true)
         {
             MarkupIndex segmentStart = new(markup.Root);
-            int i = 0, j = 0;
-
-            // find first segment
-            while (segmentsPerLine[i].Count == 0)
-            {
-                i++;
-                if (i >= segmentsPerLine.Count)
-                {
-                    // no segments at all
-                    // let the markup as it is
-                    overflow = markup.GetSize(settings).X;
-                    return;
-                }
-            }
-
-            float currentSegmentWidth = segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left;
-            MarkupIndex? lastSpaceIndex = null;
+            float minimumLineHeightForThisLine = defaultLineHeight;
+            Rect segment = new Rect(minX, topY,0,0);
+            List<Rect> previousSegmentsThisLine = new();
+            MarkupIndex? lastPossibleBreakIndex = null;
+            bool isLastPossibleBreakASpace = false;
             overflow = 0f;
+            Vector2 previousTextSize = Vector2.Zero; // 0 0 means unset
+            bool endOfContainerReached = false;
 
-            float lastMeasuredWidth = -1f;
-            Vector2 lastSegmentStartPos = new Vector2(segmentsPerLine[i][j].Left, textTop);
-            //Rect lastSegmentStartPos = new Rect(segmentsPerLine[i][j].Left, textTop, segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left, lineSpacing /* todo */);
-
-            for (MarkupIndex textIndex = segmentStart.Clone(); !textIndex.EndReached(); textIndex++)
+            for (MarkupIndex textIndex = segmentStart.Clone(); !endOfContainerReached && !textIndex.EndReached(); textIndex++)
             {
                 //if (markup[textIndex] == '\n') // not sure if this is necessary. aren't \ns replaced with MarkupNewLine()
                 //{
@@ -590,23 +574,105 @@ namespace BytingLib
                 //    {
                 //        return;
                 //    }
-                //    currentSegmentWidth = segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left;
+                //    currentSegmentSize.X = segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left;
                 //    continue;
                 //}
                 //else 
                 if (markup[textIndex] == ' ')
                 {
-                    lastSpaceIndex = textIndex.Clone(); // clone if not a struct
+                    lastPossibleBreakIndex = textIndex.Clone();
+                    isLastPossibleBreakASpace = true;
                     continue;
                 }
+                if (allowBreakBetweenTextAndTexture
+                    && textIndex.CurrentNode is MarkupTexture 
+                    && !textIndex.IsEqual(segmentStart))
+                {
+                    lastPossibleBreakIndex = textIndex.Clone();
+                    isLastPossibleBreakASpace = false;
+                }
                 int segmentCharCount = 0;// segmentStart.CharacterCountTo(textIndex + 1);
-                lastMeasuredWidth = markup.GetSize(settings, segmentStart, textIndex + 1).X;
-                if (lastMeasuredWidth > currentSegmentWidth)
+                Vector2 textSize = markup.GetSize(settings, segmentStart, textIndex + 1);
+
+                if (previousTextSize != Vector2.Zero && textSize.Y > previousTextSize.Y)
+                {
+                    // text size increased!
+                    // check if we can extend all segments in the current line downwards
+
+                    List<Rect> segmentsThisLine = previousSegmentsThisLine.ToList();
+                    segmentsThisLine.Add(segment);
+                    float grow = textSize.Y - previousTextSize.Y;
+                    bool allCanGrow = true;
+                    foreach (var s in segmentsThisLine)
+                    {
+                        if (!CanGrow(s, grow))
+                        {
+                            allCanGrow = false;
+                            break;
+                        }
+
+                        bool CanGrow(Rect segment, float grow)
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (allCanGrow)
+                    {
+                        // grow all
+                        foreach (var s in segmentsThisLine)
+                        {
+                            s.Height = textSize.Y;
+                        }
+                        // TODO: also somehow grow the Jump() markups. This would require a new kind of JumpIntoRectangle markup?
+                    }
+                    else
+                    {
+                        // reposition with higher height or break to new segment
+                        // remember beforehand
+                        Rect rememberSegment = segment.CloneRect();
+                        segment.Size = textSize;
+                        if (!GetNextSegment())
+                        {
+                            // revert back to previous segment with to shallow size -> this will trigger a segment break
+                            segment.Pos = rememberSegment.Pos;
+                            segment.Size = rememberSegment.Size;
+                        }
+                    }
+
+                }
+                previousTextSize = textSize;
+
+                if (segment.Width == 0f)// is unset?
+                {
+                    while (true)
+                    {
+                        // find current segment
+                        // TODO: implement a border for minDistX in case of more than one segments per line (replace -9999999f)
+                        segment.Size = textSize;
+
+                        if (GetNextSegment())
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            // end reached?
+                            if (segment.Y + defaultLineHeight > bottomY)
+                            {
+                                endOfContainerReached = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (textSize.X > segment.Width || textSize.Y > segment.Height)
                 {
                     bool splitMidWord = splitMethod == PolygonTextSplit.AlwaysMidWord;
                     if (!splitMidWord)
                     {
-                        if (lastSpaceIndex == null)
+                        if (lastPossibleBreakIndex == null)
                         {
                             if (splitMethod == PolygonTextSplit.AllowMidWordIfSpaceNotPossible && segmentCharCount > 1)
                             {
@@ -621,190 +687,282 @@ namespace BytingLib
                         }
                         else
                         {
-                            markup.InsertJump(segmentStart, GetJumpVector(lastSpaceIndex + 1), lastSpaceIndex, textIndex);
-                            segmentStart = lastSpaceIndex + 1; // next segment starts after the last space
-                            lastSpaceIndex = null;
+
+                            markup.InsertJump(segmentStart, GetJumpVector(lastPossibleBreakIndex), lastPossibleBreakIndex, textIndex);
+                            if (isLastPossibleBreakASpace)
+                            {
+                                lastPossibleBreakIndex++;
+                            }
+                            segmentStart = lastPossibleBreakIndex; // next segment starts after the last space
+                            lastPossibleBreakIndex = null;
                         }
                     }
                     if (splitMidWord)
                     {
-                        lastSpaceIndex = null;
+                        lastPossibleBreakIndex = null;
                         markup.InsertJump(segmentStart, GetJumpVector(textIndex), textIndex);
                         segmentStart = textIndex.Clone();
                     }
 
-                    textIndex = segmentStart - 1; // -1 because we add +1 add the end of the for loop
-                    j++;
-                    while (j >= segmentsPerLine[i].Count)
-                    {
-                        if (!NextLine(ref overflow))
-                        {
-                            return;
-                        }
-                    }
-
-                    currentSegmentWidth = segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left;
+                    CloseCurrentSegment();
                 }
             }
 
-            markup.InsertJump(segmentStart, GetJumpVector(null));
-
-            // underflow
-            if (lastMeasuredWidth != -1f)
+            if (!endOfContainerReached)
             {
-                float underflow = currentSegmentWidth - lastMeasuredWidth;
+                segments.Add(segment.CloneRect());
 
-                if (i < segmentsPerLine.Count)
-                {
-                    while (true)
-                    {
-                        j++;
-                        if (j >= segmentsPerLine[i].Count)
-                        {
-                            j = 0;
-                            i++;
-                            if (i >= segmentsPerLine.Count)
-                            {
-                                break;
-                            }
-                        }
-
-                        if (j < segmentsPerLine[i].Count)
-                        {
-                            underflow += segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left;
-                        }
-                    }
-                }
-                overflow = -underflow;
+                markup.InsertJump(segmentStart, GetJumpVector(null));
             }
+
+            //// underflow
+            //if (lastMeasuredWidth != -1f)
+            //{
+            //    float underflow = currentSegmentSize.X - lastMeasuredWidth;
+
+            //    if (i < segmentsPerLine.Count)
+            //    {
+            //        while (true)
+            //        {
+            //            j++;
+            //            if (j >= segmentsPerLine[i].Count)
+            //            {
+            //                j = 0;
+            //                i++;
+            //                if (i >= segmentsPerLine.Count)
+            //                {
+            //                    break;
+            //                }
+            //            }
+
+            //            if (j < segmentsPerLine[i].Count)
+            //            {
+            //                underflow += segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left;
+            //            }
+            //        }
+            //    }
+            //    overflow = -underflow;
+            //}
 
             Vector2 GetJumpVector(MarkupIndex? measureWidthUntil)
             {
-                // figure out where last segment left off
-                //Vector2 lastSegmentEnd = lastSegmentStartPos + new Vector2(lastMeasuredWidth, 0f);
-                // figure out where new segment starts
-                Vector2 newStart = new Vector2(segmentsPerLine[i][j].Left, textTop + i * lineSpacing);
-                //Vector2 move = newStart - lastSegmentEnd;
-                lastSegmentStartPos = newStart;
+                Vector2 jumpTo = segment.Pos;
 
-
-                //Rect newStart = new Rect(segmentsPerLine[i][j].Left, textTop + i * lineSpacing /* todo */, segmentsPerLine[i][j].Right - segmentsPerLine[i][j].Left, lineSpacing /* todo */);
-                //Vector2 move = newStart - lastSegmentEnd;
-                lastSegmentStartPos = newStart;
-
+                // anchor text inside segment, if anchor is not left aligned
                 if (anchor.X != 0f && !segmentStart.IsEqual(measureWidthUntil))
                 {
                     float textSegmentWidth = markup.GetSize(settings, segmentStart, measureWidthUntil == null ? null : (measureWidthUntil - 1)).X;
-                    lastSegmentStartPos.X += (currentSegmentWidth - textSegmentWidth) * anchor.X;
+                    jumpTo.X += (segment.Width - textSegmentWidth) * anchor.X;
                 }
-                return lastSegmentStartPos;
-                //return new Vector2(segmentsPerLine[i][j].Left, textTop);
+                return jumpTo;
             }
 
-            bool NextLine(ref float overflow)
+            void CloseCurrentSegment()
             {
-                lastSpaceIndex = null;
-                j = 0;
-                i++;
-                if (i >= segmentsPerLine.Count)
-                {
-                    // we filled all segments, but there's still text missing
-                    // simply append to the last segment
-                    if (!segmentStart.AtStart() && !(segmentStart - 1).EndReached() && markup[segmentStart - 1] == ' ')
-                    {
-                        segmentStart--;
-                    }
-
-                    overflow = markup.GetSize(settings, segmentStart).X;
-                    return false;
-                }
-                return true;
+                // TODO: if we know that was the last segment in line, directly go to next line
+                var cloneSegment = segment.CloneRect();
+                previousSegmentsThisLine.Add(cloneSegment);
+                segments.Add(cloneSegment);
+                segment.Left = segment.Right; // start next segment at the earliest of the right of the current segment
+                segment.Width = 0f; // trigger getting next segment
+                previousTextSize = Vector2.Zero; // new segment means, last text size can be ignored
+                minimumLineHeightForThisLine = MathF.Max(minimumLineHeightForThisLine, segment.Height);
             }
-        }
 
-        static List<Segment> GetEnclosedSegments(float y, List<List<Vector2>> concavePolygons, bool onlyAllowTextWhenAllPolygonsOverlaps = false)
-        {
-            List<float> left = new();
-            List<float> right = new();
-
-            foreach (var polygon in concavePolygons)
+            bool GetNextSegment()
             {
-                for (int i = 0; i < polygon.Count; i++)
+                if (minimumLineHeightForThisLine > segment.Height)
                 {
-                    int j = (i + 1) % polygon.Count;
-                    if (y <= polygon[i].Y && y >= polygon[j].Y)
-                    {
-                        // line is at collision height
-                        float colX = GetXCollisionOnLine(y, polygon[i], polygon[j]);
-                        left.Add(colX);
-                    }
-                    else if (y <= polygon[j].Y && y >= polygon[i].Y)
-                    {
-                        float colX = GetXCollisionOnLine(y, polygon[i], polygon[j]);
-                        right.Add(colX);
-                    }
+                    segment.Height = minimumLineHeightForThisLine;
                 }
-            }
-            left.Sort();
-            right.Sort();
 
-            List<Segment> segments = new();
-
-            int l = 0;
-            int r = 0;
-            int open = 0;
-            float leftOnFirstOpen = 0f;
-            int openGoal = onlyAllowTextWhenAllPolygonsOverlaps ? concavePolygons.Count - 1 : 0;
-            while (r < right.Count)
-            {
-                bool nextIsLeft = l < left.Count /*&& r < right.Count*/ && left[l] < right[r];
-                if (nextIsLeft)
+                List<float> openX = new();
+                List<float> closeX = new();
+                foreach (var polygon in polygons)
                 {
-                    if (open == 0)
+                    for (int p = 0; p < polygon.Count; p++)
                     {
-                        leftOnFirstOpen = left[l];
-                    }
-                    open++;
-                    //if (open)
-                    //{
+                        int p2 = (p + 1) % polygon.Count;
+                        Vector2 v1 = polygon[p];
+                        Vector2 v2 = polygon[p2];
+                        float xCollision;
+                        float? xCollisionMaybe;
 
-                    //}
-                    //else
-                    //{
-                    //}
-                    l++;
-                }
-                else
-                {
-                    open--;
-                    if (open == openGoal)
-                    {
-                        // close it
-                        if (onlyAllowTextWhenAllPolygonsOverlaps)
+                        #region collision check
+
+                        if (v1.Y < v2.Y)
                         {
-                            segments.Add(new(left[l - 1], right[r]));
+                            // edge that closes the polygon
+                            if (v2.Y < segment.Top || v1.Y > segment.Bottom)
+                            {
+                                // if v1 is above the cursor, v2 is too
+                                continue;
+                            }
+
+                            if (v1.X <= v2.X)
+                            {
+                                // vertex 1 is more left than vertex 2
+                                if (v1.Y >= segment.Top)
+                                {
+                                    // vertex 1 lies on same height as rect (vertex collision)
+                                    xCollision = v1.X;
+                                }
+                                else
+                                {
+                                    if ((xCollisionMaybe = CheckEdgeCollision(segment.Top)) == null)
+                                    {
+                                        continue;
+                                    }
+                                    xCollision = xCollisionMaybe.Value;
+                                }
+                            }
+                            else
+                            {
+                                // vertex 2 is more right than vertex 1
+                                if (v2.Y <= segment.Bottom)
+                                {
+                                    // vertex 2 lies on same height as rect (vertex collision)
+                                    xCollision = v2.X;
+                                }
+                                else
+                                {
+                                    if ((xCollisionMaybe = CheckEdgeCollision(segment.Bottom)) == null)
+                                    {
+                                        continue;
+                                    }
+                                    xCollision = xCollisionMaybe.Value;
+                                }
+                            }
+
+                            if (xCollision < maxX)
+                            {
+                                closeX.Add(xCollision);
+                            }
                         }
                         else
                         {
-                            segments.Add(new(leftOnFirstOpen, right[r]));
+                            // edge that opens up the polygon
+
+                            if (v1.Y < segment.Top || v2.Y > segment.Bottom)
+                            {
+                                // if v1 is above the cursor, v2 is too
+                                continue;
+                            }
+
+
+                            if (v1.X >= v2.X)
+                            {
+                                // vertex 1 is more right than vertex 2
+                                if (v1.Y <= segment.Bottom)
+                                {
+                                    // vertex 1 lies on same height as rect (vertex collision)
+                                    xCollision = v1.X;
+                                }
+                                else
+                                {
+                                    // only check edge collision with bottom of rect
+                                    if ((xCollisionMaybe = CheckEdgeCollision(segment.Bottom)) == null)
+                                    {
+                                        continue;
+                                    }
+                                    xCollision = xCollisionMaybe.Value;
+                                }
+                            }
+                            else
+                            {
+                                // vertex 2 is more right than vertex 1
+                                if (v2.Y >= segment.Top)
+                                {
+                                    // vertex 2 lies on same height as rect (vertex collision)
+                                    xCollision = v2.X;
+                                }
+                                else
+                                {
+                                    // only check edge collision with top of rect
+                                    if ((xCollisionMaybe = CheckEdgeCollision(segment.Top)) == null)
+                                    {
+                                        continue;
+                                    }
+                                    xCollision = xCollisionMaybe.Value;
+                                }
+                            }
+
+                            if (xCollision >= segment.X)
+                            {
+                                openX.Add(xCollision);
+                            }
                         }
+
+                        float? CheckEdgeCollision(float cursorTopOrBottom)
+                        {
+                            // only check edge collision with bottom of rect
+                            float distY = cursorTopOrBottom - v1.Y;
+                            Vector2 edgeDir = v2 - v1;
+                            float onLineLerp = distY / edgeDir.Y;
+                            if (onLineLerp > 1f || onLineLerp < 0f)
+                            {
+                                // no collision
+                                return null;
+                            }
+                            return v1.X + edgeDir.X * onLineLerp;
+                        }
+
+                        #endregion
                     }
-                    else if (open < 0)
+                }
+
+                openX.Sort();
+                closeX.Sort();
+
+
+                // iterate through all open positions and check if they collide with the next open or closed position
+                // check what's the first distance to actually fit the current part in (lastMeasuredSize)
+                while (openX.Count > 0)
+                {
+                    // remove all closes that are left to opens
+                    while (closeX.Count > 0 && closeX[0] < openX[0])
                     {
-                        open = 0; // not sure if this is necessary
+                        closeX.RemoveAt(0);
                     }
-                    r++;
+
+                    // skip this open, if the next open is nearer than the next close
+                    if (openX.Count > 1 && closeX.Count > 0 && openX[1] <= closeX[0])
+                    {
+                        openX.RemoveAt(0);
+                        continue;
+                    }
+
+                    segment.X = openX[0];
+                    if (closeX.Count > 0 && closeX[0] < segment.Right)
+                    {
+                        // cursor collides with close edge
+                        openX.RemoveAt(0);
+                    }
+                    else
+                    {
+                        // no collision happened, take the open
+                        break;
+                    }
+                }
+                // remember to reuse left openX and closeX for next segment in current line (if line height doesn't change)
+                if (openX.Count == 0)
+                {
+                    // no fitting segment found
+                    // try next line
+                    previousSegmentsThisLine.Clear();
+                    segment.Y += minimumLineHeightForThisLine;
+                    minimumLineHeightForThisLine = defaultLineHeight;
+                    segment.X = minX;
+                    return false;
+                }
+                else
+                {
+                    float closeX1 = closeX.Count == 0 ? maxX : closeX[0];
+
+                    segment.Width = closeX1 - openX[0];
+                    return true;
                 }
             }
-            return segments;
-        }
-
-        private static float GetXCollisionOnLine(float y, Vector2 a, Vector2 b)
-        {
-            Vector2 lineLength = a - b;
-            float lerp = (y - b.Y) / lineLength.Y;
-            float colX = b.X + lineLength.X * lerp;
-            return colX;
         }
 
         public void Draw(SpriteBatch spriteBatch, StyleRoot style)
@@ -823,49 +981,35 @@ namespace BytingLib
             float cursorTop;
             int segmentedTextIndex = 0;
             cursorTop = textTop;
-            for (int i = 0; i < unifiedSegmentsPerLine.Count; i++)
-            {
-                for (int j = 0; j < unifiedSegmentsPerLine[i].Count; j++)
-                {
-                    var s = unifiedSegmentsPerLine[i][j];
-                    font.Value.Draw(spriteBatch, segmentedText[segmentedTextIndex], s.Anchor!, color, FontScale);
+            //for (int i = 0; i < segmentedLines.Count; i++)
+            //{
+            //    for (int j = 0; j < segmentedLines[i].Count; j++)
+            //    {
+            //        var s = segmentedLines[i][j];
+            //        font.Value.Draw(spriteBatch, segmentedText[segmentedTextIndex], s.Anchor!, color, FontScale);
 
 
-                    segmentedTextIndex++;
-                    if (segmentedTextIndex >= segmentedText.Count)
-                    {
-                        return;
-                    }
-                }
-                cursorTop += lineSpacing;
-            }
+            //        segmentedTextIndex++;
+            //        if (segmentedTextIndex >= segmentedText.Count)
+            //        {
+            //            return;
+            //        }
+            //    }
+            //    cursorTop += lineHeights;
+            //}
         }
 
         public void DrawSegments(SpriteBatch spriteBatch, Color color)
         {
-            DrawSegments(spriteBatch, lineSpacing, textTop, unifiedSegmentsPerLine, true, color);
+            DrawSegments(spriteBatch, segments, color);
         }
 
-        public static float DrawSegments(SpriteBatch spriteBatch, float lineSpacing, float cursorTop, List<List<Segment>> segmentsPerLine, bool block, Color color)
+        public static void DrawSegments(SpriteBatch spriteBatch, List<Rect> segments, Color color)
         {
-            foreach (var line in segmentsPerLine)
+            foreach (var item in segments)
             {
-                foreach (var segment in line)
-                {
-                    if (block)
-                    {
-                        spriteBatch.DrawRectangle(new(segment.Left, cursorTop, segment.Right - segment.Left, lineSpacing), color);
-                    }
-                    else
-                    {
-                        spriteBatch.DrawLine(new(segment.Left, cursorTop), new(segment.Right, cursorTop), color);
-                    }
-                }
-
-                cursorTop += lineSpacing;
+                item.Draw(spriteBatch, color);
             }
-
-            return cursorTop;
         }
 
         //internal string GetSegmentedMarkupText()
@@ -902,6 +1046,13 @@ namespace BytingLib
             public float Right = right;
             public Anchor? Anchor { get; set; }
         }
+
+        class SegmentedLine
+        {
+            List<Segment> Segments { get; }
+            public float LineHeight { get; }
+        }
+
     }
 
     public enum PolygonTextSplit
