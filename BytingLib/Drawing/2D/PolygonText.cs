@@ -27,8 +27,11 @@ namespace BytingLib
             bool incrementedLines = false;
 
             float defaultLineHeight = font.Value.LineSpacing * FontScale.Y;
+            float textHeightEstimation = containerRect.Height;
 
-            for (int iteration = 0; iteration < 5/*0*/ || overflowFract > 0f; iteration++)
+            const int fontScaleIterations = 5;
+            const int yOffsetIterations = 0;
+            for (int iteration = 0; iteration < fontScaleIterations + yOffsetIterations || overflowFract > 0f; iteration++)
             {
                 if (incrementedLines)
                 {
@@ -37,12 +40,14 @@ namespace BytingLib
 
                 if (overflowFract != float.PositiveInfinity)
                 {
-                    //if (iteration == 0 && overflowFract > 0f)
-                    //{
-                    //    iteration--; // retry
-                    //}
+                    if (overflowFract > 0f
+                        && (iteration == fontScaleIterations || iteration == fontScaleIterations + yOffsetIterations))
+                    {
+                        iteration--; // retry until text doesn't overflow anymore
+                    }
 
-                    //if (iteration < 0)
+
+                    if (iteration < fontScaleIterations)
                     {
                         // try font scaling
                         if (overflowFract < 0f)
@@ -83,28 +88,18 @@ namespace BytingLib
                         }
 
                         defaultLineHeight = font.Value.LineSpacing * FontScale.Y;
-                        //lines = (int)MathF.Floor(containerRect.Height / lineHeights);
                     }
-                    //else
-                    //{
-                    //    if (overflow < 0)
-                    //    {
-                    //        // try reducing lines
-                    //        lines--;
-                    //    }
-                    //    else
-                    //    {
-                    //        lines++;
-                    //        incrementedLines = true;
-                    //    }
-                    //}
+                    else
+                    {
+                        float scaleHeightBy = 1f + overflowFract;
+                        textHeightEstimation *= scaleHeightBy;
+                    }
                 }
 
                 Vector2 anchorPos = containerRect.GetPos(anchor);
 
-                float totalTextHeight = containerRect.Height; /* for now simply use entire height *///lineSpacing * lines;
-                textTop = anchorPos.Y - totalTextHeight * anchor.Y;
-                float textBottom = textTop + totalTextHeight;
+                textTop = anchorPos.Y - textHeightEstimation * anchor.Y;
+                float textBottom = textTop + textHeightEstimation;
 
 
                 if (creator == null)
