@@ -23,6 +23,11 @@ namespace BytingLib
             Vector2? minFontScale = null;
             Vector2? maxFontScale = null;
 
+            // in case the polygon has floating point inaccuracies which could prevent a line at the exact top (0.000) add a slight offset
+            float startOffset = 1f;
+            containerRect.Y += startOffset;
+            containerRect.Height -= startOffset;
+
             float defaultLineHeight = font.Value.LineSpacing * FontScale.Y;
             float textHeightEstimation = containerRect.Height;
 
