@@ -1,5 +1,6 @@
 ﻿using BytingLib.Markup;
 using BytingLib.UI;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BytingLib
 {
@@ -33,7 +34,6 @@ namespace BytingLib
             }
         }
 
-
         public enum PolyType
         {
             /// <summary>[0,0] -> AbsoluteRect.TopLeft [1,1] -> AbsoluteRect.BottomRight</summary>
@@ -44,7 +44,8 @@ namespace BytingLib
             Relative
         }
 
-        internal void UpdateTreeInner(Rect rect)
+        [MemberNotNull(nameof(polygonsTransformed))]
+        internal void UpdatePolygons(Rect rect)
         {
             AbsoluteRect = rect;
             PolygonText = null; // trigger reloading
@@ -63,7 +64,7 @@ namespace BytingLib
                     }
                     break;
                 case PolyType.Absolute:
-                    // nothing to do
+                    polygonsTransformed = polygons;
                     break;
                 case PolyType.Relative:
                     polygonsTransformed = polygons.Select(f => f.ToList()).ToList();
@@ -103,35 +104,47 @@ namespace BytingLib
 
                 if (PolygonText == null)
                 {
-                    UpdateText(style.Font, null);
+                    if (polygonsTransformed != null && AbsoluteRect != null)
+                    {
+                        UpdateText(style.Font, null, polygonsTransformed, AbsoluteRect);
+                    }
                 }
 
                 PolygonText?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
             }
         }
 
-        private void UpdateText(Ref<SpriteFont> font, Creator? creator)
+        [MemberNotNull(nameof(PolygonText))]
+        private void UpdateText(Ref<SpriteFont> font, Creator? creator, List<List<Vector2>> polygonsTransformed, Rect rect)
         {
-            if (polygonsTransformed != null && AbsoluteRect != null)
-            {
-                PolygonText = new PolygonText(Text, font, AbsoluteRect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, borderLeft, borderRight, creator);
-            }
+            PolygonText = new PolygonText(Text, font, rect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, borderLeft, borderRight, creator);
         }
 
-        internal MarkupRoot? GetMarkupIfUpdated(StyleRoot style, Creator? creator)
+        internal MarkupRoot? GetMarkupIfUpdated(Ref<SpriteFont> font, Creator? creator)
         {
             if (PolygonText == null)
             {
-                UpdateText(style.Font, creator);
-                if (PolygonText != null)
+                if (AbsoluteRect == null)
                 {
-                    return PolygonText.SegmentedMarkup;
-                    //return PolygonText.GetSegmentedMarkupText();
-                    //throw new NotImplementedException();
-                    //return string.Join('\n', flexText.segmentedText);// "test #move(10|10)#c(f00|red)";
+                    return null;
                 }
+                return GetMarkup(font, creator, AbsoluteRect);
             }
             return null;
+        }
+
+        public MarkupRoot? GetMarkup(Ref<SpriteFont> font, Creator? creator, Rect rect)
+        {
+            if (PolygonText == null)
+            {
+                if (polygonsTransformed == null)
+                {
+                    UpdatePolygons(rect);
+                }
+
+                UpdateText(font, creator, polygonsTransformed, rect);
+            }
+            return PolygonText.SegmentedMarkup;
         }
 
         public void SetDirty(string text, Vector2 anchor)

@@ -50,6 +50,7 @@
             }
         }
 
+        [Obsolete("System.Linq has this method now")]
         private static TSource MinBy_<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector)
         {
@@ -70,6 +71,7 @@
             }
         }
 
+        [Obsolete("System.Linq has this method now")]
         private static TSource MinBy_<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector, IComparer<TKey>? comparer)
         {
@@ -106,15 +108,16 @@
                 return min;
             }
         }
-
-        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
+        [Obsolete("System.Linq has this method now")]
+        public static TSource MaxBy_<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector)
         {
-            return source.MaxBy(selector, null);
+            return source.MaxBy_(selector, null);
         }
 
 
-        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
+        [Obsolete("System.Linq has this method now")]
+        public static TSource MaxBy_<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector, IComparer<TKey>? comparer)
         {
             if (source == null)

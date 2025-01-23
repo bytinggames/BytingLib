@@ -61,7 +61,7 @@ namespace BytingLib.UI
                 FillPolygon.DrawPolygon(spriteBatch);
                 FillPolygon.PolygonText?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
 
-                MarkupRoot? newMarkup = FillPolygon.GetMarkupIfUpdated(style, creator);
+                MarkupRoot? newMarkup = FillPolygon.GetMarkupIfUpdated(style.Font, creator);
                 if (newMarkup != null)
                 {
                     markup?.Dispose();
@@ -140,7 +140,7 @@ namespace BytingLib.UI
         {
             base.UpdateTreeInner(rect);
 
-            fillPolygon?.UpdateTreeInner(rect);
+            fillPolygon?.UpdatePolygons(rect);
             fillPolygon?.SetDirty(Text, Anchor); // trigger reloading
         }
 
