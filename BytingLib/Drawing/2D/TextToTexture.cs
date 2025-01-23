@@ -12,6 +12,10 @@ namespace BytingLib
         private readonly Dictionary<TextToTextureKey, AssetHolder<Texture2D>> textures = new();
         private readonly DisposableContainer disposables = new();
         public float MinimumPixelsPerUnit { get; }
+        /// <summary>Used for debugging</summary>
+        public bool DrawTextFitPolygon { get; set; }
+        /// <summary>Used for debugging</summary>
+        public bool DrawTextFitSegments { get; set; }
 
         public TextToTexture(SpriteBatch spriteBatch, FontArray fontArray, IShaderColor textEffect, Creator markupCreator, float verticalSpaceBetweenLines, float minimumPixelsPerUnit)
         {
@@ -181,8 +185,14 @@ namespace BytingLib
                         textEffect.ApplyParameters();
                         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect.Value, Matrix.CreateScale(drawScale));
 
-                        //textFillPolygon.PolygonText?.DrawSegments(spriteBatch, Color.Lerp(Color.White, Color.Blue, 0.3f));
-                        //textFillPolygon.DrawPolygon(spriteBatch);
+                        if (DrawTextFitPolygon)
+                        {
+                            textFillPolygon.PolygonText?.DrawSegments(spriteBatch, Color.Lerp(Color.White, Color.Blue, 0.3f));
+                        }
+                        if (DrawTextFitSegments)
+                        {
+                            textFillPolygon.DrawPolygon(spriteBatch);
+                        }
                         drawElement.Draw(markupSettings);
 
                         spriteBatch.End();
