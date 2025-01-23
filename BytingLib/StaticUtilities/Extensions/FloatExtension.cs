@@ -64,5 +64,10 @@
         {
             return Math.Clamp(value.MapRange(rangeInMin, rangeInMax, rangeOutMin, rangeOutMax), rangeOutMin, rangeOutMax);
         }
+
+        public static bool NearlyEqual(this float a, float b, float maxDifference)
+        {
+            return MathF.Abs(a - b) <= maxDifference;
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace BytingLib.Markup
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace BytingLib.Markup
 {
     public class MarkupRoot : IDisposable
     {
@@ -403,17 +405,20 @@
 
                 int childIndex = parent.Children.IndexOf(text);
 
-                MarkupText newText;
-                var newCollection = new MarkupCollection(
-                    text,
-                    new MarkupJump(jump),
-                    newText = new MarkupText(text.Text.Substring(index.indexInString))
-                );
-                text.Text = text.Text.Substring(0, index.indexInString);
+                MarkupText newText = new MarkupText(text.Text.Substring(index.indexInString));
+                parent.Children.Insert(childIndex + 1, new MarkupJump(jump));
+                parent.Children.Insert(childIndex + 2, newText);
 
-                parent.Children[childIndex] = newCollection; // replace text with new collection
-                index.selectedNodeHierarchy[^1] = newCollection;
-                index.selectedNodeHierarchy.Add(newText); // goto second half of the text nodes
+                // split text into two
+                text.Text = text.Text.Substring(0, index.indexInString);
+                if (text.Text.Length == 0)
+                {
+                    // if first half has no length, simply remove that text part
+                    parent.Children.RemoveAt(childIndex);
+                }
+
+                // goto new text node
+                index.selectedNodeHierarchy[^1] = newText;
                 index.indexInString = 0;
 
 
@@ -424,8 +429,7 @@
                         if (indicesToMaybeCorrect[i].indexInString >= text.Text.Length)
                         {
                             indicesToMaybeCorrect[i].indexInString -= text.Text.Length;
-                            indicesToMaybeCorrect[i].selectedNodeHierarchy[^1] = newCollection;
-                            indicesToMaybeCorrect[i].selectedNodeHierarchy.Add(newText);
+                            indicesToMaybeCorrect[i].selectedNodeHierarchy[^1] = newText;
                         }
                     }
                 }
@@ -433,9 +437,12 @@
             else
             {
                 // insert jump before current index
-                MarkupCollection parent = (index.selectedNodeHierarchy[^2] as MarkupCollection)!;
-                int childIndex = parent.Children.IndexOf(index.CurrentNode);
-                parent.Children.Insert(childIndex, new MarkupJump(jump));
+                if (!index.AtEnd())
+                {
+                    MarkupCollection parent = (index.selectedNodeHierarchy[^2] as MarkupCollection)!;
+                    int childIndex = parent.Children.IndexOf(index.CurrentNode);
+                    parent.Children.Insert(childIndex, new MarkupJump(jump));
+                }
             }
         }
     }
@@ -472,7 +479,7 @@
 
         public static MarkupIndex operator ++(MarkupIndex a)
         {
-            if (a.EndReached())
+            if (a.AtEnd())
             {
                 return a;
             }
@@ -608,7 +615,8 @@
             return true;
         }
 
-        public bool EndReached()
+        [MemberNotNullWhen(false, nameof(CurrentNode))]
+        public bool AtEnd()
         {
             return selectedNodeHierarchy.Count == 0;
             //return index.selectedNodeHierarchy.Count == 0;

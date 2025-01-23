@@ -8,11 +8,6 @@
         public float X { get; }
         public float Y { get; }
 
-        //public MarkupJump(float x, float y)
-        //{
-        //    X = x;
-        //    Y = y;
-        //}
         public MarkupJump(Vector2 jump)
         {
             X = jump.X;
@@ -35,8 +30,7 @@
 
         public override string ToString()
         {
-            return "#jump";
-            //return $"#jump(${X}|${Y})";
+            return $"#jump({X} {Y})";
         }
 
         public void Dispose()

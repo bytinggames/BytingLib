@@ -50,7 +50,7 @@ namespace BytingLib
                 var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.White);
                 markupSettings.VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines;
                 var drawElement = new MarkupRoot(markupCreator, text);
-                Vector2 textSize = drawElement.GetSize(markupSettings);
+                Vector2 textSize = drawElement.GetSize(markupSettings); // TODO: remove this?
                 textSize /= actualFontSize;
 
                 int fontSize = GetRightFontSize(right.Length() * 2f /* because right only measures half the length */,
@@ -148,7 +148,7 @@ namespace BytingLib
             var drawElement = textFillPolygon.GetMarkup(font, markupCreator, rect)!;
 
             markupSettings.Scale = textFillPolygon.PolygonText.FontScale;
-            markupSettings.TextureScale = markupSettings.Scale;
+            markupSettings.TextureScale = textureScale * markupSettings.Scale;
             // TODO: scale rect and markupSettings font size according to desired font quality
 
             Vector2 textSize = texSize;//drawElement.GetSize(markupSettings);
@@ -170,6 +170,8 @@ namespace BytingLib
                         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect.Value);
 
                         drawElement.Draw(markupSettings);
+                        //textFillPolygon.DrawPolygon(spriteBatch);
+                        //textFillPolygon.PolygonText?.DrawSegments(spriteBatch, Color.Blue * 0.2f);
 
                         spriteBatch.End();
                     }

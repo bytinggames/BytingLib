@@ -20,82 +20,17 @@ namespace BytingLib
             FontScale = Vector2.One;
             textTop = 0f;
 
-            float overflowFract = float.PositiveInfinity;
             Vector2? minFontScale = null;
             Vector2? maxFontScale = null;
-
-            bool incrementedLines = false;
 
             float defaultLineHeight = font.Value.LineSpacing * FontScale.Y;
             float textHeightEstimation = containerRect.Height;
 
+            const bool correctOverflow = true;
             const int fontScaleIterations = 5;
-            const int yOffsetIterations = 0;
-            for (int iteration = 0; iteration < fontScaleIterations + yOffsetIterations || overflowFract > 0f; iteration++)
+            const int yOffsetIterations = 5;
+            for (int iteration = 0; iteration < fontScaleIterations + yOffsetIterations; iteration++)
             {
-                if (incrementedLines)
-                {
-                    break;
-                }
-
-                if (overflowFract != float.PositiveInfinity)
-                {
-                    if (overflowFract > 0f
-                        && (iteration == fontScaleIterations || iteration == fontScaleIterations + yOffsetIterations))
-                    {
-                        iteration--; // retry until text doesn't overflow anymore
-                    }
-
-
-                    if (iteration < fontScaleIterations)
-                    {
-                        // try font scaling
-                        if (overflowFract < 0f)
-                        {
-                            minFontScale = FontScale;
-                        }
-                        else
-                        {
-                            maxFontScale = FontScale;
-                        }
-
-                        float scaleFontBy = 1f / (1f + overflowFract);
-                        scaleFontBy = MathF.Sqrt(scaleFontBy); // because font is scaled in x and y direction
-                        scaleFontBy *= 0.99f; // go a bit smaller, underflowing is better than overflowing, as we can take that underflowed output
-                        FontScale *= scaleFontBy;
-
-                        if (minFontScale != null && FontScale.X < minFontScale.Value.X)
-                        {
-                            if (maxFontScale == null)
-                            {
-                                FontScale = minFontScale.Value * 1.5f;
-                            }
-                            else
-                            {
-                                FontScale = (maxFontScale.Value + minFontScale.Value) / 2f;
-                            }
-                        }
-                        else if (maxFontScale != null && FontScale.X > maxFontScale.Value.X)
-                        {
-                            if (minFontScale == null)
-                            {
-                                FontScale = maxFontScale.Value / 1.5f;
-                            }
-                            else
-                            {
-                                FontScale = (maxFontScale.Value + minFontScale.Value) / 2f;
-                            }
-                        }
-
-                        defaultLineHeight = font.Value.LineSpacing * FontScale.Y;
-                    }
-                    else
-                    {
-                        float scaleHeightBy = 1f + overflowFract;
-                        textHeightEstimation *= scaleHeightBy;
-                    }
-                }
-
                 Vector2 anchorPos = containerRect.GetPos(anchor);
 
                 textTop = anchorPos.Y - textHeightEstimation * anchor.Y;
@@ -114,7 +49,75 @@ namespace BytingLib
 
                 MarkupSettings settings = new(null, font, new Anchor(Vector2.Zero, anchor), Color.White, anchor.X, FontScale);
                 segments = SplitMarkupBySegments(SegmentedMarkup, settings, splitMethod,
-                        defaultLineHeight, textTop, textBottom, polygons, out overflowFract, borderLeft ? containerRect.Left : null, borderRight ? containerRect.Right : null);
+                        defaultLineHeight, textTop, textBottom, polygons, out float overflowFract, borderLeft ? containerRect.Left : null, borderRight ? containerRect.Right : null);
+
+                if (correctOverflow
+                    && overflowFract > 0f
+                    && (iteration + 1 == fontScaleIterations // was this the last font scale iteration?
+                        || iteration + 1 == fontScaleIterations + yOffsetIterations)) // or was this the last yOffset iteration?
+                {
+                    iteration--; // retry until text doesn't overflow anymore
+                }
+
+                if (iteration + 1 < fontScaleIterations) // check if next iteration is still scaling the font
+                {
+                    // try font scaling
+                    if (overflowFract < 0f)
+                    {
+                        minFontScale = FontScale;
+                    }
+                    else
+                    {
+                        maxFontScale = FontScale;
+                    }
+
+                    float scaleFontBy = 1f / (1f + overflowFract);
+                    scaleFontBy = MathF.Sqrt(scaleFontBy); // because font is scaled in x and y direction
+                    scaleFontBy *= 0.99f; // go a bit smaller, underflowing is better than overflowing, as we can take that underflowed output
+                    FontScale *= scaleFontBy;
+
+                    if (minFontScale != null && FontScale.X < minFontScale.Value.X)
+                    {
+                        if (maxFontScale == null)
+                        {
+                            FontScale = minFontScale.Value * 1.5f;
+                        }
+                        else
+                        {
+                            FontScale = (maxFontScale.Value + minFontScale.Value) / 2f;
+                        }
+                    }
+                    else if (maxFontScale != null && FontScale.X > maxFontScale.Value.X)
+                    {
+                        if (minFontScale == null)
+                        {
+                            FontScale = maxFontScale.Value / 1.5f;
+                        }
+                        else
+                        {
+                            FontScale = (maxFontScale.Value + minFontScale.Value) / 2f;
+                        }
+                    }
+
+                    defaultLineHeight = font.Value.LineSpacing * FontScale.Y;
+                }
+                else
+                {
+                    if (overflowFract.NearlyEqual(0f, 0.001f))
+                    {
+                        // fits (nearly) perfectly :o
+                        // no need to optimize further
+                        break;
+                    }
+
+                    float scaleHeightBy = 1f + overflowFract;
+                    textHeightEstimation *= scaleHeightBy;
+
+                    if (textHeightEstimation > containerRect.Height)
+                    {
+                        textHeightEstimation = containerRect.Height;
+                    }
+                }
             }
 
             CreateAnchors(font);
@@ -183,7 +186,7 @@ namespace BytingLib
             bool endOfContainerReached = false;
             bool lastSegmentInLine = false;
 
-            for (MarkupIndex textIndex = segmentStart.Clone(); !endOfContainerReached && !textIndex.EndReached(); textIndex++)
+            for (MarkupIndex textIndex = segmentStart.Clone(); !endOfContainerReached && !textIndex.AtEnd(); textIndex++)
             {
                 bool manualNewLine = textIndex.CurrentNode is MarkupNewLine;
                 Vector2 textSize = Vector2.Zero;
@@ -297,17 +300,34 @@ namespace BytingLib
                             {
                                 // skip this section, as there's no space in the segment
                                 markup.InsertJump(segmentStart, GetJumpVector(segmentStart), textIndex);
-                                // back to the start of the text segment
                             }
                         }
                         else
                         {
+                            if (isBreakChar && textIndex.CurrentNode is MarkupText markupText)
+                            {
+                                // remove break char
+                                textIndex--; // move text index right before the break char, as that gets removed
+                                markupText.Text = markupText.Text.Remove(lastPossibleBreakIndex.indexInString, 1);
+                            }
+                            else if (textIndex.CurrentNode is MarkupNewLine markupNewLine)
+                            {
+                                // remove MarkupNewLine
+                                MarkupCollection parent = (MarkupCollection)textIndex.selectedNodeHierarchy[^2];
+                                int newLineIndex = parent.Children.IndexOf(markupNewLine);
+                                textIndex--; // move before markup new line to remove it
+                                parent.Children.RemoveAt(newLineIndex);
+                                textIndex++; // revert moving backwards
+                                lastPossibleBreakIndex = textIndex.Clone();
+                            }
+
 
                             markup.InsertJump(segmentStart, GetJumpVector(lastPossibleBreakIndex), lastPossibleBreakIndex, textIndex);
-                            if (isBreakChar)
-                            {
-                                lastPossibleBreakIndex++;
-                            }
+                            //if (isBreakChar)
+                            //{
+                            //    lastPossibleBreakIndex++;
+                            //    textIndex++;
+                            //}
                             segmentStart = lastPossibleBreakIndex; // next segment starts after the last space
                             lastPossibleBreakIndex = null;
                         }
@@ -318,6 +338,7 @@ namespace BytingLib
                         markup.InsertJump(segmentStart, GetJumpVector(textIndex), textIndex);
                         segmentStart = textIndex.Clone();
                     }
+                    textIndex--; // because this gets incremented by this for loop, even though we should test the same text next segment
 
                     CloseCurrentSegment();
 
@@ -341,10 +362,18 @@ namespace BytingLib
                 // overflow
                 // measure current line size
                 Vector2 textSize = markup.GetSize(settings, segmentStart);
-                float overflowWidth = textSize.X - segment.Width;
 
-                float totalSegmentsWidth = segments.Sum(f => f.Width);
-                overflowFract = overflowWidth / totalSegmentsWidth;
+                if (segments.Count > 0)
+                {
+                    float overflowWidth = textSize.X - segment.Width;
+
+                    float totalSegmentsWidth = segments.Sum(f => f.Width);
+                    overflowFract = overflowWidth / totalSegmentsWidth;
+                }
+                else
+                {
+                    overflowFract = float.PositiveInfinity;
+                }
             }
             else
             {
@@ -378,7 +407,7 @@ namespace BytingLib
                 // anchor text inside segment, if anchor is not left aligned
                 if (anchor.X != 0f && !segmentStart.IsEqual(measureWidthUntil))
                 {
-                    float textSegmentWidth = markup.GetSize(settings, segmentStart, measureWidthUntil == null ? null : (measureWidthUntil - 1)).X;
+                    float textSegmentWidth = markup.GetSize(settings, segmentStart, measureWidthUntil).X;
                     jumpTo.X += (segment.Width - textSegmentWidth) * anchor.X;
                 }
                 return jumpTo;
@@ -517,7 +546,8 @@ namespace BytingLib
                             {
                                 xCollision = minX.Value;
                             }
-                            if (xCollision >= segment.X)
+                            if (xCollision >= segment.X
+                                && (!maxX.HasValue || xCollision < maxX.Value)) // no reason in opening up beyond the most far right x
                             {
                                 openX.Add(xCollision);
                             }
