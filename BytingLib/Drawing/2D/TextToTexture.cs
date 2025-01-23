@@ -177,9 +177,9 @@ namespace BytingLib
                         textEffect.ApplyParameters();
                         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect.Value);
 
-                        drawElement.Draw(markupSettings);
+                        //textFillPolygon.PolygonText?.DrawSegments(spriteBatch, Color.Lerp(Color.White, Color.Blue, 0.3f));
                         //textFillPolygon.DrawPolygon(spriteBatch);
-                        //textFillPolygon.PolygonText?.DrawSegments(spriteBatch, Color.Blue * 0.2f);
+                        drawElement.Draw(markupSettings);
 
                         spriteBatch.End();
                     }

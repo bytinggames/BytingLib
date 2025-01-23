@@ -90,7 +90,7 @@ namespace BytingLib
                     for (int i = 0; i < polygon.Count; i++)
                     {
                         int j = (i + 1) % polygon.Count;
-                        spriteBatch.DrawLine(polygon[i], polygon[j], Color.Green, 1f);
+                        spriteBatch.DrawLine(polygon[i], polygon[j], Color.Green, 5f);
                     }
                 }
             }

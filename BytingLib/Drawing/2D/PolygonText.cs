@@ -363,17 +363,11 @@ namespace BytingLib
                 // measure current line size
                 Vector2 textSize = markup.GetSize(settings, segmentStart);
 
-                if (segments.Count > 0)
-                {
-                    float overflowWidth = textSize.X - segment.Width;
+                float overflowWidth = textSize.X;
 
-                    float totalSegmentsWidth = segments.Sum(f => f.Width);
-                    overflowFract = overflowWidth / totalSegmentsWidth;
-                }
-                else
-                {
-                    overflowFract = float.PositiveInfinity;
-                }
+                float totalSegmentsWidth = segments.Sum(f => f.Width);
+                overflowFract = overflowWidth / totalSegmentsWidth;
+                // yes, overflowFract can get infinite here, and it's supposed to
             }
             else
             {
