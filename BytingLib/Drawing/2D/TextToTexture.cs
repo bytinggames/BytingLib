@@ -46,6 +46,10 @@ namespace BytingLib
         {
             Promise<Ref<Texture2D>> tex = new(() =>
             {
+                if (string.IsNullOrWhiteSpace(text))
+                {
+                    return GetPixel();
+                }
                 var font = fontArray.GetFont(1f, out float actualFontSize);
                 var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.White);
                 markupSettings.VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines;
@@ -59,6 +63,11 @@ namespace BytingLib
                 return CreateTextTexture(text, fontArray.GetFont(fontSize), backgroundColor, polygons, TextFillPolygon.PolyType.Normalized01, PolygonTextSplit.OnlyOnSpace, anchor, texSize, fontSize, markupSettings.VerticalSpaceBetweenLines * fontSize);
             });
             return tex;
+        }
+
+        private Ref<Texture2D> GetPixel()
+        {
+            return new AssetHolder<Texture2D>(spriteBatch.GetPixel(), "Pixel", _ => { }).Use();
         }
 
         private static int GetRightFontSize(float spaceInMeters, int textureWidthOfScale1, float targetPixelsPerCM)
@@ -148,7 +157,6 @@ namespace BytingLib
             var drawElement = textFillPolygon.GetMarkup(font, markupCreator, rect)!;
 
             markupSettings.Scale = textFillPolygon.PolygonText.FontScale;
-            markupSettings.TextureScale = textureScale * markupSettings.Scale;
             // TODO: scale rect and markupSettings font size according to desired font quality
 
             Vector2 textSize = texSize;//drawElement.GetSize(markupSettings);
