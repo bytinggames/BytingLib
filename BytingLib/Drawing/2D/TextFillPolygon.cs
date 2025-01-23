@@ -133,6 +133,7 @@ namespace BytingLib
             return null;
         }
 
+        [MemberNotNull(nameof(PolygonText))]
         public MarkupRoot? GetMarkup(Ref<SpriteFont> font, Creator? creator, Rect rect)
         {
             if (PolygonText == null)

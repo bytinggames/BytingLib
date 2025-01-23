@@ -157,16 +157,20 @@ namespace BytingLib
             var drawElement = textFillPolygon.GetMarkup(font, markupCreator, rect)!;
 
             markupSettings.Scale = textFillPolygon.PolygonText.FontScale;
-            // TODO: scale rect and markupSettings font size according to desired font quality
 
-            Vector2 textSize = texSize;//drawElement.GetSize(markupSettings);
+            // scale so 1 input pixel (from textures and font) matches exactly 1 output pixel (from rendertarget)
+            float drawScale = 1f / markupSettings.Scale.X; // for controlling the resoultion of the output image
+            texSize *= drawScale;
+
+            // previously:
+            //texSize = drawElement.GetSize(markupSettings);
 
             RenderTarget2D? tex = null;
 
             Promise<Texture2D> promise = new(() =>
             {
                 var gDevice = spriteBatch.GraphicsDevice;
-                tex = new RenderTarget2D(gDevice, (int)Math.Ceiling(textSize.X), (int)Math.Ceiling(textSize.Y), false, SurfaceFormat.Color, DepthFormat.None);
+                tex = new RenderTarget2D(gDevice, (int)Math.Ceiling(texSize.X), (int)Math.Ceiling(texSize.Y), false, SurfaceFormat.Color, DepthFormat.None);
 
                 using (gDevice.UseRenderTarget(tex))
                 {
@@ -175,7 +179,7 @@ namespace BytingLib
                     using (textEffect.Color.Use(backgroundColor.ToVector4()))
                     {
                         textEffect.ApplyParameters();
-                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect.Value);
+                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect.Value, Matrix.CreateScale(drawScale));
 
                         //textFillPolygon.PolygonText?.DrawSegments(spriteBatch, Color.Lerp(Color.White, Color.Blue, 0.3f));
                         //textFillPolygon.DrawPolygon(spriteBatch);
@@ -184,8 +188,6 @@ namespace BytingLib
                         spriteBatch.End();
                     }
                 }
-
-                //tex.SaveAsPng(@"C:\Users\Julian\Desktop\out\out.png");
 
                 disposables.Use(tex);
                 return tex;
