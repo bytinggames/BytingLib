@@ -12,13 +12,13 @@ namespace BytingLib.UI
         /// <summary>see <see cref="MarkupSettings.CropSuperfluousHeightThatIsLargerThanLineHeight"/></summary>
         public bool CropSuperfluousHeightThatIsLargerThanLineHeight { get; set; } = false;
 
-        private TextFillPolygon? fillPolygon;
-        public TextFillPolygon? FillPolygon
+        private TextFillObject? textFill;
+        public TextFillObject? TextFill
         {
-            get => fillPolygon;
+            get => textFill;
             set
             {
-                fillPolygon = value;
+                textFill = value;
                 setSizeToText = false;
                 Width = -1f;
                 Height = -1f;
@@ -56,12 +56,12 @@ namespace BytingLib.UI
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
-            if (FillPolygon != null)
+            if (TextFill != null)
             {
-                FillPolygon.DrawPolygon(spriteBatch);
-                FillPolygon.PolygonText?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
+                TextFill.DrawPolygon(spriteBatch);
+                TextFill.TextFill?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
 
-                MarkupRoot? newMarkup = FillPolygon.GetMarkupIfUpdated(style.Font, creator);
+                MarkupRoot? newMarkup = TextFill.GetMarkupIfUpdated(style.Font, creator);
                 if (newMarkup != null)
                 {
                     markup?.Dispose();
@@ -94,7 +94,7 @@ namespace BytingLib.UI
 
         private Vector2 GetFontScale(StyleRoot style)
         {
-            return FillPolygon?.PolygonText?.FontScale ?? style.FontScale;
+            return TextFill?.TextFill?.FontScale ?? style.FontScale;
         }
 
         private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style)
@@ -123,14 +123,14 @@ namespace BytingLib.UI
 
         protected override void UpdateTreeBeginSelf(StyleRoot style)
         {
-            if (fillPolygon != null)
+            if (textFill != null)
             {
                 return; // fillPolygon updates in UpdateTreeInner()
             }
 
             base.UpdateTreeBeginSelf(style);
 
-            if (FillPolygon == null)
+            if (TextFill == null)
             {
                 UpdateMarkup();
             }
@@ -140,8 +140,8 @@ namespace BytingLib.UI
         {
             base.UpdateTreeInner(rect);
 
-            fillPolygon?.UpdatePolygons(rect);
-            fillPolygon?.SetDirty(Text, Anchor); // trigger reloading
+            textFill?.UpdatePolygons(rect);
+            textFill?.SetDirty(Text, Anchor); // trigger reloading
         }
 
         private void UpdateMarkup()

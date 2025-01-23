@@ -3,7 +3,7 @@ using BytingLib.UI;
 
 namespace BytingLib
 {
-    public class PolygonText
+    public class TextFill
     {
         public Vector2 FontScale { get; private set; }
         public MarkupRoot? SegmentedMarkup { get; } = null;
@@ -12,7 +12,7 @@ namespace BytingLib
         private readonly bool globalAnchor;
         List<Rect> segments = new();
 
-        public PolygonText(string text, Ref<SpriteFont> font, Rect containerRect, Vector2 anchor, bool globalAnchor, List<List<Vector2>> polygons, PolygonTextSplit splitMethod,
+        public TextFill(string text, Ref<SpriteFont> font, Rect containerRect, Vector2 anchor, bool globalAnchor, List<List<Vector2>> polygons, PolygonTextSplit splitMethod,
             bool borderLeft = true, bool borderRight = true, Creator? creator = null)
         {
             this.anchor = anchor;

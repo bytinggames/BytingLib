@@ -4,14 +4,14 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace BytingLib
 {
-    public class TextFillPolygon
+    public class TextFillObject
     {
         private readonly List<List<Vector2>> polygons;
         private readonly PolyType polyType;
         private readonly bool borderLeft;
         private readonly bool borderRight;
         private List<List<Vector2>>? polygonsTransformed;
-        public PolygonText? PolygonText { get; private set; }
+        public TextFill? TextFill { get; private set; }
         private PolygonTextSplit splitMethod;
         private Rect? AbsoluteRect;
 
@@ -20,7 +20,7 @@ namespace BytingLib
         public string Text { get; set; } // TODO: update
         public string? MarkupTextOutput { get; private set; }
 
-        public TextFillPolygon(string text, List<List<Vector2>> polygons, PolyType polyType, PolygonTextSplit splitMethod, bool borderLeft = true, bool borderRight = true)
+        public TextFillObject(string text, List<List<Vector2>> polygons, PolyType polyType, PolygonTextSplit splitMethod, bool borderLeft = true, bool borderRight = true)
         {
             this.Text = text;
             this.polygons = polygons;
@@ -48,7 +48,7 @@ namespace BytingLib
         internal void UpdatePolygons(Rect rect)
         {
             AbsoluteRect = rect;
-            PolygonText = null; // trigger reloading
+            TextFill = null; // trigger reloading
 
             switch (polyType)
             {
@@ -102,7 +102,7 @@ namespace BytingLib
             {
                 DrawPolygon(spriteBatch);
 
-                if (PolygonText == null)
+                if (TextFill == null)
                 {
                     if (polygonsTransformed != null && AbsoluteRect != null)
                     {
@@ -110,19 +110,19 @@ namespace BytingLib
                     }
                 }
 
-                PolygonText?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
+                TextFill?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
             }
         }
 
-        [MemberNotNull(nameof(PolygonText))]
+        [MemberNotNull(nameof(TextFill))]
         private void UpdateText(Ref<SpriteFont> font, Creator? creator, List<List<Vector2>> polygonsTransformed, Rect rect)
         {
-            PolygonText = new PolygonText(Text, font, rect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, borderLeft, borderRight, creator);
+            TextFill = new TextFill(Text, font, rect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, borderLeft, borderRight, creator);
         }
 
         internal MarkupRoot? GetMarkupIfUpdated(Ref<SpriteFont> font, Creator? creator)
         {
-            if (PolygonText == null)
+            if (TextFill == null)
             {
                 if (AbsoluteRect == null)
                 {
@@ -133,10 +133,10 @@ namespace BytingLib
             return null;
         }
 
-        [MemberNotNull(nameof(PolygonText))]
+        [MemberNotNull(nameof(TextFill))]
         public MarkupRoot? GetMarkup(Ref<SpriteFont> font, Creator? creator, Rect rect)
         {
-            if (PolygonText == null)
+            if (TextFill == null)
             {
                 if (polygonsTransformed == null)
                 {
@@ -145,12 +145,12 @@ namespace BytingLib
 
                 UpdateText(font, creator, polygonsTransformed, rect);
             }
-            return PolygonText.SegmentedMarkup;
+            return TextFill.SegmentedMarkup;
         }
 
         public void SetDirty(string text, Vector2 anchor)
         {
-            PolygonText = null;
+            TextFill = null;
             Text = text;
             Anchor = anchor;
         }

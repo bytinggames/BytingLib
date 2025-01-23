@@ -64,7 +64,7 @@ namespace BytingLib
                 int fontSize = GetRightFontSize(right.Length() * 2f /* because right only measures half the length */,
                     (int)MathF.Ceiling(textSize.X), MinimumPixelsPerUnit);
 
-                return CreateTextTexture(text, fontArray.GetFont(fontSize), backgroundColor, polygons, TextFillPolygon.PolyType.Normalized01, PolygonTextSplit.OnlyOnSpace, anchor, texSize, fontSize, markupSettings.VerticalSpaceBetweenLines * fontSize);
+                return CreateTextTexture(text, fontArray.GetFont(fontSize), backgroundColor, polygons, TextFillObject.PolyType.Normalized01, PolygonTextSplit.OnlyOnSpace, anchor, texSize, fontSize, markupSettings.VerticalSpaceBetweenLines * fontSize);
             });
             return tex;
         }
@@ -143,7 +143,7 @@ namespace BytingLib
         }
 
         public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color backgroundColor, List<List<Vector2>> polygons, 
-            TextFillPolygon.PolyType polyType, PolygonTextSplit splitMethod, Vector2 anchor, Vector2 texSize, float textureScale = 1, float? verticalSpaceBetweenLines = null)
+            TextFillObject.PolyType polyType, PolygonTextSplit splitMethod, Vector2 anchor, Vector2 texSize, float textureScale = 1, float? verticalSpaceBetweenLines = null)
         {
             //if (textures.ContainsKey((text, font.Value, backgroundColor, textureScale)))
             //{
@@ -153,14 +153,14 @@ namespace BytingLib
             var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */);
             markupSettings.TextureScale = Vector2.One * textureScale;
             markupSettings.VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines;
-            TextFillPolygon textFillPolygon = new(text, polygons, polyType, splitMethod, true, true);
-            textFillPolygon.Anchor = anchor;
+            TextFillObject textFill = new(text, polygons, polyType, splitMethod, true, true);
+            textFill.Anchor = anchor;
 
             Rect rect = new Rect(Vector2.Zero, texSize);
 
-            var drawElement = textFillPolygon.GetMarkup(font, markupCreator, rect)!;
+            var drawElement = textFill.GetMarkup(font, markupCreator, rect)!;
 
-            markupSettings.Scale = textFillPolygon.PolygonText.FontScale;
+            markupSettings.Scale = textFill.TextFill.FontScale;
 
             // scale so 1 input pixel (from textures and font) matches exactly 1 output pixel (from rendertarget)
             float drawScale = 1f / markupSettings.Scale.X; // for controlling the resoultion of the output image
@@ -187,11 +187,11 @@ namespace BytingLib
 
                         if (DrawTextFitPolygon)
                         {
-                            textFillPolygon.PolygonText?.DrawSegments(spriteBatch, Color.Lerp(Color.White, Color.Blue, 0.3f));
+                            textFill.TextFill?.DrawSegments(spriteBatch, Color.Lerp(Color.White, Color.Blue, 0.3f));
                         }
                         if (DrawTextFitSegments)
                         {
-                            textFillPolygon.DrawPolygon(spriteBatch);
+                            textFill.DrawPolygon(spriteBatch);
                         }
                         drawElement.Draw(markupSettings);
 
