@@ -1,4 +1,5 @@
 ﻿using BytingLib.Markup;
+using BytingLib.UI;
 
 namespace BytingLib
 {
@@ -46,7 +47,7 @@ namespace BytingLib
             return tex;
         }
 
-        public Promise<Ref<Texture2D>> UseTexture(string text, Vector3 right, Color backgroundColor, List<List<Vector2>> polygons, Vector2 anchor, Vector2 texSize, float? verticalSpaceBetweenLines = null)
+        public Promise<Ref<Texture2D>> UseTexture(string text, Vector3 right, Color backgroundColor, List<List<Vector2>> polygons, Vector2 anchor, Vector2 texSize, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null)
         {
             Promise<Ref<Texture2D>> tex = new(() =>
             {
@@ -64,7 +65,17 @@ namespace BytingLib
                 int fontSize = GetRightFontSize(right.Length() * 2f /* because right only measures half the length */,
                     (int)MathF.Ceiling(textSize.X), MinimumPixelsPerUnit);
 
-                return CreateTextTexture(text, fontArray.GetFont(fontSize), backgroundColor, polygons, TextFillObject.PolyType.Normalized01, PolygonTextSplit.OnlyOnSpace, anchor, texSize, fontSize, markupSettings.VerticalSpaceBetweenLines * fontSize);
+                return CreateTextTexture(text, 
+                    fontArray.GetFont(fontSize), 
+                    backgroundColor,
+                    polygons,
+                    TextFillObject.PolyType.Normalized01, 
+                    PolygonTextSplit.OnlyOnSpace, 
+                    anchor, 
+                    texSize,
+                    fontSize,
+                    markupSettings.VerticalSpaceBetweenLines * fontSize,
+                    paddingNormalized);
             });
             return tex;
         }
@@ -143,7 +154,7 @@ namespace BytingLib
         }
 
         public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color backgroundColor, List<List<Vector2>> polygons, 
-            TextFillObject.PolyType polyType, PolygonTextSplit splitMethod, Vector2 anchor, Vector2 texSize, float textureScale = 1, float? verticalSpaceBetweenLines = null)
+            TextFillObject.PolyType polyType, PolygonTextSplit splitMethod, Vector2 anchor, Vector2 texSize, float textureScale = 1, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null)
         {
             //if (textures.ContainsKey((text, font.Value, backgroundColor, textureScale)))
             //{
@@ -155,6 +166,7 @@ namespace BytingLib
             markupSettings.VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines;
             TextFillObject textFill = new(text, polygons, polyType, splitMethod, true, true);
             textFill.Anchor = anchor;
+            textFill.PaddingNormalized = paddingNormalized;
 
             Rect rect = new Rect(Vector2.Zero, texSize);
 
@@ -166,6 +178,13 @@ namespace BytingLib
             float drawScale = 1f / markupSettings.Scale.X; // for controlling the resoultion of the output image
             texSize *= drawScale;
 
+            Rect texOutputRect = new Rect(0, 0, texSize.X, texSize.Y);
+            if (paddingNormalized != null)
+            {
+                texOutputRect.ApplyNormalizedPadding(paddingNormalized);
+                texOutputRect.RoundToLarger();
+            }
+
             // previously:
             //texSize = drawElement.GetSize(markupSettings);
 
@@ -174,7 +193,7 @@ namespace BytingLib
             Promise<Texture2D> promise = new(() =>
             {
                 var gDevice = spriteBatch.GraphicsDevice;
-                tex = new RenderTarget2D(gDevice, (int)Math.Ceiling(texSize.X), (int)Math.Ceiling(texSize.Y), false, SurfaceFormat.Color, DepthFormat.None);
+                tex = new RenderTarget2D(gDevice, (int)Math.Ceiling(texOutputRect.Width), (int)Math.Ceiling(texOutputRect.Height), false, SurfaceFormat.Color, DepthFormat.None);
 
                 using (gDevice.UseRenderTarget(tex))
                 {
@@ -183,7 +202,10 @@ namespace BytingLib
                     using (textEffect.Color.Use(backgroundColor.ToVector4()))
                     {
                         textEffect.ApplyParameters();
-                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect.Value, Matrix.CreateScale(drawScale));
+                        Matrix transform =
+                            Matrix.CreateScale(drawScale)
+                            * Matrix.CreateTranslation(new Vector3(-texOutputRect.Pos, 0f));
+                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, textEffect.Effect.Value, transform);
 
                         if (DrawTextFitPolygon)
                         {
