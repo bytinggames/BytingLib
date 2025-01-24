@@ -192,6 +192,11 @@ namespace BytingLib
                 textLengthChanges.Add((index, str.Length));
             }
         }
+
+        public static void Dispose(this SpriteFont font)
+        {
+            font.Texture.Dispose();
+        }
     }
 
     //public static class SpriteFontExtension

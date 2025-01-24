@@ -3,8 +3,8 @@ namespace BytingLib
 {
     public class Ref<T> : IDisposable
     {
-        private readonly Promise<T> pointerToValue;
-        private readonly Action<Ref<T>>? onDispose;
+        private Promise<T> pointerToValue;
+        private Action<Ref<T>>? onDispose;
         public event Action<Ref<T>>? OnReload;
 
         public T Value
@@ -27,6 +27,14 @@ namespace BytingLib
         internal void TriggerOnReload()
         {
             OnReload?.Invoke(this);
+        }
+
+        /// <summary>Load another asset, while using the same Ref that other objects may already reference. This calls Dispose() first, before swapping to new pointer.</summary>
+        internal void Override(Promise<T> pointerToValue, Action<Ref<T>>? onDispose)
+        {
+            Dispose();
+            this.pointerToValue = pointerToValue;
+            this.onDispose = onDispose;
         }
     }
 }

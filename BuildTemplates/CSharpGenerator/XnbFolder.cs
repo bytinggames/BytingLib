@@ -1,7 +1,4 @@
-﻿using BytingLib;
-using System.Collections.Generic;
-
-namespace BuildTemplates
+﻿namespace BuildTemplates
 {
     public class XnbFolder
     {
@@ -66,7 +63,9 @@ namespace BuildTemplates
         public string Print(string contentDirectory, string tabs, bool loadOnStartup)
         {
             if (!string.IsNullOrEmpty(contentDirectory))
+            {
                 contentDirectory += "/";
+            }
 
             string folderProperties = "";
             string folderConstruct = "";
@@ -86,12 +85,31 @@ namespace BuildTemplates
             {
                 string? print = file.PrintDeclare(loadOnStartup);
                 if (print == null)
+                {
                     continue;
+                }
                 assets += endl + tab + print;
 
                 print = file.PrintInit(loadOnStartup);
                 if (!string.IsNullOrEmpty(print))
+                {
                     fieldInitialize += endl + tab + tab + print;
+                }
+            }
+
+            string overrideMethod;
+            // only in base class
+            if (className == "ContentLoader")
+            {
+                overrideMethod = $@"
+{tab}public void Override<T>(string assetPath, Ref<T> assetRef)
+{tab}{{
+{tab}{tab}collector.Override<T>(basePath + assetPath, assetRef);
+{tab}}}";
+            }
+            else
+            {
+                overrideMethod = "";
             }
 
             string output = $@"public class {className}
@@ -108,7 +126,7 @@ namespace BuildTemplates
 {tab}public Ref<T> Use<T>(string assetNameWithoutDirectory)
 {tab}{{
 {tab}{tab}return disposables.Use(collector.Use<T>(basePath + assetNameWithoutDirectory));
-{tab}}}{assets}{classes}
+{tab}}}{overrideMethod}{assets}{classes}
 }}";
             return output.Replace("\r\n", "\n") // make consistent among OSs
                 .Replace("\n", "\n" + tabs); // indent
