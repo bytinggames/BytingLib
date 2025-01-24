@@ -56,8 +56,12 @@ namespace BytingLib
                     return GetPixel();
                 }
                 var font = fontArray.GetFont(1f, out float actualFontSize);
-                var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.White);
-                markupSettings.VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines;
+                var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.White)
+                {
+                    VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines,
+                    VerticalAlignInLine = anchor.Y,
+                    HorizontalAlignInLine = anchor.X
+                };
                 var drawElement = new MarkupRoot(markupCreator, text);
                 Vector2 textSize = drawElement.GetSize(markupSettings); // TODO: remove this?
                 textSize /= actualFontSize;
@@ -103,9 +107,11 @@ namespace BytingLib
                 return textures[(text, font.Value, backgroundColor, textureScale)].Use();
             }
 
-            var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */);
-            markupSettings.TextureScale = Vector2.One * textureScale;
-            markupSettings.VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines;
+            var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */)
+            {
+                TextureScale = Vector2.One * textureScale,
+                VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines
+            };
             var drawElement = new MarkupRoot(markupCreator, text);
 
             Vector2 textSize = drawElement.GetSize(markupSettings);
@@ -131,8 +137,6 @@ namespace BytingLib
                         spriteBatch.End();
                     }
                 }
-
-                //tex.SaveAsPng(@"C:\Users\Julian\Desktop\out\out.png");
 
                 disposables.Use(tex);
                 return tex;
@@ -161,9 +165,13 @@ namespace BytingLib
             //    return textures[(text, font.Value, backgroundColor, textureScale)].Use();
             //}
 
-            var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */);
-            markupSettings.TextureScale = Vector2.One * textureScale;
-            markupSettings.VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines;
+            var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */)
+            {
+                VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines,
+                VerticalAlignInLine = anchor.Y,
+                HorizontalAlignInLine = anchor.X,
+                TextureScale = Vector2.One * textureScale
+            };
             TextFillObject textFill = new(text, polygons, polyType, splitMethod, true, true);
             textFill.Anchor = anchor;
             textFill.PaddingNormalized = paddingNormalized;
