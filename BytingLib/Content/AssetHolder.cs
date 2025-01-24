@@ -24,13 +24,13 @@
         {
             Ref<T> assetRef = new Ref<T>(assetPointer, Unuse);
             assetReferences.Add(assetRef);
-
-            if (assetRef == null)
-            {
-                assetRef = new Ref<T>(assetPointer, Unuse);
-            }
-
             return assetRef;
+        }
+
+        public void Override(Ref<T> assetRef)
+        {
+            assetRef.Override(assetPointer, Unuse);
+            assetReferences.Add(assetRef);
         }
 
         private void Unuse(Ref<T> asset)

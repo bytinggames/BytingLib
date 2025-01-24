@@ -3,6 +3,7 @@
     public interface IContentCollectorUse
     {
         Ref<T> Use<T>(string assetName);
+        void Override<T>(string assetName, Ref<T> assetRef);
     }
 
     public interface IContentCollector : IContentCollectorUse, IDisposable

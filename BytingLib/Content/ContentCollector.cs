@@ -32,8 +32,25 @@
         public Ref<T> Use<T>(string assetName)
         {
             assetName = ToTotalAssetName(assetName);
-            bool triggerOnLoad = false;
-            object? assetHolder;
+            PreUse<T>(assetName, out bool triggerOnLoad, out object? assetHolder);
+            Ref<T> assetRef = (assetHolder as AssetHolder<T>)!.Use();
+            PostUse(assetName, assetRef, triggerOnLoad);
+
+            return assetRef!;
+        }
+
+        // mirrors Ref<T> Use<T>
+        public void Override<T>(string assetName, Ref<T> assetRef)
+        {
+            assetName = ToTotalAssetName(assetName);
+            PreUse<T>(assetName, out bool triggerOnLoad, out object? assetHolder);
+            (assetHolder as AssetHolder<T>)!.Override(assetRef);
+            PostUse(assetName, assetRef, triggerOnLoad);
+        }
+
+        private void PreUse<T>(string assetName, out bool triggerOnLoad, out object? assetHolder)
+        {
+            triggerOnLoad = false;
             if (!loadedAssets.TryGetValue(assetName, out assetHolder))
             {
                 if (typeof(T) == typeof(Texture2D))
@@ -41,7 +58,7 @@
                     // textures need to be loaded on the main thread, so load the asset via a promise here
                     assetHolder = new AssetHolder<Texture2D>(
                         new Promise<Texture2D>(() => contentRaw.Load<Texture2D>(assetName, extendedLoad)),
-                        assetName, 
+                        assetName,
                         Unuse);
                 }
                 else
@@ -56,14 +73,14 @@
                     triggerOnLoad = true;
                 }
             }
+        }
 
-            Ref<T> asset = (assetHolder as AssetHolder<T>)!.Use();
-            if (triggerOnLoad && asset != null)
+        private void PostUse<T>(string assetName, Ref<T> assetRef, bool triggerOnLoad)
+        {
+            if (triggerOnLoad && assetRef != null)
             {
-                TriggerOnLoad(assetName, asset.Value);
+                TriggerOnLoad(assetName, assetRef.Value);
             }
-
-            return asset!;
         }
 
         public void TryTriggerOnLoad<T>(string assetName, T asset)
