@@ -320,9 +320,14 @@ namespace BytingLib
                                 // remove MarkupNewLine
                                 MarkupCollection parent = (MarkupCollection)textIndex.selectedNodeHierarchy[^2];
                                 int newLineIndex = parent.Children.IndexOf(markupNewLine);
+                                bool startAtCurrentIndex = segmentStart.IsEqual(textIndex);
                                 textIndex--; // move before markup new line to remove it
                                 parent.Children.RemoveAt(newLineIndex);
                                 textIndex++; // revert moving backwards
+                                if (startAtCurrentIndex)
+                                {
+                                    segmentStart = textIndex.Clone();
+                                }
                                 lastPossibleBreakIndex = textIndex.Clone();
                             }
 
