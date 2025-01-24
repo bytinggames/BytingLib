@@ -193,6 +193,7 @@ namespace BytingLib
 
             for (MarkupIndex textIndex = segmentStart.Clone(); !endOfContainerReached && !textIndex.AtEnd(); textIndex++)
             {
+                bool breakAllowed = !textIndex.selectedNodeHierarchy.Any(f => f is MarkupNoBreak);
                 bool manualNewLine = textIndex.CurrentNode is MarkupNewLine;
                 Vector2 textSize = Vector2.Zero;
 
@@ -205,11 +206,16 @@ namespace BytingLib
                 {
                     if (markup[textIndex] == ' ')
                     {
-                        lastPossibleBreakIndex = textIndex.Clone();
-                        isBreakChar = true;
+                        if (breakAllowed)
+                        {
+                            lastPossibleBreakIndex = textIndex.Clone();
+                            isBreakChar = true;
+                        }
                         continue;
                     }
-                    if (allowBreakBetweenTextAndTexture
+
+                    if (breakAllowed
+                        && allowBreakBetweenTextAndTexture
                         && textIndex.CurrentNode is MarkupTexture
                         && !textIndex.IsEqual(segmentStart))
                     {
@@ -287,17 +293,17 @@ namespace BytingLib
                     }
                 }
 
-                if (manualNewLine 
-                    || textSize.X > segment.Width 
+                if (manualNewLine
+                    || textSize.X > segment.Width
                     || textSize.Y > segment.Height)
                 {
-                    bool splitMidWord = splitMethod == PolygonTextSplit.AlwaysMidWord;
+                    bool splitMidWord = breakAllowed && splitMethod == PolygonTextSplit.AlwaysMidWord;
                     if (!splitMidWord)
                     {
                         if (lastPossibleBreakIndex == null)
                         {
                             // TODO
-                            //if (splitMethod == PolygonTextSplit.AllowMidWordIfSpaceNotPossible) // TODO: && segmentCharCount > 1)
+                            //if (breakAllowed && splitMethod == PolygonTextSplit.AllowMidWordIfSpaceNotPossible) // TODO: && segmentCharCount > 1)
                             //{
                             //    splitMidWord = true;
                             //}
@@ -309,11 +315,14 @@ namespace BytingLib
                         }
                         else
                         {
-                            if (isBreakChar && textIndex.CurrentNode is MarkupText markupText)
+                            if (isBreakChar && lastPossibleBreakIndex.CurrentNode is MarkupText markupText)
                             {
                                 // remove break char
-                                textIndex--; // move text index right before the break char, as that gets removed
                                 markupText.Text = markupText.Text.Remove(lastPossibleBreakIndex.indexInString, 1);
+                                if (textIndex.CurrentNode == lastPossibleBreakIndex.CurrentNode)
+                                {
+                                    textIndex--; // move text index one back, as a space in that string has been removed
+                                }
                             }
                             else if (textIndex.CurrentNode is MarkupNewLine markupNewLine)
                             {
@@ -348,7 +357,7 @@ namespace BytingLib
                         markup.InsertJump(segmentStart, GetJumpVector(textIndex), textIndex);
                         segmentStart = textIndex.Clone();
                     }
-                    textIndex--; // because this gets incremented by this for loop, even though we should test the same text next segment
+                    textIndex--; // because this gets incremented by this for loop, and we should still test the same index next segment
 
                     CloseCurrentSegment();
 

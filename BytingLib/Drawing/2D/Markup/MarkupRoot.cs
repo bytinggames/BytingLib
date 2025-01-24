@@ -543,13 +543,8 @@ namespace BytingLib.Markup
             }
             else
             {
-                while (true)
+                while (a.selectedNodeHierarchy.Count >= 2)
                 {
-                    if (a.selectedNodeHierarchy.Count < 2)
-                    {
-                        break;
-                    }
-
                     var parent = a.selectedNodeHierarchy[^2] as MarkupCollection;
                     int indexOfCurrentChild = parent.Children.IndexOf(a.CurrentNode);
                     indexOfCurrentChild--;
