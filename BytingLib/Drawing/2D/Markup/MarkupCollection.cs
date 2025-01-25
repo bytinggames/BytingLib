@@ -26,6 +26,41 @@
             }
         }
 
+        public IEnumerable<INode> AllChildren() => AllChildren(this);
+        public static IEnumerable<INode> AllChildren(MarkupCollection node)
+        {
+            foreach (var child in node.Children)
+            {
+                yield return child;
+                if (child is MarkupCollection branch)
+                {
+                    foreach (var collectionChild in AllChildren(branch))
+                    {
+                        yield return collectionChild;
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<ILeaf> AllLeaves() => AllLeaves(this);
+        public static IEnumerable<ILeaf> AllLeaves(MarkupCollection node)
+        {
+            foreach (var child in node.Children)
+            {
+                if (child is MarkupCollection branch)
+                {
+                    foreach (var leaf in AllLeaves(branch))
+                    {
+                        yield return leaf;
+                    }
+                }
+                else if (child is ILeaf leaf)
+                {
+                    yield return leaf;
+                }
+            }
+        }
+
         public MarkupCollection(Creator creator, string text)
         {
             ScriptReaderLiteral reader = new ScriptReaderLiteral(text);

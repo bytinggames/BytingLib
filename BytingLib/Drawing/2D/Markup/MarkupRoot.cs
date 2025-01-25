@@ -141,12 +141,12 @@ namespace BytingLib.Markup
             return sizes;
         }
 
-        public Vector2 GetSize(MarkupSettings settings, MarkupIndex start, MarkupIndex? end = null)
+        public Vector2 GetSizeSubstring(MarkupSettings settings, MarkupIndex start, MarkupIndex? end = null)
         {
-            return GetSizeFromToInLine(settings, start, end, out _, out _);
+            return GetSizeSubstring(settings, start, end, out _, out _);
         }
 
-        public Vector2 GetSizeFromToInLine(MarkupSettings settings, MarkupIndex start, MarkupIndex? end, out float marginTop, out float marginBottom)
+        public Vector2 GetSizeSubstring(MarkupSettings settings, MarkupIndex start, MarkupIndex? end, out float marginTop, out float marginBottom)
         {
             marginTop = marginBottom = 0;
 
@@ -155,11 +155,15 @@ namespace BytingLib.Markup
             int lineCount = GetLineCount();
             int lineIndex = 0;
 
+            Vector2 totalSize = Vector2.Zero;
+
+            int startOrEndFound = 0; // 1: start found 2: end found
+
             foreach (var line in GetLinesOfLeaves(settings))
             {
                 bool lastLine = lineIndex == lineCount - 1;
 
-                Vector2? size = GetLineSize(settings, firstLine, line, out float? cropped, start, end);
+                Vector2? size = GetLineSize(settings, firstLine, line, out float? cropped, start, end, ref startOrEndFound);
                 if (size != null)
                 {
                     if (cropped != null)
@@ -175,11 +179,17 @@ namespace BytingLib.Markup
                     }
                     firstLine = false;
                     lineIndex++;
-                    return size.Value;
+
+                    totalSize.X = MathF.Max(size.Value.X, totalSize.X);
+                    totalSize.Y += size.Value.Y;
+                }
+
+                if (startOrEndFound >= 2)
+                {
+                    break;
                 }
             }
-            marginTop = marginBottom = 0f;
-            return Vector2.Zero;
+            return totalSize;
         }
 
         private static Vector2 GetLineSize(MarkupSettings settings, bool firstLine, IEnumerable<ILeaf> line, out float? croppedBecauseOfLineHeight)
@@ -224,30 +234,31 @@ namespace BytingLib.Markup
             return lineSize;
         }
 
-        private static Vector2? GetLineSize(MarkupSettings settings, bool firstLine, IEnumerable<ILeaf> line, out float? croppedBecauseOfLineHeight, MarkupIndex start, MarkupIndex? end)
+        private static Vector2? GetLineSize(MarkupSettings settings, bool firstLine, IEnumerable<ILeaf> line, out float? croppedBecauseOfLineHeight,
+            MarkupIndex start, MarkupIndex? end, ref int startOrEndFound)
         {
             croppedBecauseOfLineHeight = null;
 
             Vector2 lineSize = new Vector2(0, settings.MinLineHeight);
             bool allElementsConfineToLineSpacing = true;
-            bool startFound = false;
             foreach (var element in line)
             {
-                if (!startFound)
+                if (startOrEndFound == 0)
                 {
                     if (element == start.CurrentNode)
                     {
-                        startFound = true;
+                        startOrEndFound = 1;
                     }
                 }
                 
 
-                if (startFound)
+                if (startOrEndFound == 1)
                 {
                     Vector2 size;
 
                     if (element == end?.CurrentNode && end.indexInString == 0)
                     {
+                        startOrEndFound = 2;
                         break;
                     }
 
@@ -268,12 +279,13 @@ namespace BytingLib.Markup
 
                     if (element == end?.CurrentNode)
                     {
+                        startOrEndFound = 2;
                         break;
                     }
                 }
             }
 
-            if (!startFound)
+            if (startOrEndFound == 0)
             {
                 return null;
             }
@@ -324,7 +336,7 @@ namespace BytingLib.Markup
 
         public int GetLineCount()
         {
-            int newLineCount = Root.Children.OfType<MarkupNewLine>().Count();
+            int newLineCount = Root.AllChildren().OfType<MarkupNewLine>().Count();
             return newLineCount + 1;
         }
 

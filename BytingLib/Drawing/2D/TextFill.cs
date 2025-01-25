@@ -236,7 +236,7 @@ namespace BytingLib
                         lastPossibleBreakIndex = textIndex.Clone();
                         isBreakChar = false;
                     }
-                    textSize = markup.GetSize(settings, segmentStart, textIndex + 1);
+                    textSize = markup.GetSizeSubstring(settings, segmentStart, textIndex + 1);
 
                     if (previousTextSize != Vector2.Zero && textSize.Y > previousTextSize.Y)
                     {
@@ -377,6 +377,12 @@ namespace BytingLib
                     if (manualNewLine || lastSegmentInLine)
                     {
                         NewLine();
+
+                        if (manualNewLine)
+                        {
+                            // in case multiple manual new lines are followed by each other, we need to reset the segment height, as that won't be updated otherwise (see above, we don't get a new segment if it's a newline)
+                            segment.Height = defaultLineHeight;
+                        }
                     }
                 }
             }
@@ -393,8 +399,8 @@ namespace BytingLib
             {
                 // overflow
                 // measure current line size
-                Vector2 textSize = markup.GetSize(settings, segmentStart);
-
+                Vector2 textSize = markup.GetSizeSubstring(settings, segmentStart);
+                
                 float overflowWidth = textSize.X;
 
                 float totalSegmentsWidth = segments.Sum(f => f.Width);
@@ -433,7 +439,7 @@ namespace BytingLib
                 // anchor text inside segment, if anchor is not left aligned
                 if (!segmentStart.IsEqual(measureWidthUntil) && anchor != Vector2.Zero)
                 {
-                    Vector2 textSegmentSize = markup.GetSize(settings, segmentStart, measureWidthUntil);
+                    Vector2 textSegmentSize = markup.GetSizeSubstring(settings, segmentStart, measureWidthUntil);
                     if (anchor.X != 0f)
                     {
                         jumpTo.X += (segment.Width - textSegmentSize.X) * anchor.X;
