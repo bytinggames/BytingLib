@@ -42,7 +42,7 @@ namespace BytingLib
                 int fontSize = GetRightFontSize(right.Length() * 2f /* because right only measures half the length */,
                     (int)MathF.Ceiling(textSize.X), MinimumPixelsPerUnit);
 
-                return CreateTextTexture(text, fontArray.GetFont(fontSize), backgroundColor, fontSize, markupSettings.VerticalSpaceBetweenLines * fontSize);
+                return CreateTextTexture(text, fontArray.GetFont(fontSize), backgroundColor, markupSettings.TextureScale, markupSettings.VerticalSpaceBetweenLines * fontSize);
             });
             return tex;
         }
@@ -77,7 +77,7 @@ namespace BytingLib
                     PolygonTextSplit.OnlyOnSpace, 
                     anchor, 
                     texSize,
-                    fontSize,
+                    markupSettings.TextureScale,
                     markupSettings.VerticalSpaceBetweenLines * fontSize,
                     paddingNormalized);
             });
@@ -100,16 +100,17 @@ namespace BytingLib
             return fontSize;
         }
 
-        public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color backgroundColor, float textureScale = 1, float? verticalSpaceBetweenLines = null)
+        public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color backgroundColor, Vector2? textureScale = null, float? verticalSpaceBetweenLines = null)
         {
-            if (textures.ContainsKey((text, font.Value, backgroundColor, textureScale)))
+            textureScale ??= Vector2.One;
+            if (textures.ContainsKey((text, font.Value, backgroundColor, textureScale.Value)))
             {
-                return textures[(text, font.Value, backgroundColor, textureScale)].Use();
+                return textures[(text, font.Value, backgroundColor, textureScale.Value)].Use();
             }
 
             var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */)
             {
-                TextureScale = Vector2.One * textureScale,
+                TextureScale = textureScale.Value,
                 VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines
             };
             var drawElement = new MarkupRoot(markupCreator, text);
@@ -144,7 +145,7 @@ namespace BytingLib
 
             AssetHolder<Texture2D> assetHolder = new AssetHolder<Texture2D>(promise, "TextToTexture_" + text, _ =>
             {
-                if (!textures.Remove((text, font.Value, backgroundColor, textureScale)))
+                if (!textures.Remove((text, font.Value, backgroundColor, textureScale.Value)))
                 {
                     throw new BytingException("couldn't remove a texture from TextToTexture.textures");
                 }
@@ -152,14 +153,15 @@ namespace BytingLib
                 tex?.Dispose();
             });
 
-            textures.Add((text, font.Value, backgroundColor, textureScale), assetHolder);
+            textures.Add((text, font.Value, backgroundColor, textureScale.Value), assetHolder);
 
             return assetHolder.Use();
         }
 
         public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color backgroundColor, List<List<Vector2>> polygons, 
-            TextFillObject.PolyType polyType, PolygonTextSplit splitMethod, Vector2 anchor, Vector2 texSize, float textureScale = 1, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null)
+            TextFillObject.PolyType polyType, PolygonTextSplit splitMethod, Vector2 anchor, Vector2 texSize, Vector2? textureScale = null, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null)
         {
+            textureScale ??= Vector2.One;
             //if (textures.ContainsKey((text, font.Value, backgroundColor, textureScale)))
             //{
             //    return textures[(text, font.Value, backgroundColor, textureScale)].Use();
@@ -170,7 +172,7 @@ namespace BytingLib
                 VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines,
                 VerticalAlignInLine = anchor.Y,
                 HorizontalAlignInLine = anchor.X,
-                TextureScale = Vector2.One * textureScale
+                TextureScale = textureScale.Value
             };
             TextFillObject textFill = new(text, polygons, polyType, splitMethod, true, true);
             textFill.Anchor = anchor;
@@ -179,6 +181,11 @@ namespace BytingLib
             Rect rect = new Rect(Vector2.Zero, texSize);
 
             var drawElement = textFill.GetMarkup(font, markupCreator, rect)!;
+
+            if (drawElement == null)
+            {
+                return GetPixel();
+            }
 
             markupSettings.Scale = textFill.TextFill.FontScale;
 
