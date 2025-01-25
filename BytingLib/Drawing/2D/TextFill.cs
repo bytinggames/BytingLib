@@ -32,7 +32,7 @@ namespace BytingLib
             float textHeightEstimation = containerRect.Height;
 
             const bool correctOverflow = true;
-            const int fontScaleIterations = 5;
+            const int fontScaleIterations = 10;
             const int yOffsetIterations = 5;
             for (int iteration = 0; iteration < fontScaleIterations + yOffsetIterations; iteration++)
             {
@@ -53,8 +53,22 @@ namespace BytingLib
                 }
 
                 MarkupSettings settings = new(null, font, new Anchor(Vector2.Zero, anchor), Color.White, anchor.X, FontScale);
+                // check if the markup is practically empty and won't draw anything anyways
+                if (SegmentedMarkup.Root.IterateOverLeaves(settings).All(f => f.GetSize(settings) == Vector2.Zero))
+                {
+                    SegmentedMarkup = null;
+                    return;
+                }
+                
                 segments = SplitMarkupBySegments(SegmentedMarkup, settings, splitMethod,
-                        defaultLineHeight, textTop, textBottom, polygons, out float overflowFract, borderLeft ? containerRect.Left : null, borderRight ? containerRect.Right : null);
+                    defaultLineHeight, textTop, textBottom, polygons, out float overflowFract, borderLeft ? containerRect.Left : null, borderRight ? containerRect.Right : null);
+
+                if (overflowFract <= -1f)
+                {
+                    // no content drawn
+                    SegmentedMarkup = null;
+                    return;
+                }
 
                 if (correctOverflow
                     && overflowFract > 0f
