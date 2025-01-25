@@ -467,141 +467,160 @@ namespace BytingLib
 
                 List<float> openX = new();
                 List<float> closeX = new();
-                foreach (var polygon in polygons)
+                if (polygons.Count == 0)
                 {
-                    for (int p = 0; p < polygon.Count; p++)
+                    if (minX.HasValue)
                     {
-                        int p2 = (p + 1) % polygon.Count;
-                        Vector2 v1 = polygon[p];
-                        Vector2 v2 = polygon[p2];
-                        float xCollision;
-                        float? xCollisionMaybe;
+                        openX.Add(minX.Value);
+                    }
+                    else
+                    {
+                        throw new Exception("text fill has no polygon and no minX set. No text can be inserted");
+                    }
 
-                        #region collision check
-
-                        if (v1.Y < v2.Y)
+                    if (maxX.HasValue)
+                    {
+                        closeX.Add(maxX.Value);
+                    }
+                }
+                else
+                {
+                    foreach (var polygon in polygons)
+                    {
+                        for (int p = 0; p < polygon.Count; p++)
                         {
-                            // edge that closes the polygon
-                            if (v2.Y < segment.Top || v1.Y > segment.Bottom)
-                            {
-                                // if v1 is above the cursor, v2 is too
-                                continue;
-                            }
+                            int p2 = (p + 1) % polygon.Count;
+                            Vector2 v1 = polygon[p];
+                            Vector2 v2 = polygon[p2];
+                            float xCollision;
+                            float? xCollisionMaybe;
 
-                            if (v1.X <= v2.X)
+                            #region collision check
+
+                            if (v1.Y < v2.Y)
                             {
-                                // vertex 1 is more left than vertex 2
-                                if (v1.Y >= segment.Top)
+                                // edge that closes the polygon
+                                if (v2.Y < segment.Top || v1.Y > segment.Bottom)
                                 {
-                                    // vertex 1 lies on same height as rect (vertex collision)
-                                    xCollision = v1.X;
+                                    // if v1 is above the cursor, v2 is too
+                                    continue;
+                                }
+
+                                if (v1.X <= v2.X)
+                                {
+                                    // vertex 1 is more left than vertex 2
+                                    if (v1.Y >= segment.Top)
+                                    {
+                                        // vertex 1 lies on same height as rect (vertex collision)
+                                        xCollision = v1.X;
+                                    }
+                                    else
+                                    {
+                                        if ((xCollisionMaybe = CheckEdgeCollision(segment.Top)) == null)
+                                        {
+                                            continue;
+                                        }
+                                        xCollision = xCollisionMaybe.Value;
+                                    }
                                 }
                                 else
                                 {
-                                    if ((xCollisionMaybe = CheckEdgeCollision(segment.Top)) == null)
+                                    // vertex 2 is more right than vertex 1
+                                    if (v2.Y <= segment.Bottom)
                                     {
-                                        continue;
+                                        // vertex 2 lies on same height as rect (vertex collision)
+                                        xCollision = v2.X;
                                     }
-                                    xCollision = xCollisionMaybe.Value;
+                                    else
+                                    {
+                                        if ((xCollisionMaybe = CheckEdgeCollision(segment.Bottom)) == null)
+                                        {
+                                            continue;
+                                        }
+                                        xCollision = xCollisionMaybe.Value;
+                                    }
+                                }
+
+                                if (xCollision < maxX)
+                                {
+                                    closeX.Add(xCollision);
                                 }
                             }
                             else
                             {
-                                // vertex 2 is more right than vertex 1
-                                if (v2.Y <= segment.Bottom)
+                                // edge that opens up the polygon
+
+                                if (v1.Y < segment.Top || v2.Y > segment.Bottom)
                                 {
-                                    // vertex 2 lies on same height as rect (vertex collision)
-                                    xCollision = v2.X;
+                                    // if v1 is above the cursor, v2 is too
+                                    continue;
+                                }
+
+
+                                if (v1.X >= v2.X)
+                                {
+                                    // vertex 1 is more right than vertex 2
+                                    if (v1.Y <= segment.Bottom)
+                                    {
+                                        // vertex 1 lies on same height as rect (vertex collision)
+                                        xCollision = v1.X;
+                                    }
+                                    else
+                                    {
+                                        // only check edge collision with bottom of rect
+                                        if ((xCollisionMaybe = CheckEdgeCollision(segment.Bottom)) == null)
+                                        {
+                                            continue;
+                                        }
+                                        xCollision = xCollisionMaybe.Value;
+                                    }
                                 }
                                 else
                                 {
-                                    if ((xCollisionMaybe = CheckEdgeCollision(segment.Bottom)) == null)
+                                    // vertex 2 is more right than vertex 1
+                                    if (v2.Y >= segment.Top)
                                     {
-                                        continue;
+                                        // vertex 2 lies on same height as rect (vertex collision)
+                                        xCollision = v2.X;
                                     }
-                                    xCollision = xCollisionMaybe.Value;
-                                }
-                            }
-
-                            if (xCollision < maxX)
-                            {
-                                closeX.Add(xCollision);
-                            }
-                        }
-                        else
-                        {
-                            // edge that opens up the polygon
-
-                            if (v1.Y < segment.Top || v2.Y > segment.Bottom)
-                            {
-                                // if v1 is above the cursor, v2 is too
-                                continue;
-                            }
-
-
-                            if (v1.X >= v2.X)
-                            {
-                                // vertex 1 is more right than vertex 2
-                                if (v1.Y <= segment.Bottom)
-                                {
-                                    // vertex 1 lies on same height as rect (vertex collision)
-                                    xCollision = v1.X;
-                                }
-                                else
-                                {
-                                    // only check edge collision with bottom of rect
-                                    if ((xCollisionMaybe = CheckEdgeCollision(segment.Bottom)) == null)
+                                    else
                                     {
-                                        continue;
+                                        // only check edge collision with top of rect
+                                        if ((xCollisionMaybe = CheckEdgeCollision(segment.Top)) == null)
+                                        {
+                                            continue;
+                                        }
+                                        xCollision = xCollisionMaybe.Value;
                                     }
-                                    xCollision = xCollisionMaybe.Value;
                                 }
-                            }
-                            else
-                            {
-                                // vertex 2 is more right than vertex 1
-                                if (v2.Y >= segment.Top)
+
+                                if (minX.HasValue && xCollision < minX.Value)
                                 {
-                                    // vertex 2 lies on same height as rect (vertex collision)
-                                    xCollision = v2.X;
+                                    xCollision = minX.Value;
                                 }
-                                else
+                                if (xCollision >= segment.X
+                                    && (!maxX.HasValue || xCollision < maxX.Value)) // no reason in opening up beyond the most far right x
                                 {
-                                    // only check edge collision with top of rect
-                                    if ((xCollisionMaybe = CheckEdgeCollision(segment.Top)) == null)
-                                    {
-                                        continue;
-                                    }
-                                    xCollision = xCollisionMaybe.Value;
+                                    openX.Add(xCollision);
                                 }
                             }
 
-                            if (minX.HasValue && xCollision < minX.Value)
+                            float? CheckEdgeCollision(float cursorTopOrBottom)
                             {
-                                xCollision = minX.Value;
+                                // only check edge collision with bottom of rect
+                                float distY = cursorTopOrBottom - v1.Y;
+                                Vector2 edgeDir = v2 - v1;
+                                float onLineLerp = distY / edgeDir.Y;
+                                if (onLineLerp > 1f || onLineLerp < 0f)
+                                {
+                                    // no collision
+                                    return null;
+                                }
+                                return v1.X + edgeDir.X * onLineLerp;
                             }
-                            if (xCollision >= segment.X
-                                && (!maxX.HasValue || xCollision < maxX.Value)) // no reason in opening up beyond the most far right x
-                            {
-                                openX.Add(xCollision);
-                            }
-                        }
 
-                        float? CheckEdgeCollision(float cursorTopOrBottom)
-                        {
-                            // only check edge collision with bottom of rect
-                            float distY = cursorTopOrBottom - v1.Y;
-                            Vector2 edgeDir = v2 - v1;
-                            float onLineLerp = distY / edgeDir.Y;
-                            if (onLineLerp > 1f || onLineLerp < 0f)
-                            {
-                                // no collision
-                                return null;
-                            }
-                            return v1.X + edgeDir.X * onLineLerp;
+                            #endregion
                         }
-
-                        #endregion
                     }
                 }
 
