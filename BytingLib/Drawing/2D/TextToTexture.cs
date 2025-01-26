@@ -10,6 +10,7 @@ namespace BytingLib
         private readonly IShaderColor textEffect; // TODO: convert to shader?
         private readonly Creator markupCreator;
         private readonly float verticalSpaceBetweenLines;
+        private readonly Func<bool>? iterativeFitting;
         private readonly Dictionary<TextToTextureKey, AssetHolder<Texture2D>> textures = new();
         private readonly DisposableContainer disposables = new();
         public float MinimumPixelsPerUnit { get; }
@@ -18,7 +19,8 @@ namespace BytingLib
         /// <summary>Used for debugging</summary>
         public bool DrawTextFitSegments { get; set; }
 
-        public TextToTexture(SpriteBatch spriteBatch, FontArray fontArray, IShaderColor textEffect, Creator markupCreator, float verticalSpaceBetweenLines, float minimumPixelsPerUnit)
+        public TextToTexture(SpriteBatch spriteBatch, FontArray fontArray, IShaderColor textEffect, Creator markupCreator, 
+            float verticalSpaceBetweenLines, float minimumPixelsPerUnit, Func<bool>? iterativeFitting = null)
         {
             this.spriteBatch = spriteBatch;
             this.fontArray = fontArray;
@@ -26,6 +28,7 @@ namespace BytingLib
             this.markupCreator = markupCreator;
             this.verticalSpaceBetweenLines = verticalSpaceBetweenLines;
             MinimumPixelsPerUnit = minimumPixelsPerUnit;
+            this.iterativeFitting = iterativeFitting;
         }
 
         public Promise<Ref<Texture2D>> UseTexture(string text, Vector3 right, Color backgroundColor, float? verticalSpaceBetweenLines = null)
@@ -177,6 +180,7 @@ namespace BytingLib
             TextFillObject textFill = new(text, polygons, polyType, splitMethod, true, true);
             textFill.Anchor = anchor;
             textFill.PaddingNormalized = paddingNormalized;
+            textFill.IterativeFitting = iterativeFitting == null ? true : iterativeFitting();
 
             Rect rect = new Rect(Vector2.Zero, texSize);
 

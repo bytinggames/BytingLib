@@ -48,7 +48,7 @@ namespace BytingLib
             if (iterative)
             {
                 correctOverflow = endlessHeight ? false : true;
-                fontScaleIterations = endlessHeight ? 0 : 10;
+                fontScaleIterations = endlessHeight ? 0 : 5;
                 yOffsetIterations = anchor.Y == 0 ? 0 : 5;
             }
             else
@@ -227,6 +227,7 @@ namespace BytingLib
             Vector2 previousTextSize = Vector2.Zero; // 0 0 means unset
             bool endOfContainerReached = false;
             bool lastSegmentInLine = false;
+            float widestSegmentThatWasToNarrow = 0f;
 
             for (MarkupIndex textIndex = segmentStart.Clone(); !endOfContainerReached && !textIndex.AtEnd(); textIndex++)
             {
@@ -435,7 +436,19 @@ namespace BytingLib
                 
                 float overflowWidth = textSize.X;
 
-                float totalSegmentsWidth = segments.Sum(f => f.Width);
+                float totalSegmentsWidth;
+                //if (segments.Count > 0)
+                {
+                    totalSegmentsWidth = segments.Sum(f => f.Width);
+                }
+                ////else if (minX != null && maxX != null)
+                ////{
+                ////    segment
+                ////    totalSegmentsWidth = 
+                //}
+                //totalSegmentsWidth += segment.Width;
+                totalSegmentsWidth += widestSegmentThatWasToNarrow;
+
                 overflowFract = overflowWidth / totalSegmentsWidth;
                 // yes, overflowFract can get infinite here, and it's supposed to
             }
@@ -664,6 +677,7 @@ namespace BytingLib
                 openX.Sort();
                 closeX.Sort();
 
+                widestSegmentThatWasToNarrow = 0f;
 
                 // iterate through all open positions and check if they collide with the next open or closed position
                 // check what's the first distance to actually fit the current part in (lastMeasuredSize)
@@ -685,6 +699,7 @@ namespace BytingLib
                     segment.X = openX[0];
                     if (closeX.Count > 0 && closeX[0] < segment.Right)
                     {
+                        widestSegmentThatWasToNarrow = float.Max(closeX[0] - segment.X, widestSegmentThatWasToNarrow);
                         // cursor collides with close edge
                         openX.RemoveAt(0);
                     }
