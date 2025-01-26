@@ -106,7 +106,8 @@ namespace BytingLib.UI
                 TotalMilliseconds = style.TotalMilliseconds,
                 TextureColor = style.TextureColor ?? Color.White,
                 CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight,
-                JumpOffset = GetJumpOffset()
+                JumpOffset = GetJumpOffset(),
+                VerticalAlignInLine = Anchor.Y,
             };
         }
 
