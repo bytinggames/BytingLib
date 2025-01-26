@@ -3,14 +3,15 @@ using BytingLib.UI;
 
 namespace BytingLib
 {
-    public class TextToTexture : IDisposable
+    public class TextToTexture : IDisposable, IDraw
     {
         private readonly SpriteBatch spriteBatch;
-        private readonly FontArray fontArray;
-        private readonly IShaderColor textEffect; // TODO: convert to shader?
+        private readonly IShaderColor textEffect;
+        private readonly FontArray fontArray; 
         private readonly Creator markupCreator;
         private readonly float verticalSpaceBetweenLines;
         private readonly Func<bool>? iterativeFitting;
+        private readonly Action<Action> doAfterUpdate;
         private readonly Dictionary<TextToTextureKey, AssetHolder<Texture2D>> textures = new();
         private readonly DisposableContainer disposables = new();
         public float MinimumPixelsPerUnit { get; }
@@ -19,8 +20,11 @@ namespace BytingLib
         /// <summary>Used for debugging</summary>
         public bool DrawTextFitSegments { get; set; }
 
+        public event Action? OnFontReload;
+        private bool allowFontReload = true;
+
         public TextToTexture(SpriteBatch spriteBatch, FontArray fontArray, IShaderColor textEffect, Creator markupCreator, 
-            float verticalSpaceBetweenLines, float minimumPixelsPerUnit, Func<bool>? iterativeFitting = null)
+            float verticalSpaceBetweenLines, float minimumPixelsPerUnit, Action<Action> doAfterDraw, Func<bool>? iterativeFitting = null)
         {
             this.spriteBatch = spriteBatch;
             this.fontArray = fontArray;
@@ -29,6 +33,12 @@ namespace BytingLib
             this.verticalSpaceBetweenLines = verticalSpaceBetweenLines;
             MinimumPixelsPerUnit = minimumPixelsPerUnit;
             this.iterativeFitting = iterativeFitting;
+            this.doAfterUpdate = doAfterDraw;
+
+            for (int i = 0; i < fontArray.Fonts.Length; i++)
+            {
+                fontArray.Fonts[i].Item2.OnReload += OnIndividualFontReload;
+            }
         }
 
         public Promise<Ref<Texture2D>> UseTexture(string text, Vector3 right, Color backgroundColor, float? verticalSpaceBetweenLines = null)
@@ -146,9 +156,11 @@ namespace BytingLib
                 return tex;
             });
 
+            var key = (text, font.Value, backgroundColor, textureScale.Value);
+
             AssetHolder<Texture2D> assetHolder = new AssetHolder<Texture2D>(promise, "TextToTexture_" + text, _ =>
             {
-                if (!textures.Remove((text, font.Value, backgroundColor, textureScale.Value)))
+                if (!textures.Remove(key))
                 {
                     throw new BytingException("couldn't remove a texture from TextToTexture.textures");
                 }
@@ -156,7 +168,7 @@ namespace BytingLib
                 tex?.Dispose();
             });
 
-            textures.Add((text, font.Value, backgroundColor, textureScale.Value), assetHolder);
+            textures.Add(key, assetHolder);
 
             return assetHolder.Use();
         }
@@ -261,7 +273,32 @@ namespace BytingLib
 
         public void Dispose()
         {
+            for (int i = 0; i < fontArray.Fonts.Length; i++)
+            {
+                fontArray.Fonts[i].Item2.OnReload -= OnIndividualFontReload;
+            }
+
             disposables.Dispose();
+        }
+
+        private void OnIndividualFontReload(Ref<SpriteFont> obj)
+        {
+            if (allowFontReload) // only trigger once, not for each font in font array
+            {
+                allowFontReload = false;
+                if (OnFontReload != null)
+                {
+                    doAfterUpdate(() =>
+                    {
+                        OnFontReload?.Invoke();
+                    });
+                }
+            }
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            allowFontReload = true; // allow triggering font reload again
         }
     }
 }

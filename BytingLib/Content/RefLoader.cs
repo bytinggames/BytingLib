@@ -17,9 +17,9 @@ namespace BytingLib
     public class RefLoader<T>(RefLoaderDependencies d, string path)
     {
         private readonly RefLoaderDependencies d = d;
-        private readonly string path = path;
+        public string Path { get; } = path;
 
-        public Ref<T> Use() => d.Use<T>(path);
-        public void Override(Ref<T> asset) => d.Override(path, asset);
+        public Ref<T> Use() => d.Use<T>(Path);
+        public void Override(Ref<T> asset) => d.Override(Path, asset);
     }
 }

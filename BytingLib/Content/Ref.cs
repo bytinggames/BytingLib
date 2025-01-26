@@ -35,6 +35,8 @@ namespace BytingLib
             Dispose();
             this.pointerToValue = pointerToValue;
             this.onDispose = onDispose;
+
+            TriggerOnReload();
         }
     }
 }
