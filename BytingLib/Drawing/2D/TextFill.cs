@@ -427,36 +427,43 @@ namespace BytingLib
                 markup.InsertJump(segmentStart, GetJumpVector(null));
             }
 
-            // check overflow / underflow
-            if (endOfContainerReached)
+            // check overflow / underflow (only if the region is actually limited and not infinite
+            if (float.IsFinite(topY) && float.IsFinite(bottomY))
             {
-                // overflow
-                // measure current line size
-                Vector2 textSize = markup.GetSizeSubstring(settings, segmentStart);
-                
-                float overflowWidth = textSize.X;
-
-                float totalSegmentsWidth;
-                //if (segments.Count > 0)
+                if (endOfContainerReached)
                 {
-                    totalSegmentsWidth = segments.Sum(f => f.Width);
-                }
-                ////else if (minX != null && maxX != null)
-                ////{
-                ////    segment
-                ////    totalSegmentsWidth = 
-                //}
-                //totalSegmentsWidth += segment.Width;
-                totalSegmentsWidth += widestSegmentThatWasToNarrow;
+                    // overflow
+                    // measure current line size
+                    Vector2 textSize = markup.GetSizeSubstring(settings, segmentStart);
 
-                overflowFract = overflowWidth / totalSegmentsWidth;
-                // yes, overflowFract can get infinite here, and it's supposed to
+                    float overflowWidth = textSize.X;
+
+                    float totalSegmentsWidth;
+                    //if (segments.Count > 0)
+                    {
+                        totalSegmentsWidth = segments.Sum(f => f.Width);
+                    }
+                    ////else if (minX != null && maxX != null)
+                    ////{
+                    ////    segment
+                    ////    totalSegmentsWidth = 
+                    //}
+                    //totalSegmentsWidth += segment.Width;
+                    totalSegmentsWidth += widestSegmentThatWasToNarrow;
+
+                    overflowFract = overflowWidth / totalSegmentsWidth;
+                    // yes, overflowFract can get infinite here, and it's supposed to
+                }
+                else
+                {
+                    // underflow
+                    float heightTakenUpFract = (segment.Bottom - topY) / (bottomY - topY);
+                    overflowFract = heightTakenUpFract - 1f;
+                }
             }
             else
             {
-                // underflow
-                float heightTakenUpFract = (segment.Bottom - topY) / (bottomY - topY);
-                overflowFract = heightTakenUpFract - 1f;
+                overflowFract = 0f; // no overflow as region is infinite
             }
 
             return segments;
