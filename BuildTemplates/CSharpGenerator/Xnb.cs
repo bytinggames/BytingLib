@@ -14,17 +14,11 @@
 
         public Xnb(string filePath, string cSharpDataType, string varNameExtension)
         {
-            AssetName = Path.GetFileName(filePath);
+            AssetName = Path.GetFileNameWithoutExtension(filePath);
 
             FileName = FilePath = filePath;
             CSharpDataType = cSharpDataType;
             VarNameExtension = varNameExtension;
-
-            int dotIndex = AssetName.LastIndexOf('.');
-            if (dotIndex != -1)
-            {
-                AssetName = AssetName.Remove(dotIndex);
-            }
         }
 
         public override string ToString()
@@ -32,33 +26,28 @@
             return $"{FileName} {CSharpDataType} {VarNameExtension}";
         }
 
-        public string? PrintDeclare(bool loadOnStartup)
+        public string Print(bool loadOnStartup, string tab)
         {
             if (loadOnStartup)
             {
-                return $"public Ref<{CSharpDataType}> {VarName} {{ get; }}";
+                return $"public Ref<{CSharpDataType}> {VarName} {{ get; }} = d.Use<{CSharpDataType}>(Path + \"{AssetName}\");";
             }
             else
             {
-                return $"public Ref<{CSharpDataType}> {GetInitCode(loadOnStartup)}";
+                return $"public Ref<{CSharpDataType}> {VarName} => _{VarName}.Use();";
             }
         }
 
-        public string? PrintInit(bool loadOnStartup)
+        public string PrintRefLoader(bool loadOnStartup, string tab)
         {
             if (loadOnStartup)
             {
-                return GetInitCode(loadOnStartup);
+                return $"";
             }
             else
             {
-                return null;
+                return $"public RefLoader<{CSharpDataType}> _{VarName} = new(d, Path +  \"{AssetName}\");";
             }
-        }
-
-        private string GetInitCode(bool loadOnStartup)
-        {
-            return $"{VarName} ={(loadOnStartup ? "" : ">")} disposables.Use(collector.Use<{CSharpDataType}>(basePath + \"{AssetName}\"));";
         }
 
         internal static string ToVariableName(string name)

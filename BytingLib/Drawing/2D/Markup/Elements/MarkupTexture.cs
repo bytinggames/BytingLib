@@ -50,7 +50,7 @@ namespace BytingLib.Markup
             Effects = SpriteEffects.None;
         }
 
-        protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings)
+        protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings, int start, int end)
         {
             return GetSizeChildUnscaledInternal(settings) * ScaleXY * settings.TextureScale;
         }

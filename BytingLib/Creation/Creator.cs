@@ -315,13 +315,13 @@ namespace BytingLib
         {
             List<string> splits = new List<string>();
 
-            reader.RemoveLiteralCharEnabled = false;
+            //reader.RemoveLiteralCharEnabled = false;
             do
             {
-                string para = reader.ReadToCharOrEndConsiderOpenCloseBraces(new char[] { Close, ParameterSeparator }, Open, Close);
+                string para = reader.ReadToCharOrEndConsiderOpenCloseBraces([Close, ParameterSeparator], Open, Close);
                 splits.Add(para);
             } while (!reader.EndOfString() && reader.Peek(-1) == ParameterSeparator);
-            reader.RemoveLiteralCharEnabled = true;
+            //reader.RemoveLiteralCharEnabled = true;
 
             // clear list if paramters look like this: () <- empty
             if (splits.Count == 1 && splits[0] == "")

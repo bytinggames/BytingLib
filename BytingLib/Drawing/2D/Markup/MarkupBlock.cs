@@ -59,7 +59,7 @@
             float tempX = settings.Anchor.X;
             if (SubSizeUnion && subContainer != null)
             {
-                Vector2 thisSize = GetSizeChild(settings);
+                Vector2 thisSize = GetSizeChild(settings, 0, -1);
                 Vector2 subSize = subContainer.GetSize(settings);
                 Vector2 larger = subSize - thisSize;
                 if (larger.X > 0)
@@ -73,7 +73,7 @@
             if (subContainer != null)
             {
                 var settingsClone = settings.CloneMarkupSettings();
-                Rect ownRect = settings.Anchor.Rectangle(GetSizeChild(settingsClone));
+                Rect ownRect = settings.Anchor.Rectangle(GetSizeChild(settingsClone, 0, -1));
                 ownRect.ApplyPadding(PaddingLeft * settings.Scale.X, PaddingRight * settings.Scale.X, PaddingTop * settings.Scale.Y, PaddingBottom * settings.Scale.Y);
                 settingsClone.Anchor = ownRect.GetAnchor(SubAnchorX, SubAnchorY);
                 subContainer.Draw(settingsClone);
@@ -84,9 +84,9 @@
 
         protected abstract void DrawChild(MarkupSettings settings);
 
-        public Vector2 GetSize(MarkupSettings settings)
+        public Vector2 GetSize(MarkupSettings settings, int start, int end)
         {
-            Vector2 size = GetSizeChild(settings);
+            Vector2 size = GetSizeChild(settings, start, end);
 
             if (SubSizeUnion && subContainer != null)
             {
@@ -99,9 +99,9 @@
             return size;
         }
 
-        protected Vector2 GetSizeChild(MarkupSettings settings) => GetSizeChildUnscaled(settings) * settings.Scale;
+        protected Vector2 GetSizeChild(MarkupSettings settings, int start, int end) => GetSizeChildUnscaled(settings, start, end) * settings.Scale;
 
-        protected abstract Vector2 GetSizeChildUnscaled(MarkupSettings settings);
+        protected abstract Vector2 GetSizeChildUnscaled(MarkupSettings settings, int start, int end);
 
         public void MarginTopBottom(float val)
         {

@@ -12,19 +12,28 @@ namespace BytingLib.UI
         /// <summary>see <see cref="MarkupSettings.CropSuperfluousHeightThatIsLargerThanLineHeight"/></summary>
         public bool CropSuperfluousHeightThatIsLargerThanLineHeight { get; set; } = false;
 
-        public LabelMarkup(string text, Creator creator) : base(text)
+        private TextFillObject? textFill;
+        public TextFillObject? TextFill
         {
-            this.creator = creator;
+            get => textFill;
+            set
+            {
+                textFill = value;
+                setSizeToText = false;
+                Width = -1f;
+                Height = -1f;
+            }
         }
-        public LabelMarkup(string text, Creator creator, float width = -1f, float height = -1f)
-            : base(text, width, height)
-        {
-            this.creator = creator;
-        }
-        public LabelMarkup(string text, Creator creator, float width = -1f, float height = -1f, bool setSizeToText = true)
+
+        public LabelMarkup(string text, Creator creator, float width = 0f, float height = 0f, bool setSizeToText = true)
             : base(text, width, height, setSizeToText)
         {
             this.creator = creator;
+
+            if (width > 0f)
+            {
+                textFill = new TextFillObject(text, new(), TextFillObject.PolyType.Normalized01, PolygonTextSplit.AllowMidWordIfSpaceNotPossible);
+            }
         }
 
         protected override Vector2 MeasureString(StyleRoot style, string text)
@@ -43,18 +52,30 @@ namespace BytingLib.UI
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
+            if (textFill != null)
+            {
+                //textFill.DrawPolygon(spriteBatch);
+                //textFill.TextFill?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
+
+                if (!setSizeToText)
+                {
+                    UpdateMarkupWrapped(style);
+                }
+            }
+
             if (markup != null)
             {
                 if (style.FontBoldColor.IsNotTransparent() && style.FontBold != null)
                 {
-                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, style.FontScale, Tilt)
+                    markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, GetFontScale(style), Tilt)
                     {
                         RoundPositionTo = style.RoundPositionTo,
                         MinLineHeight = MinLineHeight,
                         TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset,
                         ForceTextColor = true,
                         TextureColor = style.TextureColor ?? Color.White, // not sure if this should be the default for textures drawn with a bold font
-                        CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight
+                        CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight,
+                        JumpOffset = GetJumpOffset()
                     });
                 }
 
@@ -65,22 +86,34 @@ namespace BytingLib.UI
             }
         }
 
+        private Vector2 GetFontScale(StyleRoot style)
+        {
+            return TextFill?.TextFill?.FontScale ?? style.FontScale;
+        }
+
         private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style)
         {
-            return new MarkupSettings(spriteBatch, 
+            return new MarkupSettings(spriteBatch,
                 style.Font,
-                AbsoluteRect == null ? new Anchor() : AbsoluteRect.GetAnchor(Anchor), 
-                style.FontColor, 
-                Anchor.X, 
-                style.FontScale,
+                AbsoluteRect == null ? new Anchor() : AbsoluteRect.GetAnchor(Anchor),
+                style.FontColor,
+                Anchor.X,
+                GetFontScale(style),
                 Tilt)
-            { 
+            {
                 RoundPositionTo = style.RoundPositionTo,
                 MinLineHeight = MinLineHeight,
                 TotalMilliseconds = style.TotalMilliseconds,
                 TextureColor = style.TextureColor ?? Color.White,
-                CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight
+                CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight,
+                JumpOffset = GetJumpOffset(),
+                VerticalAlignInLine = Anchor.Y,
             };
+        }
+
+        private Vector2 GetJumpOffset()
+        {
+            return (AbsoluteRect?.Pos ?? Vector2.Zero) + new Vector2(Padding?.Left ?? 0f, Padding?.Top ?? 0f);
         }
 
         protected override void DisposeSelf()
@@ -89,12 +122,67 @@ namespace BytingLib.UI
             markup = null;
         }
 
+        protected override Label SetSizeToText(StyleRoot style)
+        {
+            if (textFill == null)
+            {
+                return base.SetSizeToText(style);
+            }
+            else
+            {
+                if (setSizeToText)
+                {
+                    textFill?.UpdatePolygons(new Rect(0, 0, initialWidth, 0f /* TODO: really 0?? or Height? or initialHeight? */));
+                    UpdateMarkupWrapped(style);
+                }
+            }
+
+            return this;
+        }
+
         protected override void UpdateTreeBeginSelf(StyleRoot style)
         {
+            textFill?.SetDirty(Text, Anchor); // trigger reloading
+
             base.UpdateTreeBeginSelf(style);
 
+            if (TextFill == null)
+            {
+                UpdateMarkup();
+            }
+        }
+
+        private void UpdateMarkupWrapped(StyleRoot style)
+        {
+            MarkupRoot? newMarkup = textFill?.GetMarkupIfUpdated(style.Font, creator);
+            if (newMarkup != null)
+            {
+                markup?.Dispose();
+                markup = newMarkup;
+
+                if (setSizeToText)
+                {
+                    Vector2 size = newMarkup.GetSizeSubstring(GetDefaultSetting(null, style), new(newMarkup.Root)); //settings
+                    Width = size.X;
+                    Height = size.Y;
+                }
+            }
+        }
+
+        protected override void UpdateTreeInner(Rect rect)
+        {
+            base.UpdateTreeInner(rect);
+
+            if (!setSizeToText)
+            {
+                textFill?.UpdatePolygons(rect);
+            }
+        }
+
+        private void UpdateMarkup()
+        {
             markup?.Dispose();
-            markup = new MarkupRoot(creator, TextToDraw);
+            markup = new MarkupRoot(creator, TextToDraw); // TODO
         }
 
         public Vector2 MeasureSize(StyleRoot style)
@@ -104,6 +192,13 @@ namespace BytingLib.UI
                 return style.FontBold.Value.MeasureString(Text) * style.FontScale;
             }
             return style.Font.Value.MeasureString(Text) * style.FontScale;
+        }
+
+        public override void SetDirty()
+        {
+            textFill?.SetDirty(Text, Anchor); // trigger reloading
+
+            base.SetDirty();
         }
     }
 }

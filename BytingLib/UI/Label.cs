@@ -16,8 +16,9 @@
             }
         }
         protected bool setSizeToText;
-        private string? textToDraw;
+        protected string? textToDraw;
         protected string TextToDraw => textToDraw ?? Text;
+        protected float initialWidth;
 
         /// <summary>Does not affect positioning. Only affects visual rotation</summary>
         public float Tilt { get; set; } = 0f;
@@ -25,7 +26,7 @@
         public Label(string text, float width = 0, float height = 0, bool setSizeToText = true)
         {
             _text = text;
-            Width = width;
+            Width = initialWidth = width;
             Height = height;
             this.setSizeToText = setSizeToText;
         }
@@ -49,9 +50,11 @@
                 {
                     throw new NotImplementedException("this is not implemented yet. It is not trivial, there must be a more complex dependency system in place. Maybe with Funcs that get the width and height values");
                 }
-
-                textToDraw ??= CreateTextToDraw(style);
-                Height = MeasureString(style, textToDraw).Y * style.FontScale.Y;
+                else
+                {
+                    textToDraw ??= CreateTextToDraw(style);
+                    Height = MeasureString(style, textToDraw).Y * style.FontScale.Y;
+                }
             }
             return this;
         }
@@ -60,7 +63,11 @@
         {
             if (setSizeToText)
             {
-                Width = 0f; // trigger setting size to text
+                Width = initialWidth;
+                if (Width < 0f)
+                {
+                    Width = 0f;
+                }
             }
 
             textToDraw = CreateTextToDraw(style);

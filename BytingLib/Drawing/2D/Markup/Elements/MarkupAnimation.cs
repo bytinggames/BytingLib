@@ -29,7 +29,7 @@ namespace BytingLib.Markup
             Texture = animation.Value.TextureRef;
         }
 
-        protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings)
+        protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings, int start, int end)
         {
             return animation.Value.Data.GetSourceRectangle(settings.TotalMilliseconds, frameTag).Size.ToVector2();
         }

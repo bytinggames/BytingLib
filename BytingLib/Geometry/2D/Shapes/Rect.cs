@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using BytingLib.UI;
+
+namespace BytingLib
 {
     public class Rect : IShape
     {
@@ -322,6 +324,19 @@
 
         public Rect ApplyPadding(float left, float right, float top, float bottom)
         {
+            Size.X -= left + right;
+            Size.Y -= top + bottom;
+            X += left;
+            Y += top;
+            return this;
+        }
+        public Rect ApplyPadding(Padding padding) => ApplyPadding(padding.Left, padding.Right, padding.Top, padding.Bottom);
+        public Rect ApplyNormalizedPadding(Padding paddingNormalized)
+        {
+            float left = paddingNormalized.Left * Width;
+            float right = paddingNormalized.Right * Width;
+            float top = paddingNormalized.Top * Height;
+            float bottom = paddingNormalized.Bottom * Height;
             Size.X -= left + right;
             Size.Y -= top + bottom;
             X += left;

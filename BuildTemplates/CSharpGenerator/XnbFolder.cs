@@ -67,66 +67,43 @@
                 contentDirectory += "/";
             }
 
+            string contentLoaderClass = "";
             string folderProperties = "";
-            string folderConstruct = "";
             string assets = "";
+            string assets2 = "";
             string classes = "";
-            string fieldInitialize = "";
+            string path = endl + tab + $"public const string Path = \"{contentDirectory}\";";
 
+            if (className == "ContentLoader")
+            {
+                contentLoaderClass = $@"
+{tab}private readonly RefLoaderDependencies d = d;
+{tab}public Ref<T> Use<T>(string assetPath)
+{tab}{{
+{tab}{tab}return d.Use<T>(assetPath);
+{tab}}}
+{tab}public void Override<T>(string assetPath, Ref<T> assetRef)
+{tab}{{
+{tab}{tab}d.Override<T>(assetPath, assetRef);
+{tab}}}";
+            }
 
             foreach (var folder in folders)
             {
-                folderProperties += endl + tab + $"public _{folder.name} {folder.name} {{ get; }}";
-                folderConstruct += endl + tab + tab + $"{folder.name} = new _{folder.name}(collector, disposables);";
+                folderProperties += endl + tab + $"public _{folder.name} {folder.name} {{ get; }} = new _{folder.name}(d);";
                 classes += endl + tab + folder.Print(contentDirectory + folder.name, tabs, loadOnStartup);
             }
 
             foreach (var file in files)
             {
-                string? print = file.PrintDeclare(loadOnStartup);
-                if (print == null)
-                {
-                    continue;
-                }
+                string? print = file.Print(loadOnStartup, tab);
                 assets += endl + tab + print;
-
-                print = file.PrintInit(loadOnStartup);
-                if (!string.IsNullOrEmpty(print))
-                {
-                    fieldInitialize += endl + tab + tab + print;
-                }
+                print = file.PrintRefLoader(loadOnStartup, tab);
+                assets2 += endl + tab + print;
             }
 
-            string overrideMethod;
-            // only in base class
-            if (className == "ContentLoader")
-            {
-                overrideMethod = $@"
-{tab}public void Override<T>(string assetPath, Ref<T> assetRef)
-{tab}{{
-{tab}{tab}collector.Override<T>(basePath + assetPath, assetRef);
-{tab}}}";
-            }
-            else
-            {
-                overrideMethod = "";
-            }
-
-            string output = $@"public class {className}
-{{{folderProperties}
-{tab}protected readonly IContentCollector collector;
-{tab}protected readonly DisposableContainer disposables;
-{tab}protected readonly string basePath;
-{tab}public {className}(IContentCollector collector, DisposableContainer disposables)
-{tab}{{
-{tab}{tab}this.collector = collector;
-{tab}{tab}this.disposables = disposables;
-{tab}{tab}this.basePath = ""{contentDirectory}"";{fieldInitialize}{folderConstruct}
-{tab}}}
-{tab}public Ref<T> Use<T>(string assetNameWithoutDirectory)
-{tab}{{
-{tab}{tab}return disposables.Use(collector.Use<T>(basePath + assetNameWithoutDirectory));
-{tab}}}{overrideMethod}{assets}{classes}
+            string output = $@"public class {className}(RefLoaderDependencies d)
+{{{contentLoaderClass}{path}{assets}{assets2}{folderProperties}{classes}
 }}";
             return output.Replace("\r\n", "\n") // make consistent among OSs
                 .Replace("\n", "\n" + tabs); // indent

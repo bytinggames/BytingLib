@@ -506,5 +506,10 @@
             center = (min + max) / 2f;
             shift = MathF.Sin(angle);
         }
+
+        public IEnumerable<Vector2> GetGlobalVertices()
+        {
+            return Vertices.Select(f => f + Pos);
+        }
     }
 }

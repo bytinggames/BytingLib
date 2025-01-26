@@ -2,7 +2,7 @@
 {
     public class MarkupText : MarkupBlock
     {
-        public string Text { get; }
+        public string Text { get; set; }
         public override bool ConfinesToLineSpacing => true;
 
         public MarkupText(ScriptReaderLiteral reader)
@@ -15,9 +15,14 @@
             }
         }
 
-        protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings)
+        public MarkupText(string text)
         {
-            Vector2 size = settings.Font.Value.MeasureString(Text).GetCeil();
+            Text = text;
+        }
+
+        protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings, int start, int end)
+        {
+            Vector2 size = settings.Font.Value.MeasureString(end == -1 ? Text.Substring(start) : Text.Substring(start, end - start)).GetCeil();
             if (settings.TextOutline != null
                 && settings.TextOutline.SizeUnion)
             {

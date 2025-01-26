@@ -28,9 +28,9 @@
         {
         }
 
-        protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings)
+        protected override Vector2 GetSizeChildUnscaled(MarkupSettings settings, int start, int end)
         {
-            return base.GetSizeChildUnscaled(settings) * scale;
+            return base.GetSizeChildUnscaled(settings, start, end) * scale;
         }
 
         protected override void DrawChild(MarkupSettings settings)
