@@ -35,30 +35,40 @@ namespace BytingLib.Markup
             Vector2 topLeftOfLine = topLeft;
             topLeftOfLine.Y += marginTop;
             MarkupSettings settings = _settings.CloneMarkupSettings(); // clone to modify the anchor
+            settings.Anchor.OX = 0f;
+            settings.Anchor.OY = settings.VerticalAlignInLine;
 
             int lineIndex = 0;
+
+            bool anyJumped = false; // quick fix for having introduced line splitting by MarkupJump in GetLinesOfLeaves()
 
             foreach (var line in GetLinesOfLeaves(settings))
             {
                 Vector2 lineSize = lineSizes[lineIndex];
-
-                if (settings.VerticalSpaceBetweenLines != 0 && lineIndex > 0 /* first line doesn't have that top space */)
+                if (!anyJumped)
                 {
-                    lineSize.Y -= settings.VerticalSpaceBetweenLines;
-                    topLeftOfLine.Y += settings.VerticalSpaceBetweenLines;
-                }
+                    if (settings.VerticalSpaceBetweenLines != 0 && lineIndex > 0 /* first line doesn't have that top space */)
+                    {
+                        lineSize.Y -= settings.VerticalSpaceBetweenLines;
+                        topLeftOfLine.Y += settings.VerticalSpaceBetweenLines;
+                    }
 
-                float emptyHorizontalSpace = totalSize.X - lineSize.X;
-                Rect lineBounds = new Rect(topLeftOfLine.X + settings.HorizontalAlignInLine * emptyHorizontalSpace, topLeftOfLine.Y, lineSize.X, lineSize.Y);
-                settings.Anchor = new Anchor(lineBounds.X, lineBounds.Y + settings.VerticalAlignInLine * lineSize.Y, 0f, settings.VerticalAlignInLine);
+                    float emptyHorizontalSpace = totalSize.X - lineSize.X;
+                    Rect lineBounds = new Rect(topLeftOfLine.X + settings.HorizontalAlignInLine * emptyHorizontalSpace, topLeftOfLine.Y, lineSize.X, lineSize.Y);
+                    settings.Anchor.Pos = new Vector2(lineBounds.X, lineBounds.Y + settings.VerticalAlignInLine * lineSize.Y);
+                }
                 foreach (var element in line)
                 {
                     element.Draw(settings);
                     settings.Anchor.X += element.GetSize(settings).X;
+
+                    if (element is MarkupJump)
+                    {
+                        anyJumped = true;
+                    }
                 }
                 topLeftOfLine.X = topLeft.X;
                 topLeftOfLine.Y += lineSize.Y;
-
                 lineIndex++;
             }
         }
@@ -119,6 +129,13 @@ namespace BytingLib.Markup
 
             foreach (var line in GetLinesOfLeaves(settings))
             {
+                if (line.FirstOrDefault() is MarkupJump)
+                {
+                    sizes.Add(Vector2.Zero);
+                    lineIndex++;
+                    continue;
+                }
+
                 bool lastLine = lineIndex == lineCount - 1;
 
                 sizes.Add(GetLineSize(settings, firstLine, line, out float? cropped));
@@ -143,17 +160,7 @@ namespace BytingLib.Markup
 
         public Vector2 GetSizeSubstring(MarkupSettings settings, MarkupIndex start, MarkupIndex? end = null)
         {
-            return GetSizeSubstring(settings, start, end, out _, out _);
-        }
-
-        public Vector2 GetSizeSubstring(MarkupSettings settings, MarkupIndex start, MarkupIndex? end, out float marginTop, out float marginBottom)
-        {
-            marginTop = marginBottom = 0;
-
             bool firstLine = true;
-
-            int lineCount = GetLineCount();
-            int lineIndex = 0;
 
             Vector2 totalSize = Vector2.Zero;
 
@@ -161,25 +168,14 @@ namespace BytingLib.Markup
 
             foreach (var line in GetLinesOfLeaves(settings))
             {
-                bool lastLine = lineIndex == lineCount - 1;
+                //if (line.FirstOrDefault() is MarkupJump)
+                //{
+                //    continue;
+                //}
 
                 Vector2? size = GetLineSize(settings, firstLine, line, out float? cropped, start, end, ref startOrEndFound);
                 if (size != null)
                 {
-                    if (cropped != null)
-                    {
-                        if (firstLine)
-                        {
-                            marginTop = cropped.Value * settings.VerticalAlignInLine;
-                        }
-                        if (lastLine)
-                        {
-                            marginBottom = cropped.Value * (1f - settings.VerticalAlignInLine);
-                        }
-                    }
-                    firstLine = false;
-                    lineIndex++;
-
                     totalSize.X = MathF.Max(size.Value.X, totalSize.X);
                     totalSize.Y += size.Value.Y;
                 }
@@ -324,19 +320,19 @@ namespace BytingLib.Markup
         {
             do
             {
-                if (enumerator.Current is MarkupNewLine)
+                yield return enumerator.Current;
+                if (enumerator.Current is MarkupNewLine
+                    || enumerator.Current is MarkupJump)
                 {
-                    yield return enumerator.Current;
                     yield break;
                 }
-                yield return enumerator.Current;
             }
             while (enumerator.MoveNext());
         }
 
         public int GetLineCount()
         {
-            int newLineCount = Root.AllChildren().OfType<MarkupNewLine>().Count();
+            int newLineCount = Root.AllChildren().Count(f => f is MarkupNewLine || f is MarkupJump);
             return newLineCount + 1;
         }
 

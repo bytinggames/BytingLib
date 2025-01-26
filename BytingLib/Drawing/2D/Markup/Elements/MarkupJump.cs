@@ -17,8 +17,8 @@
         public void Draw(MarkupSettings settings)
         {
             //settings.Anchor = intoRectangle.GetAnchor(settings.Anchor.OX, settings.Anchor.OY);
-            settings.Anchor.X = X;
-            settings.Anchor.Y = Y;
+            settings.Anchor.X = X + settings.JumpOffset.X;
+            settings.Anchor.Y = Y + settings.JumpOffset.Y;
         }
 
         public Vector2 GetSize(MarkupSettings settings, int start, int end)

@@ -107,7 +107,7 @@ namespace BytingLib
                 {
                     if (polygonsTransformed != null && AbsoluteRect != null)
                     {
-                        UpdateText(style.Font, null, polygonsTransformed, AbsoluteRect);
+                        UpdateTextFill(style.Font, null, polygonsTransformed, AbsoluteRect);
                     }
                 }
 
@@ -115,9 +115,13 @@ namespace BytingLib
             }
         }
 
-        [MemberNotNull(nameof(TextFill))]
-        private void UpdateText(Ref<SpriteFont> font, Creator? creator, List<List<Vector2>> polygonsTransformed, Rect rect)
+        private void UpdateTextFill(Ref<SpriteFont> font, Creator? creator, List<List<Vector2>> polygonsTransformed, Rect rect)
         {
+            if (string.IsNullOrWhiteSpace(Text))
+            {
+                return;
+            }
+
             ApplyPaddingToClone(ref rect);
 
             TextFill = new TextFill(Text, font, rect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, borderLeft, borderRight, creator);
@@ -145,7 +149,6 @@ namespace BytingLib
             return null;
         }
 
-        [MemberNotNull(nameof(TextFill))]
         public MarkupRoot? GetMarkup(Ref<SpriteFont> font, Creator? creator, Rect rect)
         {
             if (TextFill == null)
@@ -155,9 +158,9 @@ namespace BytingLib
                     UpdatePolygons(rect);
                 }
 
-                UpdateText(font, creator, polygonsTransformed, rect);
+                UpdateTextFill(font, creator, polygonsTransformed, rect);
             }
-            return TextFill.SegmentedMarkup;
+            return TextFill?.SegmentedMarkup;
         }
 
         public void SetDirty(string text, Vector2 anchor)

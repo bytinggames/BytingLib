@@ -25,19 +25,15 @@ namespace BytingLib.UI
             }
         }
 
-        public LabelMarkup(string text, Creator creator) : base(text)
-        {
-            this.creator = creator;
-        }
-        public LabelMarkup(string text, Creator creator, float width = -1f, float height = -1f)
-            : base(text, width, height)
-        {
-            this.creator = creator;
-        }
-        public LabelMarkup(string text, Creator creator, float width = -1f, float height = -1f, bool setSizeToText = true)
+        public LabelMarkup(string text, Creator creator, float width = 0f, float height = 0f, bool setSizeToText = true)
             : base(text, width, height, setSizeToText)
         {
             this.creator = creator;
+
+            if (width > 0f)
+            {
+                textFill = new TextFillObject(text, new(), TextFillObject.PolyType.Normalized01, PolygonTextSplit.AllowMidWordIfSpaceNotPossible);
+            }
         }
 
         protected override Vector2 MeasureString(StyleRoot style, string text)
@@ -56,17 +52,14 @@ namespace BytingLib.UI
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
-            if (TextFill != null)
+            if (textFill != null)
             {
-                TextFill.DrawPolygon(spriteBatch);
-                TextFill.TextFill?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
+                //textFill.DrawPolygon(spriteBatch);
+                //textFill.TextFill?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
 
-                MarkupRoot? newMarkup = TextFill.GetMarkupIfUpdated(style.Font, creator);
-                if (newMarkup != null)
+                if (!setSizeToText)
                 {
-                    markup?.Dispose();
-                    markup = newMarkup;
-
+                    UpdateMarkupWrapped(style);
                 }
             }
 
@@ -81,7 +74,8 @@ namespace BytingLib.UI
                         TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset,
                         ForceTextColor = true,
                         TextureColor = style.TextureColor ?? Color.White, // not sure if this should be the default for textures drawn with a bold font
-                        CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight
+                        CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight,
+                        JumpOffset = GetJumpOffset()
                     });
                 }
 
@@ -99,20 +93,26 @@ namespace BytingLib.UI
 
         private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style)
         {
-            return new MarkupSettings(spriteBatch, 
+            return new MarkupSettings(spriteBatch,
                 style.Font,
-                AbsoluteRect == null ? new Anchor() : AbsoluteRect.GetAnchor(Anchor), 
-                style.FontColor, 
+                AbsoluteRect == null ? new Anchor() : AbsoluteRect.GetAnchor(Anchor),
+                style.FontColor,
                 Anchor.X,
                 GetFontScale(style),
                 Tilt)
-            { 
+            {
                 RoundPositionTo = style.RoundPositionTo,
                 MinLineHeight = MinLineHeight,
                 TotalMilliseconds = style.TotalMilliseconds,
                 TextureColor = style.TextureColor ?? Color.White,
-                CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight
+                CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight,
+                JumpOffset = GetJumpOffset()
             };
+        }
+
+        private Vector2 GetJumpOffset()
+        {
+            return (AbsoluteRect?.Pos ?? Vector2.Zero) + new Vector2(Padding?.Left ?? 0f, Padding?.Top ?? 0f);
         }
 
         protected override void DisposeSelf()
@@ -121,12 +121,27 @@ namespace BytingLib.UI
             markup = null;
         }
 
+        protected override Label SetSizeToText(StyleRoot style)
+        {
+            if (textFill == null)
+            {
+                return base.SetSizeToText(style);
+            }
+            else
+            {
+                if (setSizeToText)
+                {
+                    textFill?.UpdatePolygons(new Rect(0, 0, initialWidth, 0f /* TODO: really 0?? or Height? or initialHeight? */));
+                    UpdateMarkupWrapped(style);
+                }
+            }
+
+            return this;
+        }
+
         protected override void UpdateTreeBeginSelf(StyleRoot style)
         {
-            if (textFill != null)
-            {
-                return; // fillPolygon updates in UpdateTreeInner()
-            }
+            textFill?.SetDirty(Text, Anchor); // trigger reloading
 
             base.UpdateTreeBeginSelf(style);
 
@@ -136,12 +151,31 @@ namespace BytingLib.UI
             }
         }
 
+        private void UpdateMarkupWrapped(StyleRoot style)
+        {
+            MarkupRoot? newMarkup = textFill?.GetMarkupIfUpdated(style.Font, creator);
+            if (newMarkup != null)
+            {
+                markup?.Dispose();
+                markup = newMarkup;
+
+                if (setSizeToText)
+                {
+                    Vector2 size = newMarkup.GetSizeSubstring(GetDefaultSetting(null, style), new(newMarkup.Root)); //settings
+                    Width = size.X;
+                    Height = size.Y;
+                }
+            }
+        }
+
         protected override void UpdateTreeInner(Rect rect)
         {
             base.UpdateTreeInner(rect);
 
-            textFill?.UpdatePolygons(rect);
-            textFill?.SetDirty(Text, Anchor); // trigger reloading
+            if (!setSizeToText)
+            {
+                textFill?.UpdatePolygons(rect);
+            }
         }
 
         private void UpdateMarkup()
@@ -157,6 +191,13 @@ namespace BytingLib.UI
                 return style.FontBold.Value.MeasureString(Text) * style.FontScale;
             }
             return style.Font.Value.MeasureString(Text) * style.FontScale;
+        }
+
+        public override void SetDirty()
+        {
+            textFill?.SetDirty(Text, Anchor); // trigger reloading
+
+            base.SetDirty();
         }
     }
 }

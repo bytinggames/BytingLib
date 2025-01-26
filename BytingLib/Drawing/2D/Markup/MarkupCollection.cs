@@ -107,5 +107,20 @@
                 Children[i].Dispose();
             }
         }
+
+        public override string ToString()
+        {
+            string s = "[ ";
+            if (Children.Count > 0)
+            {
+                s += Children[0].ToString();
+                for (int i = 1; i < Children.Count; i++)
+                {
+                    s += ", " + Children[i].ToString();
+                }
+            }
+            s += " ]";
+            return s;
+        }
     }
 }

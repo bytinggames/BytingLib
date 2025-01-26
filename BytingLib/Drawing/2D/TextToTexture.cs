@@ -182,7 +182,7 @@ namespace BytingLib
 
             var drawElement = textFill.GetMarkup(font, markupCreator, rect)!;
 
-            if (drawElement == null)
+            if (drawElement == null || textFill.TextFill == null)
             {
                 return GetPixel();
             }

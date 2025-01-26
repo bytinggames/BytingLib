@@ -1,5 +1,4 @@
 ﻿using BytingLib.Markup;
-using BytingLib.UI;
 
 namespace BytingLib
 {
@@ -13,7 +12,7 @@ namespace BytingLib
         List<Rect> segments = new();
 
         public TextFill(string text, Ref<SpriteFont> font, Rect containerRect, Vector2 anchor, bool globalAnchor, List<List<Vector2>> polygons, PolygonTextSplit splitMethod,
-            bool borderLeft = true, bool borderRight = true, Creator? creator = null)
+            bool borderLeft = true, bool borderRight = true, Creator? creator = null, bool iterative = true)
         {
             this.anchor = anchor;
             this.globalAnchor = globalAnchor;
@@ -23,23 +22,47 @@ namespace BytingLib
             Vector2? minFontScale = null;
             Vector2? maxFontScale = null;
 
+            bool endlessHeight = containerRect.Height <= 0f;
+
+            if (endlessHeight && polygons.Count == 0 && splitMethod == PolygonTextSplit.OnlyOnSpace)
+            {
+                splitMethod = PolygonTextSplit.AllowMidWordIfSpaceNotPossible;
+            }
+
             // in case the polygon has floating point inaccuracies which could prevent a line at the exact top (0.000) add a slight offset
-            float startOffset = 1f;
-            containerRect.Y += startOffset;
-            containerRect.Height -= startOffset;
+            if (polygons.Count > 0)
+            {
+                float startOffset = 1f;
+                containerRect.Y += startOffset;
+                if (!endlessHeight)
+                {
+                    containerRect.Height -= startOffset;
+                }
+            }
 
             float defaultLineHeight = font.Value.LineSpacing * FontScale.Y;
             float textHeightEstimation = containerRect.Height;
 
-            const bool correctOverflow = true;
-            const int fontScaleIterations = 10;
-            const int yOffsetIterations = 5;
+            bool correctOverflow;
+            int fontScaleIterations, yOffsetIterations;
+            if (iterative)
+            {
+                correctOverflow = endlessHeight ? false : true;
+                fontScaleIterations = endlessHeight ? 0 : 10;
+                yOffsetIterations = anchor.Y == 0 ? 0 : 5;
+            }
+            else
+            {
+                correctOverflow = false;
+                fontScaleIterations = 1;
+                yOffsetIterations = 0;
+            }
             for (int iteration = 0; iteration < fontScaleIterations + yOffsetIterations; iteration++)
             {
                 Vector2 anchorPos = containerRect.GetPos(anchor);
 
                 textTop = anchorPos.Y - textHeightEstimation * anchor.Y;
-                float textBottom = textTop + textHeightEstimation;
+                float textBottom = endlessHeight ? float.PositiveInfinity : textTop + textHeightEstimation;
 
 
                 if (creator == null)
@@ -316,12 +339,21 @@ namespace BytingLib
                     {
                         if (lastPossibleBreakIndex == null)
                         {
-                            // TODO
-                            //if (breakAllowed && splitMethod == PolygonTextSplit.AllowMidWordIfSpaceNotPossible) // TODO: && segmentCharCount > 1)
-                            //{
-                            //    splitMidWord = true;
-                            //}
-                            //else
+                            if (breakAllowed && splitMethod == PolygonTextSplit.AllowMidWordIfSpaceNotPossible)
+                            {
+                                splitMidWord = true;
+
+                                if (textIndex.IsEqual(segmentStart))
+                                {
+                                    // what if nothing is selected? a big image f.ex.? if textIndex == segmentIndex? and we have endless height? 
+                                    // then simply add the image
+                                    if (bottomY == float.PositiveInfinity)
+                                    {
+                                        textIndex++;
+                                    }
+                                }
+                            }
+                            else
                             {
                                 // skip this section, as there's no space in the segment
                                 markup.InsertJump(segmentStart, GetJumpVector(segmentStart), textIndex);
