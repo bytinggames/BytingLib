@@ -33,6 +33,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>_GenerateContentFiles.tt.remove</DependentUpon>
     </None>
+    <None Update="Drawing\2D\CharacterAllowedAt.tt">
+      <LastGenOutput>CharacterAllowedAt.Generated.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="UI/Panel/PanelStack.Generated.tt">
       <LastGenOutput>PanelStack.Generated.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -52,6 +56,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Drawing\2D\CharacterAllowedAt.Generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CharacterAllowedAt.tt</DependentUpon>
+    </Compile>
     <Compile Update="UI/Panel/PanelStack.Generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

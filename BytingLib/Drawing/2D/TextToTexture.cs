@@ -60,7 +60,8 @@ namespace BytingLib
             return tex;
         }
 
-        public Promise<Ref<Texture2D>> UseTexture(string text, Vector3 right, Color backgroundColor, List<List<Vector2>> polygons, Vector2 anchor, Vector2 texSize, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null)
+        public Promise<Ref<Texture2D>> UseTexture(string text, Vector3 right, Color backgroundColor, List<List<Vector2>> polygons, Vector2 anchor, 
+            Vector2 texSize, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null, TextWrap textWrap = TextWrap.OnlyOnSpace)
         {
             Promise<Ref<Texture2D>> tex = new(() =>
             {
@@ -86,8 +87,8 @@ namespace BytingLib
                     fontArray.GetFont(fontSize), 
                     backgroundColor,
                     polygons,
-                    TextFillObject.PolyType.Normalized01, 
-                    TextWrap.OnlyOnSpace, 
+                    TextFillObject.PolyType.Normalized01,
+                    textWrap, 
                     anchor, 
                     texSize,
                     markupSettings.TextureScale,

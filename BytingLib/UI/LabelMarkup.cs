@@ -25,14 +25,14 @@ namespace BytingLib.UI
             }
         }
 
-        public LabelMarkup(string text, Creator creator, float width = 0f, float height = 0f, bool setSizeToText = true)
+        public LabelMarkup(string text, Creator creator, float width = 0f, float height = 0f, bool setSizeToText = true, TextWrap wrap = TextWrap.AllowMidWordIfSpaceNotPossible)
             : base(text, width, height, setSizeToText)
         {
             this.creator = creator;
 
             if (width > 0f)
             {
-                textFill = new TextFillObject(text, new(), TextFillObject.PolyType.Normalized01, TextWrap.AllowMidWordIfSpaceNotPossible);
+                textFill = new TextFillObject(text, new(), TextFillObject.PolyType.Normalized01, wrap);
             }
         }
 

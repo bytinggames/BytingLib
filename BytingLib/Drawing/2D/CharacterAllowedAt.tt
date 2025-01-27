@@ -1,0 +1,78 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Runtime.InteropServices" #>
+<#@ output encoding="utf-8" extension=".Generated.cs" #>
+<#
+
+// I removed the " character from the rules, as I thought this doesn't make sense... because you don't know if it starts or ends a qoute
+
+// source: https://en.wikipedia.org/wiki/Line_breaking_rules_in_East_Asian_languages
+string denyAtBeginning = ".,;!?:])}>€$!%),.:;?]}" // the ones I thought of
++ "¢°·†‡›℃∶、。〃〆〕〗〞﹚﹜！＂％＇），．：；？！］｝～"  // Characters that are not allowed at the start of a line 
++ ")]｝〕〉》」』】〙〗〟'｠»" // Closing brackets
++ "ヽヾーァィゥェォッャュョヮヵヶぁぃぅぇぉっゃゅょゎゕゖㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ々〻" // Japanese characters: chiisai kana and special marks
++ "‐゠–〜" // Hyphens
++ "？!‼⁇⁈⁉" // Delimiters
++ "・、:;," // mid sentence punctuation
++ "。." // sentence ending punctuation
+;
+
+string denyAtEnd = "([{" // the ones I thought of
++ "$(£¥·〈《「『【〔〖〝﹙﹛＄（［｛￡￥" // Characters that are not allowed at the end of a line 
++ "([｛〔〈《「『【〘〖〝'｟«" // Opening brackets
+;
+
+Transform(ref denyAtBeginning);
+Transform(ref denyAtEnd);
+
+void Transform(ref string str)
+{
+	str = str.Replace(" ", "");
+
+	var chars = str.Distinct().ToArray();
+
+	string newStr = "";
+	if (chars.Length > 0)
+	{
+		newStr = $"'{chars[0]}'";
+		for (int i = 1; i < chars.Length; i++)
+		{
+			if (chars[i] == '\'')
+			{
+				newStr += $" or '\\{chars[i]}'";
+			}
+			else
+			{
+				newStr += $" or '{chars[i]}'";
+			}
+		}
+	}
+	str = newStr;
+}
+
+#>
+namespace BytingLib
+{
+    public static class CharacterAllowedAt
+	{
+        public static bool BeginningOfLine(char c)
+        {
+            return c switch
+            {
+               <#= denyAtBeginning #> => false,
+                _ => true
+            };
+        }
+
+        public static bool EndOfLine(char c)
+        {
+            return c switch
+            {
+                <#= denyAtEnd #> => false,
+                _ => true
+            };
+        }
+	}
+}

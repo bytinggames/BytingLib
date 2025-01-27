@@ -222,6 +222,7 @@ namespace BytingLib
             Rect segment = new Rect(-float.MaxValue, topY,0,0);
             List<Rect> previousSegmentsThisLine = new();
             MarkupIndex? lastPossibleBreakIndex = null;
+            MarkupIndex? lastPossibleMidWordBreakIndex = null;
             bool isBreakChar = false;
             overflowFract = 0f;
             Vector2 previousTextSize = Vector2.Zero; // 0 0 means unset
@@ -237,19 +238,28 @@ namespace BytingLib
 
                 if (manualNewLine)
                 {
-                    lastPossibleBreakIndex = textIndex.Clone();
+                    lastPossibleMidWordBreakIndex = lastPossibleBreakIndex = textIndex.Clone();
                     isBreakChar = true;
                 }
                 else
                 {
-                    if (markup[textIndex] == ' ')
+                    char? currentChar = markup[textIndex];
+                    if (currentChar == ' ')
                     {
                         if (breakAllowed)
                         {
-                            lastPossibleBreakIndex = textIndex.Clone();
+                            lastPossibleMidWordBreakIndex = lastPossibleBreakIndex = textIndex.Clone();
                             isBreakChar = true;
                         }
                         continue;
+                    }
+                    else if (breakAllowed && currentChar != null && CharacterAllowedAt.BeginningOfLine(currentChar.Value))
+                    {
+                        char? previousChar = markup[textIndex - 1];
+                        if (previousChar != null && CharacterAllowedAt.EndOfLine(previousChar.Value))
+                        {
+                            lastPossibleMidWordBreakIndex = textIndex.Clone();
+                        }
                     }
 
                     if (breakAllowed
@@ -257,7 +267,7 @@ namespace BytingLib
                         && textIndex.CurrentNode is MarkupTexture
                         && !textIndex.IsEqual(segmentStart))
                     {
-                        lastPossibleBreakIndex = textIndex.Clone();
+                        lastPossibleMidWordBreakIndex = lastPossibleBreakIndex = textIndex.Clone();
                         isBreakChar = false;
                     }
                     textSize = markup.GetSizeSubstring(settings, segmentStart, textIndex + 1);
@@ -335,19 +345,23 @@ namespace BytingLib
                     || textSize.X > segment.Width
                     || textSize.Y > segment.Height)
                 {
-                    bool splitMidWord = breakAllowed && splitMethod == TextWrap.AlwaysMidWord;
+                    bool splitMidWord = breakAllowed 
+                        && splitMethod == TextWrap.AlwaysMidWord
+                        && lastPossibleMidWordBreakIndex != null;
                     if (!splitMidWord)
                     {
                         if (lastPossibleBreakIndex == null)
                         {
-                            if (breakAllowed && splitMethod == TextWrap.AllowMidWordIfSpaceNotPossible)
+                            if (breakAllowed
+                                && splitMethod == TextWrap.AllowMidWordIfSpaceNotPossible 
+                                && lastPossibleMidWordBreakIndex != null)
                             {
                                 splitMidWord = true;
 
                                 if (textIndex.IsEqual(segmentStart))
                                 {
                                     // what if nothing is selected? a big image f.ex.? if textIndex == segmentIndex? and we have endless height? 
-                                    // then simply add the image
+                                    // then simply add the image, even though it's overflowing (TODO: should be warned though by returning an overflow?)
                                     if (bottomY == float.PositiveInfinity)
                                     {
                                         textIndex++;
@@ -358,6 +372,7 @@ namespace BytingLib
                             {
                                 // skip this section, as there's no space in the segment
                                 markup.InsertJump(segmentStart, GetJumpVector(segmentStart), textIndex);
+                                lastPossibleMidWordBreakIndex = null;
                             }
                         }
                         else
@@ -387,6 +402,7 @@ namespace BytingLib
                             }
 
 
+                            lastPossibleMidWordBreakIndex = null;
                             markup.InsertJump(segmentStart, GetJumpVector(lastPossibleBreakIndex), lastPossibleBreakIndex, textIndex);
                             //if (isBreakChar)
                             //{
@@ -397,11 +413,12 @@ namespace BytingLib
                             lastPossibleBreakIndex = null;
                         }
                     }
-                    if (splitMidWord)
+                    if (splitMidWord && lastPossibleMidWordBreakIndex != null)
                     {
                         lastPossibleBreakIndex = null;
-                        markup.InsertJump(segmentStart, GetJumpVector(textIndex), textIndex);
-                        segmentStart = textIndex.Clone();
+                        markup.InsertJump(segmentStart, GetJumpVector(lastPossibleMidWordBreakIndex), lastPossibleMidWordBreakIndex, textIndex);
+                        segmentStart = lastPossibleMidWordBreakIndex;
+                        lastPossibleMidWordBreakIndex = null;
                     }
                     textIndex--; // because this gets incremented by this for loop, and we should still test the same index next segment
 
@@ -423,7 +440,7 @@ namespace BytingLib
             if (!endOfContainerReached)
             {
                 segments.Add(segment.CloneRect());
-
+                
                 markup.InsertJump(segmentStart, GetJumpVector(null));
             }
 
