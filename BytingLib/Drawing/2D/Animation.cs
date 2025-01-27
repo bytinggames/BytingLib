@@ -34,16 +34,16 @@ namespace BytingLib
         {
             Rectangle frameRect = Data.GetSourceRectangle(frameIndex)!.Value;
             Rectangle sourceRect;
-            Rect rect;
+            Rect rect = new();
 
             Rectangle[,] sliceRects = GetSliceRects();
-            Vector2[] worldCoords = new Vector2[4]
-            {
+            Vector2[] worldCoords =
+            [
                 absoluteRect.Pos,
                 absoluteRect.Pos + sliceRects[1,1].Location.ToVector2(),
-                absoluteRect.BottomRight - sliceRects[2,2].Location.ToVector2() + Vector2.One, // not sure why +(1,1) but fixes the issue of stretched sides at the right and bottom
+                absoluteRect.BottomRight - sliceRects[2,2].Size.ToVector2(),
                 absoluteRect.BottomRight
-            };
+            ];
 
             for (int x = 0; x < 3; x++)
             {
@@ -52,17 +52,18 @@ namespace BytingLib
                     sourceRect = sliceRects[x, y];
                     sourceRect.X += frameRect.X;
                     sourceRect.Y += frameRect.Y;
-                    rect = GetWorldRect(x, y);
+                    GetWorldRect(x, y, ref rect);
 
                     Texture.Draw(spriteBatch, rect, null, sourceRect);
                 }
             }
 
-            Rect GetWorldRect(int xPatch, int yPatch)
+            void GetWorldRect(int xPatch, int yPatch, ref Rect rect)
             {
-                float x = worldCoords[xPatch].X;
-                float y = worldCoords[yPatch].Y;
-                return new Rect(x, y, worldCoords[xPatch + 1].X - x, worldCoords[yPatch + 1].Y - y);
+                rect.X = worldCoords[xPatch].X;
+                rect.Y = worldCoords[yPatch].Y;
+                rect.Width = worldCoords[xPatch + 1].X - rect.X;
+                rect.Height = worldCoords[yPatch + 1].Y - rect.Y;
             }
         }
 
