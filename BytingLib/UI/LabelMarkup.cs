@@ -32,7 +32,7 @@ namespace BytingLib.UI
 
             if (width > 0f)
             {
-                textFill = new TextFillObject(text, new(), TextFillObject.PolyType.Normalized01, PolygonTextSplit.AllowMidWordIfSpaceNotPossible);
+                textFill = new TextFillObject(text, new(), TextFillObject.PolyType.Normalized01, TextWrap.AllowMidWordIfSpaceNotPossible);
             }
         }
 

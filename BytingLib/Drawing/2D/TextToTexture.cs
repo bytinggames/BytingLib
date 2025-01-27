@@ -87,7 +87,7 @@ namespace BytingLib
                     backgroundColor,
                     polygons,
                     TextFillObject.PolyType.Normalized01, 
-                    PolygonTextSplit.OnlyOnSpace, 
+                    TextWrap.OnlyOnSpace, 
                     anchor, 
                     texSize,
                     markupSettings.TextureScale,
@@ -174,7 +174,7 @@ namespace BytingLib
         }
 
         public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color backgroundColor, List<List<Vector2>> polygons, 
-            TextFillObject.PolyType polyType, PolygonTextSplit splitMethod, Vector2 anchor, Vector2 texSize, Vector2? textureScale = null, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null)
+            TextFillObject.PolyType polyType, TextWrap splitMethod, Vector2 anchor, Vector2 texSize, Vector2? textureScale = null, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null)
         {
             textureScale ??= Vector2.One;
             //if (textures.ContainsKey((text, font.Value, backgroundColor, textureScale)))

@@ -12,7 +12,7 @@ namespace BytingLib
         private readonly bool borderRight;
         private List<List<Vector2>>? polygonsTransformed;
         public TextFill? TextFill { get; private set; }
-        private PolygonTextSplit splitMethod;
+        private TextWrap splitMethod;
         private Rect? AbsoluteRect;
 
         public bool GlobalAnchor { get; set; } = true;
@@ -22,7 +22,7 @@ namespace BytingLib
         public Padding? PaddingNormalized { get; set; }
         public bool IterativeFitting { get; set; }
 
-        public TextFillObject(string text, List<List<Vector2>> polygons, PolyType polyType, PolygonTextSplit splitMethod, bool borderLeft = true, bool borderRight = true)
+        public TextFillObject(string text, List<List<Vector2>> polygons, PolyType polyType, TextWrap splitMethod, bool borderLeft = true, bool borderRight = true)
         {
             this.Text = text;
             this.polygons = polygons;

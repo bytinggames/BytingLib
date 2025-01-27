@@ -11,7 +11,7 @@ namespace BytingLib
         private readonly bool globalAnchor;
         List<Rect> segments = new();
 
-        public TextFill(string text, Ref<SpriteFont> font, Rect containerRect, Vector2 anchor, bool globalAnchor, List<List<Vector2>> polygons, PolygonTextSplit splitMethod,
+        public TextFill(string text, Ref<SpriteFont> font, Rect containerRect, Vector2 anchor, bool globalAnchor, List<List<Vector2>> polygons, TextWrap splitMethod,
             bool borderLeft = true, bool borderRight = true, Creator? creator = null, bool iterative = true)
         {
             this.anchor = anchor;
@@ -24,9 +24,9 @@ namespace BytingLib
 
             bool endlessHeight = containerRect.Height <= 0f;
 
-            if (endlessHeight && polygons.Count == 0 && splitMethod == PolygonTextSplit.OnlyOnSpace)
+            if (endlessHeight && polygons.Count == 0 && splitMethod == TextWrap.OnlyOnSpace)
             {
-                splitMethod = PolygonTextSplit.AllowMidWordIfSpaceNotPossible;
+                splitMethod = TextWrap.AllowMidWordIfSpaceNotPossible;
             }
 
             // in case the polygon has floating point inaccuracies which could prevent a line at the exact top (0.000) add a slight offset
@@ -213,7 +213,7 @@ namespace BytingLib
             //}
         }
 
-        private List<Rect> SplitMarkupBySegments(MarkupRoot markup, MarkupSettings settings, PolygonTextSplit splitMethod, float defaultLineHeight, 
+        private List<Rect> SplitMarkupBySegments(MarkupRoot markup, MarkupSettings settings, TextWrap splitMethod, float defaultLineHeight, 
             float topY, float bottomY, List<List<Vector2>> polygons, out float overflowFract, float? minX, float? maxX, bool allowBreakBetweenTextAndTexture = true)
         {
             List<Rect> segments = new List<Rect>();
@@ -335,12 +335,12 @@ namespace BytingLib
                     || textSize.X > segment.Width
                     || textSize.Y > segment.Height)
                 {
-                    bool splitMidWord = breakAllowed && splitMethod == PolygonTextSplit.AlwaysMidWord;
+                    bool splitMidWord = breakAllowed && splitMethod == TextWrap.AlwaysMidWord;
                     if (!splitMidWord)
                     {
                         if (lastPossibleBreakIndex == null)
                         {
-                            if (breakAllowed && splitMethod == PolygonTextSplit.AllowMidWordIfSpaceNotPossible)
+                            if (breakAllowed && splitMethod == TextWrap.AllowMidWordIfSpaceNotPossible)
                             {
                                 splitMidWord = true;
 
@@ -747,7 +747,7 @@ namespace BytingLib
         }
     }
 
-    public enum PolygonTextSplit
+    public enum TextWrap
     {
         OnlyOnSpace,
         AllowMidWordIfSpaceNotPossible,
