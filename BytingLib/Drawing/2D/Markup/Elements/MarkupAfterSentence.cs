@@ -12,7 +12,7 @@ namespace BytingLib.Markup
 
         static string AppendAfterSentence(string text, string append)
         {
-            return Regex.Replace(text, "[;.!?！。]", f => f + append);
+            return Regex.Replace(text, "[;.!?！。．？‼⁇⁈⁉]", f => f + append);
         }
     }
 }
