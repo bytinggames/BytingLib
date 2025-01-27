@@ -8,7 +8,7 @@
 
         public Vector2 GetSize(MarkupSettings settings, int start, int end)
         {
-            return new Vector2(0, settings.Font.Value.LineSpacing * settings.Scale.Y);
+            return new Vector2(0, settings.LineSpacing);
         }
 
         public override string ToString()

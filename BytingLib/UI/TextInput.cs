@@ -314,7 +314,7 @@
             else
             {
                 Vector2 stringSize = MeasureString(style, drawnText);
-                stringSize.Y = MathF.Max(stringSize.Y, style.Font.Value.LineSpacing);
+                stringSize.Y = MathF.Max(stringSize.Y, style.LineSpacing);
                 relativePos += AbsoluteRect.GetAnchor(Anchor).Rectangle(stringSize).Pos;
             }
 

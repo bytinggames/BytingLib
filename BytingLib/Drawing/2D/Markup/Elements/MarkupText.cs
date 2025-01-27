@@ -57,5 +57,17 @@
         {
             return Text;
         }
+
+        public MarkupText CloneMarkupText(bool removeSubContainer)
+        {
+            MarkupText clone = (MarkupText)this.MemberwiseClone();
+
+            if (removeSubContainer)
+            {
+                clone.subContainer = null;
+            }
+
+            return clone;
+        }
     }
 }

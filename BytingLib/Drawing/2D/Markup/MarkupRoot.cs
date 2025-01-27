@@ -212,13 +212,14 @@ namespace BytingLib.Markup
             // crop to line spacing, when:
             if (allElementsConfineToLineSpacing) // all elements in the line support LineSpacing
             {
-                if (lineSize.Y > settings.Font.Value.LineSpacing)
+                float lineSpacing = settings.LineSpacing;
+                if (lineSize.Y > lineSpacing)
                 {
                     if (!settings.CropSuperfluousHeightThatIsLargerThanLineHeight)
                     {
-                        croppedBecauseOfLineHeight = lineSize.Y - settings.Font.Value.LineSpacing;
+                        croppedBecauseOfLineHeight = lineSize.Y - lineSpacing;
                     }
-                    lineSize.Y = settings.Font.Value.LineSpacing;
+                    lineSize.Y = lineSpacing;
                 }
             }
 
@@ -288,13 +289,14 @@ namespace BytingLib.Markup
             // crop to line spacing, when:
             if (allElementsConfineToLineSpacing) // all elements in the line support LineSpacing
             {
-                if (lineSize.Y > settings.Font.Value.LineSpacing)
+                float lineSpacing = settings.LineSpacing;
+                if (lineSize.Y > lineSpacing)
                 {
                     if (!settings.CropSuperfluousHeightThatIsLargerThanLineHeight)
                     {
-                        croppedBecauseOfLineHeight = lineSize.Y - settings.Font.Value.LineSpacing;
+                        croppedBecauseOfLineHeight = lineSize.Y - lineSpacing;
                     }
-                    lineSize.Y = settings.Font.Value.LineSpacing;
+                    lineSize.Y = lineSpacing;
                 }
             }
 
@@ -413,7 +415,8 @@ namespace BytingLib.Markup
 
                 int childIndex = parent.Children.IndexOf(text);
 
-                MarkupText newText = new MarkupText(text.Text.Substring(index.indexInString));
+                MarkupText newText = text.CloneMarkupText(true);
+                newText.Text = text.Text.Substring(index.indexInString);
                 parent.Children.Insert(childIndex + 1, new MarkupJump(jump));
                 parent.Children.Insert(childIndex + 2, newText);
 

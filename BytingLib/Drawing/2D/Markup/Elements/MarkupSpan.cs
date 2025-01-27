@@ -23,6 +23,8 @@
             set => scale.Y = value;
         }
 
+        public override bool ConfinesToLineSpacing => scale == Vector2.One ? base.ConfinesToLineSpacing : false;
+
         public MarkupSpan(string str)
             : base(new ScriptReaderLiteral(str))
         {

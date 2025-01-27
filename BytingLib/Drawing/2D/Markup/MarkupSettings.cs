@@ -30,6 +30,7 @@
         /// to crop images as well, you have to use MarkupTexture.AsTextHeight()
         /// </summary>
         public bool CropSuperfluousHeightThatIsLargerThanLineHeight { get; set; } = false;
+        public float LineSpacing => Font.Value.LineSpacing * Scale.Y;
 
         public class Line : ICloneable
         {

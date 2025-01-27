@@ -17,7 +17,7 @@
         /// <summary>No PaddingBottom support for SubSizeUnion yet.</summary>
         public float PaddingBottom { get; set; }
 
-        private MarkupRoot? subContainer;
+        protected MarkupRoot? subContainer;
 
         public bool SubSizeUnion { get; set; } = false;
 
