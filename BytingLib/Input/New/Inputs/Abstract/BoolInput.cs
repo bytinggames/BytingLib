@@ -1,0 +1,38 @@
+﻿namespace BytingLib
+{
+    public abstract class BoolInput : InputUpdate, IBoolDelta
+    {
+        protected long stamp;
+
+        public bool Down => stamp <= 0 ? false : (updater.CurrentStamp - stamp) >= 0;
+        public bool Pressed => stamp <= 0 ? false : updater.CurrentStamp == stamp;
+        public int DownTime => stamp <= 0 ? 0 : (int)(updater.CurrentStamp - stamp + 1);
+        public bool Released => -stamp == updater.CurrentStamp;
+        public int ReleasedTime => stamp >= 0 ? 0 : (int)(updater.CurrentStamp - -stamp + 1);
+
+        public abstract bool IsDown(FullInput input);
+
+        public override void Update(FullInput input)
+        {
+            bool isDown = IsDown(input);
+            if (stamp <= 0)
+            {
+                // currently not held
+                if (isDown)
+                {
+                    // beginning to hold
+                    stamp = updater.CurrentStamp;
+                }
+            }
+            else
+            {
+                // currently held
+                if (!isDown)
+                {
+                    // hold ending
+                    stamp = -updater.CurrentStamp;
+                }
+            }
+        }
+    }
+}
