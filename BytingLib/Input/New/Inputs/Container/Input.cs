@@ -50,9 +50,9 @@ namespace BytingLib
                 updater.RemoveOutput(outputs[i]);
             }
         }
-        protected static Creator CreateCreator(InputUpdater updater)
+        protected static Creator CreateCreator()
         {
-            return new Creator("BytingLib", null, [updater], typeof(InputShortcutAttribute))
+            return new Creator("BytingLib", null, null, typeof(InputShortcutAttribute))
             {
                 ParameterSeparator = ','
             };
@@ -62,7 +62,7 @@ namespace BytingLib
         {
             string output = "";
 
-            Creator c = CreateCreator(updater);
+            Creator c = CreateCreator();
 
             var props = GetType().GetProperties();
 
@@ -100,7 +100,7 @@ namespace BytingLib
 
         public void Override(string keymap)
         {
-            Creator c = CreateCreator(updater);
+            Creator c = CreateCreator();
             keymap = Regex.Replace(keymap, @"\s+", "");
 
             ScriptReaderLiteral reader = new(keymap);
