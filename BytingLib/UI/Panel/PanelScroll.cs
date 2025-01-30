@@ -11,9 +11,9 @@
 
         public override void Update(ElementInput input)
         {
-            if (input.Mouse.Scroll != 0)
+            if (input.Input.Scroll != 0)
             {
-                int scroll = Math.Sign(input.Mouse.Scroll);
+                int scroll = Math.Sign(input.Input.Scroll);
                 float y;
                 if (Padding == null)
                 {

@@ -1,13 +1,13 @@
 ﻿namespace BytingLib
 {
-    public class FloatMouseWheel : FloatInput
+    public class IntMouseWheel : IntInput
     {
         public override IEnumerable<InputUpdate> GetChildren()
         {
             yield break;
         }
 
-        public override float GetValue(FullInput input)
+        public override int GetValue(FullInput input)
         {
             return input.MouseState.ScrollWheelValue;
         }

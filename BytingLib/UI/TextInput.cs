@@ -58,7 +58,7 @@
                 }
             }
 
-            if (input.Mouse.Left.Pressed || doFocus)
+            if (input.Input.LeftClick.Pressed || doFocus)
             {
                 bool hover = doFocus || input.CanHover(AbsoluteRect, this);
                 doFocus = false;
@@ -82,7 +82,7 @@
                 if (hover)
                 {
                     mouseClick = true;
-                    mousePos = input.Mouse.Position;
+                    mousePos = input.Input.MousePosition;
                     catched = true;
                     input.SetUpdateCatch(this);
                 }
@@ -91,10 +91,10 @@
             {
                 mouseClick = false;
 
-                if (input.Mouse.Left.Down)
+                if (input.Input.LeftClick.Down)
                 {
                     mouseHold = true;
-                    mousePos = input.Mouse.Position;
+                    mousePos = input.Input.MousePosition;
                 }
                 else
                 {

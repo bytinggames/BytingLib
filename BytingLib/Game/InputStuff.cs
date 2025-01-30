@@ -16,7 +16,7 @@ namespace BytingLib
         public KeyInput KeysDev { get; }
         public MouseInput MouseDev { get; }
         public GamePadInput GamePadDev { get; }
-        public Random Rand { get; private set; } = new Random(); // is directly initialized with CreateInputRecorder. This random initialization is just a fallback
+        public Random Rand { get; private set; } = new Random(); // is initialized again with CreateInputRecorder. This random initialization is just a fallback
         public Int2 Resolution => inputSource.Current.WindowResolution;
         public Int2 GetResolution() => inputSource.Current.WindowResolution;
         private int randSeed;

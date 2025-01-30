@@ -5,9 +5,18 @@ namespace BytingLib
     public class Input : IDisposable
     {
         private InputUpdate[] outputs;
-        private readonly InputUpdater updater;
+        protected readonly InputUpdater updater;
 
-        public Input(InputUpdater updater)
+        public Input(InputUpdater updater, bool initializeOutputs = true)
+        {
+            this.updater = updater;
+            if (initializeOutputs)
+            {
+                InitializeOutputs();
+            }
+        }
+
+        protected void InitializeOutputs()
         {
             outputs = GetOutputs();
 
@@ -16,8 +25,6 @@ namespace BytingLib
                 updater.AddOutput(outputs[i]);
                 outputs[i].Initialize(updater);
             }
-
-            this.updater = updater;
         }
 
         private InputUpdate[] GetOutputs()

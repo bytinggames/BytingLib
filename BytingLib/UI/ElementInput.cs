@@ -5,8 +5,7 @@
     /// </summary>
     public class ElementInput
     {
-        public MouseInput Mouse { get; }
-        public KeyInput Keys { get; }
+        public IInputCanvas Input { get; }
         public Action<Element?> SetUpdateCatch { get; }
         public Element? FocusElement { get; set; }
         public Element? HoverElement { get; set; }
@@ -14,10 +13,9 @@
 
         private readonly Element hoverOutsideOfScissorRect = new Element();
 
-        public ElementInput(MouseInput mouse, KeyInput keys, Action<Element?> setUpdateCatch, GameWindow window)
+        public ElementInput(IInputCanvas input, Action<Element?> setUpdateCatch, GameWindow window)
         {
-            Mouse = mouse;
-            Keys = keys;
+            Input = input;
             SetUpdateCatch = setUpdateCatch;
             Window = window;
         }
@@ -41,7 +39,7 @@
         {
             if (HoverElement == null || element == HoverElement)
             {
-                return rect.CollidesWith(Mouse.Position);
+                return rect.CollidesWith(Input.MousePosition);
             }
             return false;
         }
