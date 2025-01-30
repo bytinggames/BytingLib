@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using Microsoft.Xna.Framework.Input;
+
+namespace BytingLib
 {
     public abstract class BoolInput : InputUpdate, IBoolDelta
     {
@@ -34,5 +36,9 @@
                 }
             }
         }
+
+        public static implicit operator BoolInput(Keys key) => new BoolKey(key);
+        public static implicit operator BoolInput(MouseButton mouseButton) => new BoolMouse(mouseButton);
+        public static implicit operator BoolInput(Buttons gamePadButton) => new BoolGamePad(gamePadButton);
     }
 }

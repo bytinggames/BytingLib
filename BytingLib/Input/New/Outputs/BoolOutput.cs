@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using Microsoft.Xna.Framework.Input;
+
+namespace BytingLib
 {
     public class BoolOutput : BoolInput, IPointerValue
     {
@@ -37,5 +39,9 @@
         {
             return "->" + Value;
         }
+
+        public static implicit operator BoolOutput(Keys key) => new BoolOutput(new BoolKey(key));
+        public static implicit operator BoolOutput(MouseButton mouseButton) => new BoolOutput(new BoolMouse(mouseButton));
+        public static implicit operator BoolOutput(Buttons gamePadButton) => new BoolOutput(new BoolGamePad(gamePadButton));
     }
 }
