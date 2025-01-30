@@ -16,7 +16,7 @@ namespace BytingLib
             this.getState = getState;
         }
 
-        public bool IsActivatedThisUpdate => currentState.IsActivatedThisUpdate;
+        public bool IsActivatedThisUpdate => currentState.IsGameActive;
 
         public void Update()
         {

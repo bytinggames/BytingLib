@@ -2,16 +2,16 @@
 {
     public struct MetaInputState
     {
-        public MetaInputState(bool isActivedThisUpdate)
+        public MetaInputState(bool isGameActive)
         {
-            IsActivatedThisUpdate = isActivedThisUpdate;
+            IsGameActive = isGameActive;
         }
 
-        public bool IsActivatedThisUpdate { get; internal set; }
+        public bool IsGameActive { get; internal set; }
 
         public static bool operator ==(MetaInputState a, MetaInputState b)
         {
-            return a.IsActivatedThisUpdate == b.IsActivatedThisUpdate;
+            return a.IsGameActive == b.IsGameActive;
         }
         
         public static bool operator !=(MetaInputState a, MetaInputState b)
@@ -22,12 +22,12 @@
         public override bool Equals(object? obj)
         {
             return obj is MetaInputState state &&
-                   IsActivatedThisUpdate == state.IsActivatedThisUpdate;
+                   IsGameActive == state.IsGameActive;
         }
 
         public override int GetHashCode()
         {
-            return IsActivatedThisUpdate ? 1 : 0;
+            return IsGameActive ? 1 : 0;
         }
     }
 }
