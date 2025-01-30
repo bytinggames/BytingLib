@@ -16,6 +16,7 @@ namespace BytingLib
 
         private readonly string defaultNamespace;
         private readonly Assembly[] assemblies;
+        private readonly Type? shortcutAttributeType;
         private readonly Dictionary<Type, Func<string, object>> converters;
 
         public Creator(string defaultNamespace, Assembly[]? assemblies = null, object[]? _autoParameters = null, Type? shortcutAttributeType = null, Dictionary<Type, Func<string, object>>? converters = null)
@@ -24,6 +25,7 @@ namespace BytingLib
 
             this.defaultNamespace = defaultNamespace;
             this.assemblies = assemblies;
+            this.shortcutAttributeType = shortcutAttributeType;
             this.converters = converters ?? new Dictionary<Type, Func<string, object>>();
 
             AutoParameters.Add(GetType(), this);
@@ -106,9 +108,20 @@ namespace BytingLib
         }
 
         /// <summary>"Type(ctorArg1)(ctorArg2)_Prop(val)_Method(arg1)(arg2)"</summary>
-        private object CreateObject(ScriptReaderLiteral reader, Type objectBaseType)
+        public object CreateObject(ScriptReaderLiteral reader, Type objectBaseType)
         {
-            string typeStr = reader.ReadToChar(Open);
+            string typeStr = reader.ReadToCharOrEnd(out char? foundChar, Open);
+
+            if (foundChar == null)
+            {
+                if (objectBaseType == typeof(object))
+                {
+                    throw new Exception("braces () missing or provide a objectBaseType");
+                }
+                // no ()
+                // try to convert directly to objectBaseType
+                return Convert.ChangeType(typeStr, objectBaseType);
+            }
 
             Type? type = null;
             if (shortcuts.ContainsKey(typeStr))
@@ -136,7 +149,7 @@ namespace BytingLib
 
             if (!objectBaseType.IsAssignableFrom(type))
             {
-                throw new Exception("type " + nameof(type)  + " is not assignable to " + objectBaseType);
+                throw new Exception("type " + type  + " is not assignable to " + objectBaseType);
             }
 
             object obj = CreateObject(type, reader);
@@ -151,14 +164,14 @@ namespace BytingLib
             var prop = type.GetProperty(setterName);
             if (prop != null)
             {
-                prop.SetValue(obj, GetParameters(reader.ReadToCharOrEndConsiderOpenCloseBraces(Close, Open, Close), prop.PropertyType));
+                prop.SetValue(obj, GetParameter(reader.ReadToCharOrEndConsiderOpenCloseBraces(Close, Open, Close), prop.PropertyType));
             }
             else
             {
                 var method = type.GetMethod(setterName);
                 if (method != null)
                 {
-                    object[] args = GetParameters(GetParameterStrings(reader), method.GetParameters().Select(f => f.ParameterType).ToArray());
+                    object[] args = GetParameters(GetParameterStrings(reader), method.GetParameters().Select(f => f.ParameterType).ToArray(), false /* no params support for methods for now */);
                     method.Invoke(obj, args);
                 }
                 else
@@ -167,7 +180,7 @@ namespace BytingLib
 
                     if (field != null)
                     {
-                        field.SetValue(obj, GetParameters(reader.ReadToCharOrEndConsiderOpenCloseBraces(Close, Open, Close), field.FieldType));
+                        field.SetValue(obj, GetParameter(reader.ReadToCharOrEndConsiderOpenCloseBraces(Close, Open, Close), field.FieldType));
                     }
                     else
                     {
@@ -181,7 +194,6 @@ namespace BytingLib
         private object CreateObject(Type type, ScriptReaderLiteral reader)
         {
             object[] args = GetParametersForConstructor(reader, type);
-
             return Activator.CreateInstance(type, args)!;
         }
 
@@ -191,8 +203,7 @@ namespace BytingLib
             var ctors = constructorType.GetConstructors();
 
             string[] split = GetParameterStrings(reader);
-
-            ConstructorInfo? ctorInfo = GetMatchingConstructor(ctors, split);
+            ConstructorInfo? ctorInfo = GetMatchingConstructor(ctors, split, out bool lastParameterIsParamsAttribute);
             if (ctorInfo == null)
             {
                 throw new Exception("no matching constructor found for type " + constructorType.Name);
@@ -200,29 +211,41 @@ namespace BytingLib
 
             var parameterInfos = ctorInfo.GetParameters().ToArray();
 
-            return GetParameters(split, parameterInfos.Select(f => f.ParameterType).ToArray());
+            return GetParameters(split, parameterInfos.Select(f => f.ParameterType).ToArray(), lastParameterIsParamsAttribute);
         }
 
-        private ConstructorInfo? GetMatchingConstructor(ConstructorInfo[] ctors, string[] split)
+        private ConstructorInfo? GetMatchingConstructor(ConstructorInfo[] ctors, string[] split, out bool lastParameterIsParamsAttribute)
         {
             foreach (var ctor in ctors)
             {
                 var parameters = ctor.GetParameters();
                 int parametersForSplitArray = 0;
+                lastParameterIsParamsAttribute = false;
                 for (int i = 0; i < parameters.Length; i++)
                 {
                     if (!TryGetAutoParameter(parameters[i].ParameterType, out _))
                     {
+                        if (i == parameters.Length - 1) // last parameter
+                        {
+                            var paramAttribute = parameters[i].GetCustomAttribute<ParamArrayAttribute>(false);
+                            if (paramAttribute != null)
+                            {
+                                lastParameterIsParamsAttribute = true;
+                                break;
+                            }
+                        }
                         parametersForSplitArray++;
                     }
                 }
 
-                if (parametersForSplitArray == split.Length)
+                if (split.Length == parametersForSplitArray 
+                    || lastParameterIsParamsAttribute && split.Length >= parametersForSplitArray)
                 {
                     return ctor;
                 }
             }
 
+            lastParameterIsParamsAttribute = false;
             return null;
         }
 
@@ -246,11 +269,11 @@ namespace BytingLib
         }
 
         /// <summary>{"ctorArg1", "ctorArg2"}</summary>
-        private object[] GetParameters(string[] split, Type[] expectedTypes)
+        private object[] GetParameters(string[] split, Type[] expectedTypes, bool lastParameterIsParamsAttribute)
         {
             if (split == null)
             {
-                split = new string[0];
+                split = [];
             }
 
             object[] output = new object[expectedTypes.Length];
@@ -264,7 +287,20 @@ namespace BytingLib
                 }
                 else
                 {
-                    output[i] = GetParameters(split[splitIndex++], expectedTypes[i]);
+                    if (i == expectedTypes.Length - 1 && lastParameterIsParamsAttribute)
+                    {
+                        Type elementType = expectedTypes[i].GetElementType()!;
+                        Array arr = Array.CreateInstance(elementType, split.Length - splitIndex);
+                        for (int j = 0; j < arr.Length; j++)
+                        {
+                            arr.SetValue(GetParameter(split[splitIndex++], elementType), j); // TODO: array to non-array
+                        }
+                        output[i] = arr;
+                    }
+                    else
+                    {
+                        output[i] = GetParameter(split[splitIndex++], expectedTypes[i]);
+                    }
                 }
             }
 
@@ -272,7 +308,7 @@ namespace BytingLib
         }
 
         /// <summary>"ctorArg1"</summary>
-        private object GetParameters(string argStr, Type expectedType)
+        private object GetParameter(string argStr, Type expectedType)
         {
             Type? nullableUnderlyingType;
             if (expectedType == typeof(string))
@@ -341,6 +377,115 @@ namespace BytingLib
         {
             AutoParameters.Remove(type);
             AutoParameters.Add(type, value);
+        }
+
+        /// <summary>
+        /// Experimental
+        /// </summary>
+        public string Serialize(object obj)
+        {
+            Type type = obj.GetType();
+
+            if (type.IsEnum || type.IsValueType)
+            {
+                return obj.ToString() ?? "";
+            }
+
+            string? className = null;
+
+            if (shortcutAttributeType != null)
+            {
+                CreatorShortcutAttribute? shortcutAttribute = (CreatorShortcutAttribute?)type.GetCustomAttribute(shortcutAttributeType);
+                if (shortcutAttribute != null)
+                {
+                    className = shortcutAttribute.ShortcutName;
+                }
+            }
+            if (className == null)
+            {
+                className = type.Name;
+            }
+            string str = className + Open;
+
+            var ctors = obj.GetType().GetConstructors();
+            if (ctors.Length > 1)
+            {
+                throw new Exception("only one constructor is currently supported");
+            }
+            var ctor = ctors[0];
+            var parameters = ctor.GetParameters();
+            int addedParameterCount = 0;
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (addedParameterCount > 0)
+                {
+                    str += ParameterSeparator;
+                }
+
+                var p = parameters[i];
+
+                if (AutoParameters.ContainsKey(p.ParameterType))
+                {
+                    continue;
+                }
+
+                if (p.Name == null)
+                {
+                    throw new Exception($"ctor parameter {i} of {type} has no name");
+                }
+                var prop = type.GetProperty(p.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty);
+                object instance;
+                if (prop != null)
+                {
+                    instance = prop.GetValue(obj) ?? throw new Exception($"couldn't get value from prop {p.Name} of {type}");
+                }
+                else
+                {
+                    string name = $"<{p.Name}>P"; // this may only be used for class Name(int field); fields?
+                    var field = type.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetField);
+                    if (field != null)
+                    {
+                        instance = field.GetValue(obj) ?? throw new Exception($"couldn't get value from field {name} of {type}");
+                    }
+                    else
+                    {
+                        throw new Exception($"prop and field {p.Name} of {type} doesn't exist");
+                    }
+                }
+
+                var paramAttribute = p.GetCustomAttribute<ParamArrayAttribute>(false);
+                if (paramAttribute == null)
+                {
+                    str += Serialize(instance);
+                }
+                else
+                {
+                    // iterate over array and serialize each instances
+                    Array arr = (Array)instance;
+                    for (int j = 0; j < arr.Length; j++)
+                    {
+                        if (j > 0)
+                        {
+                            str += ParameterSeparator;
+                        }
+                        var val = arr.GetValue(j);
+                        if (val == null)
+                        {
+                            str += "null";
+                        }
+                        else
+                        {
+                            str += Serialize(val);
+                        }
+                    }
+                }
+
+
+                addedParameterCount++;
+            }
+
+            str += Close;
+            return str;
         }
     }
 }

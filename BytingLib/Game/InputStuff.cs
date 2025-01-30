@@ -30,6 +30,7 @@ namespace BytingLib
 
         public GamePadDeadZone GamePadDeadZoneLeft { get; set; } = GamePadDeadZone.IndependentAxes;
         public GamePadDeadZone GamePadDeadZoneRight { get; set; } = GamePadDeadZone.IndependentAxes;
+        public FullInput FullInput => inputSource.Current;
 
         public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths, 
             Action<Action> startRecordingPlayback, bool startRecordingInstantly, bool enableDevInput, bool controlViaF5 = true)

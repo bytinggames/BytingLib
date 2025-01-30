@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    public class Pointer<T>
+    public class Pointer<T> : IPointerValue
     {
         public T? Value { get; set; }
 
@@ -13,5 +13,15 @@
         {
             Value = value;
         }
+
+        public void SetPointerValue(object obj)
+        {
+            if (obj is T val)
+            {
+                Value = val;
+            }
+        }
+        public Type GetDeclaredPointerValueType() => typeof(T);
+        public object? GetPointerValue() => Value;
     }
 }
