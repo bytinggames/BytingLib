@@ -22,8 +22,10 @@ namespace BytingLib
 
             for (int i = 0; i < outputs.Length; i++)
             {
-                updater.AddOutput(outputs[i]);
-                outputs[i].Initialize(updater);
+                if (updater.AddOutput(outputs[i]))
+                {
+                    outputs[i].Initialize(updater);
+                }
             }
         }
 

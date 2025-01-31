@@ -27,9 +27,14 @@
             }
         }
 
-        public void AddOutput(InputUpdate output)
+        public bool AddOutput(InputUpdate output)
         {
-            outputs.Add(output);
+            if (!outputs.Contains(output))
+            {
+                outputs.Add(output);
+                return true;
+            }
+            return false;
         }
 
         internal void RemoveOutput(InputUpdate output)
