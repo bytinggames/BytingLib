@@ -2,7 +2,7 @@
 
 namespace BytingLib
 {
-    public class BoolOutput : BoolInput, IPointerValue
+    public class BoolOutput : BoolInput, IPointerValue, IInputOutput
     {
         public BoolInput Value { get; private set; }
 
@@ -17,7 +17,7 @@ namespace BytingLib
 
         public override bool IsDown(FullInput input)
         {
-            return Value.IsDown(input);
+            return Value.Down;
         }
 
         public void SetPointerValue(object obj)

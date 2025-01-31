@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    public class IntOutput : IntInput, IPointerValue
+    public class IntOutput : IntInput, IPointerValue, IInputOutput
     {
         private IntInput child;
 
@@ -14,7 +14,7 @@
 
         public override int GetValue(FullInput input)
         {
-            return child.GetValue(input);
+            return child.Value;
         }
 
         public void SetPointerValue(object obj)
