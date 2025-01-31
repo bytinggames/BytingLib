@@ -71,7 +71,7 @@
 
             if (down)
             {
-                if (!input.Input.LeftClick.Down)
+                if (!input.Input.Click.Down)
                 {
                     if (Hover)
                     {
@@ -88,7 +88,7 @@
 
         protected virtual bool WhileHover(Element _, ElementInput input)
         {
-            if (input.Input.LeftClick.Pressed)
+            if (input.Input.Click.Pressed)
             {
                 down = true;
                 input.SetUpdateCatch(this);

@@ -3,7 +3,7 @@
     public class InputCanvas : Input, IInputCanvas
     {
         public Vector2Output MousePosition { get; } = new(new Vector2Mouse());
-        public BoolOutput LeftClick { get; } = MouseButton.Left;
+        public BoolOutput Click { get; } = MouseButton.Left;
         public IntOutput Scroll { get; } = new(new IntMouseWheel());
         public InputUpdater Updater => updater;
 

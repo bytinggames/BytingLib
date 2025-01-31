@@ -58,7 +58,7 @@
                 }
             }
 
-            if (input.Input.LeftClick.Pressed || doFocus)
+            if (input.Input.Click.Pressed || doFocus)
             {
                 bool hover = doFocus || input.CanHover(AbsoluteRect, this);
                 doFocus = false;
@@ -91,7 +91,7 @@
             {
                 mouseClick = false;
 
-                if (input.Input.LeftClick.Down)
+                if (input.Input.Click.Down)
                 {
                     mouseHold = true;
                     mousePos = input.Input.MousePosition;

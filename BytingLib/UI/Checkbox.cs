@@ -140,13 +140,13 @@
         {
             if (MultiSelectionID != null)
             {
-                if (input.Input.LeftClick.Pressed)
+                if (input.Input.Click.Pressed)
                 {
                     input.FocusElement = this;
                     DoClick();
                     SetDirty();
                 }
-                else if (input.Input.LeftClick.Down && input.FocusElement is Checkbox checkboxFocus && checkboxFocus.MultiSelectionID == MultiSelectionID)
+                else if (input.Input.Click.Down && input.FocusElement is Checkbox checkboxFocus && checkboxFocus.MultiSelectionID == MultiSelectionID)
                 {
                     if (checkboxFocus.Checked != Checked)
                     {

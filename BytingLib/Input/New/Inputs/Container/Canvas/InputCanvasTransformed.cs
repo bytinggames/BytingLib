@@ -8,7 +8,7 @@
         public InputUpdater Updater => input.Updater;
 
         public Vector2Output MousePosition { get; }
-        public BoolOutput LeftClick => input.LeftClick;
+        public BoolOutput Click => input.Click;
         public IntOutput Scroll => input.Scroll;
 
         public InputCanvasTransformed(IInputCanvas input, Func<Matrix> getUITransform)
