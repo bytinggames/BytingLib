@@ -9,7 +9,7 @@
 
         public override bool IsDown(FullInput input)
         {
-            return input.MetaState.IsGameActive;
+            return input.MetaState.IsActivatedThisUpdate;
         }
     }
 }

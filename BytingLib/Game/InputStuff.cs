@@ -58,7 +58,7 @@ namespace BytingLib
                 new FullInput(getMouseState(),
                 CurrentKeyState, 
                 Microsoft.Xna.Framework.Input.GamePad.GetState(0), 
-                new MetaInputState(game.IsActive),
+                new MetaInputState(game.IsActivatedThisFrame()),
                 windowManager.Resolution)));
             inputSource.OnUpdate += InputSource_OnUpdate;
 
@@ -77,7 +77,7 @@ namespace BytingLib
                 GamePadDev = new GamePadInput(() => default);
             }
 
-            stuff.Add(Mouse = new MouseInput(() => inputSource.Current.MouseState, () => inputSource.Current.MetaState.IsGameActive, SetMousePosition));
+            stuff.Add(Mouse = new MouseInput(() => inputSource.Current.MouseState, () => inputSource.Current.MetaState.IsActivatedThisUpdate, SetMousePosition));
             stuff.Add(GamePad = new GamePadInput(() => inputSource.Current.GamePadState));
 
             stuff.Add(InputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));

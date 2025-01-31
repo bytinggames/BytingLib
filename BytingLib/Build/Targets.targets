@@ -26,6 +26,6 @@
 
 	<!-- Customizing the Content Build Process -->
 	<PropertyGroup>
-		<MonoGameMGCBAdditionalArguments>/define:$(Configuration) /define:Configuration=$(Configuration) /define:RuntimeIdentifier=$(RuntimeIdentifier) /define:ConfigRuntime=$(Configuration)_$(RuntimeIdentifier)</MonoGameMGCBAdditionalArguments>
+		<MonoGameMGCBAdditionalArguments>/rebuildOnVersionUpdate:true /parallelCores:0.5 /define:$(Configuration) /define:Configuration=$(Configuration) /define:RuntimeIdentifier=$(RuntimeIdentifier) /define:ConfigRuntime=$(Configuration)_$(RuntimeIdentifier)</MonoGameMGCBAdditionalArguments>
 	</PropertyGroup>
 </Project>
