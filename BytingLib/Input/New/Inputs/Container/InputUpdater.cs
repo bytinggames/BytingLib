@@ -32,6 +32,7 @@
             if (!outputs.Contains(output))
             {
                 outputs.Add(output);
+                output.Initialize(this);
                 return true;
             }
             return false;

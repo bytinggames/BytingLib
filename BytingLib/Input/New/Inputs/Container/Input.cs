@@ -25,14 +25,6 @@ namespace BytingLib
         protected void InitializeOutputs()
         {
             outputs = GetOutputs();
-
-            for (int i = 0; i < outputs.Length; i++)
-            {
-                if (updater.AddOutput(outputs[i]))
-                {
-                    outputs[i].Initialize(updater);
-                }
-            }
         }
 
         private IInputOutput[] GetOutputs()
@@ -47,12 +39,19 @@ namespace BytingLib
                 {
                     continue;
                 }
-                IInputOutput? instance = (IInputOutput?)prop.GetValue(this);
-                if (instance == null)
+                IInputOutput? output = (IInputOutput?)prop.GetValue(this);
+                if (output == null)
                 {
                     continue;
                 }
-                outputsList.Add(instance);
+
+                // add to updater
+                // if not added, that means it already has been added. So it's not unique and we don't need to keep track of it
+                if (!updater.AddOutput(output))
+                {
+                    continue;
+                }
+                outputsList.Add(output);
             }
 
             return outputsList.ToArray();
