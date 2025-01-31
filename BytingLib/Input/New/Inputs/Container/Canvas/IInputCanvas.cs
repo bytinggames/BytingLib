@@ -6,6 +6,6 @@
         public BoolOutput LeftClick { get; }
         public IntOutput Scroll { get; }
         public InputUpdater Updater { get; }
-        void Transform(Func<Matrix> getUITransform);
+        void SetMousePosition(Vector2 position);
     }
 }

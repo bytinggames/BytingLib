@@ -4,6 +4,7 @@
     public class InputCanvasTransformed : Input, IInputCanvas
     {
         private readonly IInputCanvas input;
+        private readonly Func<Matrix> getUITransform;
         public InputUpdater Updater => input.Updater;
 
         public Vector2Output MousePosition { get; }
@@ -14,15 +15,16 @@
             : base(input.Updater, false)
         {
             this.input = input;
-
+            this.getUITransform = getUITransform;
             MousePosition = new Vector2Output(new Vector2Transform(input.MousePosition, getUITransform));
 
             InitializeOutputs();
         }
 
-        public void Transform(Func<Matrix> getUITransform)
+        public void SetMousePosition(Vector2 position)
         {
-            throw new NotImplementedException();
+            position = Vector2.Transform(position, Matrix.Invert(getUITransform()));
+            input.SetMousePosition(position);
         }
     }
 }

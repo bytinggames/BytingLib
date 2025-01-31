@@ -7,13 +7,12 @@
         public IntOutput Scroll { get; } = new(new IntMouseWheel());
         public InputUpdater Updater => updater;
 
-        public void Transform(Func<Matrix> getUITransform)
+        public void SetMousePosition(Vector2 position)
         {
-            MousePosition.Dispose();
-            Vector2Input inputSource = (Vector2Input)MousePosition.GetPointerValue()!;
-            // TODO: inputSource gets disposed... is that a problem? it gets re-added
-            MousePosition.SetPointerValue(new Vector2Transform(inputSource, getUITransform));
-            //MousePosition.Initialize(updater);
+            Microsoft.Xna.Framework.Input.Mouse.SetPosition(
+                (int)MathF.Round(position.X),
+                (int)MathF.Round(position.Y)
+            );
         }
 
         public InputCanvas(InputUpdater updater) : base(updater)
