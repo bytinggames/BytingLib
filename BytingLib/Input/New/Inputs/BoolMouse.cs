@@ -21,12 +21,6 @@ namespace BytingLib
                     return state.RightButton == ButtonState.Pressed;
                 case MouseButton.Middle:
                     return state.MiddleButton == ButtonState.Pressed;
-                case MouseButton.WheelPlusOrMinus:
-                    return state.ScrollWheelValue != 0;
-                case MouseButton.WheelPlus:
-                    return state.ScrollWheelValue > 0;
-                case MouseButton.WheelMinus:
-                    return state.ScrollWheelValue < 0;
                 default:
                     throw new NotImplementedException();
             }

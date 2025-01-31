@@ -175,12 +175,6 @@ namespace BytingLib
                     return Right;
                 case MouseButton.Middle:
                     return Middle;
-                case MouseButton.WheelPlusOrMinus:
-                    return ScrollAsPressedButton;
-                case MouseButton.WheelPlus:
-                    return ScrollPlusAsPressedButton;
-                case MouseButton.WheelMinus:
-                    return ScrollMinusAsPressedButton;
                 default:
                     throw new NotImplementedException();
             }

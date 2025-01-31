@@ -4,9 +4,6 @@
     {
         Left,
         Right,
-        Middle,
-        WheelPlusOrMinus,
-        WheelPlus,
-        WheelMinus
+        Middle
     }
 }
