@@ -4,10 +4,16 @@ namespace BytingLib
 {
     public class Input : IDisposable
     {
-        private InputUpdate[] outputs;
+        private IInputOutput[] outputs;
         protected readonly InputUpdater updater;
 
+        /// <summary>
+        /// If you set initializeOutputs to false, you must call InitializeOutputs() manually.
+        /// Best practice is at the end of the constructor.
+        /// </summary>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Input(InputUpdater updater, bool initializeOutputs = true)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             this.updater = updater;
             if (initializeOutputs)
@@ -29,19 +35,19 @@ namespace BytingLib
             }
         }
 
-        private InputUpdate[] GetOutputs()
+        private IInputOutput[] GetOutputs()
         {
-            List<InputUpdate> outputsList = new();
+            List<IInputOutput> outputsList = new();
 
             var props = GetType().GetProperties();
 
             foreach (var prop in props)
             {
-                if (!prop.PropertyType.IsAssignableTo(typeof(InputUpdate)))
+                if (!prop.PropertyType.IsAssignableTo(typeof(IInputOutput)))
                 {
                     continue;
                 }
-                InputUpdate? instance = (InputUpdate?)prop.GetValue(this);
+                IInputOutput? instance = (IInputOutput?)prop.GetValue(this);
                 if (instance == null)
                 {
                     continue;

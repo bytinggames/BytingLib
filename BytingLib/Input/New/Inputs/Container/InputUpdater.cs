@@ -5,7 +5,7 @@
         public long CurrentStamp { get; private set; }
         private readonly Func<FullInput> getFullInput;
         public Action<Exception> OnException { get; }
-        private readonly List<InputUpdate> outputs = new();
+        private readonly List<IInputOutput> outputs = new();
 
         public InputUpdater(Func<FullInput> getFullInput, Action<Exception> onException)
         {
@@ -20,14 +20,14 @@
             var input = getFullInput();
             for (int i = 0; i < outputs.Count; i++)
             {
-                foreach (var child in outputs[i].GetAllRecursively())
+                foreach (var child in outputs[i].GetAllRecursivelyUntilOutput())
                 {
                     child.Update(input);
                 }
             }
         }
 
-        public bool AddOutput(InputUpdate output)
+        public bool AddOutput(IInputOutput output)
         {
             if (!outputs.Contains(output))
             {
@@ -37,7 +37,7 @@
             return false;
         }
 
-        internal void RemoveOutput(InputUpdate output)
+        internal void RemoveOutput(IInputOutput output)
         {
             outputs.Remove(output);
         }
