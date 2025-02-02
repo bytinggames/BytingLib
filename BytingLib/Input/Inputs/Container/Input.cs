@@ -34,7 +34,7 @@ namespace BytingLib
 
         private IInputOutput[] GetOutputs()
         {
-            List<IInputOutput> outputsList = new();
+            Dictionary<IInputOutput, IInputOutput[]> outputsDict = new();
 
             var props = GetType().GetProperties();
 
@@ -50,17 +50,51 @@ namespace BytingLib
                     continue;
                 }
 
-                // add to updater
-                // if not added, that means it already has been added. So it's not unique and we don't need to keep track of it
-                if (!updater.AddOutput(output))
-                {
-                    continue;
-                }
-                outputsList.Add(output);
+                outputsDict.Add(output, output.GetDependencies().ToArray());
             }
 
-            return outputsList.ToArray();
+            HashSet<IInputOutput> alreadyAdded = new();
+            List<IInputOutput> orderedOutputs = new();
+            // order outputs by dependencies
+            foreach (var o in outputsDict)
+            {
+                GetLeaves(o.Key, o.Value);
+            }
+
+            void GetLeaves(IInputOutput current, IInputOutput[] dependencies)
+            {
+                for (int i = 0; i < dependencies.Length; i++)
+                {
+                    if (alreadyAdded.Contains(dependencies[i]))
+                    {
+                        continue;
+                    }
+                    if (outputsDict.TryGetValue(dependencies[i], out IInputOutput[]? nextDependencies))
+                    {
+                        GetLeaves(dependencies[i], nextDependencies);
+                    }
+                    else
+                    {
+                        // dependency doesn't exist locally, so this output is called after the dependency
+                    }
+                }
+                alreadyAdded.Add(current);
+                orderedOutputs.Add(current);
+            }
+
+            for (int i = 0; i < orderedOutputs.Count; i++)
+            {
+                // add to updater
+                // if not added, that means it already has been added. So it's not unique and we don't need to keep track of it
+                if (!updater.AddOutput(orderedOutputs[i]))
+                {
+                    orderedOutputs.RemoveAt(i--);
+                }
+            }
+
+            return orderedOutputs.ToArray();
         }
+
 
         public void Dispose()
         {

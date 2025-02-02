@@ -8,34 +8,6 @@
 
         public abstract IEnumerable<InputUpdate> GetChildren();
 
-
-        public IEnumerable<InputUpdate> GetAllRecursively()
-        {
-            foreach (var child in GetChildren())
-            {
-                foreach (var c in child.GetAllRecursively())
-                {
-                    yield return c;
-                }
-            }
-            yield return this;
-        }
-
-        public IEnumerable<InputUpdate> GetAllRecursivelyUntilOutput()
-        {
-            foreach (var child in GetChildren())
-            {
-                if (child is not IInputOutput)
-                {
-                    foreach (var c in child.GetAllRecursivelyUntilOutput())
-                    {
-                        yield return c;
-                    }
-                }
-            }
-            yield return this;
-        }
-
         public void Initialize(InputUpdater updater)
         {
             this.updater = updater;
