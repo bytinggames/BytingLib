@@ -124,6 +124,10 @@ namespace BytingLib
             for (int i = 0; i < iterations; i++)
             {
                 UpdateSingleIteration(gameTime);
+                if (i + 1 < iterations)
+                {
+                    globalInputUpdater.Update();
+                }
             }
 
             ScreenshotType screenshot = ScreenshotType.None;
@@ -175,11 +179,11 @@ namespace BytingLib
             {
                 if (!pauseUpdate && inputGameSpeed.SpeedUp100.Down)
                 {
-                    iterations *= 10;
+                    iterations *= 100;
                 }
                 else if (!pauseUpdate && inputGameSpeed.SpeedUp10.Down)
                 {
-                    iterations *= 100;
+                    iterations *= 10;
                 }
                 else
                 {

@@ -1,5 +1,6 @@
 ﻿using BytingLib.Serialization;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 
 namespace BytingLib
 {
@@ -29,7 +30,7 @@ namespace BytingLib
         public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths,
             Action<Action> startRecordingPlayback, bool startRecordingInstantly, InputRecordingBinds? inputRecordingBinds)
         {
-            CurrentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+            CurrentMouseState = Mouse.GetState();
             CurrentKeyState = Keyboard.GetState();
 
             stuff = new StuffDisposable(typeof(IUpdate));
@@ -47,12 +48,12 @@ namespace BytingLib
                 getMouseState = mouseFiltered.GetState;
             }
 
-            stuff.Add(inputSource = new StructSource<FullInput>(() =>
+            inputSource = new StructSource<FullInput>(() =>
                 new FullInput(getMouseState(),
                 CurrentKeyState,
-                Microsoft.Xna.Framework.Input.GamePad.GetState(0),
+                GamePad.GetState(0),
                 new MetaInputState(game.IsActivatedThisFrame()),
-                windowManager.Resolution)));
+                windowManager.Resolution));
             inputSource.OnUpdate += InputSource_OnUpdate;
 
             stuff.Add(InputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));
@@ -69,15 +70,16 @@ namespace BytingLib
             this.metaObjectManager = metaObjectManager;
         }
 
+        public void PreUpdate()
+        {
+            CurrentMouseState = Mouse.GetState();
+            CurrentKeyState = Keyboard.GetState();
+            inputSource.Update();
+        }
+
         public void Update()
         {
             stuff.ForEach<IUpdate>(f => f.Update());
-        }
-
-        public void PreUpdate()
-        {
-            CurrentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
-            CurrentKeyState = Keyboard.GetState();
         }
 
         public void Dispose()
