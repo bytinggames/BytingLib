@@ -160,6 +160,6 @@ namespace BytingLib
         protected static BoolInput Alt() => new BoolAlt();
         protected static BoolInput And(params BoolInput[] inputs) => new BoolAnd(inputs);
         protected static BoolInput Or(params BoolInput[] inputs) => new BoolOr(inputs);
-        protected static BoolInput No(BoolInput input) => new BoolNot(input);
+        protected static BoolInput Not(BoolInput input) => new BoolNot(input);
     }
 }

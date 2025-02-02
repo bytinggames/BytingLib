@@ -16,6 +16,9 @@ namespace BytingLib
         private readonly InputRecordingBinds? inputRecordingBinds;
         protected readonly InputUpdater globalInputUpdater;
         protected readonly InputCanvas inputCanvas;
+        /// <summary>Only used for input that shouldn't be recorded (Fullscreen Toggle for example or Replay interrupt).
+        /// The difference to inputDev</summary>
+        protected readonly InputMeta inputMeta;
 
         private readonly bool randomScreenshots;
         protected readonly Screenshotter screenshotter;
@@ -27,9 +30,6 @@ namespace BytingLib
 
         private Action? startRecordingPlayback;
 
-        /// <summary>Only used for input that shouldn't be recorded (Fullscreen Toggle for example or Replay interrupt).
-        /// The difference to InputStuff.KeysDev</summary>
-        protected KeyInput metaKeys;
         public event Action? OnFrameBeforeScreenshot;
         private int takeScreenshotNextFrame = -1;
 
@@ -76,6 +76,7 @@ namespace BytingLib
             globalInputUpdater = new(() => input.FullInput, onInputException);
 
             inputCanvas = Use(new InputCanvas(globalInputUpdater));
+            inputMeta = Use(new InputMeta(globalInputUpdater));
 
             if (enableGameSpeedKeys)
             {
@@ -92,8 +93,6 @@ namespace BytingLib
             screenshotter = new Screenshotter(gDevice, paths);
 
             InitWindowAndGraphics(vsync);
-
-            metaKeys = new KeyInput(() => input.CurrentKeyState);
 
             mouseVisibilityManager = new MouseVisibilityManager(gameWrapper);
         }
@@ -119,7 +118,6 @@ namespace BytingLib
         {
             globalInputUpdater.Update();
             input.PreUpdate();
-            metaKeys.Update();
 
             int iterations = GetIterations();
 
@@ -130,10 +128,10 @@ namespace BytingLib
 
             ScreenshotType screenshot = ScreenshotType.None;
 
-            if (metaKeys.F12.Pressed && !metaKeys.Control.Down)
+            if (inputMeta.Screenshot.Pressed)
             {
                 OnFrameBeforeScreenshot?.Invoke();
-                takeScreenshotNextFrame = metaKeys.Shift.Down ? 5 : 1;
+                takeScreenshotNextFrame = inputMeta.ScreenshotDelayed.Down ? 5 : 1;
             }
             else if (takeScreenshotNextFrame != -1)
             {
@@ -213,7 +211,7 @@ namespace BytingLib
 
             input.Update();
 
-            if (f11ToToggleFullscreen && metaKeys.F11.Pressed)
+            if (f11ToToggleFullscreen && inputMeta.ToggleFullscreen.Pressed)
             {
                 windowManager.ToggleFullscreen();
             }
@@ -228,11 +226,7 @@ namespace BytingLib
             mouseVisibilityManager.UpdateEnd(GetTopmostScene());
         }
 
-#if DEBUG
-        protected virtual bool ShouldSwapScreen() => metaKeys.Tab.Pressed;
-#else
-        protected virtual bool ShouldSwapScreen() => metaKeys.Control.Down && metaKeys.Tab.Pressed;
-#endif
+        protected virtual bool ShouldSwapScreen() => inputMeta.SwapScreen.Pressed;
 
         public sealed override void DrawActive(GameTime gameTime)
         {
