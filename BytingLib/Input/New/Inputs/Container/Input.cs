@@ -7,6 +7,11 @@ namespace BytingLib
         private IInputOutput[] outputs;
         protected readonly InputUpdater updater;
 
+        public Input(InputUpdater updater)
+            :this(updater, true)
+        {
+        }
+
         /// <summary>
         /// If you set initializeOutputs to false, you must call InitializeOutputs() manually.
         /// Best practice is at the end of the constructor.
@@ -149,5 +154,12 @@ namespace BytingLib
                 }
             }
         }
+
+        protected static BoolInput Ctrl() => new BoolCtrl();
+        protected static BoolInput Shift() => new BoolShift();
+        protected static BoolInput Alt() => new BoolAlt();
+        protected static BoolInput And(params BoolInput[] inputs) => new BoolAnd(inputs);
+        protected static BoolInput Or(params BoolInput[] inputs) => new BoolOr(inputs);
+        protected static BoolInput No(BoolInput input) => new BoolNot(input);
     }
 }

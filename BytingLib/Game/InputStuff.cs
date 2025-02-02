@@ -13,9 +13,6 @@ namespace BytingLib
         public KeyInput Keys { get; }
         public MouseInput Mouse { get; }
         public GamePadInput GamePad { get; }
-        public KeyInput KeysDev { get; }
-        public MouseInput MouseDev { get; }
-        public GamePadInput GamePadDev { get; }
         public Random Rand { get; private set; } = new Random(); // is initialized again with CreateInputRecorder. This random initialization is just a fallback
         public Int2 Resolution => inputSource.Current.WindowResolution;
         public Int2 GetResolution() => inputSource.Current.WindowResolution;
@@ -32,8 +29,8 @@ namespace BytingLib
         public GamePadDeadZone GamePadDeadZoneRight { get; set; } = GamePadDeadZone.IndependentAxes;
         public FullInput FullInput => inputSource.Current;
 
-        public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths, 
-            Action<Action> startRecordingPlayback, bool startRecordingInstantly, bool enableDevInput, bool controlViaF5 = true)
+        public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths,
+            Action<Action> startRecordingPlayback, bool startRecordingInstantly, InputRecordingBinds? inputRecordingBinds)
         {
             CurrentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
             CurrentKeyState = Keyboard.GetState();
@@ -56,32 +53,19 @@ namespace BytingLib
 
             stuff.Add(inputSource = new StructSource<FullInput>(() =>
                 new FullInput(getMouseState(),
-                CurrentKeyState, 
-                Microsoft.Xna.Framework.Input.GamePad.GetState(0), 
+                CurrentKeyState,
+                Microsoft.Xna.Framework.Input.GamePad.GetState(0),
                 new MetaInputState(game.IsActivatedThisFrame()),
                 windowManager.Resolution)));
             inputSource.OnUpdate += InputSource_OnUpdate;
 
             stuff.Add(Keys = new KeyInput(() => inputSource.Current.KeyState));
 
-            if (enableDevInput)
-            {
-                KeysDev = new KeyInput(() => CurrentKeyState);
-                MouseDev = new MouseInput(() => CurrentMouseState, game.IsActivatedThisFrame, SetMousePosition);
-                GamePadDev = new GamePadInput(() => Microsoft.Xna.Framework.Input.GamePad.GetState(0, GamePadDeadZoneLeft, GamePadDeadZoneRight));
-            }
-            else
-            {
-                KeysDev = new KeyInput(() => default);
-                MouseDev = new MouseInput(() => default, () => false, SetMousePosition);
-                GamePadDev = new GamePadInput(() => default);
-            }
-
             stuff.Add(Mouse = new MouseInput(() => inputSource.Current.MouseState, () => inputSource.Current.MetaState.IsActivatedThisUpdate, SetMousePosition));
             stuff.Add(GamePad = new GamePadInput(() => inputSource.Current.GamePadState));
 
             stuff.Add(InputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));
-            stuff.Add(InputRecordingTriggerer = new(KeysDev, InputRecordingManager, basePaths.InputRecordingsDir, startRecordingPlayback, startRecordingInstantly, controlViaF5));
+            stuff.Add(InputRecordingTriggerer = new(inputRecordingBinds, InputRecordingManager, basePaths.InputRecordingsDir, startRecordingPlayback, startRecordingInstantly));
         }
 
         private void InputSource_OnUpdate(FullInput obj)
@@ -103,10 +87,6 @@ namespace BytingLib
         {
             CurrentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
             CurrentKeyState = Keyboard.GetState();
-
-            KeysDev.Update();
-            MouseDev.Update();
-            GamePadDev.Update();
         }
 
         public void Dispose()

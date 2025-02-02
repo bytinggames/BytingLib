@@ -1,0 +1,22 @@
+﻿
+namespace BytingLib
+{
+    public class IntOutputOnChange : IntOutput
+    {
+        private readonly int defaultValue;
+
+        public IntOutputOnChange(IntInput child, int defaultValue = -1) : base(child)
+        {
+            this.defaultValue = defaultValue;
+        }
+
+        public override int GetValue(FullInput input)
+        {
+            if (child.Delta != 0)
+            {
+                return child.Value;
+            }
+            return defaultValue;
+        }
+    }
+}

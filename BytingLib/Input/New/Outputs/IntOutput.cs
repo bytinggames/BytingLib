@@ -2,7 +2,7 @@
 {
     public class IntOutput : IntInput, IPointerValue, IInputOutput
     {
-        private IntInput child;
+        protected IntInput child;
 
         public IntOutput(IntInput child)
         {

@@ -12,6 +12,10 @@ namespace BytingLib
         protected readonly DefaultPaths basePaths;
         protected readonly SaveStateManager saveStateManager;
         protected readonly MouseVisibilityManager mouseVisibilityManager;
+        private readonly InputControlGameSpeed? inputGameSpeed;
+        private readonly InputRecordingBinds? inputRecordingBinds;
+        protected readonly InputUpdater globalInputUpdater;
+        protected readonly InputCanvas inputCanvas;
 
         private readonly bool randomScreenshots;
         protected readonly Screenshotter screenshotter;
@@ -33,10 +37,10 @@ namespace BytingLib
         public static Func<int> DebugGetFrame { get; set; } = () => 0;
         public static int DebugFrame => DebugGetFrame();
 
-        public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter, HotReloadType hotReloadType,
+        public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter, HotReloadType hotReloadType, Action<Exception> onInputException,
             bool mouseWithActivationClick = false,
-            bool vsync = true, bool startRecordingInstantly = true, bool enableDevKeys = false,
-            bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool controlViaF5 = true)
+            bool vsync = true, bool startRecordingInstantly = true, bool enableGameSpeedKeys = false,
+            bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool enableRecordingKeys = true)
             : base(g, hotReloadType, contentConverter, clearHotReloadOutputPath)
         {
             MainThread.Initialize(); // tell the main thread which thread actually is the main thread
@@ -67,7 +71,20 @@ namespace BytingLib
             };
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, new object[] { contentCollector }, typeof(MarkupShortcutAttribute), converters);
 
-            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, enableDevKeys, controlViaF5);
+            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, inputRecordingBinds);
+
+            globalInputUpdater = new(() => input.FullInput, onInputException);
+
+            inputCanvas = Use(new InputCanvas(globalInputUpdater));
+
+            if (enableGameSpeedKeys)
+            {
+                inputGameSpeed = Use(new InputControlGameSpeed(globalInputUpdater));
+            }
+            if (enableRecordingKeys)
+            {
+                inputRecordingBinds = Use(new InputRecordingBinds(globalInputUpdater));
+            }
 
             basePaths = paths;
             saveStateManager = new SaveStateManager(paths.SaveStateDir);
@@ -100,6 +117,7 @@ namespace BytingLib
 
         public sealed override void UpdateActive(GameTime gameTime)
         {
+            globalInputUpdater.Update();
             input.PreUpdate();
             metaKeys.Update();
 
@@ -155,32 +173,35 @@ namespace BytingLib
         private int GetIterations()
         {
             int iterations = 1;
-            if (!pauseUpdate && input.KeysDev.Alt.Down)
+            if (inputGameSpeed != null)
             {
-                iterations *= 10;
-                if (input.KeysDev.Apps.Down)
+                if (!pauseUpdate && inputGameSpeed.SpeedUp100.Down)
                 {
                     iterations *= 10;
                 }
-            }
-            else
-            {
-                if (input.KeysDev.Apps.Down)
+                else if (!pauseUpdate && inputGameSpeed.SpeedUp10.Down)
                 {
-                    pauseUpdate = true;
-
-                    if (input.KeysDev.Alt.Pressed)
-                    {
-                        iterations = 1; // display next frame
-                    }
-                    else
-                    {
-                        iterations = 0;
-                    }
+                    iterations *= 100;
                 }
                 else
                 {
-                    pauseUpdate = false;
+                    if (inputGameSpeed.Halt.Down)
+                    {
+                        pauseUpdate = true;
+
+                        if (inputGameSpeed.ForwardOneFrame.Pressed)
+                        {
+                            iterations = 1; // display next frame
+                        }
+                        else
+                        {
+                            iterations = 0;
+                        }
+                    }
+                    else
+                    {
+                        pauseUpdate = false;
+                    }
                 }
             }
             return iterations;
