@@ -10,7 +10,6 @@ namespace BytingLib
 
         public InputRecordingManager<FullInput> InputRecordingManager { get; }
         public InputRecordingTriggerer<FullInput> InputRecordingTriggerer { get; }
-        public GamePadInput GamePad { get; }
         public Random Rand { get; private set; } = new Random(); // is initialized again with CreateInputRecorder. This random initialization is just a fallback
         public Int2 Resolution => inputSource.Current.WindowResolution;
         public Int2 GetResolution() => inputSource.Current.WindowResolution;
@@ -55,8 +54,6 @@ namespace BytingLib
                 new MetaInputState(game.IsActivatedThisFrame()),
                 windowManager.Resolution)));
             inputSource.OnUpdate += InputSource_OnUpdate;
-
-            stuff.Add(GamePad = new GamePadInput(() => inputSource.Current.GamePadState));
 
             stuff.Add(InputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));
             stuff.Add(InputRecordingTriggerer = new(inputRecordingBinds, InputRecordingManager, basePaths.InputRecordingsDir, startRecordingPlayback, startRecordingInstantly));
