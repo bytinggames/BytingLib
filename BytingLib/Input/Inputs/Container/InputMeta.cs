@@ -7,6 +7,7 @@ namespace BytingLib
         public BoolOutput Screenshot { get; } = new(And(Not(Ctrl()), Keys.F12));
         public BoolOutput ScreenshotDelayed { get; } = new(Shift());
         public BoolOutput ToggleFullscreen { get; } = Keys.F11;
+        public BoolOutput InterruptReplay { get; } = Keys.Escape;
 
 #if DEBUG
         public BoolOutput SwapScreen { get; } = Keys.Tab;

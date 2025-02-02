@@ -8,6 +8,8 @@ namespace BytingLib
     {
         protected readonly IStuffDisposable stuff;
         protected readonly StructSource<FullInput> inputSource;
+        private readonly WindowManager windowManager;
+        private readonly GameWrapper game;
 
         public InputRecordingManager<FullInput> InputRecordingManager { get; }
         public InputRecordingTriggerer<FullInput> InputRecordingTriggerer { get; }
@@ -26,16 +28,19 @@ namespace BytingLib
         public GamePadDeadZone GamePadDeadZoneLeft { get; set; } = GamePadDeadZone.IndependentAxes;
         public GamePadDeadZone GamePadDeadZoneRight { get; set; } = GamePadDeadZone.IndependentAxes;
         public FullInput FullInput => inputSource.Current;
+        private readonly Func<MouseState> getMouseState;
 
         public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths,
             Action<Action> startRecordingPlayback, bool startRecordingInstantly, InputRecordingBinds? inputRecordingBinds)
         {
+            this.windowManager = windowManager;
+            this.game = game;
+
             CurrentMouseState = Mouse.GetState();
             CurrentKeyState = Keyboard.GetState();
 
             stuff = new StuffDisposable(typeof(IUpdate));
 
-            Func<MouseState> getMouseState;
             var mouseSource = new MouseWithoutOutOfWindowClicks(() => CurrentMouseState, windowManager);
 
             if (mouseWithActivationClick)
@@ -48,16 +53,20 @@ namespace BytingLib
                 getMouseState = mouseFiltered.GetState;
             }
 
-            inputSource = new StructSource<FullInput>(() =>
-                new FullInput(getMouseState(),
-                CurrentKeyState,
-                GamePad.GetState(0),
-                new MetaInputState(game.IsActivatedThisFrame()),
-                windowManager.Resolution));
+            inputSource = new StructSource<FullInput>(GetRealInput);
             inputSource.OnUpdate += InputSource_OnUpdate;
 
             stuff.Add(InputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));
             stuff.Add(InputRecordingTriggerer = new(inputRecordingBinds, InputRecordingManager, basePaths.InputRecordingsDir, startRecordingPlayback, startRecordingInstantly));
+        }
+
+        public FullInput GetRealInput()
+        {
+            return new FullInput(getMouseState(),
+                CurrentKeyState,
+                GamePad.GetState(0),
+                new MetaInputState(game.IsActivatedThisFrame()),
+                windowManager.Resolution);
         }
 
         private void InputSource_OnUpdate(FullInput obj)

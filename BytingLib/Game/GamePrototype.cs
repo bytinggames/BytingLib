@@ -15,6 +15,7 @@ namespace BytingLib
         private readonly InputControlGameSpeed? inputGameSpeed;
         private readonly InputRecordingBinds? inputRecordingBinds;
         protected readonly InputUpdater globalInputUpdater;
+        protected readonly InputUpdater metaInputUpdater;
         protected readonly InputCanvas inputCanvas;
         /// <summary>Only used for input that shouldn't be recorded (Fullscreen Toggle for example or Replay interrupt).
         /// The difference to inputDev</summary>
@@ -74,9 +75,10 @@ namespace BytingLib
             input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, inputRecordingBinds);
 
             globalInputUpdater = new(() => input.FullInput, onInputException);
+            metaInputUpdater = new(input.GetRealInput, onInputException);
 
             inputCanvas = Use(new InputCanvas(globalInputUpdater));
-            inputMeta = Use(new InputMeta(globalInputUpdater));
+            inputMeta = Use(new InputMeta(metaInputUpdater));
 
             if (enableGameSpeedKeys)
             {
@@ -117,6 +119,7 @@ namespace BytingLib
         public sealed override void UpdateActive(GameTime gameTime)
         {
             globalInputUpdater.Update();
+            metaInputUpdater.Update();
             input.PreUpdate();
 
             int iterations = GetIterations();
