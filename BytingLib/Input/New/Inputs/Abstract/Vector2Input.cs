@@ -2,9 +2,9 @@
 {
     public abstract class Vector2Input : InputUpdate
     {
-        public Vector2 LastValue { get; private set; }
+        public Vector2? LastValue { get; private set; }
         public Vector2 Value { get; private set; }
-        public Vector2 Delta => updater.CurrentStamp >= 2 ? Value - LastValue : Vector2.Zero;
+        public Vector2 Delta => LastValue.HasValue ? Value - LastValue.Value : Vector2.Zero;
         public float X => Value.X;
         public float Y => Value.Y;
 

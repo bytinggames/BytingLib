@@ -10,7 +10,6 @@ namespace BytingLib
 
         public InputRecordingManager<FullInput> InputRecordingManager { get; }
         public InputRecordingTriggerer<FullInput> InputRecordingTriggerer { get; }
-        public MouseInput Mouse { get; }
         public GamePadInput GamePad { get; }
         public Random Rand { get; private set; } = new Random(); // is initialized again with CreateInputRecorder. This random initialization is just a fallback
         public Int2 Resolution => inputSource.Current.WindowResolution;
@@ -33,7 +32,6 @@ namespace BytingLib
         {
             CurrentMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
             CurrentKeyState = Keyboard.GetState();
-            void SetMousePosition(Vector2 pos) => Microsoft.Xna.Framework.Input.Mouse.SetPosition((int)MathF.Round(pos.X), (int)MathF.Round(pos.Y));
 
             stuff = new StuffDisposable(typeof(IUpdate));
 
@@ -58,7 +56,6 @@ namespace BytingLib
                 windowManager.Resolution)));
             inputSource.OnUpdate += InputSource_OnUpdate;
 
-            stuff.Add(Mouse = new MouseInput(() => inputSource.Current.MouseState, () => inputSource.Current.MetaState.IsActivatedThisUpdate, SetMousePosition));
             stuff.Add(GamePad = new GamePadInput(() => inputSource.Current.GamePadState));
 
             stuff.Add(InputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));

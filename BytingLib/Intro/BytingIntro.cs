@@ -167,6 +167,17 @@ namespace BytingLib.Intro
         }
     }
 
+    public class InputBytingIntro : Input
+    {
+        public Vector2Output MousePosition { get; } = new(new Vector2Mouse());
+        public BoolOutput LeftClick { get; } = MouseButton.Left;
+        public BoolOutput RightClick { get; } = MouseButton.Right;
+
+        public InputBytingIntro(InputUpdater updater) : base(updater)
+        {
+        }
+    }
+
     public class BytingIntro : IUpdate, IDisposable
     {
         static readonly bool edit = false;
@@ -175,7 +186,7 @@ namespace BytingLib.Intro
         IntroData data = new IntroData();
 
         private readonly Rect requiredSpace;
-        private readonly MouseInput mouse;
+        private readonly InputBytingIntro input;
         RenderTarget2D? renderTarget;
 
         private bool firstDraw = true;
@@ -184,9 +195,9 @@ namespace BytingLib.Intro
         Tooth? selectedTooth;
         int? selectedVertex;
 
-        public BytingIntro(MouseInput mouse)
+        public BytingIntro(InputBytingIntro input)
         {
-            this.mouse = mouse;
+            this.input = input;
 
             requiredSpace = Anchor.Center(Vector2.Zero).Rectangle(1920, 1080);
 
@@ -225,6 +236,7 @@ namespace BytingLib.Intro
                     }
                 }
             }
+
 
             //Rect bytingGamesRect = Rect.FromPoints(data.Teeth.Take(16).SelectMany(f => f.Vertices))!;
             //center = bytingGamesRect.GetCenter();
@@ -309,14 +321,18 @@ namespace BytingLib.Intro
 
         private void UpdateDraw(Matrix toInput)
         {
-            Vector2 mousePos = Vector2.Transform(mouse.Position, toInput);
-            Vector2 mouseMove = mousePos - Vector2.Transform(mouse.GetStatePrevious().Position.ToVector2(), toInput);
-
-            if ((mouse.Right.Down || mouse.Left.Down) && selectedTooth != null)
+            Vector2 mousePos = Vector2.Transform(input.MousePosition, toInput);
+            Vector2 mouseMove = Vector2.Zero;
+            if (input.MousePosition.LastValue.HasValue)
             {
-                if (mouse.Move != Vector2.Zero)
+                mouseMove = mousePos - Vector2.Transform(input.MousePosition.LastValue.Value, toInput);
+            }
+
+            if ((input.RightClick.Down || input.LeftClick.Down) && selectedTooth != null)
+            {
+                if (mouseMove != Vector2.Zero)
                 {
-                    if (mouse.Left.Down)
+                    if (input.LeftClick.Down)
                     {
                         for (int i = 0; i < selectedTooth.Vertices.Count; i++)
                         {
