@@ -5,7 +5,7 @@ namespace BytingLib
     {
         private readonly int defaultValue;
 
-        public IntOutputOnChange(IntInput child, int defaultValue = -1) : base(child)
+        public IntOutputOnChange(IntInput child, int defaultValue = -1) : base(child, defaultValue)
         {
             this.defaultValue = defaultValue;
         }

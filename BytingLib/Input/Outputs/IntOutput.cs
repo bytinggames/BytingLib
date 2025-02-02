@@ -3,10 +3,12 @@
     public class IntOutput : IntInput, IPointerValue, IInputOutput
     {
         protected IntInput child;
+        private readonly int disabledValue;
 
-        public IntOutput(IntInput child)
+        public IntOutput(IntInput child, int disabledValue = 0)
         {
             this.child = child;
+            this.disabledValue = disabledValue;
         }
 
         public Type GetDeclaredPointerValueType() => typeof(IntInput);
@@ -35,6 +37,11 @@
         public override string ToString()
         {
             return "->" + child;
+        }
+
+        public void Disable()
+        {
+            SetPointerValue(new IntConst(disabledValue));
         }
 
         public static implicit operator int(IntOutput f) => f.Value;

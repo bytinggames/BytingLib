@@ -37,6 +37,11 @@
             return "->" + child;
         }
 
+        public void Disable()
+        {
+            SetPointerValue(new Vector2Const(Vector2.Zero));
+        }
+
         public static implicit operator Vector2(Vector2Output v) => v.Value;
     }
 }

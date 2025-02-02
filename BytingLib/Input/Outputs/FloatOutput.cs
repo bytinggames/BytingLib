@@ -37,6 +37,11 @@
             return "->" + child;
         }
 
+        public void Disable()
+        {
+            SetPointerValue(new FloatConst(0f));
+        }
+
         public static implicit operator float(FloatOutput f) => f.Value;
     }
 }

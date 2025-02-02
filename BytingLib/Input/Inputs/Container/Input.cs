@@ -4,7 +4,7 @@ namespace BytingLib
 {
     public class Input : IDisposable
     {
-        private IInputOutput[] outputs;
+        protected IInputOutput[] outputs;
         protected readonly InputUpdater updater;
 
         public Input(InputUpdater updater)
