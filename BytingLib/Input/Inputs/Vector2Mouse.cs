@@ -2,7 +2,7 @@
 {
     public class Vector2Mouse : Vector2Input
     {
-        public override Vector2 CalculateValue(FullInput input)
+        protected override Vector2 CalculateValue(FullInput input)
         {
             return input.MouseState.Position.ToVector2();
         }

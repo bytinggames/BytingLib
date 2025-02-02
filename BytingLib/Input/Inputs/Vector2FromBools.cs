@@ -2,7 +2,7 @@
 {
     public class Vector2FromBools(BoolInput up, BoolInput left, BoolInput down, BoolInput right) : Vector2Input
     {
-        public override Vector2 CalculateValue(FullInput input)
+        protected override Vector2 CalculateValue(FullInput input)
         {
             Vector2 v = Vector2.Zero;
             if (left.Down)

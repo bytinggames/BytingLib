@@ -15,7 +15,7 @@
             yield return mouseWheelSource;
         }
 
-        public override bool CalculateValue(FullInput input)
+        protected override bool CalculateValue(FullInput input)
         {
             if (mouseWheelSource.Value != 0)
             {

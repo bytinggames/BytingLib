@@ -10,7 +10,7 @@ namespace BytingLib
             yield break;
         }
 
-        public override bool CalculateValue(FullInput input) => input.KeyState.IsKeyDown(Keys.LeftControl) || input.KeyState.IsKeyDown(Keys.RightControl);
+        protected override bool CalculateValue(FullInput input) => input.KeyState.IsKeyDown(Keys.LeftControl) || input.KeyState.IsKeyDown(Keys.RightControl);
 
         public override string ToString()
         {

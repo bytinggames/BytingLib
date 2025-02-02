@@ -5,7 +5,7 @@ namespace BytingLib
     [InputShortcut("GamePad")]
     public class BoolGamePad(Buttons button) : BoolInput
     {
-        public override bool CalculateValue(FullInput input)
+        protected override bool CalculateValue(FullInput input)
         {
             return input.GamePadState.IsButtonDown(button);
         }

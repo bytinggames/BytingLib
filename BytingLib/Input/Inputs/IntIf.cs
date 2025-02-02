@@ -12,7 +12,7 @@
             yield return input;
         }
 
-        public override int CalculateValue(FullInput input)
+        protected override int CalculateValue(FullInput input)
         {
             if (condition.Down)
             {

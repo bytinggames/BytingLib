@@ -24,7 +24,7 @@ namespace BytingLib
             }
         }
 
-        public override int CalculateValue(FullInput input)
+        protected override int CalculateValue(FullInput input)
         {
             for (int i = 0; i < numberInputs.Length; i++)
             {

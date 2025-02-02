@@ -6,7 +6,7 @@
         public int Value { get; private set; }
         public int Delta => updater.CurrentStamp >= 2 ? Value - LastValue : 0;
 
-        public abstract int CalculateValue(FullInput input);
+        protected abstract int CalculateValue(FullInput input);
 
         public override void Update(FullInput input)
         {

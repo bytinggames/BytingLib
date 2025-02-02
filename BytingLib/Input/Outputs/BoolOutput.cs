@@ -15,7 +15,7 @@ namespace BytingLib
 
         public Type GetDeclaredPointerValueType() => typeof(BoolInput);
 
-        public override bool CalculateValue(FullInput input)
+        protected override bool CalculateValue(FullInput input)
         {
             return Value.Down;
         }

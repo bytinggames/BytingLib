@@ -2,7 +2,7 @@
 {
     public class Vector2Transform(Vector2Input child, Func<Matrix> getTransform) : Vector2Input
     {
-        public override Vector2 CalculateValue(FullInput input)
+        protected override Vector2 CalculateValue(FullInput input)
         {
             return Vector2.Transform(child.Value, getTransform());
         }

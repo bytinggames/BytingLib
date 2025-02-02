@@ -4,7 +4,7 @@
     {
         public T Value { get; protected set; }
 
-        public abstract T CalculateValue(FullInput input);
+        protected abstract T CalculateValue(FullInput input);
 
         public override void Update(FullInput input)
         {

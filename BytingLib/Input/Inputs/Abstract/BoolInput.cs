@@ -12,7 +12,7 @@ namespace BytingLib
         public bool Released => -stamp == updater.CurrentStamp;
         public int ReleasedTime => stamp >= 0 ? 0 : (int)(updater.CurrentStamp - -stamp + 1);
 
-        public abstract bool CalculateValue(FullInput input);
+        protected abstract bool CalculateValue(FullInput input);
 
         public override void Update(FullInput input)
         {

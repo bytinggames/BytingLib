@@ -7,7 +7,7 @@
             yield return child;
         }
 
-        public override Vector2 CalculateValue(FullInput input)
+        protected override Vector2 CalculateValue(FullInput input)
         {
             return child.Delta;
         }

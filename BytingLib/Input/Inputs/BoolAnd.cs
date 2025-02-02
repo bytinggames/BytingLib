@@ -3,7 +3,7 @@
     [InputShortcut("And")]
     public class BoolAnd(params BoolInput[] bools) : BoolInput
     {
-        public override bool CalculateValue(FullInput input)
+        protected override bool CalculateValue(FullInput input)
         {
             if (bools.Length == 0)
             {

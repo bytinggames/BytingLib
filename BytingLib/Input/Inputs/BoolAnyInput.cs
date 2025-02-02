@@ -13,7 +13,7 @@ namespace BytingLib
             yield break;
         }
 
-        public override bool CalculateValue(FullInput input)
+        protected override bool CalculateValue(FullInput input)
         {
             bool inputChanged = input.MouseState != lastMouseState
                 || input.KeyState != lastKeyState

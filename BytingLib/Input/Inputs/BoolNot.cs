@@ -8,7 +8,7 @@
             yield return child;
         }
 
-        public override bool CalculateValue(FullInput input)
+        protected override bool CalculateValue(FullInput input)
         {
             return !child.Down;
         }

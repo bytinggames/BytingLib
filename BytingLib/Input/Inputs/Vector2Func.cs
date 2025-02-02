@@ -26,7 +26,7 @@
             }
         }
 
-        public override Vector2 CalculateValue(FullInput input)
+        protected override Vector2 CalculateValue(FullInput input)
         {
             if (child != null && getValueFromChild != null)
             {

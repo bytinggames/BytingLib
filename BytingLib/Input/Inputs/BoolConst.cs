@@ -14,7 +14,7 @@
             yield break;
         }
 
-        public override bool CalculateValue(FullInput input)
+        protected override bool CalculateValue(FullInput input)
         {
             return value;
         }

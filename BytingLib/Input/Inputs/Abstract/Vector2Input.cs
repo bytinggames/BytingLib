@@ -8,7 +8,7 @@
         public float X => Value.X;
         public float Y => Value.Y;
 
-        public abstract Vector2 CalculateValue(FullInput input);
+        protected abstract Vector2 CalculateValue(FullInput input);
 
         public override void Update(FullInput input)
         {

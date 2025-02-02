@@ -14,7 +14,7 @@
         public Type GetDeclaredPointerValueType() => typeof(IntInput);
         public object? GetPointerValue() => child;
 
-        public override int CalculateValue(FullInput input)
+        protected override int CalculateValue(FullInput input)
         {
             return child.Value;
         }

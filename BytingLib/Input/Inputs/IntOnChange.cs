@@ -11,7 +11,7 @@ namespace BytingLib
             yield return child;
         }
 
-        public override int CalculateValue(FullInput input)
+        protected override int CalculateValue(FullInput input)
         {
             if (child.Delta != 0)
             {

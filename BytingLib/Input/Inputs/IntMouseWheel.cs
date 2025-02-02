@@ -9,7 +9,7 @@
             yield break;
         }
 
-        public override int CalculateValue(FullInput input)
+        protected override int CalculateValue(FullInput input)
         {
             int scroll = input.MouseState.ScrollWheelValue;
             long scrollDiff = (long)scroll - previousScrollWheelValue;
