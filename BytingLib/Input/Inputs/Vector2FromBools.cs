@@ -5,19 +5,19 @@
         public override Vector2 CalculateValue(FullInput input)
         {
             Vector2 v = Vector2.Zero;
-            if (left.CalculateValue(input))
+            if (left.Down)
             {
                 v.X--;
             }
-            if (right.CalculateValue(input))
+            if (right.Down)
             {
                 v.X++;
             }
-            if (up.CalculateValue(input))
+            if (up.Down)
             {
                 v.Y--;
             }
-            if (down.CalculateValue(input))
+            if (down.Down)
             {
                 v.Y++;
             }

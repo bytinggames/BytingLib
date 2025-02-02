@@ -10,7 +10,7 @@
 
         public override bool CalculateValue(FullInput input)
         {
-            return !child.CalculateValue(input);
+            return !child.Down;
         }
 
         public override string ToString()

@@ -4,7 +4,7 @@
     {
         public override Vector2 CalculateValue(FullInput input)
         {
-            return Vector2.Transform(child.CalculateValue(input), getTransform());
+            return Vector2.Transform(child.Value, getTransform());
         }
 
         public override IEnumerable<InputUpdate> GetChildren()
