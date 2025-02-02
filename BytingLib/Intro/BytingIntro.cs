@@ -176,7 +176,6 @@ namespace BytingLib.Intro
 
         private readonly Rect requiredSpace;
         private readonly MouseInput mouse;
-        private readonly KeyInput keys;
         RenderTarget2D? renderTarget;
 
         private bool firstDraw = true;
@@ -185,10 +184,9 @@ namespace BytingLib.Intro
         Tooth? selectedTooth;
         int? selectedVertex;
 
-        public BytingIntro(MouseInput mouse, KeyInput keys)
+        public BytingIntro(MouseInput mouse)
         {
             this.mouse = mouse;
-            this.keys = keys;
 
             requiredSpace = Anchor.Center(Vector2.Zero).Rectangle(1920, 1080);
 
