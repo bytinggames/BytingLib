@@ -118,9 +118,9 @@ namespace BytingLib
 
         public sealed override void UpdateActive(GameTime gameTime)
         {
+            input.PreUpdate(); // this updates the input queue
             globalInputUpdater.Update();
             metaInputUpdater.Update();
-            input.PreUpdate();
 
             int iterations = GetIterations();
 
