@@ -4,11 +4,11 @@
     {
         public T Value { get; protected set; }
 
-        public abstract T GetValue(FullInput input);
+        public abstract T CalculateValue(FullInput input);
 
         public override void Update(FullInput input)
         {
-            Value = GetValue(input);
+            Value = CalculateValue(input);
         }
     }
 }

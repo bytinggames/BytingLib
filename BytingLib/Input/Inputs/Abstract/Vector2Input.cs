@@ -8,12 +8,12 @@
         public float X => Value.X;
         public float Y => Value.Y;
 
-        public abstract Vector2 GetValue(FullInput input);
+        public abstract Vector2 CalculateValue(FullInput input);
 
         public override void Update(FullInput input)
         {
             LastValue = Value;
-            Value = GetValue(input);
+            Value = CalculateValue(input);
         }
     }
 }

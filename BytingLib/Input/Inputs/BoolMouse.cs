@@ -10,7 +10,7 @@ namespace BytingLib
             yield break;
         }
 
-        public override bool IsDown(FullInput input)
+        public override bool CalculateValue(FullInput input)
         {
             var state = input.MouseState;
             switch (mouseButton)

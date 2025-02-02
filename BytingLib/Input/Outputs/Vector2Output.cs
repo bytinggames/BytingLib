@@ -12,7 +12,7 @@
         public Type GetDeclaredPointerValueType() => typeof(Vector2Input);
         public object? GetPointerValue() => child;
 
-        public override Vector2 GetValue(FullInput input)
+        public override Vector2 CalculateValue(FullInput input)
         {
             return child.Value;
         }

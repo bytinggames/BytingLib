@@ -23,7 +23,7 @@
             }
         }
 
-        public override int GetValue(FullInput input)
+        public override int CalculateValue(FullInput input)
         {
             int value = this.input.Value;
             if (increment.Pressed)

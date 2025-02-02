@@ -2,9 +2,9 @@
 {
     public class Vector2Transform(Vector2Input child, Func<Matrix> getTransform) : Vector2Input
     {
-        public override Vector2 GetValue(FullInput input)
+        public override Vector2 CalculateValue(FullInput input)
         {
-            return Vector2.Transform(child.GetValue(input), getTransform());
+            return Vector2.Transform(child.CalculateValue(input), getTransform());
         }
 
         public override IEnumerable<InputUpdate> GetChildren()

@@ -12,7 +12,7 @@
         public Type GetDeclaredPointerValueType() => typeof(FloatInput);
         public object? GetPointerValue() => child;
 
-        public override float GetValue(FullInput input)
+        public override float CalculateValue(FullInput input)
         {
             return child.Value;
         }

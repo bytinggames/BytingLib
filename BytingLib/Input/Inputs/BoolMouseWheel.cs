@@ -15,7 +15,7 @@
             yield return mouseWheelSource;
         }
 
-        public override bool IsDown(FullInput input)
+        public override bool CalculateValue(FullInput input)
         {
             if (mouseWheelSource.Value != 0)
             {

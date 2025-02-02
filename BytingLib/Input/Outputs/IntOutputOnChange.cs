@@ -10,7 +10,7 @@ namespace BytingLib
             this.defaultValue = defaultValue;
         }
 
-        public override int GetValue(FullInput input)
+        public override int CalculateValue(FullInput input)
         {
             if (child.Delta != 0)
             {

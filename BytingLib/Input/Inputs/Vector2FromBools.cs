@@ -2,22 +2,22 @@
 {
     public class Vector2FromBools(BoolInput up, BoolInput left, BoolInput down, BoolInput right) : Vector2Input
     {
-        public override Vector2 GetValue(FullInput input)
+        public override Vector2 CalculateValue(FullInput input)
         {
             Vector2 v = Vector2.Zero;
-            if (left.IsDown(input))
+            if (left.CalculateValue(input))
             {
                 v.X--;
             }
-            if (right.IsDown(input))
+            if (right.CalculateValue(input))
             {
                 v.X++;
             }
-            if (up.IsDown(input))
+            if (up.CalculateValue(input))
             {
                 v.Y--;
             }
-            if (down.IsDown(input))
+            if (down.CalculateValue(input))
             {
                 v.Y++;
             }

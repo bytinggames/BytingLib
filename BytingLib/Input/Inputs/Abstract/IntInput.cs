@@ -6,12 +6,12 @@
         public int Value { get; private set; }
         public int Delta => updater.CurrentStamp >= 2 ? Value - LastValue : 0;
 
-        public abstract int GetValue(FullInput input);
+        public abstract int CalculateValue(FullInput input);
 
         public override void Update(FullInput input)
         {
             LastValue = Value;
-            Value = GetValue(input);
+            Value = CalculateValue(input);
         }
 
         public override string ToString()

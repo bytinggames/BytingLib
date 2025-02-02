@@ -8,9 +8,9 @@
             yield return child;
         }
 
-        public override bool IsDown(FullInput input)
+        public override bool CalculateValue(FullInput input)
         {
-            return !child.IsDown(input);
+            return !child.CalculateValue(input);
         }
 
         public override string ToString()

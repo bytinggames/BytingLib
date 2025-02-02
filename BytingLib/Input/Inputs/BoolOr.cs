@@ -3,7 +3,7 @@
     [InputShortcut("Or")]
     public class BoolOr(params BoolInput[] bools) : BoolInput
     {
-        public override bool IsDown(FullInput input)
+        public override bool CalculateValue(FullInput input)
         {
             for (int i = 0; i < bools.Length; i++)
             {

@@ -14,7 +14,7 @@
             yield break;
         }
 
-        public override int GetValue(FullInput input)
+        public override int CalculateValue(FullInput input)
         {
             return value;
         }
