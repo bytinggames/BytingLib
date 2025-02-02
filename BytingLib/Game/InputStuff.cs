@@ -10,7 +10,6 @@ namespace BytingLib
 
         public InputRecordingManager<FullInput> InputRecordingManager { get; }
         public InputRecordingTriggerer<FullInput> InputRecordingTriggerer { get; }
-        public KeyInput Keys { get; }
         public MouseInput Mouse { get; }
         public GamePadInput GamePad { get; }
         public Random Rand { get; private set; } = new Random(); // is initialized again with CreateInputRecorder. This random initialization is just a fallback
@@ -58,8 +57,6 @@ namespace BytingLib
                 new MetaInputState(game.IsActivatedThisFrame()),
                 windowManager.Resolution)));
             inputSource.OnUpdate += InputSource_OnUpdate;
-
-            stuff.Add(Keys = new KeyInput(() => inputSource.Current.KeyState));
 
             stuff.Add(Mouse = new MouseInput(() => inputSource.Current.MouseState, () => inputSource.Current.MetaState.IsActivatedThisUpdate, SetMousePosition));
             stuff.Add(GamePad = new GamePadInput(() => inputSource.Current.GamePadState));

@@ -5,6 +5,8 @@
         public Vector2 LastValue { get; private set; }
         public Vector2 Value { get; private set; }
         public Vector2 Delta => updater.CurrentStamp >= 2 ? Value - LastValue : Vector2.Zero;
+        public float X => Value.X;
+        public float Y => Value.Y;
 
         public abstract Vector2 GetValue(FullInput input);
 
