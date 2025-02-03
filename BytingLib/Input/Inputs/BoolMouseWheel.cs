@@ -34,5 +34,17 @@
             }
             return false;
         }
+
+        public override string ToString()
+        {
+            if (onlyUpOrDown == null)
+            {
+                return "Wheel";
+            }
+            else
+            {
+                return onlyUpOrDown.Value ? "Wheel Up" : "Wheel Down";
+            }
+        }
     }
 }

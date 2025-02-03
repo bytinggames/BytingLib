@@ -21,6 +21,10 @@ namespace BytingLib
                     return state.RightButton == ButtonState.Pressed;
                 case MouseButton.Middle:
                     return state.MiddleButton == ButtonState.Pressed;
+                case MouseButton.Button1:
+                    return state.XButton1 == ButtonState.Pressed;
+                case MouseButton.Button2:
+                    return state.XButton2 == ButtonState.Pressed;
                 default:
                     throw new NotImplementedException();
             }

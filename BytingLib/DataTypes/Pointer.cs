@@ -23,5 +23,10 @@
         }
         public Type GetDeclaredPointerValueType() => typeof(T);
         public object? GetPointerValue() => Value;
+
+        public override string ToString()
+        {
+            return Value?.ToString() ?? "";
+        }
     }
 }

@@ -130,23 +130,26 @@ namespace BytingLib
                 updater.RemoveOutput(outputs[i]);
             }
         }
-        protected static Creator CreateCreator(Dictionary<Type, object>? autoParameters)
-        {
-            return new Creator("BytingLib", autoParameters ?? new(), null, typeof(InputShortcutAttribute))
+
+        public static Creator Creator { get; } =
+            new Creator("BytingLib", new(), null, typeof(InputShortcutAttribute))
             {
                 ParameterSeparator = ','
             };
-        }
 
         private List<PropItem> InitializeDefaultSerialized()
         {
             Input defaultInstance = CreateDefault();
-            return defaultInstance.SerializeInner();
+            return defaultInstance.SerializeInner(null);
         }
 
-        public string Serialize()
+        public static string SerializeToString(List<PropItem> props)
         {
-            List<PropItem> serializedMe = SerializeInner();
+            return string.Join(",\n", props);
+        }
+        public void Serialize(List<PropItem> serialized)
+        {
+            List<PropItem> serializedMe = SerializeInner(serialized);
 
             for (int i = 0; i < serializedMe.Count; i++)
             {
@@ -164,19 +167,16 @@ namespace BytingLib
                 }
             }
 
-            return string.Join(",\n", serializedMe);
+            serialized.AddRange(serializedMe);
         }
 
-        private List<PropItem> SerializeInner(Dictionary<Type, object>? autoParameters = null)
+        private IEnumerable<PropInstance> GetPointers()
         {
-            List<PropItem> output = new();
-
-            Creator c = CreateCreator(autoParameters);
-
             var props = GetType().GetProperties();
 
             foreach (var prop in props)
             {
+                IPointerValue? instance = null;
                 try
                 {
                     var ignoreAttr = prop.GetCustomAttribute<CreatorIgnoreAttribute>(true);
@@ -188,18 +188,44 @@ namespace BytingLib
                     {
                         continue;
                     }
-                    IPointerValue? instance = (IPointerValue?)prop.GetValue(this);
+                    instance = (IPointerValue?)prop.GetValue(this);
                     if (instance == null)
                     {
                         continue;
                     }
-                    var pointerVal = instance.GetPointerValue();
+                }
+                catch (Exception e)
+                {
+                    updater.OnException.Invoke(e);
+                }
+                if (instance != null)
+                {
+                    yield return new(prop.Name, instance);
+                }
+            }
+        }
+
+        private List<PropItem> SerializeInner(List<PropItem>? alreadySerialized)
+        {
+            List<PropItem> output = new();
+
+            var props = GetType().GetProperties();
+
+            foreach (PropInstance prop in GetPointers())
+            {
+                try
+                {
+                    if (alreadySerialized != null && alreadySerialized.Any(f => f.Prop == prop.Name))
+                    {
+                        continue;
+                    }
+                    var pointerVal = prop.Pointer.GetPointerValue();
                     if (pointerVal == null)
                     {
                         continue;
                     }
 
-                    string serialized = c.Serialize(pointerVal);
+                    string serialized = Creator.Serialize(pointerVal);
                     output.Add(new PropItem(prop.Name, serialized));
                 }
                 catch (Exception e)
@@ -212,7 +238,6 @@ namespace BytingLib
 
         public void Override(string keymap)
         {
-            Creator c = CreateCreator(null);
             keymap = Regex.Replace(keymap, @"\s+", "");
 
             ScriptReaderLiteral reader = new(keymap);
@@ -237,7 +262,7 @@ namespace BytingLib
                     {
                         //var valProp = prop.PropertyType.GetProperty("Value", System.Reflection.BindingFlags.SetProperty | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
                         ScriptReaderLiteral reader2 = new(propertyCode);
-                        object keyBindObject = c.CreateObject(reader2, pointer.GetDeclaredPointerValueType());
+                        object keyBindObject = Creator.CreateObject(reader2, pointer.GetDeclaredPointerValueType());
                         pointer.SetPointerValue(keyBindObject);
                     }
                 }
@@ -265,12 +290,16 @@ namespace BytingLib
         protected static BoolInput Or(params BoolInput[] inputs) => new BoolOr(inputs);
         protected static BoolInput Not(BoolInput input) => new BoolNot(input);
 
-        private record PropItem(string Prop, string Value)
+        public record PropItem(string Prop, string Value)
         {
             public override string ToString()
             {
                 return $"{Prop}:{Value}";
             }
         }
+
+        public record PropInstance(string Name, IPointerValue Pointer);
+
+        public IEnumerable<PropInstance> GetCustomizableProperties() => GetPointers();
     }
 }

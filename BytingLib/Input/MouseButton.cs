@@ -4,6 +4,8 @@
     {
         Left,
         Right,
-        Middle
+        Middle,
+        Button1,
+        Button2
     }
 }

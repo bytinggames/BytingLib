@@ -32,5 +32,12 @@
         }
 
         public abstract void Update(FullInput input);
+
+        public object Clone(Creator creator)
+        {
+            string serialized = creator.Serialize(this);
+            object clone = creator.CreateObject(new ScriptReaderLiteral(serialized), GetType());
+            return clone;
+        }
     }
 }

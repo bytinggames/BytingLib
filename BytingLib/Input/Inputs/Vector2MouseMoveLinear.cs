@@ -33,7 +33,7 @@
 
         public override string ToString()
         {
-            return $"MouseDelta ({Value})";
+            return $"MouseDelta";
         }
 
         public void PreventMouseMovement(int forNextUpdates = 1)
