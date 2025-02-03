@@ -8,10 +8,22 @@ namespace BytingLib
         protected IInputOutput[] outputs;
         protected readonly InputUpdater updater;
 
-        private List<PropItem>? defaultSerialized;
+        private List<PropItem>? _defaultSerialized;
+        private List<PropItem> DefaultSerialized
+        {
+            get
+            {
+                if (_defaultSerialized == null)
+                {
+                    _defaultSerialized = InitializeDefaultSerialized();
+                }
+
+                return _defaultSerialized;
+            }
+        }
 
         public Input(InputUpdater updater)
-            :this(updater, true)
+            : this(updater, true)
         {
         }
 
@@ -106,6 +118,10 @@ namespace BytingLib
 
         public void Dispose()
         {
+            if (outputs == null || updater == null)
+            {
+                return;
+            }
             for (int i = 0; i < outputs.Length; i++)
             {
                 updater.RemoveOutput(outputs[i]);
@@ -119,22 +135,23 @@ namespace BytingLib
             };
         }
 
-        public string Serialize(Dictionary<Type, object>? autoParameters = null)
+        private List<PropItem> InitializeDefaultSerialized()
         {
-            List<PropItem> serializedMe = SerializeInner(autoParameters);
-            if (defaultSerialized == null)
-            {
-                Input defaultInstance = (Input)Activator.CreateInstance(GetType(), true)!;
-                defaultSerialized = defaultInstance.SerializeInner(autoParameters);
-            }
+            Input defaultInstance = CreateDefault();
+            return defaultInstance.SerializeInner();
+        }
+
+        public string Serialize()
+        {
+            List<PropItem> serializedMe = SerializeInner();
 
             for (int i = 0; i < serializedMe.Count; i++)
             {
-                for (int j = 0; j < defaultSerialized.Count; j++)
+                for (int j = 0; j < DefaultSerialized.Count; j++)
                 {
-                    if (serializedMe[i].Prop == defaultSerialized[j].Prop)
+                    if (serializedMe[i].Prop == DefaultSerialized[j].Prop)
                     {
-                        if (serializedMe[i].Value == defaultSerialized[j].Value)
+                        if (serializedMe[i].Value == DefaultSerialized[j].Value)
                         {
                             serializedMe.RemoveAt(i--);
                         }
@@ -190,9 +207,9 @@ namespace BytingLib
             return output;
         }
 
-        public void Override(string keymap, Dictionary<Type, object> autoParameters)
+        public void Override(string keymap)
         {
-            Creator c = CreateCreator(autoParameters);
+            Creator c = CreateCreator(null);
             keymap = Regex.Replace(keymap, @"\s+", "");
 
             ScriptReaderLiteral reader = new(keymap);
@@ -226,6 +243,11 @@ namespace BytingLib
                     updater.OnException(e);
                 }
             }
+        }
+
+        public Input CreateDefault()
+        {
+            return (Input)Activator.CreateInstance(GetType(), true)!;
         }
 
         protected static BoolInput Ctrl() => new BoolCtrl();
