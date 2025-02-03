@@ -32,7 +32,7 @@ namespace BytingLib
 
         public override string ToString()
         {
-            return "Mouse." + mouseButton;
+            return mouseButton + " Mouse";
         }
     }
 }

@@ -39,11 +39,11 @@
         {
             if (onlyUpOrDown == null)
             {
-                return "Wheel";
+                return "Mouse Wheel";
             }
             else
             {
-                return onlyUpOrDown.Value ? "Wheel Up" : "Wheel Down";
+                return "Mouse Wheel " + (onlyUpOrDown.Value ? "Up" : "Down");
             }
         }
     }
