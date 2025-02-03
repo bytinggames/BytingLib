@@ -5,18 +5,12 @@
     {
         private readonly Vector2Input mousePos = new Vector2Mouse();
         private readonly BoolInput windowActive = new BoolWindowActive();
-        private readonly IPreventMouseMovement preventMouseMovement;
 
-        private int ignoreMouseMovementForNextUpdates = 1; // if the player moves the mouse while a level is loading, it shouldn't affect the view direction
-
-        public Vector2MouseMoveLinear(IPreventMouseMovement preventMouseMovement)
-        {
-            this.preventMouseMovement = preventMouseMovement;
-        }
+        private int ignoreMouseMovementForNextUpdates = 0; // if the player moves the mouse while a level is loading, it shouldn't affect the view direction
 
         protected override Vector2 CalculateValue(FullInput input)
         {
-            if (windowActive.Pressed || preventMouseMovement.PreventMouseMovement)
+            if (windowActive.Pressed)
             {
                 PreventMouseMovement();
             }
