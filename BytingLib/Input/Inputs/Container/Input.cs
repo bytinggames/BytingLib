@@ -8,6 +8,8 @@ namespace BytingLib
         protected IInputOutput[] outputs;
         protected readonly InputUpdater updater;
 
+        private List<PropItem>? defaultSerialized;
+
         public Input(InputUpdater updater)
             :this(updater, true)
         {
@@ -27,6 +29,11 @@ namespace BytingLib
                 InitializeOutputs();
             }
         }
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        // used for default serialization
+        protected Input() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         protected void InitializeOutputs()
         {
@@ -114,7 +121,35 @@ namespace BytingLib
 
         public string Serialize(Dictionary<Type, object>? autoParameters = null)
         {
-            string output = "";
+            List<PropItem> serializedMe = SerializeInner(autoParameters);
+            if (defaultSerialized == null)
+            {
+                Input defaultInstance = (Input)Activator.CreateInstance(GetType(), true)!;
+                defaultSerialized = defaultInstance.SerializeInner(autoParameters);
+            }
+
+            for (int i = 0; i < serializedMe.Count; i++)
+            {
+                for (int j = 0; j < defaultSerialized.Count; j++)
+                {
+                    if (serializedMe[i].Prop == defaultSerialized[j].Prop)
+                    {
+                        if (serializedMe[i].Value == defaultSerialized[j].Value)
+                        {
+                            serializedMe.RemoveAt(i--);
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            return string.Join(",\n", serializedMe);
+        }
+
+        private List<PropItem> SerializeInner(Dictionary<Type, object>? autoParameters = null)
+        {
+            List<PropItem> output = new();
 
             Creator c = CreateCreator(autoParameters);
 
@@ -145,12 +180,7 @@ namespace BytingLib
                     }
 
                     string serialized = c.Serialize(pointerVal);
-
-                    if (output != "")
-                    {
-                        output += ",\n";
-                    }
-                    output += prop.Name + ":" + serialized;
+                    output.Add(new PropItem(prop.Name, serialized));
                 }
                 catch (Exception e)
                 {
@@ -204,5 +234,13 @@ namespace BytingLib
         protected static BoolInput And(params BoolInput[] inputs) => new BoolAnd(inputs);
         protected static BoolInput Or(params BoolInput[] inputs) => new BoolOr(inputs);
         protected static BoolInput Not(BoolInput input) => new BoolNot(input);
+
+        private record PropItem(string Prop, string Value)
+        {
+            public override string ToString()
+            {
+                return $"{Prop}: {Value}";
+            }
+        }
     }
 }
