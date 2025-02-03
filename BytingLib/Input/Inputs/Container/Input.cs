@@ -69,7 +69,10 @@ namespace BytingLib
                 {
                     continue;
                 }
-
+                if (outputsDict.ContainsKey(output))
+                {
+                    continue;
+                }
                 outputsDict.Add(output, output.GetDependencies().ToArray());
             }
 
@@ -245,6 +248,11 @@ namespace BytingLib
             }
         }
 
+        public static T? CreateDefault<T>() where T : Input
+        {
+            return (T?)Activator.CreateInstance(typeof(T), true);
+        }
+
         public Input CreateDefault()
         {
             return (Input)Activator.CreateInstance(GetType(), true)!;
@@ -261,7 +269,7 @@ namespace BytingLib
         {
             public override string ToString()
             {
-                return $"{Prop}: {Value}";
+                return $"{Prop}:{Value}";
             }
         }
     }
