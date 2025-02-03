@@ -20,8 +20,13 @@ namespace BytingLib
         private readonly Dictionary<Type, Func<string, object>> converters;
 
         public Creator(string defaultNamespace, Assembly[]? assemblies = null, object[]? _autoParameters = null, Type? shortcutAttributeType = null, Dictionary<Type, Func<string, object>>? converters = null)
+            :this(defaultNamespace, ToDictionary(_autoParameters), assemblies, shortcutAttributeType, converters)
         {
-            assemblies ??= new Assembly[] { Assembly.GetCallingAssembly() };
+        }
+
+        public Creator(string defaultNamespace, Dictionary<Type, object> _autoParameters, Assembly[]? assemblies = null, Type? shortcutAttributeType = null, Dictionary<Type, Func<string, object>>? converters = null)
+        {
+            assemblies ??= [Assembly.GetCallingAssembly()];
 
             this.defaultNamespace = defaultNamespace;
             this.assemblies = assemblies;
@@ -31,9 +36,9 @@ namespace BytingLib
             AutoParameters.Add(GetType(), this);
             if (_autoParameters != null)
             {
-                for (int i = 0; i < _autoParameters.Length; i++)
+                foreach (var parameter in _autoParameters)
                 {
-                    AutoParameters.Add(_autoParameters[i].GetType(), _autoParameters[i]);
+                    AutoParameters.Add(parameter.Key, parameter.Value);
                 }
             }
 
@@ -51,6 +56,21 @@ namespace BytingLib
                     }
                 }
             }
+        }
+
+        private static Dictionary<Type, object> ToDictionary(object[]? autoParameters)
+        {
+            if (autoParameters == null || autoParameters.Length == 0)
+            {
+                return new();
+            }
+            Dictionary<Type, object> dict = new();
+
+            for (int i = 0; i < autoParameters.Length; i++)
+            {
+                dict.Add(autoParameters[i].GetType(), autoParameters[i]);
+            }
+            return dict;
         }
 
         public void AddShortcut(string name, Type type)
@@ -382,8 +402,13 @@ namespace BytingLib
         /// <summary>
         /// Experimental
         /// </summary>
-        public string Serialize(object obj)
+        public string Serialize(object? obj)
         {
+            if (obj == null)
+            {
+                return "null";
+            }
+
             Type type = obj.GetType();
 
             if (type.IsEnum || type.IsValueType)
@@ -415,6 +440,7 @@ namespace BytingLib
             var ctor = ctors[0];
             var parameters = ctor.GetParameters();
             int addedParameterCount = 0;
+
             for (int i = 0; i < parameters.Length; i++)
             {
                 if (addedParameterCount > 0)
@@ -434,18 +460,24 @@ namespace BytingLib
                     throw new Exception($"ctor parameter {i} of {type} has no name");
                 }
                 var prop = type.GetProperty(p.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty);
-                object instance;
+                object? instance;
                 if (prop != null)
                 {
                     instance = prop.GetValue(obj) ?? throw new Exception($"couldn't get value from prop {p.Name} of {type}");
                 }
                 else
                 {
-                    string name = $"<{p.Name}>P"; // this may only be used for class Name(int field); fields?
+                    string name = p.Name;
                     var field = type.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetField);
+                    if (field == null)
+                    {
+                        name = $"<{name}>P"; // this may only be used for class Name(int field); fields?
+                        field = type.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetField);
+                    }
+
                     if (field != null)
                     {
-                        instance = field.GetValue(obj) ?? throw new Exception($"couldn't get value from field {name} of {type}");
+                        instance = field.GetValue(obj);// ?? throw new Exception($"couldn't get value from field {name} of {type}");
                     }
                     else
                     {
@@ -454,7 +486,7 @@ namespace BytingLib
                 }
 
                 var paramAttribute = p.GetCustomAttribute<ParamArrayAttribute>(false);
-                if (paramAttribute == null)
+                if (paramAttribute == null || instance == null)
                 {
                     str += Serialize(instance);
                 }

@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace BytingLib
 {
@@ -103,19 +104,19 @@ namespace BytingLib
                 updater.RemoveOutput(outputs[i]);
             }
         }
-        protected static Creator CreateCreator()
+        protected static Creator CreateCreator(Dictionary<Type, object>? autoParameters)
         {
-            return new Creator("BytingLib", null, null, typeof(InputShortcutAttribute))
+            return new Creator("BytingLib", autoParameters ?? new(), null, typeof(InputShortcutAttribute))
             {
                 ParameterSeparator = ','
             };
         }
 
-        public string Serialize()
+        public string Serialize(Dictionary<Type, object>? autoParameters = null)
         {
             string output = "";
 
-            Creator c = CreateCreator();
+            Creator c = CreateCreator(autoParameters);
 
             var props = GetType().GetProperties();
 
@@ -123,9 +124,10 @@ namespace BytingLib
             {
                 try
                 {
-                    if (output != "")
+                    var ignoreAttr = prop.GetCustomAttribute<CreatorIgnoreAttribute>(true);
+                    if (ignoreAttr != null)
                     {
-                        output += ",";
+                        continue;
                     }
                     if (!prop.PropertyType.IsAssignableTo(typeof(IPointerValue)))
                     {
@@ -141,7 +143,14 @@ namespace BytingLib
                     {
                         continue;
                     }
-                    output += prop.Name + ":" + c.Serialize(pointerVal);
+
+                    string serialized = c.Serialize(pointerVal);
+
+                    if (output != "")
+                    {
+                        output += ",\n";
+                    }
+                    output += prop.Name + ":" + serialized;
                 }
                 catch (Exception e)
                 {
@@ -151,9 +160,9 @@ namespace BytingLib
             return output;
         }
 
-        public void Override(string keymap)
+        public void Override(string keymap, Dictionary<Type, object> autoParameters)
         {
-            Creator c = CreateCreator();
+            Creator c = CreateCreator(autoParameters);
             keymap = Regex.Replace(keymap, @"\s+", "");
 
             ScriptReaderLiteral reader = new(keymap);
