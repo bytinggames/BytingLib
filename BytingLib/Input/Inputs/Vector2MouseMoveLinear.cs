@@ -7,7 +7,7 @@
         private readonly BoolInput windowActive = new BoolWindowActive();
         private readonly IPreventMouseMovement preventMouseMovement;
 
-        private int ignoreMouseMovementForNextUpdates = 2; // if the player moves the mouse while a level is loading, it shouldn't affect the view direction
+        private int ignoreMouseMovementForNextUpdates = 1; // if the player moves the mouse while a level is loading, it shouldn't affect the view direction
 
         public Vector2MouseMoveLinear(IPreventMouseMovement preventMouseMovement)
         {
