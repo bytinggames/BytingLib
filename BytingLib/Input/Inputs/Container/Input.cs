@@ -211,8 +211,6 @@ namespace BytingLib
         {
             List<PropItem> output = new();
 
-            var props = GetType().GetProperties();
-
             foreach (PropInstance prop in GetPointers())
             {
                 try
@@ -274,22 +272,31 @@ namespace BytingLib
                 }
             }
         }
-
-        public static T? CreateDefault<T>() where T : Input
+        /// <summary>Don't modify this instance!</summary>
+        public static Input? GetDefault(Type type)
         {
-            return (T?)Activator.CreateInstance(typeof(T), true);
-        }
-
-        public Input GetDefault()
-        {
-            Type t = GetType();
             Input? input;
-            if (!defaults.TryGetValue(t, out input))
+            if (!defaults.TryGetValue(type, out input))
             {
-                input = (Input)Activator.CreateInstance(GetType(), true)!;
-                defaults.Add(t, input);
+                input = (Input?)Activator.CreateInstance(type, true)!;
+                defaults.Add(type, input);
             }
             return input;
+        }
+        /// <summary>Don't modify this instance!</summary>
+        public static T? GetDefault<T>() where T : Input
+        {
+            return (T?)GetDefault(typeof(T));
+        }
+        public static T? GetDefaultClone<T>() where T : Input
+        {
+            return (T?)Activator.CreateInstance(typeof(T), true)!;
+        }
+
+        /// <summary>Don't modify this instance!</summary>
+        public Input GetDefault()
+        {
+            return GetDefault(GetType())!;
         }
 
         protected static BoolInput Ctrl() => new BoolCtrl();
