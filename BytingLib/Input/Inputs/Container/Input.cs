@@ -22,6 +22,8 @@ namespace BytingLib
             }
         }
 
+        static Dictionary<Type, Input> defaults = new();
+
         public Input(InputUpdater updater)
             : this(updater, true)
         {
@@ -139,7 +141,7 @@ namespace BytingLib
 
         private List<PropItem> InitializeDefaultSerialized()
         {
-            Input defaultInstance = CreateDefault();
+            Input defaultInstance = GetDefault();
             return defaultInstance.SerializeInner(null);
         }
 
@@ -278,9 +280,16 @@ namespace BytingLib
             return (T?)Activator.CreateInstance(typeof(T), true);
         }
 
-        public Input CreateDefault()
+        public Input GetDefault()
         {
-            return (Input)Activator.CreateInstance(GetType(), true)!;
+            Type t = GetType();
+            Input? input;
+            if (!defaults.TryGetValue(t, out input))
+            {
+                input = (Input)Activator.CreateInstance(GetType(), true)!;
+                defaults.Add(t, input);
+            }
+            return input;
         }
 
         protected static BoolInput Ctrl() => new BoolCtrl();
