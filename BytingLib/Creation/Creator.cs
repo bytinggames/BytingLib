@@ -140,7 +140,7 @@ namespace BytingLib
                 }
                 // no ()
                 // try to convert directly to objectBaseType
-                return Convert.ChangeType(typeStr, objectBaseType);
+                return Convert.ChangeType(typeStr, objectBaseType, CultureInfo.InvariantCulture);
             }
 
             Type? type = null;
@@ -400,7 +400,7 @@ namespace BytingLib
         }
 
         /// <summary>
-        /// Experimental
+        /// Experimental. only culture independent for float and double. Might break on some culture dependant stuff.
         /// </summary>
         public string Serialize(object? obj)
         {
@@ -413,6 +413,14 @@ namespace BytingLib
 
             if (type.IsEnum || type.IsValueType)
             {
+                if (obj is float f)
+                {
+                    return f.ToString(CultureInfo.InvariantCulture);
+                }
+                else if (obj is double d)
+                {
+                    return d.ToString(CultureInfo.InvariantCulture);
+                }
                 return obj.ToString() ?? "";
             }
 
