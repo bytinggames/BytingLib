@@ -1,13 +1,15 @@
 ﻿namespace BytingLib
 {
     [InputShortcut("Or")]
-    public class BoolOr(params BoolInput[] bools) : BoolInput
+    public class BoolOr(params BoolInput[] Children) : BoolInput
     {
+        public BoolInput[] Children { get; } = Children;
+
         protected override bool CalculateValue(FullInput input)
         {
-            for (int i = 0; i < bools.Length; i++)
+            for (int i = 0; i < Children.Length; i++)
             {
-                if (bools[i].Down)
+                if (Children[i].Down)
                 {
                     return true;
                 }
@@ -18,15 +20,15 @@
 
         public override IEnumerable<InputUpdate> GetChildren()
         {
-            for (int i = 0; i < bools.Length; i++)
+            for (int i = 0; i < Children.Length; i++)
             {
-                yield return bools[i];
+                yield return Children[i];
             }
         }
 
         public override string ToString()
         {
-            return string.Join(" | ", (object?[])bools);
+            return string.Join(" | ", (object?[])Children);
         }
     }
 }
