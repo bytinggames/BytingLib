@@ -16,11 +16,11 @@
         protected override int CalculateValue(FullInput input, InputIntState state)
         {
             int value = this.input.GetState(state.Updater).Value;
-            if (increment.GetState(state.Updater).Down)
+            if (increment.GetState(state.Updater).Pressed)
             {
                 value++;
             }
-            if (decrement != null && decrement.GetState(state.Updater).Down)
+            if (decrement != null && decrement.GetState(state.Updater).Pressed)
             {
                 value--;
             }
