@@ -1,20 +1,20 @@
 ﻿using Microsoft.Xna.Framework.Input;
+using System.Text.Json.Serialization;
 
 namespace BytingLib
 {
-    [InputShortcut("Key")]
-    public class BoolKey(Keys key) : BoolInput
+    public class BoolKey(Keys Key) : InputBoolSimple
     {
-        public override IEnumerable<InputUpdate> GetChildren()
-        {
-            yield break;
-        }
+        public Keys Key { get; } = Key;
 
-        protected override bool CalculateValue(FullInput input) => input.KeyState.IsKeyDown(key);
+        protected override bool CalculateValue(FullInput input, InputBoolState state)
+        {
+            return input.KeyState.IsKeyDown(Key);
+        }
 
         public override string ToString()
         {
-            return key.ToString();
+            return Key.ToString();
         }
     }
 }

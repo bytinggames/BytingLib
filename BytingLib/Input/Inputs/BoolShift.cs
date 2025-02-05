@@ -2,15 +2,12 @@
 
 namespace BytingLib
 {
-    [InputShortcut("Shift")]
-    public class BoolShift : BoolInput
+    public class BoolShift : InputBoolSimple
     {
-        public override IEnumerable<InputUpdate> GetChildren()
+        protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
-            yield break;
+            return input.KeyState.IsKeyDown(Keys.LeftShift) || input.KeyState.IsKeyDown(Keys.RightShift);
         }
-
-        protected override bool CalculateValue(FullInput input) => input.KeyState.IsKeyDown(Keys.LeftShift) || input.KeyState.IsKeyDown(Keys.RightShift);
 
         public override string ToString()
         {

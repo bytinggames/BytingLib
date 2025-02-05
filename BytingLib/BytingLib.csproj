@@ -37,6 +37,26 @@
       <LastGenOutput>CharacterAllowedAt.Generated.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
+    <None Update="Input\Inputs\Abstract\Input.Generate.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Input.Generate.cs</LastGenOutput>
+    </None>
+    <None Update="Input\Inputs\Binds\ControlGameSpeed\BindsControlGameSpeed.tt">
+      <LastGenOutput>BindsControlGameSpeed.Generated.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Input\Inputs\Binds\InputRecording\BindsInputRecordings.tt">
+      <LastGenOutput>BindsInputRecordings.Generated.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Input\Inputs\Binds\Meta\BindsMeta.tt">
+      <LastGenOutput>BindsMeta.Generated.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Input\Inputs\Binds\Canvas\BindsCanvas.tt">
+      <LastGenOutput>BindsCanvas.Generated.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="UI/Panel/PanelStack.Generated.tt">
       <LastGenOutput>PanelStack.Generated.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -60,6 +80,31 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>CharacterAllowedAt.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Input\Inputs\Abstract\Input.Generate.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Input.Generate.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Input\Inputs\Binds\ControlGameSpeed\BindsControlGameSpeed.Generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BindsControlGameSpeed.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Input\Inputs\Binds\InputRecording\BindsInputRecordings.Generated.cs">
+      <DependentUpon>BindsInputRecordings.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Input\Inputs\Binds\Meta\BindsMeta.Generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BindsMeta.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Input\Inputs\Binds\Canvas\BindsCanvas.Generated.cs">
+      <DependentUpon>BindsCanvas.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Update="UI/Panel/PanelStack.Generated.cs">
       <DesignTime>True</DesignTime>

@@ -1,16 +1,15 @@
 ﻿namespace BytingLib
 {
-    [InputShortcut("Not")]
-    public class BoolNot(BoolInput child) : BoolInput
+    public class BoolNot(InputBool child) : InputBoolSimple
     {
-        public override IEnumerable<InputUpdate> GetChildren()
+        public override IEnumerable<Input> GetChildren()
         {
             yield return child;
         }
 
-        protected override bool CalculateValue(FullInput input)
+        protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
-            return !child.Down;
+            return !child.GetState(state.Updater).Down;
         }
 
         public override string ToString()

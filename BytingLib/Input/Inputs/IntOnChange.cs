@@ -4,20 +4,21 @@ namespace BytingLib
     /// <summary>
     /// Might be bad practice to use this. Probably rather use IntOutputOnChange, because the output is the topmost property in the input tree
     /// </summary>
-    public class IntOnChange(IntInput child, int defaultValue = -1) : IntInput
+    public class IntOnChange(InputInt child, int defaultValue = -1) : InputIntSimple
     {
-        public override IEnumerable<InputUpdate> GetChildren()
+        protected override int CalculateValue(FullInput input, InputIntState state)
         {
-            yield return child;
-        }
-
-        protected override int CalculateValue(FullInput input)
-        {
-            if (child.Delta != 0)
+            var childState = child.GetState(state.Updater);
+            if (childState.Delta != 0)
             {
-                return child.Value;
+                return childState.Value;
             }
             return defaultValue;
+        }
+
+        public override IEnumerable<Input> GetChildren()
+        {
+            yield return child;
         }
     }
 }

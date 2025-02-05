@@ -1,32 +1,25 @@
 ﻿namespace BytingLib
 {
-    public class IntMouseWheel : IntInput
+    public class IntMouseWheel : InputInt<IntMouseWheelState>
     {
-        int previousScrollWheelValue;
+        protected override int CalculateValue(FullInput input, IntMouseWheelState state)
+        {
+            return state.CalculateValue(input.MouseState.ScrollWheelValue);
+        }
 
-        public override IEnumerable<InputUpdate> GetChildren()
+        public override IntMouseWheelState CreateState(InputUpdater updater)
+        {
+            return new IntMouseWheelState(updater);
+        }
+
+        public override IEnumerable<Input> GetChildren()
         {
             yield break;
         }
 
-        protected override int CalculateValue(FullInput input)
-        {
-            int scroll = input.MouseState.ScrollWheelValue;
-            long scrollDiff = (long)scroll - previousScrollWheelValue;
-            if (Math.Abs(scrollDiff) >= int.MaxValue) // check if value overflew (int.MaxValue is only half the range, but still suffices, because you can't scroll that much in a single update)
-            {
-                // correct overflow
-                const long intRange = (long)int.MaxValue * 2 + 1;
-                scrollDiff = Math.Sign(-scrollDiff) * (intRange - Math.Abs(scrollDiff));
-            }
-
-            previousScrollWheelValue = scroll;
-            return (int)scrollDiff;
-        }
-
         public override string ToString()
         {
-            return $"MouseWheel ({Value})";
+            return $"MouseWheel";
         }
     }
 }

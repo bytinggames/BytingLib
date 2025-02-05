@@ -2,12 +2,12 @@
 {
     public class InputRecordingTriggerer<T> : IUpdate where T : struct
     {
-        private readonly InputRecordingBinds? input;
+        private readonly InputInputRecordings? input;
         private readonly InputRecordingManager<T> inputRecordingManager;
         private readonly string inputRecordingDir;
         private readonly Action<Action> onStartPlaying;
 
-        public InputRecordingTriggerer(InputRecordingBinds? input, InputRecordingManager<T> inputRecordingManager, string inputRecordingDir, Action<Action> onStartPlaying, bool startRecordingInstantly)
+        public InputRecordingTriggerer(InputInputRecordings? input, InputRecordingManager<T> inputRecordingManager, string inputRecordingDir, Action<Action> onStartPlaying, bool startRecordingInstantly)
         {
             this.input = input;
             this.inputRecordingManager = inputRecordingManager;

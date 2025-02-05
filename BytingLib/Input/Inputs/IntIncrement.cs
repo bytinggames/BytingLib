@@ -1,19 +1,33 @@
 ﻿namespace BytingLib
 {
-    public class IntIncrement : IntInput
+    public class IntIncrement : InputIntSimple
     {
-        private readonly IntInput input;
-        private readonly BoolInput increment;
-        private readonly BoolInput? decrement;
+        private readonly InputInt input;
+        private readonly InputBool increment;
+        private readonly InputBool? decrement;
 
-        public IntIncrement(IntInput input, BoolInput increment, BoolInput? decrement)
+        public IntIncrement(InputInt input, InputBool increment, InputBool? decrement)
         {
             this.input = input;
             this.increment = increment;
             this.decrement = decrement;
         }
 
-        public override IEnumerable<InputUpdate> GetChildren()
+        protected override int CalculateValue(FullInput input, InputIntState state)
+        {
+            int value = this.input.GetState(state.Updater).Value;
+            if (increment.GetState(state.Updater).Down)
+            {
+                value++;
+            }
+            if (decrement != null && decrement.GetState(state.Updater).Down)
+            {
+                value--;
+            }
+            return value;
+        }
+
+        public override IEnumerable<Input> GetChildren()
         {
             yield return input;
             yield return increment;
@@ -21,20 +35,6 @@
             {
                 yield return decrement;
             }
-        }
-
-        protected override int CalculateValue(FullInput input)
-        {
-            int value = this.input.Value;
-            if (increment.Pressed)
-            {
-                value++;
-            }
-            if (decrement != null && decrement.Pressed)
-            {
-                value--;
-            }
-            return value;
         }
     }
 }

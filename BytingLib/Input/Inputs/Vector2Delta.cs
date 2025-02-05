@@ -1,15 +1,15 @@
 ﻿namespace BytingLib
 {
-    public class Vector2Delta(Vector2Input child) : Vector2Input
+    public class Vector2Delta(InputVector2 child) : InputVector2Simple
     {
-        public override IEnumerable<InputUpdate> GetChildren()
+        public override IEnumerable<Input> GetChildren()
         {
             yield return child;
         }
 
-        protected override Vector2 CalculateValue(FullInput input)
+        protected override Vector2 CalculateValue(FullInput input, InputVector2State state)
         {
-            return child.Delta;
+            return child.GetState(state.Updater).Delta;
         }
 
         public override string ToString()

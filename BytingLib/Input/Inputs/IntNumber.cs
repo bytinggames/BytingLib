@@ -2,21 +2,21 @@
 
 namespace BytingLib
 {
-    public class IntNumber : IntInput
+    public class IntNumber : InputIntSimple
     {
-        BoolInput[] numberInputs;
+        InputBool[] numberInputs;
 
         public IntNumber()
         {
             numberInputs = GetNumberKeys();
         }
 
-        public IntNumber(BoolInput[] numberInputs)
+        public IntNumber(InputBool[] numberInputs)
         {
             this.numberInputs = numberInputs;
         }
 
-        public override IEnumerable<InputUpdate> GetChildren()
+        public override IEnumerable<Input> GetChildren()
         {
             for (int i = 0; i < numberInputs.Length; i++)
             {
@@ -24,11 +24,11 @@ namespace BytingLib
             }
         }
 
-        protected override int CalculateValue(FullInput input)
+        protected override int CalculateValue(FullInput input, InputIntState state)
         {
             for (int i = 0; i < numberInputs.Length; i++)
             {
-                if (numberInputs[i].Pressed)
+                if (numberInputs[i].GetState(state.Updater).Down)
                 {
                     return i;
                 }
@@ -36,7 +36,7 @@ namespace BytingLib
             return -1;
         }
 
-        public static BoolInput[] GetNumberKeys()
+        public static InputBool[] GetNumberKeys()
         {
             return [
                 new BoolKey(Keys.D0),

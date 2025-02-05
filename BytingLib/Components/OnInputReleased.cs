@@ -3,20 +3,30 @@ namespace BytingLib
 {
     public class OnInputReleased : IUpdate
     {
-        private readonly BoolOutput boolOutput;
+        private readonly Func<InputBoolState> input;
         private readonly Action action;
+        private readonly bool alsoUpdateBelowPopup;
 
-        public OnInputReleased(BoolOutput boolOutput, Action action)
+        public OnInputReleased(Func<InputBoolState> input, Action action, bool alsoUpdateBelowPopup = false)
         {
-            this.boolOutput = boolOutput;
+            this.input = input;
             this.action = action;
+            this.alsoUpdateBelowPopup = alsoUpdateBelowPopup;
         }
 
         public void Update()
         {
-            if (boolOutput.Released)
+            if (input().Released)
             {
                 action();
+            }
+        }
+
+        public void UpdateWhenBelowPopup(Scene popup)
+        {
+            if (alsoUpdateBelowPopup)
+            {
+                Update();
             }
         }
     }

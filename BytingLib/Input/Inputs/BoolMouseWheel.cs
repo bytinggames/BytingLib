@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    public class BoolMouseWheel : BoolInput
+    public class BoolMouseWheel : InputBoolSimple
     {
         IntMouseWheel mouseWheelSource = new();
         private readonly bool? onlyUpOrDown;
@@ -10,14 +10,15 @@
             this.onlyUpOrDown = onlyUpOrDown;
         }
 
-        public override IEnumerable<InputUpdate> GetChildren()
+        public override IEnumerable<Input> GetChildren()
         {
             yield return mouseWheelSource;
         }
 
-        protected override bool CalculateValue(FullInput input)
+        protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
-            if (mouseWheelSource.Value != 0)
+            var wheelState = mouseWheelSource.GetState(state.Updater);
+            if (wheelState.Value != 0)
             {
                 if (onlyUpOrDown == null)
                 {
@@ -25,11 +26,11 @@
                 }
                 else if (onlyUpOrDown.Value)
                 {
-                    return mouseWheelSource.Value > 0;
+                    return wheelState.Value > 0;
                 }
                 else
                 {
-                    return mouseWheelSource.Value < 0;
+                    return wheelState.Value < 0;
                 }
             }
             return false;

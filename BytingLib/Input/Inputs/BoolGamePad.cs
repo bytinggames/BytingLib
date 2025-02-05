@@ -2,18 +2,18 @@
 
 namespace BytingLib
 {
-    [InputShortcut("GamePad")]
-    public class BoolGamePad(Buttons button) : BoolInput
+    public class BoolGamePad(Buttons Button) : InputBoolSimple
     {
-        protected override bool CalculateValue(FullInput input)
+        public Buttons Button { get; } = Button;
+
+        protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
-            return input.GamePadState.IsButtonDown(button);
+            return input.GamePadState.IsButtonDown(Button);
         }
-        public override IEnumerable<InputUpdate> GetChildren() { yield break; }
 
         public override string ToString()
         {
-            return "GamePad." + button.ToString();
+            return Button.ToString();
         }
     }
 }

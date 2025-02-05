@@ -2,15 +2,12 @@
 
 namespace BytingLib
 {
-    [InputShortcut("Alt")]
-    public class BoolAlt : BoolInput
+    public class BoolAlt : InputBoolSimple
     {
-        public override IEnumerable<InputUpdate> GetChildren()
+        protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
-            yield break;
+            return input.KeyState.IsKeyDown(Keys.LeftAlt) || input.KeyState.IsKeyDown(Keys.RightAlt);
         }
-
-        protected override bool CalculateValue(FullInput input) => input.KeyState.IsKeyDown(Keys.LeftAlt) || input.KeyState.IsKeyDown(Keys.RightAlt);
 
         public override string ToString()
         {

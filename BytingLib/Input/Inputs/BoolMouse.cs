@@ -2,29 +2,23 @@
 
 namespace BytingLib
 {
-    [InputShortcut("Mouse")]
-    public class BoolMouse(MouseButton mouseButton) : BoolInput
+    public class BoolMouse(MouseButton mouseButton) : InputBoolSimple
     {
-        public override IEnumerable<InputUpdate> GetChildren()
+        protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
-            yield break;
-        }
-
-        protected override bool CalculateValue(FullInput input)
-        {
-            var state = input.MouseState;
+            var s = input.MouseState;
             switch (mouseButton)
             {
                 case MouseButton.Left:
-                    return state.LeftButton == ButtonState.Pressed;
+                    return s.LeftButton == ButtonState.Pressed;
                 case MouseButton.Right:
-                    return state.RightButton == ButtonState.Pressed;
+                    return s.RightButton == ButtonState.Pressed;
                 case MouseButton.Middle:
-                    return state.MiddleButton == ButtonState.Pressed;
+                    return s.MiddleButton == ButtonState.Pressed;
                 case MouseButton.Button1:
-                    return state.XButton1 == ButtonState.Pressed;
+                    return s.XButton1 == ButtonState.Pressed;
                 case MouseButton.Button2:
-                    return state.XButton2 == ButtonState.Pressed;
+                    return s.XButton2 == ButtonState.Pressed;
                 default:
                     throw new NotImplementedException();
             }

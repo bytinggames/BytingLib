@@ -13,9 +13,13 @@ namespace BytingLib
         protected readonly SaveStateManager saveStateManager;
         protected readonly MouseVisibilityManager mouseVisibilityManager;
         private readonly InputControlGameSpeed? inputGameSpeed;
-        private readonly InputRecordingBinds? inputRecordingBinds;
+        private readonly InputInputRecordings? inputInputRecordings;
         protected readonly InputUpdater globalInputUpdater;
         protected readonly InputUpdater metaInputUpdater;
+        protected readonly InputBinds<BindsCanvas> bindsCanvas = new();
+        protected readonly InputBinds<BindsMeta> bindsMeta = new();
+        protected readonly InputBinds<BindsControlGameSpeed> bindsControlGameSpeed = new();
+        protected readonly InputBinds<BindsInputRecordings> bindsInputRecordings = new();
         protected readonly InputCanvas inputCanvas;
         /// <summary>Only used for input that shouldn't be recorded (Fullscreen Toggle for example or Replay interrupt).
         /// The difference to inputDev</summary>
@@ -38,7 +42,7 @@ namespace BytingLib
         public static Func<int> DebugGetFrame { get; set; } = () => 0;
         public static int DebugFrame => DebugGetFrame();
 
-        public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter, HotReloadType hotReloadType, Action<Exception> onInputException,
+        public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter, HotReloadType hotReloadType,
             bool mouseWithActivationClick = false,
             bool vsync = true, bool startRecordingInstantly = true, bool enableGameSpeedKeys = false,
             bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool enableRecordingKeys = true)
@@ -72,21 +76,21 @@ namespace BytingLib
             };
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, new object[] { contentCollector }, typeof(MarkupShortcutAttribute), converters);
 
-            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, inputRecordingBinds);
+            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, inputInputRecordings);
 
-            globalInputUpdater = new(() => input.FullInput, onInputException);
-            metaInputUpdater = new(input.GetRealInput, onInputException);
+            globalInputUpdater = new(() => input.FullInput);
+            metaInputUpdater = new(input.GetRealInput);
 
-            inputCanvas = Use(new InputCanvas(globalInputUpdater));
-            inputMeta = Use(new InputMeta(metaInputUpdater));
+            inputCanvas = Use(new InputCanvas(bindsCanvas, globalInputUpdater));
+            inputMeta = Use(new InputMeta(bindsMeta, metaInputUpdater));
 
             if (enableGameSpeedKeys)
             {
-                inputGameSpeed = Use(new InputControlGameSpeed(globalInputUpdater));
+                inputGameSpeed = Use(new InputControlGameSpeed(bindsControlGameSpeed, globalInputUpdater));
             }
             if (enableRecordingKeys)
             {
-                inputRecordingBinds = Use(new InputRecordingBinds(globalInputUpdater));
+                inputInputRecordings = Use(new InputInputRecordings(bindsInputRecordings, globalInputUpdater));
             }
 
             basePaths = paths;

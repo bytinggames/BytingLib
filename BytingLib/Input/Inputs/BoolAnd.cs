@@ -1,9 +1,8 @@
 ﻿namespace BytingLib
 {
-    [InputShortcut("And")]
-    public class BoolAnd(params BoolInput[] bools) : BoolInput
+    public class BoolAnd(params InputBool[] bools) : InputBoolSimple
     {
-        protected override bool CalculateValue(FullInput input)
+        protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
             if (bools.Length == 0)
             {
@@ -12,18 +11,19 @@
             long shortestDownTime = long.MaxValue;
             for (int i = 0; i < bools.Length - 1; i++)
             {
-                if (!bools[i].Down)
+                var s = bools[i].GetState(state.Updater);
+                if (!s.Down)
                 {
                     return false;
                 }
-                shortestDownTime = bools[i].DownTime;
+                shortestDownTime = s.DownTime;
             }
 
             var lastState = bools[^1];
-            return lastState.Down && lastState.DownTime < shortestDownTime;
+            return lastState.GetState(state.Updater).Down && lastState.GetState(state.Updater).DownTime < shortestDownTime;
         }
 
-        public override IEnumerable<InputUpdate> GetChildren()
+        public override IEnumerable<Input> GetChildren()
         {
             for (int i = 0; i < bools.Length; i++)
             {

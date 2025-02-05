@@ -3,20 +3,20 @@ namespace BytingLib
 {
     public class OnInputPressed : IUpdate, IUpdateWhenBelowPopup
     {
-        private readonly BoolOutput boolOutput;
+        private readonly Func<InputBoolState> input;
         private readonly Action action;
         private readonly bool alsoUpdateBelowPopup;
 
-        public OnInputPressed(BoolOutput boolOutput, Action action, bool alsoUpdateBelowPopup = false)
+        public OnInputPressed(Func<InputBoolState> input, Action action, bool alsoUpdateBelowPopup = false)
         {
-            this.boolOutput = boolOutput;
+            this.input = input;
             this.action = action;
             this.alsoUpdateBelowPopup = alsoUpdateBelowPopup;
         }
 
         public void Update()
         {
-            if (boolOutput.Pressed)
+            if (input().Pressed)
             {
                 action();
             }

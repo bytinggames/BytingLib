@@ -1,13 +1,8 @@
 ﻿namespace BytingLib
 {
-    public class BoolWindowActive : BoolInput
+    public class BoolWindowActive : InputBoolSimple
     {
-        public override IEnumerable<InputUpdate> GetChildren()
-        {
-            yield break;
-        }
-
-        protected override bool CalculateValue(FullInput input)
+        protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
             return input.MetaState.IsActivatedThisUpdate;
         }

@@ -33,15 +33,6 @@
 
         protected override ElementInput CreateElementInput(IInputCanvas input, GameWindow window)
         {
-            //input = input.Clone();
-            //input.Transform(GetTransform); // TODO: clone?
-
-            //MouseTransformed mouseTransformed = new MouseTransformed(mouse.GetState, GetTransform, mouse.SetPosition);
-            //MouseInput mouseNew = new MouseInput(mouseTransformed.GetState, () => mouse.IsActivatedThisFrame, mouseTransformed.SetPosition);
-
-            //input.MousePosition.SetPointerValue
-
-            inputTransformed?.Dispose();
             inputTransformed = new InputCanvasTransformed(input, () => Matrix.Invert(GetTransform()));
             return new ElementInput(inputTransformed, SetUpdateCatch, window);
         }
@@ -248,13 +239,6 @@
         public void TakeUIScreenshot(string outputPngFile)
         {
             takeUIScreenshot = outputPngFile;
-        }
-
-        protected override void DisposeSelf()
-        {
-            inputTransformed?.Dispose();
-
-            base.DisposeSelf();
         }
     }
 }

@@ -2,15 +2,12 @@
 
 namespace BytingLib
 {
-    [InputShortcut("Ctrl")]
-    public class BoolCtrl : BoolInput
+    public class BoolCtrl : InputBoolSimple
     {
-        public override IEnumerable<InputUpdate> GetChildren()
+        protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
-            yield break;
+            return input.KeyState.IsKeyDown(Keys.LeftControl) || input.KeyState.IsKeyDown(Keys.RightControl);
         }
-
-        protected override bool CalculateValue(FullInput input) => input.KeyState.IsKeyDown(Keys.LeftControl) || input.KeyState.IsKeyDown(Keys.RightControl);
 
         public override string ToString()
         {

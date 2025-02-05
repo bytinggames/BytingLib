@@ -31,7 +31,7 @@ namespace BytingLib
         private readonly Func<MouseState> getMouseState;
 
         public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths,
-            Action<Action> startRecordingPlayback, bool startRecordingInstantly, InputRecordingBinds? inputRecordingBinds)
+            Action<Action> startRecordingPlayback, bool startRecordingInstantly, InputInputRecordings? inputInputRecordings)
         {
             this.windowManager = windowManager;
             this.game = game;
@@ -57,7 +57,7 @@ namespace BytingLib
             inputSource.OnUpdate += InputSource_OnUpdate;
 
             stuff.Add(InputRecordingManager = new(stuff, inputSource, CreateInputRecorder, PlayInput));
-            stuff.Add(InputRecordingTriggerer = new(inputRecordingBinds, InputRecordingManager, basePaths.InputRecordingsDir, startRecordingPlayback, startRecordingInstantly));
+            stuff.Add(InputRecordingTriggerer = new(inputInputRecordings, InputRecordingManager, basePaths.InputRecordingsDir, startRecordingPlayback, startRecordingInstantly));
         }
 
         public FullInput GetRealInput()
