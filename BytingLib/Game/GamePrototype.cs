@@ -16,10 +16,10 @@ namespace BytingLib
         private readonly InputInputRecordings? inputInputRecordings;
         protected readonly InputUpdater globalInputUpdater;
         protected readonly InputUpdater metaInputUpdater;
-        protected readonly InputBinds<BindsCanvas> bindsCanvas = new();
-        protected readonly InputBinds<BindsMeta> bindsMeta = new();
-        protected readonly InputBinds<BindsControlGameSpeed> bindsControlGameSpeed = new();
-        protected readonly InputBinds<BindsInputRecordings> bindsInputRecordings = new();
+        protected readonly BindsCanvas bindsCanvas = new();
+        protected readonly BindsMeta bindsMeta = new();
+        protected readonly BindsControlGameSpeed bindsControlGameSpeed = new();
+        protected readonly BindsInputRecordings bindsInputRecordings = new();
         protected readonly InputCanvas inputCanvas;
         /// <summary>Only used for input that shouldn't be recorded (Fullscreen Toggle for example or Replay interrupt).
         /// The difference to inputDev</summary>

@@ -2,7 +2,7 @@
 
 namespace BytingLib
 {
-    public class BindsMeta : BindsShortcuts
+    public class BindsMeta : InputBinds
     {
         #region >InputMeta
 

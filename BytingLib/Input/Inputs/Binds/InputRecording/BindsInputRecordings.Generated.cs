@@ -13,21 +13,21 @@ namespace BytingLib
 		public virtual InputBoolState StartRecording => startRecording.GetState(updater);
 		public virtual InputBoolState StopRecording => stopRecording.GetState(updater);
 
-		public InputInputRecordings(InputBinds<BindsInputRecordings> b, InputUpdater updater)
+		public InputInputRecordings(BindsInputRecordings binds, InputUpdater updater)
 		{
 			this.updater = updater;
 			
-			startRecording = new(() => b.Binds.StartRecording);
-			stopRecording = new(() => b.Binds.StopRecording);
+			InitInput(out startRecording, new(() => binds.StartRecording));
+			InitInput(out stopRecording, new(() => binds.StopRecording));
 
-			InitInput(startRecording);
-			InitInput(stopRecording);
+			
 		}
-
-		protected void InitInput(Input input)
+		
+		protected void InitInput<T>(out T inputOut, T input) where T : Input
 		{
 			updater.AddOutput(input);
 			disposables.Use(input);
+            inputOut = input;
 		}
 
 		public void Dispose()

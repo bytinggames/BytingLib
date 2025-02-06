@@ -17,25 +17,23 @@ namespace BytingLib
 		public virtual InputBoolState Halt => halt.GetState(updater);
 		public virtual InputBoolState ForwardOneFrame => forwardOneFrame.GetState(updater);
 
-		public InputControlGameSpeed(InputBinds<BindsControlGameSpeed> b, InputUpdater updater)
+		public InputControlGameSpeed(BindsControlGameSpeed binds, InputUpdater updater)
 		{
 			this.updater = updater;
 			
-			speedUp10 = new(() => b.Binds.SpeedUp10);
-			speedUp100 = new(() => b.Binds.SpeedUp100);
-			halt = new(() => b.Binds.Halt);
-			forwardOneFrame = new(() => b.Binds.ForwardOneFrame);
+			InitInput(out speedUp10, new(() => binds.SpeedUp10));
+			InitInput(out speedUp100, new(() => binds.SpeedUp100));
+			InitInput(out halt, new(() => binds.Halt));
+			InitInput(out forwardOneFrame, new(() => binds.ForwardOneFrame));
 
-			InitInput(speedUp10);
-			InitInput(speedUp100);
-			InitInput(halt);
-			InitInput(forwardOneFrame);
+			
 		}
-
-		protected void InitInput(Input input)
+		
+		protected void InitInput<T>(out T inputOut, T input) where T : Input
 		{
 			updater.AddOutput(input);
 			disposables.Use(input);
+            inputOut = input;
 		}
 
 		public void Dispose()

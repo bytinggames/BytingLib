@@ -15,23 +15,22 @@ namespace BytingLib
 		public virtual InputBoolState Click => click.GetState(updater);
 		public virtual InputIntState Scroll => scroll.GetState(updater);
 
-		public InputCanvas(InputBinds<BindsCanvas> b, InputUpdater updater)
+		public InputCanvas(BindsCanvas binds, InputUpdater updater)
 		{
 			this.updater = updater;
 			
-			mousePosition = new(() => b.Binds.MousePosition);
-			click = new(() => b.Binds.Click);
-			scroll = new(() => b.Binds.Scroll);
+			InitInput(out mousePosition, new(() => binds.MousePosition));
+			InitInput(out click, new(() => binds.Click));
+			InitInput(out scroll, new(() => binds.Scroll));
 
-			InitInput(mousePosition);
-			InitInput(click);
-			InitInput(scroll);
+			
 		}
-
-		protected void InitInput(Input input)
+		
+		protected void InitInput<T>(out T inputOut, T input) where T : Input
 		{
 			updater.AddOutput(input);
 			disposables.Use(input);
+            inputOut = input;
 		}
 
 		public void Dispose()

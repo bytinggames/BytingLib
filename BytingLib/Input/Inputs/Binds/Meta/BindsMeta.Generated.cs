@@ -19,27 +19,24 @@ namespace BytingLib
 		public virtual InputBoolState InterruptReplay => interruptReplay.GetState(updater);
 		public virtual InputBoolState SwapScreen => swapScreen.GetState(updater);
 
-		public InputMeta(InputBinds<BindsMeta> b, InputUpdater updater)
+		public InputMeta(BindsMeta binds, InputUpdater updater)
 		{
 			this.updater = updater;
 			
-			screenshot = new(() => b.Binds.Screenshot);
-			screenshotDelayed = new(() => b.Binds.ScreenshotDelayed);
-			toggleFullscreen = new(() => b.Binds.ToggleFullscreen);
-			interruptReplay = new(() => b.Binds.InterruptReplay);
-			swapScreen = new(() => b.Binds.SwapScreen);
+			InitInput(out screenshot, new(() => binds.Screenshot));
+			InitInput(out screenshotDelayed, new(() => binds.ScreenshotDelayed));
+			InitInput(out toggleFullscreen, new(() => binds.ToggleFullscreen));
+			InitInput(out interruptReplay, new(() => binds.InterruptReplay));
+			InitInput(out swapScreen, new(() => binds.SwapScreen));
 
-			InitInput(screenshot);
-			InitInput(screenshotDelayed);
-			InitInput(toggleFullscreen);
-			InitInput(interruptReplay);
-			InitInput(swapScreen);
+			
 		}
-
-		protected void InitInput(Input input)
+		
+		protected void InitInput<T>(out T inputOut, T input) where T : Input
 		{
 			updater.AddOutput(input);
 			disposables.Use(input);
+            inputOut = input;
 		}
 
 		public void Dispose()
