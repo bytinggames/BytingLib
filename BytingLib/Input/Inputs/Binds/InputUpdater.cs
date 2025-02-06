@@ -4,11 +4,13 @@
     {
         public long CurrentStamp { get; private set; }
         protected readonly Func<FullInput> getFullInput;
+        private readonly string? name;
         private readonly List<Input> outputs = new();
 
-        public InputUpdater(Func<FullInput> getFullInput)
+        public InputUpdater(Func<FullInput> getFullInput, string name = null)
         {
             this.getFullInput = getFullInput;
+            this.name = name;
         }
 
         public void Update()
@@ -38,6 +40,15 @@
         public void RemoveOutput(Input output)
         {
             outputs.Remove(output);
+        }
+
+        public override string? ToString()
+        {
+            if (name == null)
+            {
+                return base.ToString();
+            }
+            return "InputUpdater " + name;
         }
     }
 }

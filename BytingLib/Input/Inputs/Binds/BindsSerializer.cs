@@ -10,10 +10,10 @@ namespace BytingLib
              
         };
 
-        public string Serialize(InputBinds binds, bool removeDefaults = true)
+        public string Serialize(object inputBinds, bool removeDefaults = true)
         {
-            Type type = binds.GetType();
-            string json = JsonSerializer.Serialize(binds, type, options);
+            Type type = inputBinds.GetType();
+            string json = JsonSerializer.Serialize(inputBinds, type, options);
 
             if (removeDefaults)
             {
@@ -127,6 +127,20 @@ namespace BytingLib
                 defaultJsonSplit.Add(t, SplitJson(json)); 
             }
             return defaultJsonSplit[t];
+        }
+
+        /// <summary>Can also be used on Inputs</summary>
+        public bool AreEqualWhenSerialized(object? obj1, object? obj2)
+        {
+            if (obj1 == null && obj2 == null)
+            {
+                return true;
+            }
+            if (obj1 == null || obj2 == null)
+            {
+                return false;
+            }
+            return Serialize(obj1, false) == Serialize(obj2, false);
         }
     }
 }

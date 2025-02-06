@@ -78,8 +78,8 @@ namespace BytingLib
 
             input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, inputInputRecordings);
 
-            globalInputUpdater = new(() => input.FullInput);
-            metaInputUpdater = new(input.GetRealInput);
+            globalInputUpdater = new(() => input.FullInput, "Global");
+            metaInputUpdater = new(input.GetRealInput, "Meta");
 
             inputCanvas = Use(new InputCanvas(bindsCanvas, globalInputUpdater));
             inputMeta = Use(new InputMeta(bindsMeta, metaInputUpdater));
