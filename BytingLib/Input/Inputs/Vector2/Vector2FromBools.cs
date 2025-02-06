@@ -2,22 +2,27 @@
 {
     public class Vector2FromBools(InputBool up, InputBool left, InputBool down, InputBool right) : InputVector2Simple
     {
+        public InputBool Up { get; } = up;
+        public InputBool Left { get; } = left;
+        public InputBool Down { get; } = down;
+        public InputBool Right { get; } = right;
+
         protected override Vector2 CalculateValue(FullInput input, InputVector2State state)
         {
             Vector2 v = Vector2.Zero;
-            if (left.GetState(state.Updater).Down)
+            if (Left.GetState(state.Updater).Down)
             {
                 v.X--;
             }
-            if (right.GetState(state.Updater).Down)
+            if (Right.GetState(state.Updater).Down)
             {
                 v.X++;
             }
-            if (up.GetState(state.Updater).Down)
+            if (Up.GetState(state.Updater).Down)
             {
                 v.Y--;
             }
-            if (down.GetState(state.Updater).Down)
+            if (Down.GetState(state.Updater).Down)
             {
                 v.Y++;
             }
@@ -26,15 +31,15 @@
 
         public override IEnumerable<Input> GetChildren()
         {
-            yield return left;
-            yield return right;
-            yield return up;
-            yield return down;
+            yield return Left;
+            yield return Right;
+            yield return Up;
+            yield return Down;
         }
 
         public override string ToString()
         {
-            return $"{up} {left} {down} {right}";
+            return $"{Up} {Left} {Down} {Right}";
         }
     }
 }

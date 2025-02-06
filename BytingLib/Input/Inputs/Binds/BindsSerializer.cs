@@ -10,12 +10,16 @@ namespace BytingLib
              
         };
 
-        public string Serialize(InputBinds binds)
+        public string Serialize(InputBinds binds, bool removeDefaults = true)
         {
             Type type = binds.GetType();
             string json = JsonSerializer.Serialize(binds, type, options);
 
-            return RemoveDefaultJson(json, GetDefaultJsonSplit(type));
+            if (removeDefaults)
+            {
+                json = RemoveDefaultJson(json, GetDefaultJsonSplit(type));
+            }
+            return json;
         }
 
         private string RemoveDefaultJson(string json, List<string> defaultJson)
@@ -70,13 +74,20 @@ namespace BytingLib
                     if (newVal is Input newInput)
                     {
                         var currentVal = prop.GetValue(binds);
-                        if (currentVal is Input input)
+                        if (currentVal == null)
                         {
-                            input.Override(newInput, f => prop.SetValue(binds, f));
+                            prop.SetValue(binds, newInput);
                         }
                         else
                         {
-                            throw new Exception("currentVal is not of type Input");
+                            if (currentVal is Input input)
+                            {
+                                input.Override(newInput, f => prop.SetValue(binds, f));
+                            }
+                            else
+                            {
+                                throw new Exception("currentVal is not of type Input");
+                            }
                         }
                     }
                     else

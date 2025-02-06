@@ -1,11 +1,10 @@
 ﻿using Microsoft.Xna.Framework.Input;
-using System.Text.Json.Serialization;
 
 namespace BytingLib
 {
-    public class BoolKey(Keys Key) : InputBoolSimple
+    public class BoolKey(Keys key) : InputBoolSimple
     {
-        public Keys Key { get; } = Key;
+        public Keys Key { get; } = key;
 
         protected override bool CalculateValue(FullInput input, InputBoolState state)
         {

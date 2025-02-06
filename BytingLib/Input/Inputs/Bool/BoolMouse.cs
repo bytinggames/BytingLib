@@ -4,10 +4,12 @@ namespace BytingLib
 {
     public class BoolMouse(MouseButton mouseButton) : InputBoolSimple
     {
+        public MouseButton MouseButton { get; } = mouseButton;
+
         protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
             var s = input.MouseState;
-            switch (mouseButton)
+            switch (MouseButton)
             {
                 case MouseButton.Left:
                     return s.LeftButton == ButtonState.Pressed;
@@ -26,7 +28,7 @@ namespace BytingLib
 
         public override string ToString()
         {
-            return mouseButton + " Mouse";
+            return MouseButton + " Mouse";
         }
     }
 }

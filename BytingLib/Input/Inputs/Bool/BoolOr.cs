@@ -1,8 +1,8 @@
 ﻿namespace BytingLib
 {
-    public class BoolOr(params InputBool[] Children) : InputBoolSimple
+    public class BoolOr(params InputBool[] children) : InputBoolSimple
     {
-        public InputBool[] Children { get; } = Children;
+        public InputBool[] Children { get; } = children;
 
         protected override bool CalculateValue(FullInput input, InputBoolState state)
         {

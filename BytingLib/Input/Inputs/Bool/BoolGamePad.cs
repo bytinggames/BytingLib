@@ -2,9 +2,9 @@
 
 namespace BytingLib
 {
-    public class BoolGamePad(Buttons Button) : InputBoolSimple
+    public class BoolGamePad(Buttons button) : InputBoolSimple
     {
-        public Buttons Button { get; } = Button;
+        public Buttons Button { get; } = button;
 
         protected override bool CalculateValue(FullInput input, InputBoolState state)
         {

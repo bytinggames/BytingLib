@@ -78,34 +78,36 @@ namespace BytingLib
 
     public class BoolConst(bool value) : InputBoolSimple
     {
+        public bool Value { get; } = value;
+
         protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
-            return value;
+            return Value;
         }
     }
 
     public class BoolSwitch(InputBool condition, InputBool onTrue, InputBool onFalse) : InputBoolSimple
     {
-        private readonly InputBool condition = condition;
-        private readonly InputBool onTrue = onTrue;
-        private readonly InputBool onFalse = onFalse;
+        public InputBool Condition { get; } = condition;
+        public InputBool OnTrue { get; } = onTrue;
+        public InputBool OnFalse { get; } = onFalse;
 
         public override IEnumerable<Input> GetChildren()
         {
-            yield return condition;
-            yield return onTrue;
-            yield return onFalse;
+            yield return Condition;
+            yield return OnTrue;
+            yield return OnFalse;
         }
 
         protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
-            if (condition.GetState(state.Updater))
+            if (Condition.GetState(state.Updater))
             {
-                return onTrue.GetState(state.Updater);
+                return OnTrue.GetState(state.Updater);
             }
             else
             {
-                return onFalse.GetState(state.Updater);
+                return OnFalse.GetState(state.Updater);
             }
         }
     }
@@ -185,34 +187,36 @@ namespace BytingLib
 
     public class IntConst(int value) : InputIntSimple
     {
+        public int Value { get; } = value;
+
         protected override int CalculateValue(FullInput input, InputIntState state)
         {
-            return value;
+            return Value;
         }
     }
 
     public class IntSwitch(InputBool condition, InputInt onTrue, InputInt onFalse) : InputIntSimple
     {
-        private readonly InputBool condition = condition;
-        private readonly InputInt onTrue = onTrue;
-        private readonly InputInt onFalse = onFalse;
+        public InputBool Condition { get; } = condition;
+        public InputInt OnTrue { get; } = onTrue;
+        public InputInt OnFalse { get; } = onFalse;
 
         public override IEnumerable<Input> GetChildren()
         {
-            yield return condition;
-            yield return onTrue;
-            yield return onFalse;
+            yield return Condition;
+            yield return OnTrue;
+            yield return OnFalse;
         }
 
         protected override int CalculateValue(FullInput input, InputIntState state)
         {
-            if (condition.GetState(state.Updater))
+            if (Condition.GetState(state.Updater))
             {
-                return onTrue.GetState(state.Updater);
+                return OnTrue.GetState(state.Updater);
             }
             else
             {
-                return onFalse.GetState(state.Updater);
+                return OnFalse.GetState(state.Updater);
             }
         }
     }
@@ -292,34 +296,36 @@ namespace BytingLib
 
     public class Vector2Const(Vector2 value) : InputVector2Simple
     {
+        public Vector2 Value { get; } = value;
+
         protected override Vector2 CalculateValue(FullInput input, InputVector2State state)
         {
-            return value;
+            return Value;
         }
     }
 
     public class Vector2Switch(InputBool condition, InputVector2 onTrue, InputVector2 onFalse) : InputVector2Simple
     {
-        private readonly InputBool condition = condition;
-        private readonly InputVector2 onTrue = onTrue;
-        private readonly InputVector2 onFalse = onFalse;
+        public InputBool Condition { get; } = condition;
+        public InputVector2 OnTrue { get; } = onTrue;
+        public InputVector2 OnFalse { get; } = onFalse;
 
         public override IEnumerable<Input> GetChildren()
         {
-            yield return condition;
-            yield return onTrue;
-            yield return onFalse;
+            yield return Condition;
+            yield return OnTrue;
+            yield return OnFalse;
         }
 
         protected override Vector2 CalculateValue(FullInput input, InputVector2State state)
         {
-            if (condition.GetState(state.Updater))
+            if (Condition.GetState(state.Updater))
             {
-                return onTrue.GetState(state.Updater);
+                return OnTrue.GetState(state.Updater);
             }
             else
             {
-                return onFalse.GetState(state.Updater);
+                return OnFalse.GetState(state.Updater);
             }
         }
     }

@@ -1,17 +1,10 @@
 ﻿namespace BytingLib
 {
-    public class IntIncrement : InputIntSimple
+    public class IntIncrement(InputInt input, InputBool increment, InputBool? decrement) : InputIntSimple
     {
-        private readonly InputInt input;
-        private readonly InputBool increment;
-        private readonly InputBool? decrement;
-
-        public IntIncrement(InputInt input, InputBool increment, InputBool? decrement)
-        {
-            this.input = input;
-            this.increment = increment;
-            this.decrement = decrement;
-        }
+        public InputInt input { get; } = input;
+        public InputBool increment { get; } = increment;
+        public InputBool? decrement { get; }  = decrement;
 
         protected override int CalculateValue(FullInput input, InputIntState state)
         {

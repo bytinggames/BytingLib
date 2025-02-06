@@ -3,11 +3,11 @@
     public class BoolMouseWheel : InputBoolSimple
     {
         IntMouseWheel mouseWheelSource = new();
-        private readonly bool? onlyUpOrDown;
+        public bool? OnlyUpOrDown { get; }
 
         public BoolMouseWheel(bool? onlyUpOrDown = null)
         {
-            this.onlyUpOrDown = onlyUpOrDown;
+            this.OnlyUpOrDown = onlyUpOrDown;
         }
 
         public override IEnumerable<Input> GetChildren()
@@ -20,11 +20,11 @@
             var wheelState = mouseWheelSource.GetState(state.Updater);
             if (wheelState.Value != 0)
             {
-                if (onlyUpOrDown == null)
+                if (OnlyUpOrDown == null)
                 {
                     return true;
                 }
-                else if (onlyUpOrDown.Value)
+                else if (OnlyUpOrDown.Value)
                 {
                     return wheelState.Value > 0;
                 }
@@ -38,13 +38,13 @@
 
         public override string ToString()
         {
-            if (onlyUpOrDown == null)
+            if (OnlyUpOrDown == null)
             {
                 return "Mouse Wheel";
             }
             else
             {
-                return "Mouse Wheel " + (onlyUpOrDown.Value ? "Up" : "Down");
+                return "Mouse Wheel " + (OnlyUpOrDown.Value ? "Up" : "Down");
             }
         }
     }

@@ -1,6 +1,9 @@
 ﻿namespace BytingLib
 {
-    public class BoolFalse(bool value) : BoolConst(value)
+    public class BoolFalse : BoolConst
     {
+        public BoolFalse() : base(false)
+        {
+        }
     }
 }

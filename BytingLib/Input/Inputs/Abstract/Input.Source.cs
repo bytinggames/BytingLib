@@ -77,34 +77,36 @@ namespace BytingLib
 
     public class FloatConst(float value) : InputFloatSimple
     {
+        public float Value { get; } = value;
+
         protected override float CalculateValue(FullInput input, InputFloatState state)
         {
-            return value;
+            return Value;
         }
     }
 
     public class FloatSwitch(InputBool condition, InputFloat onTrue, InputFloat onFalse) : InputFloatSimple
     {
-        private readonly InputBool condition = condition;
-        private readonly InputFloat onTrue = onTrue;
-        private readonly InputFloat onFalse = onFalse;
+        public InputBool Condition { get; } = condition;
+        public InputFloat OnTrue { get; } = onTrue;
+        public InputFloat OnFalse { get; } = onFalse;
 
         public override IEnumerable<Input> GetChildren()
         {
-            yield return condition;
-            yield return onTrue;
-            yield return onFalse;
+            yield return Condition;
+            yield return OnTrue;
+            yield return OnFalse;
         }
 
         protected override float CalculateValue(FullInput input, InputFloatState state)
         {
-            if (condition.GetState(state.Updater))
+            if (Condition.GetState(state.Updater))
             {
-                return onTrue.GetState(state.Updater);
+                return OnTrue.GetState(state.Updater);
             }
             else
             {
-                return onFalse.GetState(state.Updater);
+                return OnFalse.GetState(state.Updater);
             }
         }
     }

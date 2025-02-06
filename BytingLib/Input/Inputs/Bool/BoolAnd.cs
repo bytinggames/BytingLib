@@ -1,17 +1,24 @@
 ﻿namespace BytingLib
 {
-    public class BoolAnd(params InputBool[] bools) : InputBoolSimple
+    public class BoolAnd : InputBoolSimple
     {
+        public InputBool[] Bools { get; }
+
+        public BoolAnd(params InputBool[] bools)
+        {
+            this.Bools = bools;
+        }
+
         protected override bool CalculateValue(FullInput input, InputBoolState state)
         {
-            if (bools.Length == 0)
+            if (Bools.Length == 0)
             {
                 return false;
             }
             long shortestDownTime = long.MaxValue;
-            for (int i = 0; i < bools.Length - 1; i++)
+            for (int i = 0; i < Bools.Length - 1; i++)
             {
-                var s = bools[i].GetState(state.Updater);
+                var s = Bools[i].GetState(state.Updater);
                 if (!s.Down)
                 {
                     return false;
@@ -19,21 +26,21 @@
                 shortestDownTime = s.DownTime;
             }
 
-            var lastState = bools[^1];
+            var lastState = Bools[^1];
             return lastState.GetState(state.Updater).Down && lastState.GetState(state.Updater).DownTime < shortestDownTime;
         }
 
         public override IEnumerable<Input> GetChildren()
         {
-            for (int i = 0; i < bools.Length; i++)
+            for (int i = 0; i < Bools.Length; i++)
             {
-                yield return bools[i];
+                yield return Bools[i];
             }
         }
 
         public override string ToString()
         {
-            return string.Join(" + ", (object?[])bools);
+            return string.Join(" + ", (object?[])Bools);
         }
     }
 }
