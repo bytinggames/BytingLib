@@ -1,8 +1,12 @@
-﻿namespace BytingLib
+﻿using System.Text.Json.Serialization;
+
+namespace BytingLib
 {
     // this class is used to generate all the other Input... classes (InputInt, InputFloat etc.)
     // No, it was not possible to make them generic, as we have implicit operators and because of the State : InputFloatState
 
+    [JsonDerivedType(typeof(FloatSwitch), "FloatSwitch")]
+    [JsonDerivedType(typeof(FloatConst), "FloatConst")]
     public abstract partial class InputFloat : Input
     {
         public abstract InputFloatState GetState(InputUpdater updater);

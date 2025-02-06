@@ -1,9 +1,13 @@
 
+using System.Text.Json.Serialization;
+
 namespace BytingLib
 {
     // this class is used to generate all the other Input... classes (InputInt, InputBool etc.)
     // No, it was not possible to make them generic, as we have implicit operators and because of the State : InputBoolState
 
+    [JsonDerivedType(typeof(BoolSwitch), "BoolSwitch")]
+    [JsonDerivedType(typeof(BoolConst), "BoolConst")]
     public abstract partial class InputBool : Input
     {
         public abstract InputBoolState GetState(InputUpdater updater);
@@ -109,6 +113,8 @@ namespace BytingLib
     // this class is used to generate all the other Input... classes (InputInt, InputInt etc.)
     // No, it was not possible to make them generic, as we have implicit operators and because of the State : InputIntState
 
+    [JsonDerivedType(typeof(IntSwitch), "IntSwitch")]
+    [JsonDerivedType(typeof(IntConst), "IntConst")]
     public abstract partial class InputInt : Input
     {
         public abstract InputIntState GetState(InputUpdater updater);
@@ -214,6 +220,8 @@ namespace BytingLib
     // this class is used to generate all the other Input... classes (InputInt, InputVector2 etc.)
     // No, it was not possible to make them generic, as we have implicit operators and because of the State : InputVector2State
 
+    [JsonDerivedType(typeof(Vector2Switch), "Vector2Switch")]
+    [JsonDerivedType(typeof(Vector2Const), "Vector2Const")]
     public abstract partial class InputVector2 : Input
     {
         public abstract InputVector2State GetState(InputUpdater updater);

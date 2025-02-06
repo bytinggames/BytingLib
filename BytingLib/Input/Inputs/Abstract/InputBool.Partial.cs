@@ -12,8 +12,6 @@ namespace BytingLib
     [JsonDerivedType(typeof(BoolShift), "BoolShift")]
     [JsonDerivedType(typeof(BoolAlt), "BoolAlt")]
     [JsonDerivedType(typeof(BoolCtrl), "BoolCtrl")]
-    [JsonDerivedType(typeof(BoolConst), "BoolConst")]
-    [JsonDerivedType(typeof(BoolSwitch), "BoolSwitch")]
     [JsonDerivedType(typeof(BoolFalse), "BoolFalse")]
     [JsonDerivedType(typeof(BoolMouseWheel), "BoolMouseWheel")]
     [JsonDerivedType(typeof(BoolNot), "BoolNot")]
