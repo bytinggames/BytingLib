@@ -54,6 +54,10 @@
         public void Dispose()
         {
             List<InputUpdater> updaters = GetUpdaters();
+            foreach (var updater in updaters)
+            {
+                updater.RemoveOutput(this);
+            }
             Unregister(updaters);
 
             DisposeSelf();
