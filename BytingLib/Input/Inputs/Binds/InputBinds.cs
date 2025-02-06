@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace BytingLib
 {
@@ -19,7 +20,7 @@ namespace BytingLib
                 | BindingFlags.GetProperty
                 | BindingFlags.Public
                 | BindingFlags.Instance
-            ).Where(f => f.CanWrite && f.CanRead);
+            ).Where(f => f.CanWrite && f.CanRead && f.GetCustomAttribute<JsonIgnoreAttribute>() == null);
 
             return props;
         }
