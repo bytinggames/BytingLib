@@ -63,7 +63,10 @@ namespace BytingLib
             return splits;
         }
 
-        public void Deserialize(string json, InputBinds binds)
+        /// <summary>
+        /// Setting replaceOrAdd to false is only used for debugging (only supports Bool and Vector2 and creates new references each time you call this method)
+        /// </summary>
+        public void Deserialize(string json, InputBinds binds, bool replaceOrAdd = true)
         {
             var newBinds = JsonSerializer.Deserialize(json, binds.GetType(), options);
             if (newBinds != null)
@@ -82,7 +85,25 @@ namespace BytingLib
                         {
                             if (currentVal is Input input)
                             {
-                                input.Override(newInput, f => prop.SetValue(binds, f));
+                                if (replaceOrAdd)
+                                {
+                                    input.Override(newInput, f => prop.SetValue(binds, f));
+                                }
+                                else
+                                {
+                                    if (input is InputBool inputBool && newInput is InputBool newInputBool)
+                                    {
+                                        inputBool.Override(new BoolOr(inputBool, newInputBool), f => prop.SetValue(binds, f));
+                                    }
+                                    else if (input is InputVector2 inputV && newInput is InputVector2 newInputV)
+                                    {
+                                        inputV.Override(new Vector2MaxLength(inputV, newInputV), f => prop.SetValue(binds, f));
+                                    }
+                                    else
+                                    {
+                                        input.Override(newInput, f => prop.SetValue(binds, f));
+                                    }
+                                }
                             }
                             else
                             {

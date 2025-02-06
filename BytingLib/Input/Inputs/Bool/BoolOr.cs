@@ -17,10 +17,7 @@
         }
         public override IEnumerable<Input> GetChildren()
         {
-            for (int i = 0; i < Children.Length; i++)
-            {
-                yield return Children[i];
-            }
+            return Children;
         }
 
         public override string ToString()

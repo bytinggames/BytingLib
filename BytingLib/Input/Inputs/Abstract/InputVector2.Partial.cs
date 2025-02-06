@@ -7,6 +7,14 @@ namespace BytingLib
     [JsonDerivedType(typeof(Vector2Mouse), "Vector2Mouse")]
     [JsonDerivedType(typeof(Vector2MouseMoveLinear), "Vector2MouseMoveLinear")]
     [JsonDerivedType(typeof(Vector2Transform), "Vector2Transform")]
+    [JsonDerivedType(typeof(Vector2CircularDeadzone), "Vector2CircularDeadzone")]
+    [JsonDerivedType(typeof(Vector2GamePadStick), "Vector2GamePadStick")]
+    [JsonDerivedType(typeof(Vector2Multiply), "Vector2Multiply")]
+    [JsonDerivedType(typeof(Vector2SquareDeadzone), "Vector2SquareDeadzone")]
+    [JsonDerivedType(typeof(Vector2StickPow), "Vector2StickPow")]
+    [JsonDerivedType(typeof(Vector2Sum), "Vector2Sum")]
+    [JsonDerivedType(typeof(Vector2GamePadStickCustom), "Vector2GamePadStickCustom")]
+    [JsonDerivedType(typeof(Vector2MaxLength), "Vector2MaxLength")]
     public abstract partial class InputVector2 : Input
     {
     }
