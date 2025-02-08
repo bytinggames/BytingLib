@@ -173,12 +173,21 @@ namespace BytingLib
 
             void ParseLine(int lineIndex, string keyDirectory, string localKey)
             {
-                if (skipPluses && localizationLines[lineIndex].EndsWith("{+}"))
+                bool endsWithPlus = localizationLines[lineIndex].EndsWith("{+}");
+                if (skipPluses && endsWithPlus)
                 {
                     return;
                 }
 
-                string? value = GetCell(lineIndex, languageColumn, localizationLines);
+                string? value;
+                if (endsWithPlus)
+                {
+                    value = "{+}";
+                }
+                else
+                {
+                    value = GetCell(lineIndex, languageColumn, localizationLines);
+                }
 
                 if (string.IsNullOrEmpty(value))
                 {
@@ -491,6 +500,10 @@ namespace BytingLib
                 previousIndex = index;
 
                 // is this cell embedded in "?
+                if (index + 1 >= localizationLines[lineIndex].Length)
+                {
+                    return null;
+                }
                 bool embeddedInQuotes = localizationLines[lineIndex][index + 1] == textMarker;
 
                 if (embeddedInQuotes)
