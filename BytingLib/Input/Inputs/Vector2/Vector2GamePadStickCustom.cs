@@ -58,5 +58,21 @@ namespace BytingLib
         {
             yield return child;
         }
+
+        public override string ToString()
+        {
+            if (LeftOrRight == null)
+            {
+                return "Any Thumb Stick";
+            }
+            else if (LeftOrRight.Value)
+            {
+                return $"Left Thumb Stick";
+            }
+            else
+            {
+                return $"Right Thumb Stick";
+            }
+        }
     }
 }

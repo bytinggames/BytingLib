@@ -85,7 +85,7 @@ namespace BytingLib
         }
     }
 
-    public class FloatSwitch(InputBool condition, InputFloat onTrue, InputFloat onFalse) : InputFloatSimple
+    public partial class FloatSwitch(InputBool condition, InputFloat onTrue, InputFloat onFalse) : InputFloatSimple
     {
         public InputBool Condition { get; } = condition;
         public InputFloat OnTrue { get; } = onTrue;

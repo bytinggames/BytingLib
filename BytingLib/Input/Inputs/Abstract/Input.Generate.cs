@@ -86,7 +86,7 @@ namespace BytingLib
         }
     }
 
-    public class BoolSwitch(InputBool condition, InputBool onTrue, InputBool onFalse) : InputBoolSimple
+    public partial class BoolSwitch(InputBool condition, InputBool onTrue, InputBool onFalse) : InputBoolSimple
     {
         public InputBool Condition { get; } = condition;
         public InputBool OnTrue { get; } = onTrue;
@@ -195,7 +195,7 @@ namespace BytingLib
         }
     }
 
-    public class IntSwitch(InputBool condition, InputInt onTrue, InputInt onFalse) : InputIntSimple
+    public partial class IntSwitch(InputBool condition, InputInt onTrue, InputInt onFalse) : InputIntSimple
     {
         public InputBool Condition { get; } = condition;
         public InputInt OnTrue { get; } = onTrue;
@@ -304,7 +304,7 @@ namespace BytingLib
         }
     }
 
-    public class Vector2Switch(InputBool condition, InputVector2 onTrue, InputVector2 onFalse) : InputVector2Simple
+    public partial class Vector2Switch(InputBool condition, InputVector2 onTrue, InputVector2 onFalse) : InputVector2Simple
     {
         public InputBool Condition { get; } = condition;
         public InputVector2 OnTrue { get; } = onTrue;

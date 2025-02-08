@@ -18,4 +18,19 @@ namespace BytingLib
     public abstract partial class InputVector2 : Input
     {
     }
+
+    public partial class Vector2Switch
+    {
+        public override string ToString()
+        {
+            if (OnFalse is Vector2Const c && c.Value == Vector2.Zero)
+            {
+                return $"{Condition} + {OnTrue}";
+            }
+            else
+            {
+                return $"{Condition} ? {OnTrue} : {OnFalse}";
+            }
+        }
+    }
 }
