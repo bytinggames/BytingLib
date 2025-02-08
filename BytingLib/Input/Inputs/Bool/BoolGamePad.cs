@@ -13,7 +13,17 @@ namespace BytingLib
 
         public override string ToString()
         {
-            return Button.ToString();
+            if (Button == Buttons.A
+                || Button == Buttons.B
+                || Button == Buttons.Y
+                || Button == Buttons.X)
+            {
+                return "(" + Button + ")";
+            }
+            else
+            {
+                return Button.ToString();
+            }
         }
     }
 }
