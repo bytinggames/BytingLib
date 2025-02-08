@@ -10,8 +10,12 @@ namespace BytingLib
         public InputBool ScreenshotDelayed { get; } = Shift();
         public InputBool ToggleFullscreen { get; } = Keys.F11;
         public InputBool InterruptReplay { get; } = Keys.Escape;
-        public InputBool SwapScreen { get; } = And(Ctrl(), Keys.Tab);
-
+        public InputBool SwapScreen { get; } =
+#if DEBUG
+            Keys.Tab;
+#else
+            And(Ctrl(), Keys.Tab);
+#endif
         #endregion
     }
 }
