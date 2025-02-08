@@ -34,7 +34,7 @@
         protected override ElementInput CreateElementInput(IInputCanvas input, GameWindow window)
         {
             inputTransformed = new InputCanvasTransformed(input, () => Matrix.Invert(GetTransform()));
-            return new ElementInput(inputTransformed, SetUpdateCatch, window);
+            return new ElementInput(inputTransformed, SetUpdateCatch, UnsetUpdateCatch, window);
         }
 
         private Matrix GetTransform()

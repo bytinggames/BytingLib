@@ -7,16 +7,18 @@
     {
         public IInputCanvas Input { get; }
         public Action<Element?> SetUpdateCatch { get; }
+        public Action<Element> UnsetUpdateCatch { get; }
         public Element? FocusElement { get; set; }
         public Element? HoverElement { get; set; }
         public GameWindow Window { get; set; }
 
         private readonly Element hoverOutsideOfScissorRect = new Element();
 
-        public ElementInput(IInputCanvas input, Action<Element?> setUpdateCatch, GameWindow window)
+        public ElementInput(IInputCanvas input, Action<Element?> setUpdateCatch, Action<Element> unsetUpdateCatch, GameWindow window)
         {
             Input = input;
             SetUpdateCatch = setUpdateCatch;
+            UnsetUpdateCatch = unsetUpdateCatch;
             Window = window;
         }
 

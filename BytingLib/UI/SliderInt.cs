@@ -96,7 +96,7 @@ namespace BytingLib.UI
                 if (!input.Input.Click.Down)
                 {
                     OnDragEnd?.Invoke(this);
-                    input.SetUpdateCatch(null);
+                    input.UnsetUpdateCatch(this);
                     catched = false;
 
                     if (valueBeforeMouseClick != Value)

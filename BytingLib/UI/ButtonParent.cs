@@ -81,7 +81,7 @@
                     down = false;
                     SetDirty();
 
-                    input.SetUpdateCatch(null);
+                    input.UnsetUpdateCatch(this);
                 }
             }
         }

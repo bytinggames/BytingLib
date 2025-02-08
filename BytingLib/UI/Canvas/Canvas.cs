@@ -38,7 +38,7 @@
 
         protected virtual ElementInput CreateElementInput(IInputCanvas input, GameWindow window)
         {
-            return new ElementInput(input, SetUpdateCatch, window);
+            return new ElementInput(input, SetUpdateCatch, UnsetUpdateCatch, window);
         }
 
         public void Update()
@@ -52,12 +52,7 @@
             }
             else
             {
-                UpdateSelf(Input);
-
-                for (int i = 0; i < Children.Count; i++)
-                {
-                    Children[i].Update(Input);
-                }
+                base.Update(Input);
             }
         }
 
@@ -69,6 +64,13 @@
         public void SetUpdateCatch(Element? element)
         {
             updateCatch = element;
+        }
+        public void UnsetUpdateCatch(Element element)
+        {
+            if (element == updateCatch)
+            {
+                updateCatch = null;
+            }
         }
 
         public abstract void DrawBatch(SpriteBatch spriteBatch);

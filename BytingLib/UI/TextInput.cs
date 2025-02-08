@@ -98,7 +98,7 @@
                 }
                 else
                 {
-                    input.SetUpdateCatch(null);
+                    input.UnsetUpdateCatch(this);
                     catched = false;
                 }
             }
