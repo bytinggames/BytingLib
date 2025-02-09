@@ -442,7 +442,7 @@ namespace BytingLib
             if (!endOfContainerReached)
             {
                 segments.Add(segment.CloneRect());
-                
+
                 markup.InsertJump(segmentStart, GetJumpVector(null));
             }
 
@@ -515,7 +515,7 @@ namespace BytingLib
                     {
                         jumpTo.X += (segment.Width - textSegmentSize.X) * anchor.X;
                     }
-                    if (anchor.Y != 0f)
+                    if (anchorInLineY != 0f)
                     {
                         jumpTo.Y += segment.Height * anchorInLineY;
                     }
