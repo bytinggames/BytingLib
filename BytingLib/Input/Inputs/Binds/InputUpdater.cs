@@ -30,7 +30,7 @@
             {
                 outputs.Add(output);
 
-                output.Register(this);
+                output.Register(this, true);
 
                 return true;
             }

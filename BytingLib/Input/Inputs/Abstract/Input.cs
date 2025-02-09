@@ -15,14 +15,18 @@
         }
         protected abstract void UpdateSelf(InputUpdater updater, FullInput input);
 
-        public void Register(InputUpdater updater)
+        public void Register(InputUpdater updater, bool updateToInitialize)
         {
             foreach (var child in GetChildren())
             {
-                child.Register(updater);
+                child.Register(updater, updateToInitialize);
             }
 
             RegisterSelf(updater);
+            if (updateToInitialize)
+            {
+                UpdateSelf(updater, default);
+            }
         }
         protected abstract void RegisterSelf(InputUpdater updater);
 
@@ -36,7 +40,7 @@
 
             foreach (var updater in updaters)
             {
-                newInput.Register(updater);
+                newInput.Register(updater, false);
             }
             setNewInput(newInput);
         }
