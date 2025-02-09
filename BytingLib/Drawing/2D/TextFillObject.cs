@@ -17,6 +17,7 @@ namespace BytingLib
 
         public bool GlobalAnchor { get; set; } = true;
         public Vector2 Anchor { get; set; } // TODO: update
+        public float AnchorInLineY { get; set; } = 0.5f;
         public string Text { get; set; } // TODO: update
         public string? MarkupTextOutput { get; private set; }
         public Padding? PaddingNormalized { get; set; }
@@ -125,7 +126,7 @@ namespace BytingLib
 
             ApplyPaddingToClone(ref rect);
 
-            TextFill = new TextFill(Text, font, rect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, borderLeft, borderRight, creator, IterativeFitting);
+            TextFill = new TextFill(Text, font, rect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, borderLeft, borderRight, creator, IterativeFitting, AnchorInLineY);
         }
 
         private void ApplyPaddingToClone(ref Rect rect)

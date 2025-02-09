@@ -109,7 +109,7 @@ namespace BytingLib.UI
                 TextureScale = style.MarkupTextureScale,
                 CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight,
                 JumpOffset = GetJumpOffset(),
-                VerticalAlignInLine = Anchor.Y,
+                VerticalAlignInLine = 0.5f,
             };
         }
 

@@ -9,13 +9,15 @@ namespace BytingLib
         private readonly float textTop;
         private readonly Vector2 anchor;
         private readonly bool globalAnchor;
+        private readonly float anchorInLineY;
         List<Rect> segments = new();
 
         public TextFill(string text, Ref<SpriteFont> font, Rect containerRect, Vector2 anchor, bool globalAnchor, List<List<Vector2>> polygons, TextWrap splitMethod,
-            bool borderLeft = true, bool borderRight = true, Creator? creator = null, bool iterative = true)
+            bool borderLeft = true, bool borderRight = true, Creator? creator = null, bool iterative = true, float anchorInLineY = 0.5f)
         {
             this.anchor = anchor;
             this.globalAnchor = globalAnchor;
+            this.anchorInLineY = anchorInLineY;
             FontScale = Vector2.One;
             textTop = 0f;
 
@@ -515,7 +517,7 @@ namespace BytingLib
                     }
                     if (anchor.Y != 0f)
                     {
-                        jumpTo.Y += segment.Height * anchor.Y;
+                        jumpTo.Y += segment.Height * anchorInLineY;
                     }
                 }
                 return jumpTo;

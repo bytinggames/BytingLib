@@ -104,6 +104,7 @@ namespace BytingLib.Markup
             //        }
             //        break;
             //}
+            //settings.Anchor.Rectangle(Texture.Value.GetSize() * settings.Scale * ScaleXY * settings.TextureScale).Draw(settings.SpriteBatch, Color.Yellow * 0.5f);
             Texture.Value.Draw(settings.SpriteBatch, settings.Anchor, ColorExtension.MultiplyColors(settings.TextureColor, Color), SourceRectangle, settings.Scale * ScaleXY * settings.TextureScale, settings.Rotation, flip, null, settings.RoundPositionTo);
         }
 

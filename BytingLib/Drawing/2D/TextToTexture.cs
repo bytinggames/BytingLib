@@ -61,7 +61,8 @@ namespace BytingLib
         }
 
         public Promise<Ref<Texture2D>> UseTexture(string text, Vector3 right, Color backgroundColor, List<List<Vector2>> polygons, Vector2 anchor, 
-            Vector2 texSize, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null, TextWrap textWrap = TextWrap.OnlyOnSpace)
+            Vector2 texSize, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null, TextWrap textWrap = TextWrap.OnlyOnSpace,
+            float anchorInLineY = 0.5f)
         {
             Promise<Ref<Texture2D>> tex = new(() =>
             {
@@ -73,7 +74,7 @@ namespace BytingLib
                 var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.White)
                 {
                     VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines,
-                    VerticalAlignInLine = anchor.Y,
+                    VerticalAlignInLine = anchorInLineY,
                     HorizontalAlignInLine = anchor.X
                 };
                 var drawElement = new MarkupRoot(markupCreator, text);
@@ -93,7 +94,8 @@ namespace BytingLib
                     texSize,
                     markupSettings.TextureScale,
                     markupSettings.VerticalSpaceBetweenLines * fontSize,
-                    paddingNormalized);
+                    paddingNormalized,
+                    markupSettings.VerticalAlignInLine);
             });
             return tex;
         }
@@ -175,7 +177,7 @@ namespace BytingLib
         }
 
         public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color backgroundColor, List<List<Vector2>> polygons, 
-            TextFillObject.PolyType polyType, TextWrap splitMethod, Vector2 anchor, Vector2 texSize, Vector2? textureScale = null, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null)
+            TextFillObject.PolyType polyType, TextWrap splitMethod, Vector2 anchor, Vector2 texSize, Vector2? textureScale = null, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null, float anchorInLineY = 0.5f)
         {
             textureScale ??= Vector2.One;
             //if (textures.ContainsKey((text, font.Value, backgroundColor, textureScale)))
@@ -186,12 +188,13 @@ namespace BytingLib
             var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */)
             {
                 VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines,
-                VerticalAlignInLine = anchor.Y,
+                VerticalAlignInLine = anchorInLineY,
                 HorizontalAlignInLine = anchor.X,
                 TextureScale = textureScale.Value
             };
             TextFillObject textFill = new(text, polygons, polyType, splitMethod, true, true);
             textFill.Anchor = anchor;
+            textFill.AnchorInLineY = anchorInLineY;
             textFill.PaddingNormalized = paddingNormalized;
             textFill.IterativeFitting = iterativeFitting == null ? true : iterativeFitting();
 

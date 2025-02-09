@@ -54,6 +54,7 @@
 
         private void DrawChildInner(MarkupSettings settings)
         {
+            //settings.Anchor.Rectangle(settings.Font.Value.MeasureString(Text) * settings.Scale).Draw(settings.SpriteBatch, Color.Yellow * 0.5f);
             settings.Font.Value.Draw(settings.SpriteBatch, Text, settings.Anchor, settings.TextColor, settings.Scale, settings.Rotation, settings.Effects,
                 settings.TextUnderline, settings.TextOutline, settings.RoundPositionTo);
         }
