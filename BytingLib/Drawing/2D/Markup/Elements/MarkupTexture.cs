@@ -69,6 +69,10 @@ namespace BytingLib.Markup
 
         protected override void DrawChild(MarkupSettings settings)
         {
+            if (!settings.Visible)
+            {
+                return;
+            }
             SpriteEffects flip = settings.Effects ^ Effects;
             //flip = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically;
             //switch (Effects)

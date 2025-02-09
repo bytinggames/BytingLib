@@ -19,23 +19,20 @@
         public override IEnumerable<ILeaf> IterateOverLeaves(MarkupSettings settings)
         {
             bool show = settings.TotalMilliseconds / 1000 % intervalSeconds < intervalSeconds / 2;
-            Color? tempTexColor = null;
-            Color? tempFontColor = null;
+            bool visible = false;
             if (!show)
             {
-                tempTexColor = settings.TextureColor;
-                tempFontColor = settings.TextColor;
-                settings.TextureColor = settings.TextColor = Color.Transparent;
+                visible = settings.Visible;
+                settings.Visible = false;
             }
 
             foreach (var leaf in base.IterateOverLeaves(settings))
             {
                 yield return leaf;
             }
-            if (tempTexColor != null && tempFontColor != null)
+            if (!show)
             {
-                settings.TextureColor = tempTexColor.Value;
-                settings.TextColor = tempFontColor.Value;
+                settings.Visible = visible;
             }
         }
     }

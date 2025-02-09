@@ -31,6 +31,8 @@
         /// </summary>
         public bool CropSuperfluousHeightThatIsLargerThanLineHeight { get; set; } = false;
         public float LineSpacing => Font.Value.LineSpacing * Scale.Y;
+        public bool Visible { get; set; } = true;
+
 
         public class Line : ICloneable
         {

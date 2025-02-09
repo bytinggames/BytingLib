@@ -41,6 +41,11 @@
 
         public void Draw(MarkupSettings settings)
         {
+            if (!settings.Visible)
+            {
+                return;
+            }
+
             if (MarginLeft == 0 && MarginTop == 0 && MarginRight == 0 && MarginBottom == 0)
             {
                 InnerDraw(settings);
