@@ -31,6 +31,11 @@ namespace BytingLib
             return states[updater];
         }
 
+        public override bool IsRegistered(InputUpdater updater)
+        {
+            return states.ContainsKey(updater);
+        }
+
         protected override void RegisterSelf(InputUpdater updater)
         {
             states.TryAdd(updater, CreateState(updater));

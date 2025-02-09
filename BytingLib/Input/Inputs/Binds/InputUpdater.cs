@@ -6,6 +6,7 @@
         protected readonly Func<FullInput> getFullInput;
         private readonly string? name;
         private readonly List<Input> outputs = new();
+        private readonly HashSet<Input> alreadyUpdated = new();
 
         public InputUpdater(Func<FullInput> getFullInput, string name = null)
         {
@@ -16,6 +17,7 @@
         public void Update()
         {
             CurrentStamp++;
+            alreadyUpdated.Clear();
 
             var input = getFullInput();
             for (int i = 0; i < outputs.Count; i++)
@@ -49,6 +51,11 @@
                 return base.ToString();
             }
             return "InputUpdater " + name;
+        }
+
+        internal bool HasAlreadyUpdated(Input input)
+        {
+            return !alreadyUpdated.Add(input);
         }
     }
 }

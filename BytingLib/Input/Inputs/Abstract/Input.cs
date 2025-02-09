@@ -6,6 +6,10 @@
 
         public void Update(InputUpdater updater, FullInput input)
         {
+            if (updater.HasAlreadyUpdated(this))
+            {
+                return;
+            }
             foreach (var child in GetChildren())
             {
                 child.Update(updater, input);
@@ -17,17 +21,26 @@
 
         public void Register(InputUpdater updater, bool updateToInitialize)
         {
+            if (IsRegistered(updater))
+            {
+                return;
+            }
+
             foreach (var child in GetChildren())
             {
                 child.Register(updater, updateToInitialize);
             }
 
             RegisterSelf(updater);
+
             if (updateToInitialize)
             {
                 UpdateSelf(updater, default);
             }
         }
+
+        public abstract bool IsRegistered(InputUpdater updater);
+
         protected abstract void RegisterSelf(InputUpdater updater);
 
         public abstract List<InputUpdater> GetUpdaters();
