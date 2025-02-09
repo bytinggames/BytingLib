@@ -7,6 +7,7 @@
         public Color? FontColor => GetOverride(f => f.FontColor);
         public Color? FontBoldColor => GetOverride(f => f.FontBoldColor);
         public Color? TextureColor => GetOverride(f => f.TextureColor);
+        public Vector2 MarkupTextureScale => GetOverrideMultiply(f => f.MarkupTextureScale);
         public Vector2 FontScale => GetOverrideMultiply(f => f.FontScale);
         public Ref<Animation> ButtonAnimation => GetOverride(f => f.ButtonAnimation)!;
         public Padding? ButtonPadding => GetOverride(f => f.ButtonPadding);
