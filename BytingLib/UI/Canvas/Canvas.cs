@@ -52,7 +52,12 @@
             }
             else
             {
-                base.Update(Input);
+                UpdateSelf(Input);
+
+                for (int i = Children.Count - 1; i >= 0; i--)
+                {
+                    Children[i].Update(Input);
+                }
             }
         }
 
