@@ -9,7 +9,7 @@
 
         public override void Update(ElementInput input)
         {
-            bool mouseInside = AbsoluteRect.CollidesWith(input.Mouse.Position);
+            bool mouseInside = AbsoluteRect.CollidesWith(input.Input.MousePosition);
             if (!mouseInside)
             {
                 input.DoWhileHoverOutsideOfScissorRect(() => base.Update(input));

@@ -6,7 +6,7 @@
         public bool DrawUnderlyingParents { get; set; } = true;
 
         public event Action<Scene>? OnPopupOpen;
-        public event Action? OnPopupClose;
+        public event Action<Scene>? OnBeforePopupClose;
         public Action? OnShowAsMainScene;
 
         public bool HideMouse { get; set; }
@@ -83,10 +83,10 @@
         {
             if (PopupScene != null)
             {
+                OnBeforePopupClose?.Invoke(PopupScene);
+
                 PopupScene?.Dispose();
                 PopupScene = null;
-
-                OnPopupClose?.Invoke();
             }
         }
 

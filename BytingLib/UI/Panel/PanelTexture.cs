@@ -21,7 +21,12 @@
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
-            Texture.Value.Draw(spriteBatch, AbsoluteRect, Color);
+            Color c = Color;
+            if (style.TextureColor != null)
+            {
+                c = new Color(Color.ToVector4() * style.TextureColor.Value.ToVector4());
+            }
+            Texture.Value.Draw(spriteBatch, AbsoluteRect, c);
         }
 
         public PanelTexture SetSizeToTexture()

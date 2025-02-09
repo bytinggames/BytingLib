@@ -5,8 +5,7 @@
         Left,
         Right,
         Middle,
-        WheelPlusOrMinus,
-        WheelPlus,
-        WheelMinus
+        Button1,
+        Button2
     }
 }

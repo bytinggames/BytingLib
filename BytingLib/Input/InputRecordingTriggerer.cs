@@ -2,19 +2,17 @@
 {
     public class InputRecordingTriggerer<T> : IUpdate where T : struct
     {
-        private readonly KeyInput keys;
+        private readonly InputInputRecordings? input;
         private readonly InputRecordingManager<T> inputRecordingManager;
         private readonly string inputRecordingDir;
         private readonly Action<Action> onStartPlaying;
-        private readonly bool controlViaF5;
 
-        public InputRecordingTriggerer(KeyInput devKeys, InputRecordingManager<T> inputRecordingManager, string inputRecordingDir, Action<Action> onStartPlaying, bool startRecordingInstantly, bool controlViaF5 = true)
+        public InputRecordingTriggerer(InputInputRecordings? input, InputRecordingManager<T> inputRecordingManager, string inputRecordingDir, Action<Action> onStartPlaying, bool startRecordingInstantly)
         {
-            keys = devKeys;
+            this.input = input;
             this.inputRecordingManager = inputRecordingManager;
             this.inputRecordingDir = inputRecordingDir;
             this.onStartPlaying = onStartPlaying;
-            this.controlViaF5 = controlViaF5;
 
             if (inputRecordingDir != null && startRecordingInstantly)
             {
@@ -24,13 +22,13 @@
 
         public void Update()
         {
-            if (controlViaF5 && keys.F5.Pressed)
+            if (input != null)
             {
-                if (keys.Shift.Down)
+                if (input.StartRecording.Pressed)
                 {
                     Record();
                 }
-                else
+                else if (input.StopRecording.Pressed)
                 {
                     Play();
                 }

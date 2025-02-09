@@ -80,7 +80,7 @@ namespace BytingLib.UI
         protected override void UpdateSelf(ElementInput input)
         {
             hover = input.CanHover(AbsoluteRect, this);
-            if (input.Mouse.Left.Pressed
+            if (input.Input.Click.Pressed
                 && hover)
             {
                 input.SetUpdateCatch(this);
@@ -91,12 +91,12 @@ namespace BytingLib.UI
 
             if (catched)
             {
-                Value = (int)Math.Round((input.Mouse.X - AbsoluteInnerLeft) / AbsoluteInnerWidth * (Steps - 1));
+                Value = (int)Math.Round((input.Input.MousePosition.Value.X - AbsoluteInnerLeft) / AbsoluteInnerWidth * (Steps - 1));
 
-                if (!input.Mouse.Left.Down)
+                if (!input.Input.Click.Down)
                 {
                     OnDragEnd?.Invoke(this);
-                    input.SetUpdateCatch(null);
+                    input.UnsetUpdateCatch(this);
                     catched = false;
 
                     if (valueBeforeMouseClick != Value)

@@ -12,6 +12,18 @@ namespace BytingLib
         protected readonly DefaultPaths basePaths;
         protected readonly SaveStateManager saveStateManager;
         protected readonly MouseVisibilityManager mouseVisibilityManager;
+        private readonly InputControlGameSpeed? inputGameSpeed;
+        private readonly InputInputRecordings? inputInputRecordings;
+        protected readonly InputUpdater globalInputUpdater;
+        protected readonly InputUpdater metaInputUpdater;
+        protected readonly BindsCanvas bindsCanvas = new();
+        protected readonly BindsMeta bindsMeta = new();
+        protected readonly BindsControlGameSpeed bindsControlGameSpeed = new();
+        protected readonly BindsInputRecordings bindsInputRecordings = new();
+        protected readonly InputCanvas inputCanvas;
+        /// <summary>Only used for input that shouldn't be recorded (Fullscreen Toggle for example or Replay interrupt).
+        /// The difference to inputDev</summary>
+        protected readonly InputMeta inputMeta;
 
         private readonly bool randomScreenshots;
         protected readonly Screenshotter screenshotter;
@@ -23,9 +35,6 @@ namespace BytingLib
 
         private Action? startRecordingPlayback;
 
-        /// <summary>Only used for input that shouldn't be recorded (Fullscreen Toggle for example or Replay interrupt).
-        /// The difference to InputStuff.KeysDev</summary>
-        protected KeyInput metaKeys;
         public event Action? OnFrameBeforeScreenshot;
         private int takeScreenshotNextFrame = -1;
 
@@ -35,8 +44,8 @@ namespace BytingLib
 
         public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter, HotReloadType hotReloadType,
             bool mouseWithActivationClick = false,
-            bool vsync = true, bool startRecordingInstantly = true, bool enableDevKeys = false,
-            bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool controlViaF5 = true)
+            bool vsync = true, bool startRecordingInstantly = true, bool enableGameSpeedKeys = false,
+            bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool enableRecordingKeys = true)
             : base(g, hotReloadType, contentConverter, clearHotReloadOutputPath)
         {
             MainThread.Initialize(); // tell the main thread which thread actually is the main thread
@@ -67,7 +76,22 @@ namespace BytingLib
             };
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, new object[] { contentCollector }, typeof(MarkupShortcutAttribute), converters);
 
-            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, enableDevKeys, controlViaF5);
+            input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, inputInputRecordings);
+
+            globalInputUpdater = new(() => input.FullInput, "Global");
+            metaInputUpdater = new(input.GetRealInput, "Meta");
+
+            inputCanvas = Use(new InputCanvas(bindsCanvas, globalInputUpdater));
+            inputMeta = Use(new InputMeta(bindsMeta, metaInputUpdater));
+
+            if (enableGameSpeedKeys)
+            {
+                inputGameSpeed = Use(new InputControlGameSpeed(bindsControlGameSpeed, globalInputUpdater));
+            }
+            if (enableRecordingKeys)
+            {
+                inputInputRecordings = Use(new InputInputRecordings(bindsInputRecordings, globalInputUpdater));
+            }
 
             basePaths = paths;
             saveStateManager = new SaveStateManager(paths.SaveStateDir);
@@ -75,8 +99,6 @@ namespace BytingLib
             screenshotter = new Screenshotter(gDevice, paths);
 
             InitWindowAndGraphics(vsync);
-
-            metaKeys = new KeyInput(() => input.CurrentKeyState);
 
             mouseVisibilityManager = new MouseVisibilityManager(gameWrapper);
         }
@@ -100,22 +122,27 @@ namespace BytingLib
 
         public sealed override void UpdateActive(GameTime gameTime)
         {
-            input.PreUpdate();
-            metaKeys.Update();
+            input.PreUpdate(); // this updates the input queue
+            globalInputUpdater.Update();
+            metaInputUpdater.Update();
 
             int iterations = GetIterations();
 
             for (int i = 0; i < iterations; i++)
             {
                 UpdateSingleIteration(gameTime);
+                if (i + 1 < iterations)
+                {
+                    globalInputUpdater.Update();
+                }
             }
 
             ScreenshotType screenshot = ScreenshotType.None;
 
-            if (metaKeys.F12.Pressed && !metaKeys.Control.Down)
+            if (inputMeta.Screenshot.Pressed)
             {
                 OnFrameBeforeScreenshot?.Invoke();
-                takeScreenshotNextFrame = metaKeys.Shift.Down ? 5 : 1;
+                takeScreenshotNextFrame = inputMeta.ScreenshotDelayed.Down ? 5 : 1;
             }
             else if (takeScreenshotNextFrame != -1)
             {
@@ -155,32 +182,35 @@ namespace BytingLib
         private int GetIterations()
         {
             int iterations = 1;
-            if (!pauseUpdate && input.KeysDev.Alt.Down)
+            if (inputGameSpeed != null)
             {
-                iterations *= 10;
-                if (input.KeysDev.Apps.Down)
+                if (!pauseUpdate && inputGameSpeed.SpeedUp100.Down)
+                {
+                    iterations *= 100;
+                }
+                else if (!pauseUpdate && inputGameSpeed.SpeedUp10.Down)
                 {
                     iterations *= 10;
                 }
-            }
-            else
-            {
-                if (input.KeysDev.Apps.Down)
+                else
                 {
-                    pauseUpdate = true;
-
-                    if (input.KeysDev.Alt.Pressed)
+                    if (inputGameSpeed.Halt.Down)
                     {
-                        iterations = 1; // display next frame
+                        pauseUpdate = true;
+
+                        if (inputGameSpeed.ForwardOneFrame.Pressed)
+                        {
+                            iterations = 1; // display next frame
+                        }
+                        else
+                        {
+                            iterations = 0;
+                        }
                     }
                     else
                     {
-                        iterations = 0;
+                        pauseUpdate = false;
                     }
-                }
-                else
-                {
-                    pauseUpdate = false;
                 }
             }
             return iterations;
@@ -192,7 +222,7 @@ namespace BytingLib
 
             input.Update();
 
-            if (f11ToToggleFullscreen && metaKeys.F11.Pressed)
+            if (f11ToToggleFullscreen && inputMeta.ToggleFullscreen.Pressed)
             {
                 windowManager.ToggleFullscreen();
             }
@@ -207,11 +237,7 @@ namespace BytingLib
             mouseVisibilityManager.UpdateEnd(GetTopmostScene());
         }
 
-#if DEBUG
-        protected virtual bool ShouldSwapScreen() => metaKeys.Tab.Pressed;
-#else
-        protected virtual bool ShouldSwapScreen() => metaKeys.Control.Down && metaKeys.Tab.Pressed;
-#endif
+        protected virtual bool ShouldSwapScreen() => inputMeta.SwapScreen.Pressed;
 
         public sealed override void DrawActive(GameTime gameTime)
         {

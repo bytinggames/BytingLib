@@ -16,11 +16,11 @@
         protected readonly RasterizerState rasterizerState = CreateDefaultRasterizerState();
         protected readonly RasterizerState rasterizerStateScissor;
 
-        public Canvas(Func<Rect> getRenderRect, MouseInput mouse, KeyInput keys, GameWindow window, StyleRoot style)
+        public Canvas(Func<Rect> getRenderRect, IInputCanvas input, GameWindow window, StyleRoot style)
         {
             this.getRenderRect = getRenderRect;
             StyleRoot = style;
-            Input = CreateElementInput(mouse, keys, window);
+            Input = CreateElementInput(input, window);
 
             rasterizerStateScissor = CreateDefaultRasterizerState();
             rasterizerStateScissor.ScissorTestEnable = true;
@@ -36,15 +36,13 @@
 
         protected bool TreeDirty => treeDirty;
 
-        protected virtual ElementInput CreateElementInput(MouseInput mouse, KeyInput keys, GameWindow window)
+        protected virtual ElementInput CreateElementInput(IInputCanvas input, GameWindow window)
         {
-            return new ElementInput(mouse, keys, SetUpdateCatch, window);
+            return new ElementInput(input, SetUpdateCatch, UnsetUpdateCatch, window);
         }
 
         public void Update()
         {
-            Input.Mouse.Update();
-
             // reset hover element
             Input.HoverElement = null;
 
@@ -56,7 +54,7 @@
             {
                 UpdateSelf(Input);
 
-                for (int i = 0; i < Children.Count; i++)
+                for (int i = Children.Count - 1; i >= 0; i--)
                 {
                     Children[i].Update(Input);
                 }
@@ -71,6 +69,13 @@
         public void SetUpdateCatch(Element? element)
         {
             updateCatch = element;
+        }
+        public void UnsetUpdateCatch(Element element)
+        {
+            if (element == updateCatch)
+            {
+                updateCatch = null;
+            }
         }
 
         public abstract void DrawBatch(SpriteBatch spriteBatch);

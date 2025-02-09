@@ -34,6 +34,11 @@
 
         protected override void DrawChild(MarkupSettings settings)
         {
+            if (!settings.Visible)
+            {
+                return;
+            }
+
             if (settings.TextOutline != null && settings.TextOutline.SizeUnion)
             {
                 float xTemp = settings.Anchor.X;

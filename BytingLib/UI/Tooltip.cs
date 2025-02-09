@@ -35,7 +35,7 @@
 
         protected override void UpdateSelf(ElementInput input)
         {
-            bool mouseConsideredMoved = mouseStillForFrames < NoMouseMovementToShowInFrames && input.Mouse.Move.LengthSquared() > MaxMouseMoveSquaredConsideredStill;
+            bool mouseConsideredMoved = mouseStillForFrames < NoMouseMovementToShowInFrames && input.Input.MousePosition.Delta.LengthSquared() > MaxMouseMoveSquaredConsideredStill;
             if (mouseConsideredMoved && !showInstantlyWhileMoving
                 || newHover == null
                 || lastHover != newHover
@@ -74,7 +74,7 @@
             newHover = null;
             newText = null;
 
-            mousePos = input.Mouse.Position;
+            mousePos = input.Input.MousePosition;
 
             base.UpdateSelf(input);
         }

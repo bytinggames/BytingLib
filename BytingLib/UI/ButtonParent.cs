@@ -71,7 +71,7 @@
 
             if (down)
             {
-                if (!input.Mouse.Left.Down)
+                if (!input.Input.Click.Down)
                 {
                     if (Hover)
                     {
@@ -81,14 +81,14 @@
                     down = false;
                     SetDirty();
 
-                    input.SetUpdateCatch(null);
+                    input.UnsetUpdateCatch(this);
                 }
             }
         }
 
         protected virtual bool WhileHover(Element _, ElementInput input)
         {
-            if (input.Mouse.Left.Pressed)
+            if (input.Input.Click.Pressed)
             {
                 down = true;
                 input.SetUpdateCatch(this);
