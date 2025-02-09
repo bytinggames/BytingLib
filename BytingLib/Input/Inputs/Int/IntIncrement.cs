@@ -2,18 +2,18 @@
 {
     public class IntIncrement(InputInt input, InputBool increment, InputBool? decrement) : InputIntSimple
     {
-        public InputInt input { get; } = input;
-        public InputBool increment { get; } = increment;
-        public InputBool? decrement { get; }  = decrement;
+        public InputInt Input { get; } = input;
+        public InputBool Increment { get; } = increment;
+        public InputBool? Decrement { get; }  = decrement;
 
         protected override int CalculateValue(FullInput input, InputIntState state)
         {
-            int value = this.input.GetState(state.Updater).Value;
-            if (increment.GetState(state.Updater).Pressed)
+            int value = this.Input.GetState(state.Updater).Value;
+            if (Increment.GetState(state.Updater).Pressed)
             {
                 value++;
             }
-            if (decrement != null && decrement.GetState(state.Updater).Pressed)
+            if (Decrement != null && Decrement.GetState(state.Updater).Pressed)
             {
                 value--;
             }
@@ -22,11 +22,11 @@
 
         public override IEnumerable<Input> GetChildren()
         {
-            yield return input;
-            yield return increment;
-            if (decrement != null)
+            yield return Input;
+            yield return Increment;
+            if (Decrement != null)
             {
-                yield return decrement;
+                yield return Decrement;
             }
         }
     }
