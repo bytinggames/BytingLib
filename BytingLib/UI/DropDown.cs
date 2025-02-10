@@ -49,7 +49,7 @@ namespace BytingLib.UI
         }
     }
 
-    public class DropDown : ButtonParent
+    public class Dropdown : ButtonParent
     {
         /// <summary>Used for stuff that should happen immediately, like sound effects</summary>
         public event Action? OnBeforeClick;
@@ -63,7 +63,7 @@ namespace BytingLib.UI
         public Label Label { get; }
         public float? ListItemHeight { get; set; }
 
-        public DropDown(string text, Func<(string Text, object Obj)[]> getOptions, Canvas canvas, float width, float height, Vector2? anchor = null, Padding? padding = null)
+        public Dropdown(string text, Func<(string Text, object Obj)[]> getOptions, Canvas canvas, float width, float height, Vector2? anchor = null, Padding? padding = null)
             : base(width, height, anchor, padding)
         {
             this.getOptions = getOptions;
