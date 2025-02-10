@@ -9,16 +9,16 @@ namespace BytingLib
         {
             if (reader.TokenType == JsonTokenType.StartObject)
             {
-                var foundType = SimpleJsonObjectReader.BeginReadObject(ref reader, "Value", [JsonTokenType.Number, JsonTokenType.Null]);
-                float? floatValue = null;
-                if (foundType == JsonTokenType.Number)
-                {
-                    floatValue = reader.GetSingle();
-                }
-                
+                SimpleJsonObjectReader.BeginReadObject(ref reader, "Value", [JsonTokenType.Number]);
+                float? floatValue = reader.GetSingle();
+
                 var val = new ValueEvent<float?>(floatValue);
                 SimpleJsonObjectReader.EndReadObject(ref reader);
                 return val;
+            }
+            else if (reader.TokenType == JsonTokenType.String)
+            {
+                return new ValueEvent<float?>(null);
             }
             else
             {
@@ -30,7 +30,7 @@ namespace BytingLib
         {
             if (value.Value == null)
             {
-                writer.WriteNullValue();
+                writer.WriteStringValue("null");
             }
             else
             {
