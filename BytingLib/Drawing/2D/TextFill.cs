@@ -508,7 +508,7 @@ namespace BytingLib
                 Vector2 jumpTo = segment.Pos;
 
                 // anchor text inside segment, if anchor is not left aligned
-                if (!segmentStart.IsEqual(measureWidthUntil) && anchor != Vector2.Zero)
+                if (!segmentStart.IsEqual(measureWidthUntil) && (anchor.X != 0 || anchorInLineY != 0))
                 {
                     Vector2 textSegmentSize = markup.GetSizeSubstring(settings, segmentStart, measureWidthUntil);
                     if (anchor.X != 0f)
