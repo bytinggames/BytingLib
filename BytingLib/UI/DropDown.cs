@@ -61,6 +61,7 @@ namespace BytingLib.UI
         private (string Text, object Obj)[]? options;
         private readonly Canvas canvas;
         public Label Label { get; }
+        public float? ListItemHeight { get; set; }
 
         public DropDown(string text, Func<(string Text, object Obj)[]> getOptions, Canvas canvas, float width, float height, Vector2? anchor = null, Padding? padding = null)
             : base(width, height, anchor, padding)
@@ -105,7 +106,7 @@ namespace BytingLib.UI
             {
                 int iRemember = i;
                 panel.Add(
-                    new Button(() => SelectOption(iRemember, options[iRemember]), Width, Height, Anchor)
+                    new Button(() => SelectOption(iRemember, options[iRemember]), Width, ListItemHeight ?? Height, Anchor)
                     {
                         HoverStyle = HoverStyle
                     }.Add(
