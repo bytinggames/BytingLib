@@ -4,7 +4,7 @@ namespace BytingLib
 {
     internal static class SimpleJsonObjectReader
     {
-        public static void BeginReadObject(ref Utf8JsonReader reader, string propertyName, JsonTokenType[] allowedTypes)
+        public static JsonTokenType BeginReadObject(ref Utf8JsonReader reader, string propertyName, JsonTokenType[] allowedTypes)
         {
             reader.Read();
             if (reader.TokenType != JsonTokenType.PropertyName)
@@ -31,6 +31,7 @@ namespace BytingLib
             {
                 throw new Exception($"json token type was not one of the given allowed types");
             }
+            return allowedTypes[i];
         }
 
         public static void EndReadObject(ref Utf8JsonReader reader)

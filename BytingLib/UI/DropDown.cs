@@ -60,7 +60,7 @@ namespace BytingLib.UI
         private readonly Func<(string Text, object Obj)[]> getOptions;
         private (string Text, object Obj)[]? options;
         private readonly Canvas canvas;
-        private Label label;
+        public Label Label { get; }
 
         public DropDown(string text, Func<(string Text, object Obj)[]> getOptions, Canvas canvas, float width, float height, Vector2? anchor = null, Padding? padding = null)
             : base(width, height, anchor, padding)
@@ -68,12 +68,13 @@ namespace BytingLib.UI
             this.getOptions = getOptions;
             this.canvas = canvas;
 
-            Add(label = new Label(text));
+            Add(Label = new Label(text));
+            Label.Anchor = new Vector2(0f, 0.5f);
         }
 
         private void SelectOption(int index, (string Text, object Obj) option)
         {
-            label.Text = option.Text;
+            Label.Text = option.Text;
             OnSelect?.Invoke(index, option.Obj);
         }
 
@@ -108,7 +109,7 @@ namespace BytingLib.UI
                     {
                         HoverStyle = HoverStyle
                     }.Add(
-                        new Label(options[i].Text)
+                        new Label(options[i].Text) { Anchor = Label.Anchor }
                     )
                 );
             }

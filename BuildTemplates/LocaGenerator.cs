@@ -230,22 +230,6 @@ using System.Collections.Generic;
 
 namespace {nameSpace}
 {{{locaCode}
-
-    public class LocaArray
-    {{
-        private readonly Func<string, string> getLocaValue;
-        private readonly string baseKey;
-        public int Length {{ get; }}
-
-        public LocaArray(Func<string, string> getLocaValue, string baseKey, int length)
-        {{
-            this.getLocaValue = getLocaValue;
-            this.baseKey = baseKey;
-            Length = length;
-        }}
-
-        public string this[int index] => getLocaValue(baseKey + index);
-    }}
 }}";
             return locaCode;
         }

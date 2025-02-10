@@ -13,6 +13,7 @@ namespace BytingLib.Serialization
                 new ValueEventStringJsonConverter(),
                 new ValueEventIntJsonConverter(),
                 new ValueEventFloatJsonConverter(),
+                new ValueEventFloatNullableJsonConverter(),
                 new ValueEventBoolJsonConverter(),
                 new DateTimeMSJsonConverter(),
             }
