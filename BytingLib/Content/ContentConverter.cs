@@ -51,6 +51,7 @@ namespace BytingLib
             { "Song", "Song" },
             { "Video", "Video" },
             { "byte[]", "Bytes" },
+            { "int[]", "Ints" },
             // BytingLib
             { "Animation", "" }, // Ani is already in the asset name
             { "ModelGL", "Model" }, // Ani is already in the asset name
