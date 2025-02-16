@@ -37,6 +37,7 @@ namespace BytingLib
 
         public event Action? OnFrameBeforeScreenshot;
         private int takeScreenshotNextFrame = -1;
+        private DateTime? lastScreenshotTaken;
 
         /// <summary>Only used for easy access on frames for when debugging.</summary>
         public static Func<int> DebugGetFrame { get; set; } = () => 0;
@@ -97,10 +98,16 @@ namespace BytingLib
             saveStateManager = new SaveStateManager(paths.SaveStateDir);
 
             screenshotter = new Screenshotter(gDevice, paths);
+            screenshotter.OnTakeScreenshot += Screenshotter_OnTakeScreenshot;
 
             InitWindowAndGraphics(vsync);
 
             mouseVisibilityManager = new MouseVisibilityManager(gameWrapper);
+        }
+
+        private void Screenshotter_OnTakeScreenshot()
+        {
+            lastScreenshotTaken = DateTime.UtcNow;
         }
 
         protected virtual void InitWindowAndGraphics(bool vsync)
@@ -243,6 +250,16 @@ namespace BytingLib
         {
             drawSpeed.OnRefresh(gameTime);
 
+            if (lastScreenshotTaken.HasValue)
+            {
+                if ((DateTime.UtcNow - lastScreenshotTaken.Value).TotalMilliseconds > 100)
+                {
+                    lastScreenshotTaken = null;
+                }
+                // ensure that at least one frame is black
+                gDevice.Clear(Color.Black);
+                return;
+            }
             DrawIteration(gameTime);
         }
 
