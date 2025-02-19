@@ -5,6 +5,7 @@ namespace BytingLib
     public class MouseVisibilityManager : IDisposable
     {
         private readonly IMouseVisible mouseVisible;
+        private readonly IResolution res;
         private readonly bool setVisibleToOnDispose;
 
         public bool CenterIfAppearing { get; set; } = true;
@@ -12,9 +13,10 @@ namespace BytingLib
 
         public event Action? OnAppear, OnHide;
 
-        public MouseVisibilityManager(IMouseVisible mouseVisible)
+        public MouseVisibilityManager(IMouseVisible mouseVisible, IResolution res)
         {
             this.mouseVisible = mouseVisible;
+            this.res = res;
             setVisibleToOnDispose = mouseVisible.IsMouseVisible;
         }
 
@@ -59,8 +61,8 @@ namespace BytingLib
                 // only set mouse position, when not replaying
                 if (AllowSetMousePos)
                 {
-                    var dispMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
-                    Mouse.SetPosition(dispMode.Width / 2, dispMode.Height / 2);
+                    var center = res.Resolution / 2;
+                    Mouse.SetPosition(center.X, center.Y);
                 }
             }
 

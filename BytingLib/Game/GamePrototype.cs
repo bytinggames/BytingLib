@@ -102,7 +102,7 @@ namespace BytingLib
 
             InitWindowAndGraphics(vsync);
 
-            mouseVisibilityManager = new MouseVisibilityManager(gameWrapper);
+            mouseVisibilityManager = new MouseVisibilityManager(gameWrapper, windowManager);
         }
 
         private void Screenshotter_OnTakeScreenshot()
