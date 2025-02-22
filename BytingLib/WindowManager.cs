@@ -143,12 +143,12 @@ namespace BytingLib
 
         private int GetViewportWidth()
         {
-            return graphics.GraphicsDevice.Viewport.Width;
+            return Math.Max(1, graphics.GraphicsDevice.Viewport.Width);
         }
 
         private int GetViewportHeight()
         {
-            return graphics.GraphicsDevice.Viewport.Height;
+            return Math.Max(1, graphics.GraphicsDevice.Viewport.Height);
         }
 
         public void SwapScreen()

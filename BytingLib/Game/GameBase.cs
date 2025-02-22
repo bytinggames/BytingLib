@@ -62,7 +62,7 @@
         {
             // draw black blend to hint to the user, that the window isn't active
             spriteBatch.Begin();
-            spriteBatch.DrawRectangle(new Rect(0, 0, gDevice.Viewport.Width, gDevice.Viewport.Height), Color.Black * 0.25f);
+            spriteBatch.DrawRectangle(new Rect(0, 0, windowManager.ResolutionX, windowManager.ResolutionY), Color.Black * 0.25f);
             spriteBatch.End();
         }
 
