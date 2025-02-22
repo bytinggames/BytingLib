@@ -5,6 +5,7 @@ namespace BytingLib.Serialization
     public class SaveStateManager
     {
         private readonly string saveStateDir;
+        public bool ThrowExceptionWhenLoadingTooNewVersion { get; set; }
 
         public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions(JsonSerializerOptions.Default)
         {
@@ -19,9 +20,10 @@ namespace BytingLib.Serialization
             }
         };
 
-        public SaveStateManager(string saveStateDir)
+        public SaveStateManager(string saveStateDir, bool throwExceptionWhenLoadingTooNewVersion)
         {
             this.saveStateDir = saveStateDir;
+            this.ThrowExceptionWhenLoadingTooNewVersion = throwExceptionWhenLoadingTooNewVersion;
         }
 
         public T LoadOrCreate<T>(string saveStateName, out bool createdNewSaveState)
@@ -60,11 +62,17 @@ namespace BytingLib.Serialization
             }
 
             string json = File.ReadAllText(filePath);
-            T? save = migrator.Deserialize(json);
+            T? save = migrator.Deserialize(json, ThrowExceptionWhenLoadingTooNewVersion, out uint? tooNewVersion);
             if (save == null)
             {
                 throw new BytingException("Couldn't load save file");
             }
+
+            if (tooNewVersion != null)
+            {
+                File.Copy(filePath, Path.Combine(Path.GetDirectoryName(filePath) ?? "", Path.GetFileNameWithoutExtension(filePath) + "_backup_v" + tooNewVersion.Value + ".json"));
+            }
+
             return save;
         }
 

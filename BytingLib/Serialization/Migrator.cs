@@ -54,13 +54,25 @@ namespace BytingLib.Serialization
             json = json.Slice(json.IndexOf(Encoding.UTF8.GetBytes("{"))); // skip migration version
         }
 
-        public CurrentVersion? Deserialize(string json)
+        public CurrentVersion? Deserialize(string json, bool throwExceptionOnTooNewVersion, out uint? tooNewVersion)
         {
             uint version = StripVersionFromJson(ref json);
 
             if (version >= typePerVersion.Length)
             {
-                throw new ArgumentException("json migration version is too large");
+                tooNewVersion = version;
+                if (throwExceptionOnTooNewVersion)
+                {
+                    throw new ArgumentException("json migration version is too large");
+                }
+                else
+                {
+                    version = (uint)(typePerVersion.Length - 1);
+                }
+            }
+            else
+            {
+                tooNewVersion = null;
             }
 
             Type type = typePerVersion[version];

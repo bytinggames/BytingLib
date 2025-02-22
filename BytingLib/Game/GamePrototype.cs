@@ -95,7 +95,7 @@ namespace BytingLib
             }
 
             basePaths = paths;
-            saveStateManager = new SaveStateManager(paths.SaveStateDir);
+            saveStateManager = new SaveStateManager(paths.SaveStateDir, false);
 
             screenshotter = new Screenshotter(gDevice, paths);
             screenshotter.OnTakeScreenshot += Screenshotter_OnTakeScreenshot;
