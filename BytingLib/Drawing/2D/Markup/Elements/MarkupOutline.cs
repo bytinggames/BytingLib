@@ -40,14 +40,19 @@
 
         public override IEnumerable<ILeaf> IterateOverLeaves(MarkupSettings settings)
         {
-            var temp = settings.TextOutline?.CloneOutline();
-            settings.TextOutline = new MarkupSettings.Outline(color ?? settings.TextColor, thickness, SizeUnion, quality);
-
+            MarkupSettings.Outline? temp = settings.TextOutline?.CloneOutline();
+            if (thickness > 0f)
+            {
+                settings.TextOutline = new MarkupSettings.Outline(color ?? settings.TextColor, thickness, SizeUnion, quality);
+            }
+            else
+            {
+                settings.TextOutline = null;
+            }
             foreach (var leaf in base.IterateOverLeaves(settings))
             {
                 yield return leaf;
             }
-
             settings.TextOutline = temp;
         }
     }
