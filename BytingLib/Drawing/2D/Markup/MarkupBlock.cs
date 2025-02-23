@@ -17,7 +17,7 @@
         /// <summary>No PaddingBottom support for SubSizeUnion yet.</summary>
         public float PaddingBottom { get; set; }
 
-        protected MarkupRoot? subContainer;
+        protected List<MarkupRoot>? subContainers;
 
         public bool SubSizeUnion { get; set; } = false;
 
@@ -29,7 +29,12 @@
 
         public void Sub(Creator creator, string text)
         {
-            subContainer = new MarkupRoot(creator, text);
+            if (subContainers == null)
+            {
+                subContainers = new();
+            }
+
+            subContainers.Add(new MarkupRoot(creator, text));
         }
 
         public void SubAnchor(float x, float y)
@@ -62,10 +67,10 @@
         private void InnerDraw(MarkupSettings settings)
         {
             float tempX = settings.Anchor.X;
-            if (SubSizeUnion && subContainer != null)
+            if (SubSizeUnion && subContainers != null && subContainers.Count > 0)
             {
                 Vector2 thisSize = GetSizeChild(settings, 0, -1);
-                Vector2 subSize = subContainer.GetSize(settings);
+                Vector2 subSize = subContainers.Max(f => f.GetSize(settings));
                 Vector2 larger = subSize - thisSize;
                 if (larger.X > 0)
                 {
@@ -75,13 +80,16 @@
 
             DrawChild(settings);
 
-            if (subContainer != null)
+            if (subContainers != null && subContainers.Count > 0)
             {
                 var settingsClone = settings.CloneMarkupSettings();
                 Rect ownRect = settings.Anchor.Rectangle(GetSizeChild(settingsClone, 0, -1));
                 ownRect.ApplyPadding(PaddingLeft * settings.Scale.X, PaddingRight * settings.Scale.X, PaddingTop * settings.Scale.Y, PaddingBottom * settings.Scale.Y);
                 settingsClone.Anchor = ownRect.GetAnchor(SubAnchorX, SubAnchorY);
-                subContainer.Draw(settingsClone);
+                for (int i = 0; i < subContainers.Count; i++)
+                {
+                    subContainers[i].Draw(settingsClone);
+                }
             }
 
             settings.Anchor.X = tempX;
@@ -93,9 +101,9 @@
         {
             Vector2 size = GetSizeChild(settings, start, end);
 
-            if (SubSizeUnion && subContainer != null)
+            if (SubSizeUnion && subContainers != null && subContainers.Count > 0)
             {
-                Vector2 subSize = subContainer.GetSize(settings);
+                Vector2 subSize = subContainers.Max(f => f.GetSize(settings));
                 size = Vector2.Max(size, subSize);
             }
 

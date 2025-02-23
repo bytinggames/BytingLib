@@ -70,7 +70,7 @@
 
             if (removeSubContainer)
             {
-                clone.subContainer = null;
+                clone.subContainers = null;
             }
 
             return clone;
