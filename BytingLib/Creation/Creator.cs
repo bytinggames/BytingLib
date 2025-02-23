@@ -213,8 +213,15 @@ namespace BytingLib
         /// <summary>"ctorArg1,ctorArg2"</summary>
         private object CreateObject(Type type, ScriptReaderLiteral reader)
         {
-            object[] args = GetParametersForConstructor(reader, type);
-            return Activator.CreateInstance(type, args)!;
+            object?[] args = GetParametersForConstructor(reader, type);
+            return Activator.CreateInstance(type,
+                BindingFlags.CreateInstance |
+                BindingFlags.Public |
+                BindingFlags.Instance |
+                BindingFlags.OptionalParamBinding,
+                null,
+                args,
+                CultureInfo.InvariantCulture)!;
         }
 
         /// <summary>"ctorArg1,ctorArg2"</summary>
@@ -240,6 +247,7 @@ namespace BytingLib
             {
                 var parameters = ctor.GetParameters();
                 int parametersForSplitArray = 0;
+                int parametersForSplitArrayOptional = 0;
                 lastParameterIsParamsAttribute = false;
                 for (int i = 0; i < parameters.Length; i++)
                 {
@@ -254,11 +262,19 @@ namespace BytingLib
                                 break;
                             }
                         }
-                        parametersForSplitArray++;
+
+                        if (parameters[i].IsOptional)
+                        {
+                            parametersForSplitArrayOptional++;
+                        }
+                        else
+                        {
+                            parametersForSplitArray++;
+                        }
                     }
                 }
 
-                if (split.Length == parametersForSplitArray 
+                if (split.Length >= parametersForSplitArray && split.Length <= parametersForSplitArray + parametersForSplitArrayOptional
                     || lastParameterIsParamsAttribute && split.Length >= parametersForSplitArray)
                 {
                     return ctor;
@@ -307,19 +323,27 @@ namespace BytingLib
                 }
                 else
                 {
-                    if (i == expectedTypes.Length - 1 && lastParameterIsParamsAttribute)
+                    if (splitIndex >= split.Length)
                     {
-                        Type elementType = expectedTypes[i].GetElementType()!;
-                        Array arr = Array.CreateInstance(elementType, split.Length - splitIndex);
-                        for (int j = 0; j < arr.Length; j++)
-                        {
-                            arr.SetValue(GetParameter(split[splitIndex++], elementType), j); // TODO: array to non-array
-                        }
-                        output[i] = arr;
+                        // no values left. Skip the optional parameters
+                        output[i] = Type.Missing;
                     }
                     else
                     {
-                        output[i] = GetParameter(split[splitIndex++], expectedTypes[i]);
+                        if (i == expectedTypes.Length - 1 && lastParameterIsParamsAttribute)
+                        {
+                            Type elementType = expectedTypes[i].GetElementType()!;
+                            Array arr = Array.CreateInstance(elementType, split.Length - splitIndex);
+                            for (int j = 0; j < arr.Length; j++)
+                            {
+                                arr.SetValue(GetParameter(split[splitIndex++], elementType), j); // TODO: array to non-array
+                            }
+                            output[i] = arr;
+                        }
+                        else
+                        {
+                            output[i] = GetParameter(split[splitIndex++], expectedTypes[i]);
+                        }
                     }
                 }
             }
