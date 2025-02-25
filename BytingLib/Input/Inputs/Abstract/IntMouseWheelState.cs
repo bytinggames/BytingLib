@@ -3,6 +3,7 @@
     public class IntMouseWheelState : InputIntState
     {
         int? previousScrollWheelValue;
+        bool ignoreDefaultValueOfInitialization = true;
 
         public IntMouseWheelState(InputUpdater updater)
             : base(updater)
@@ -22,7 +23,14 @@
                     scrollDiff = Math.Sign(-scrollDiff) * (intRange - Math.Abs(scrollDiff));
                 }
             }
-            previousScrollWheelValue = scroll;
+            if (ignoreDefaultValueOfInitialization)
+            {
+                ignoreDefaultValueOfInitialization = false;
+            }
+            else
+            {
+                previousScrollWheelValue = scroll;
+            }
             return (int)scrollDiff;
         }
     }
