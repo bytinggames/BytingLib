@@ -16,6 +16,7 @@ namespace BytingLib
     [JsonDerivedType(typeof(BoolMouseWheel), "BoolMouseWheel")]
     [JsonDerivedType(typeof(BoolNot), "BoolNot")]
     [JsonDerivedType(typeof(BoolWindowActive), "BoolWindowActive")]
+    [JsonDerivedType(typeof(BoolOnPress), "BoolOnPress")]
     public abstract partial class InputBool : Input
     {
         public static implicit operator InputBool(Keys key) => new BoolKey(key);
