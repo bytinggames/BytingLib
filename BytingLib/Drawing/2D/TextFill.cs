@@ -12,7 +12,7 @@ namespace BytingLib
         private readonly float anchorInLineY;
         List<Rect> segments = new();
 
-        public TextFill(string text, Ref<SpriteFont> font, Rect containerRect, Vector2 anchor, bool globalAnchor, List<List<Vector2>> polygons, TextWrap splitMethod,
+        public TextFill(string text, Ref<SpriteFont> font, Rect containerRect, Vector2 anchor, bool globalAnchor, List<List<Vector2>> polygons, TextWrap splitMethod, bool relativeJumps,
             bool borderLeft = true, bool borderRight = true, Creator? creator = null, bool iterative = true, float anchorInLineY = 0.5f)
         {
             this.anchor = anchor;
@@ -77,7 +77,10 @@ namespace BytingLib
                     SegmentedMarkup = new MarkupRoot(creator, text);
                 }
 
-                MarkupSettings settings = new(null, font, new Anchor(Vector2.Zero, anchor), Color.White, anchor.X, FontScale);
+                MarkupSettings settings = new(null, font, new Anchor(Vector2.Zero, anchor), Color.White, anchor.X, FontScale)
+                {
+                    JumpOffset = relativeJumps ? containerRect.Pos : Vector2.Zero
+                };
                 // check if the markup is practically empty and won't draw anything anyways
                 if (SegmentedMarkup.Root.IterateOverLeaves(settings).All(f => f.GetSize(settings) == Vector2.Zero))
                 {
@@ -506,6 +509,7 @@ namespace BytingLib
             Vector2 GetJumpVector(MarkupIndex? measureWidthUntil)
             {
                 Vector2 jumpTo = segment.Pos;
+                jumpTo -= settings.JumpOffset;
 
                 // anchor text inside segment, if anchor is not left aligned
                 if (!segmentStart.IsEqual(measureWidthUntil) && (anchor.X != 0 || anchorInLineY != 0))

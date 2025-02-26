@@ -30,9 +30,13 @@ namespace BytingLib.UI
         {
             this.creator = creator;
 
-            if (width > 0f)
+            if (width != 0f)
             {
-                textFill = new TextFillObject(text, new(), TextFillObject.PolyType.Normalized01, wrap);
+                textFill = new TextFillObject(text, new(), TextFillObject.PolyType.Normalized01, wrap, true);
+                if (width < 0f)
+                {
+                    this.setSizeToText = false;
+                }
             }
         }
 

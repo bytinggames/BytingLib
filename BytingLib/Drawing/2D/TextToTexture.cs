@@ -192,7 +192,7 @@ namespace BytingLib
                 HorizontalAlignInLine = anchor.X,
                 TextureScale = textureScale.Value
             };
-            TextFillObject textFill = new(text, polygons, polyType, splitMethod, true, true);
+            TextFillObject textFill = new(text, polygons, polyType, splitMethod, false, true, true);
             textFill.Anchor = anchor;
             textFill.AnchorInLineY = anchorInLineY;
             textFill.PaddingNormalized = paddingNormalized;
