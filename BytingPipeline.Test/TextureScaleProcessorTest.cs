@@ -5,7 +5,7 @@ namespace BytingPipeline.Test
     [TestClass]
     public class TextureScaleProcessorTest
     {
-        static string imageFile = "Resources\\Image.png";
+        static string imageFile = "Resources\\Discord.png";
 
         [TestMethod]
         public void Test()

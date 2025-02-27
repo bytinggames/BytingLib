@@ -2,16 +2,17 @@
 {
     internal class GameGDeviceDummy : Game
     {
-        public GraphicsDeviceManager GraphicsDeviceManager { get; }
+        public GraphicsDeviceManager graphics { get; }
 
         public GameGDeviceDummy()
         {
-            GraphicsDeviceManager = new GraphicsDeviceManager(this); // this is required for the graphics device
+            graphics = new GraphicsDeviceManager(this); // this is required for the graphics device
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
         }
 
         protected override void Dispose(bool disposing)
         {
-            GraphicsDeviceManager.Dispose();
+            graphics.Dispose();
 
             base.Dispose(disposing);
         }

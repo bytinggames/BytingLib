@@ -358,7 +358,7 @@ namespace BytingLib
 
                 gDevice.SetRenderTarget(outputTex);
                 gDevice.Clear(Color.Transparent);
-                spriteBatch.Begin();
+                spriteBatch.Begin(blendState: BlendState.Additive);
                 sourceTex.Draw(spriteBatch, Anchor.Center(outputWidth / 2f, outputHeight / 2f).Rectangle(renderW, renderH));
                 spriteBatch.End();
                 gDevice.SetRenderTarget(null);
