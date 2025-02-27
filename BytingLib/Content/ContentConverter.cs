@@ -23,6 +23,7 @@ namespace BytingLib
             { "StringProcessor", "string" },
             { "GLTFProcessor", "ModelGL" },
             { "BytesProcessor", "byte[]" },
+            { "TextureScaleProcessor", "Texture2D" },
         };
 
         public Dictionary<string, string> ExtensionCopyToDataType { get; } = new()
