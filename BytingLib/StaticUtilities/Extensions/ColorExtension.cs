@@ -1,10 +1,36 @@
 ﻿using System.Globalization;
-using System.Reflection;
 
 namespace BytingLib
 {
     public static class ColorExtension
     {
+        private static readonly Vector2[] msaa8Kernel;
+
+        static ColorExtension()
+        {
+            msaa8Kernel = GetMsaaKernel();
+        }
+
+        private static Vector2[] GetMsaaKernel()
+        {
+            Vector2[] kernel = [
+                new(4,0),
+                new(2,1),
+                new(0,2),
+                new(1,4),
+                new(3,7),
+                new(5,6),
+                new(7,5),
+                new(6,3)
+            ];
+            // map to range [-0.5;0.5]
+            for (int i = 0; i < kernel.Length; i++)
+            {
+                kernel[i] = (kernel[i] - new Vector2(3.5f)) / 8f;
+            }
+            return kernel;
+        }
+
         public static Color AddColors(Color c1, Color c2)
         {
             c1 *= (1f - (c2.A / 255f));
@@ -325,53 +351,70 @@ namespace BytingLib
             }
         }
 
-        /// <summary>
-        /// TODO: this is highly unoptimized. To get a graphics device I had to create a game... Replace this with some cpu based image replacer.
-        /// </summary>
         public static void ScaleToTargetSize(ref Color[] input, int inputWidth, ref Color[] output, int outputWidth, bool keepAspectRatio)
         {
             int inputHeight = input.Length / inputWidth;
             int outputHeight = output.Length / outputWidth;
 
-            using (var game = new GameGDeviceDummy())
+            Rect renderRect = new Rect(0, 0, outputWidth, outputHeight);
+            if (keepAspectRatio)
             {
-                game.RunOneFrame(); // this triggers loading the graphics device
-                GraphicsDevice gDevice = game.GraphicsDevice;
+                float inputAspect = (float)inputWidth / inputHeight;
+                renderRect.ShrinkToAspectRatio(inputAspect, new Vector2(0.5f));
+            }
 
-                string codeBase = Assembly.GetExecutingAssembly()?.Location ?? throw new Exception("failed getting assembly path");
-                UriBuilder uri = new UriBuilder(codeBase);
-                string path = Uri.UnescapeDataString(uri.Path);
-                path = Path.GetDirectoryName(path) ?? throw new Exception("failed getting directory name of assembly path"); ;
+            int left = (int)renderRect.Left;
+            int top = (int)renderRect.Top;
+            int right = (int)renderRect.Right;
+            int bottom = (int)renderRect.Bottom;
 
-                using (var effect = new Effect(gDevice, File.ReadAllBytes(Path.Combine(path, "Content", "Effects", "TextureMsaa.mgfx"))))
+            const int msaa = 8; // msut be equal to length of msaa8Kernel
+            Vector2 pixelSizeOnInput = new Vector2(1f / renderRect.Width, 1f / renderRect.Height);
+
+            if (bottom >= outputHeight)
+            {
+                bottom = outputHeight - 1;
+            }
+            if (right >= outputWidth)
+            {
+                right = outputWidth - 1;
+            }
+
+            Vector2 texCoord = Vector2.Zero;
+            for (int xOutput = left, xRender = 0; xOutput <= right; xOutput++, xRender++)
+            {
+                for (int yOutput = top, yRender = 0; yOutput <= bottom; yOutput++, yRender++)
                 {
-                    SpriteBatch spriteBatch = new(gDevice);
-                    Texture2D sourceTex = input.ToTexture(inputWidth, gDevice);
-                    RenderTarget2D outputTex = new(gDevice, outputWidth, outputHeight, false, SurfaceFormat.Color, DepthFormat.None, 8, RenderTargetUsage.DiscardContents);
+                    // half pixel offset so (int) rounds to correct pixel
+                    texCoord.X = (xRender + 0.5f) / renderRect.Width;
+                    texCoord.Y = (yRender + 0.5f) / renderRect.Height;
 
-                    float renderW = outputWidth;
-                    float renderH = outputHeight;
-                    if (keepAspectRatio)
+                    Vector4 color = Vector4.Zero;
+                    for (int i = 0; i < msaa; i++)
                     {
-                        float outputAspect = (float)outputWidth / outputHeight;
-                        float inputAspect = (float)inputWidth / inputHeight;
-                        if (outputAspect > inputAspect)
+                        Vector2 texCoordMsaa = texCoord + pixelSizeOnInput * msaa8Kernel[i];
+                        int sourceX = (int)(texCoordMsaa.X * inputWidth);
+                        int sourceY = (int)(texCoordMsaa.Y * inputHeight);
+
+                        if (sourceX >= 0 && sourceX < inputWidth
+                            && sourceY >= 0 && sourceY < inputHeight)
                         {
-                            renderW = renderH * inputAspect;
-                        }
-                        else if (outputAspect < inputAspect)
-                        {
-                            renderH = renderW / inputAspect;
+                            int sourceIndex = sourceX + sourceY * inputWidth;
+                            Vector4 c = input[sourceIndex].ToVector4();
+                            // make sure transparent pixels contribute less
+                            c.X *= c.W;
+                            c.Y *= c.W;
+                            c.Z *= c.W;
+                            color += c;
                         }
                     }
+                    color /= msaa; // normalize
+                    // restore previous alpha
+                    color.X /= color.W;
+                    color.Y /= color.W;
+                    color.Z /= color.W;
 
-                    gDevice.SetRenderTarget(outputTex);
-                    gDevice.Clear(Color.Transparent);
-                    spriteBatch.Begin(blendState: BlendState.Additive, samplerState: SamplerState.AnisotropicClamp, effect: effect);
-                    sourceTex.Draw(spriteBatch, Anchor.Center(outputWidth / 2f, outputHeight / 2f).Rectangle(renderW, renderH));
-                    spriteBatch.End();
-                    gDevice.SetRenderTarget(null);
-                    output = outputTex.ToColor();
+                    output[xOutput + yOutput * outputWidth] = new Color(color);
                 }
             }
         }
