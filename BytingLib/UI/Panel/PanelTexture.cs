@@ -4,6 +4,7 @@
     {
         public Ref<Texture2D> Texture { get; set; }
         public Color Color { get; set; }
+        public bool ReplaceOrMultiplyWithStyleColor { get; set; } = false;
 
         public PanelTexture(Ref<Texture2D> texture, float? width = null, float? height = null, Color? color = null, Vector2? anchor = null, Padding? padding = null)
         {
@@ -24,7 +25,14 @@
             Color c = Color;
             if (style.TextureColor != null)
             {
-                c = new Color(Color.ToVector4() * style.TextureColor.Value.ToVector4());
+                if (ReplaceOrMultiplyWithStyleColor)
+                {
+                    c = style.TextureColor.Value;
+                }
+                else
+                {
+                    c = new Color(Color.ToVector4() * style.TextureColor.Value.ToVector4());
+                }
             }
             Texture.Value.Draw(spriteBatch, AbsoluteRect, c);
         }
