@@ -335,34 +335,37 @@ namespace BytingLib
             using (var game = new GameGDeviceDummy())
             {
                 game.RunOneFrame(); // this triggers loading the graphics device
-                GraphicsDevice gDevice = game.GraphicsDevice;
-                SpriteBatch spriteBatch = new(gDevice);
-                Texture2D sourceTex = input.ToTexture(inputWidth, gDevice);
-                RenderTarget2D outputTex = new(gDevice, outputWidth, outputHeight);
-
-                float renderW = outputWidth;
-                float renderH = outputHeight;
-                if (keepAspectRatio)
+                using (var effect = game.Content.Load<Effect>("TextureMsaa"))
                 {
-                    float outputAspect = (float)outputWidth / outputHeight;
-                    float inputAspect = (float)inputWidth / inputHeight;
-                    if (outputAspect > inputAspect)
-                    {
-                        renderW = renderH * inputAspect;
-                    }
-                    else if (outputAspect < inputAspect)
-                    {
-                        renderH = renderW / inputAspect;
-                    }
-                }
+                    GraphicsDevice gDevice = game.GraphicsDevice;
+                    SpriteBatch spriteBatch = new(gDevice);
+                    Texture2D sourceTex = input.ToTexture(inputWidth, gDevice);
+                    RenderTarget2D outputTex = new(gDevice, outputWidth, outputHeight, false, SurfaceFormat.Color, DepthFormat.None, 8, RenderTargetUsage.DiscardContents);
 
-                gDevice.SetRenderTarget(outputTex);
-                gDevice.Clear(Color.Transparent);
-                spriteBatch.Begin(blendState: BlendState.Additive);
-                sourceTex.Draw(spriteBatch, Anchor.Center(outputWidth / 2f, outputHeight / 2f).Rectangle(renderW, renderH));
-                spriteBatch.End();
-                gDevice.SetRenderTarget(null);
-                output = outputTex.ToColor();
+                    float renderW = outputWidth;
+                    float renderH = outputHeight;
+                    if (keepAspectRatio)
+                    {
+                        float outputAspect = (float)outputWidth / outputHeight;
+                        float inputAspect = (float)inputWidth / inputHeight;
+                        if (outputAspect > inputAspect)
+                        {
+                            renderW = renderH * inputAspect;
+                        }
+                        else if (outputAspect < inputAspect)
+                        {
+                            renderH = renderW / inputAspect;
+                        }
+                    }
+
+                    gDevice.SetRenderTarget(outputTex);
+                    gDevice.Clear(Color.Transparent);
+                    spriteBatch.Begin(blendState: BlendState.Additive, samplerState: SamplerState.AnisotropicClamp, effect: effect);
+                    sourceTex.Draw(spriteBatch, Anchor.Center(outputWidth / 2f, outputHeight / 2f).Rectangle(renderW, renderH));
+                    spriteBatch.End();
+                    gDevice.SetRenderTarget(null);
+                    output = outputTex.ToColor();
+                }
             }
         }
 

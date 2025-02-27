@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+using System;
 
 namespace BytingPipeline
 {
@@ -34,6 +35,10 @@ namespace BytingPipeline
                     ColorExtension.BytesToColors(bytes, source);
                     Color[] output = new Color[outputW * outputH];
                     ColorExtension.ScaleToTargetSize(ref source, inputW, ref output, outputW, KeepAspectRatio);
+                    if (bytes.Length < output.Length * 4)
+                    {
+                        Array.Resize(ref bytes, output.Length * 4);
+                    }
                     ColorExtension.ColorsToBytes(ref output, ref bytes);
                     PixelBitmapContent<Color> newFace = new(outputW, outputH);
                     newFace.SetPixelData(bytes);
