@@ -324,6 +324,48 @@ namespace BytingLib
             }
         }
 
+        /// <summary>
+        /// TODO: this is highly unoptimized. To get a graphics device I had to create a game... Replace this with some cpu based image replacer.
+        /// </summary>
+        public static void ScaleToTargetSize(ref Color[] input, int inputWidth, ref Color[] output, int outputWidth, bool keepAspectRatio)
+        {
+            int inputHeight = input.Length / inputWidth;
+            int outputHeight = output.Length / outputWidth;
+
+            using (var game = new GameGDeviceDummy())
+            {
+                game.RunOneFrame(); // this triggers loading the graphics device
+                GraphicsDevice gDevice = game.GraphicsDevice;
+                SpriteBatch spriteBatch = new(gDevice);
+                Texture2D sourceTex = input.ToTexture(inputWidth, gDevice);
+                RenderTarget2D outputTex = new(gDevice, outputWidth, outputHeight);
+
+                float renderW = outputWidth;
+                float renderH = outputHeight;
+                if (keepAspectRatio)
+                {
+                    float outputAspect = (float)outputWidth / outputHeight;
+                    float inputAspect = (float)inputWidth / inputHeight;
+                    if (outputAspect > inputAspect)
+                    {
+                        renderW = renderH * inputAspect;
+                    }
+                    else if (outputAspect < inputAspect)
+                    {
+                        renderH = renderW / inputAspect;
+                    }
+                }
+
+                gDevice.SetRenderTarget(outputTex);
+                gDevice.Clear(Color.Transparent);
+                spriteBatch.Begin();
+                sourceTex.Draw(spriteBatch, Anchor.Center(outputWidth / 2f, outputHeight / 2f).Rectangle(renderW, renderH));
+                spriteBatch.End();
+                gDevice.SetRenderTarget(null);
+                output = outputTex.ToColor();
+            }
+        }
+
         /// <summary>Can be optimized</summary>
         public static void BytesToColors(byte[] bytes, Color[,] colors)
         {
@@ -350,6 +392,50 @@ namespace BytingLib
         }
 
         /// <summary>Can be optimized</summary>
+        public static void BytesToColors(byte[] bytes, Vector4[,] colors)
+        {
+            int w = colors.GetLength(0);
+            int h = colors.GetLength(1);
+
+            if (w * h * 4 < bytes.Length)
+            {
+                throw new Exception("colors array size is too small for bytes array");
+            }
+
+            int i = 0;
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    colors[x, y] = new Vector4(bytes[i++] / 255f,
+                        bytes[i++] / 255f,
+                        bytes[i++] / 255f,
+                        bytes[i++] / 255f
+                    );
+                }
+            }
+        }
+
+        /// <summary>Can be optimized</summary>
+        public static void BytesToColors(byte[] bytes, Color[] colors)
+        {
+            if (colors.Length * 4 < bytes.Length)
+            {
+                throw new Exception("colors array size is too small for bytes array");
+            }
+
+            for (int i = 0; i < bytes.Length;)
+            {
+                colors[i / 4] = new Color(
+                    bytes[i++],
+                    bytes[i++],
+                    bytes[i++],
+                    bytes[i++]
+                );
+            }
+        }
+
+        /// <summary>Can be optimized</summary>
         public static void ColorsToBytes(Color[,] colors, byte[] bytes)
         {
             int w = colors.GetLength(0);
@@ -372,28 +458,22 @@ namespace BytingLib
                 }
             }
         }
-        /// <summary>Can be optimized</summary>
-        public static void BytesToColors(byte[] bytes, Vector4[,] colors)
-        {
-            int w = colors.GetLength(0);
-            int h = colors.GetLength(1);
 
-            if (w * h * 4 < bytes.Length)
+        /// <summary>Can be optimized</summary>
+        public static void ColorsToBytes(ref Color[] colors, ref byte[] bytes)
+        {
+            if (bytes.Length < colors.Length * 4)
             {
-                throw new Exception("colors array size is too small for bytes array");
+                throw new Exception("bytes array size is too small for colors array");
             }
 
             int i = 0;
-            for (int y = 0; y < h; y++)
+            for (int j = 0; j < colors.Length; j++)
             {
-                for (int x = 0; x < w; x++)
-                {
-                    colors[x, y] = new Vector4(bytes[i++] / 255f,
-                        bytes[i++] / 255f,
-                        bytes[i++] / 255f,
-                        bytes[i++] / 255f
-                    );
-                }
+                bytes[i++] = colors[j].R;
+                bytes[i++] = colors[j].G;
+                bytes[i++] = colors[j].B;
+                bytes[i++] = colors[j].A;
             }
         }
 

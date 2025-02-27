@@ -228,6 +228,24 @@
             return tex;
         }
 
+        /// <summary>Not as efficient as the ToTexture method using a one dimensional color array</summary>
+        public static Texture2D ToTexture(this Color[,] colors, GraphicsDevice gDevice)
+        {
+            int w = colors.GetLength(0);
+            int h = colors.GetLength(1);
+            Texture2D tex = new Texture2D(gDevice, w, h);
+            Color[] colors1D = new Color[w * h];
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    colors1D[x + y * w] = colors[x, y];
+                }
+            }
+            tex.SetData(colors1D);
+            return tex;
+        }
+
         public static Vector2 GetSize(this Texture2D tex)
         {
             return new Vector2(tex.Width, tex.Height);
