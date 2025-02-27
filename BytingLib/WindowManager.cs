@@ -19,6 +19,7 @@ namespace BytingLib
         public Int2? ForceWindowSize { get; set; }
 
         private const int SW_MAXIMIZE = 3;
+        private const int SW_MINIMIZE = 6;
         [DllImport("user32.dll", EntryPoint = "FindWindow")]
         public static extern IntPtr FindWindowByCaption(IntPtr ZeroOnly, string lpWindowName);
         [DllImport("user32.dll")]
@@ -240,27 +241,44 @@ namespace BytingLib
         public void MaximizeWindow()
         {
 #if WINDOWS
-            IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);
-            ShowWindow(hwnd, SW_MAXIMIZE);
-            RECT r = new();
-            GetClientRect(hwnd, out r);
-
-            // make sure graphics.PreferredBackBufferWidth and Height are updated correctly
-            // also apply graphics changes now, because this alters the window position a bit if the window is maximized.
-            // if we do this now, we can fix the position offset right away
-
-            graphics.PreferredBackBufferWidth = r.Right - r.Left;
-            graphics.PreferredBackBufferHeight = r.Bottom - r.Top;
-
-            var rememberPosition = Window.Position;
-
-            graphics.ApplyChanges();
-
-            // fix position offset that may occur because of graphics.ApplyChanges() here
-            Window.Position = rememberPosition;
+            ShowWindow(SW_MAXIMIZE);
 #endif
         }
 
+        /// <summary>Only supported on Windows</summary>
+        public void MinimizeWindow()
+        {
+#if WINDOWS
+            ShowWindow(SW_MINIMIZE);
+#endif
+        }
+
+        private void ShowWindow(int action)
+        {
+#if WINDOWS
+            IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);
+            ShowWindow(hwnd, action);
+            if (action == SW_MAXIMIZE)
+            {
+                RECT r = new();
+                GetClientRect(hwnd, out r);
+
+                // make sure graphics.PreferredBackBufferWidth and Height are updated correctly
+                // also apply graphics changes now, because this alters the window position a bit if the window is maximized.
+                // if we do this now, we can fix the position offset right away
+
+                graphics.PreferredBackBufferWidth = r.Right - r.Left;
+                graphics.PreferredBackBufferHeight = r.Bottom - r.Top;
+
+                var rememberPosition = Window.Position;
+
+                graphics.ApplyChanges();
+
+                // fix position offset that may occur because of graphics.ApplyChanges() here
+                Window.Position = rememberPosition;
+            }
+#endif
+        }
 
         public void SetWindowResolution(Int2 resolution)
         {
