@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Reflection;
 
 namespace BytingLib
 {
@@ -335,9 +336,15 @@ namespace BytingLib
             using (var game = new GameGDeviceDummy())
             {
                 game.RunOneFrame(); // this triggers loading the graphics device
-                using (var effect = game.Content.Load<Effect>("TextureMsaa"))
+                GraphicsDevice gDevice = game.GraphicsDevice;
+
+                string codeBase = Assembly.GetExecutingAssembly()?.Location ?? throw new Exception("failed getting assembly path");
+                UriBuilder uri = new UriBuilder(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                path = Path.GetDirectoryName(path) ?? throw new Exception("failed getting directory name of assembly path"); ;
+
+                using (var effect = new Effect(gDevice, File.ReadAllBytes(Path.Combine(path, "Content", "Effects", "TextureMsaa.mgfx"))))
                 {
-                    GraphicsDevice gDevice = game.GraphicsDevice;
                     SpriteBatch spriteBatch = new(gDevice);
                     Texture2D sourceTex = input.ToTexture(inputWidth, gDevice);
                     RenderTarget2D outputTex = new(gDevice, outputWidth, outputHeight, false, SurfaceFormat.Color, DepthFormat.None, 8, RenderTargetUsage.DiscardContents);

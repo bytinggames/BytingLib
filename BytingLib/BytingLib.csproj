@@ -33,6 +33,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>_GenerateContentFiles.tt.remove</DependentUpon>
     </None>
+    <None Update="Content\Effects\TextureMsaa.mgfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Drawing\2D\CharacterAllowedAt.tt">
       <LastGenOutput>CharacterAllowedAt.Generated.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>

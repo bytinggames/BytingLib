@@ -1,3 +1,7 @@
+// compile this with
+// "C:\Projects\MonoGame.BytingGames\Artifacts\MonoGame.Content.Builder.Editor.Launcher\Windows\Debug\mgcb-editor-windows-data\mgfxc.exe" "C:\Projects\SE\BytingLib\BytingLib\Content\Effects\TextureMsaa.fx" "C:\Projects\SE\BytingLib\BytingLib\Content\Effects\TextureMsaa.mgfx"
+// make sure to set the TextureMsaa.mgfx to "Copy if newer"
+
 #if OPENGL
 #define VS_SHADERMODEL vs_3_0
 #define PS_SHADERMODEL ps_3_0
