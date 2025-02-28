@@ -15,10 +15,10 @@
                 }
             }
         }
-        protected bool setSizeToText;
+        public bool setSizeToText { get; set; }
         protected string? textToDraw;
         protected string TextToDraw => textToDraw ?? Text;
-        protected float initialWidth;
+        public float initialWidth;
 
         /// <summary>Does not affect positioning. Only affects visual rotation</summary>
         public float Tilt { get; set; } = 0f;
