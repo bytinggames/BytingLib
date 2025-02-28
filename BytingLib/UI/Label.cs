@@ -15,10 +15,10 @@
                 }
             }
         }
-        public bool setSizeToText { get; set; }
+        public bool AutoSetSizeToText { get; set; }
         protected string? textToDraw;
         protected string TextToDraw => textToDraw ?? Text;
-        public float initialWidth;
+        public float InitialWidth { get; set; }
 
         /// <summary>Does not affect positioning. Only affects visual rotation</summary>
         public float Tilt { get; set; } = 0f;
@@ -26,9 +26,9 @@
         public Label(string text, float width = 0, float height = 0, bool setSizeToText = true)
         {
             _text = text;
-            Width = initialWidth = width;
+            Width = InitialWidth = width;
             Height = height;
-            this.setSizeToText = setSizeToText;
+            this.AutoSetSizeToText = setSizeToText;
         }
 
         protected virtual Vector2 MeasureString(StyleRoot style, string text)
@@ -61,9 +61,9 @@
 
         protected override void UpdateTreeBeginSelf(StyleRoot style)
         {
-            if (setSizeToText)
+            if (AutoSetSizeToText)
             {
-                Width = initialWidth;
+                Width = InitialWidth;
                 if (Width < 0f)
                 {
                     Width = 0f;
@@ -72,7 +72,7 @@
 
             textToDraw = CreateTextToDraw(style);
 
-            if (setSizeToText)
+            if (AutoSetSizeToText)
             {
                 SetSizeToText(style);
             }

@@ -19,7 +19,7 @@ namespace BytingLib.UI
             set
             {
                 textFill = value;
-                setSizeToText = false;
+                AutoSetSizeToText = false;
                 Width = -1f;
                 Height = -1f;
             }
@@ -35,7 +35,7 @@ namespace BytingLib.UI
                 textFill = new TextFillObject(text, new(), TextFillObject.PolyType.Normalized01, wrap, true);
                 if (width < 0f)
                 {
-                    this.setSizeToText = false;
+                    this.AutoSetSizeToText = false;
                 }
             }
         }
@@ -61,7 +61,7 @@ namespace BytingLib.UI
                 //textFill.DrawPolygon(spriteBatch);
                 //textFill.TextFill?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
 
-                if (!setSizeToText)
+                if (!AutoSetSizeToText)
                 {
                     UpdateMarkupWrapped(style);
                 }
@@ -136,9 +136,9 @@ namespace BytingLib.UI
             }
             else
             {
-                if (setSizeToText)
+                if (AutoSetSizeToText)
                 {
-                    textFill?.UpdatePolygons(new Rect(0, 0, initialWidth, 0f /* TODO: really 0?? or Height? or initialHeight? */));
+                    textFill?.UpdatePolygons(new Rect(0, 0, InitialWidth, 0f /* TODO: really 0?? or Height? or initialHeight? */));
                     UpdateMarkupWrapped(style);
                 }
             }
@@ -166,7 +166,7 @@ namespace BytingLib.UI
                 markup?.Dispose();
                 markup = newMarkup;
 
-                if (setSizeToText)
+                if (AutoSetSizeToText)
                 {
                     Vector2 size = newMarkup.GetSizeSubstring(GetDefaultSetting(null, style), new(newMarkup.Root)); //settings
                     Width = size.X;
@@ -179,7 +179,7 @@ namespace BytingLib.UI
         {
             base.UpdateTreeInner(rect);
 
-            if (!setSizeToText)
+            if (!AutoSetSizeToText)
             {
                 textFill?.UpdatePolygons(rect);
             }
