@@ -4,7 +4,7 @@ namespace BytingLib
 {
     public partial class Localization : ILocaChanger
     {
-        private const char separator = ';';
+        private readonly char separator;
         private const char textMarker = '"';
         private const char adder = '.';
         private const char nestedLevel = '\t';
@@ -23,9 +23,10 @@ namespace BytingLib
         public string[]? CsvOutput { get; private set; }
 
 
-        public Localization(string csvFile, string languageKey, string defaultLanguage = "en", bool fallbackToFirstLanguage = true, bool resolveValues = true, bool skipPluses = false, Localization? locaOverride = null)
+        public Localization(string csvFile, string languageKey, string defaultLanguage = "en", bool fallbackToFirstLanguage = true, bool resolveValues = true, bool skipPluses = false, Localization? locaOverride = null, char separator = ';')
         {
             this.csvFile = csvFile;
+            this.separator = separator;
             LanguageKey = languageKey;
             this.defaultLanguage = defaultLanguage;
             this.fallbackToFirstLanguage = fallbackToFirstLanguage;
@@ -636,7 +637,7 @@ namespace BytingLib
 
         record CsvExportRow(string SourceValue, string TargetValue, string Comment);
 
-        public static string CsvExportForTranslator(string locaFile, string[] columns, string defaultLanguageKey = "en")
+        public static string CsvExportForTranslator(string locaFile, string[] columns, string defaultLanguageKey = "en", char separator = ';')
         {
             Localization[] locas = new Localization[columns.Length];
 
@@ -670,7 +671,7 @@ namespace BytingLib
             return csv;
         }
 
-        public static void CsvImportFromTranslator(string locaFile, string translatorFile, int targetLanguageColumnIndex = 2, string defaultLanguageKey = "en")
+        public static void CsvImportFromTranslator(string locaFile, string translatorFile, char separator, int targetLanguageColumnIndex = 2, string defaultLanguageKey = "en")
         {
             // either:
             // put back into tabbed csv
@@ -686,7 +687,7 @@ namespace BytingLib
             string[] columns = translatedLines[0].Split([separator]);
             string targetLanguage = columns[targetLanguageColumnIndex];
 
-            Localization translated = new(translatorFile, targetLanguage, defaultLanguageKey, false, false, true);
+            Localization translated = new(translatorFile, targetLanguage, defaultLanguageKey, false, false, true, null, separator);
 
             Localization loca = new(locaFile, targetLanguage, defaultLanguageKey, false, false, true, translated);
 
