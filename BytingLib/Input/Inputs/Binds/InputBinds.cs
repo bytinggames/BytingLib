@@ -24,5 +24,41 @@ namespace BytingLib
 
             return props;
         }
+
+        protected virtual void SetControllerBinds()
+        {
+        }
+
+        /// <summary>Experimental. Only used for debugging</summary>
+        public void SetDefaultAndControllerBinds()
+        {
+            var binds = Activator.CreateInstance(GetType()) as InputBinds;
+            if (binds == null)
+            {
+                return;
+            }
+            binds.SetControllerBinds();
+            BindsSerializer serializer = new();
+            string controllerJson = serializer.Serialize(binds);
+
+            // reset to default
+            serializer.Deserialize("{}", this);
+            // add controller
+            serializer.Deserialize(controllerJson, this, false);
+        }
+
+        public void OverrideWithDefaultControllerBinds()
+        {
+            var binds = Activator.CreateInstance(GetType()) as InputBinds;
+            if (binds == null)
+            {
+                return;
+            }
+            binds.SetControllerBinds();
+            BindsSerializer serializer = new();
+            string controllerJson = serializer.Serialize(binds);
+
+            serializer.Deserialize(controllerJson, this);
+        }
     }
 }
