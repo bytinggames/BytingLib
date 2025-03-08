@@ -497,5 +497,17 @@
 
             return this;
         }
+
+        public IEnumerable<Element> GetAllChildren()
+        {
+            foreach (var child in Children)
+            {
+                yield return child;
+                foreach (var c in child.GetAllChildren())
+                {
+                    yield return c;
+                }
+            }
+        }
     }
 }

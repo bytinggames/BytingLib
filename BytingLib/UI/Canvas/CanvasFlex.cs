@@ -67,6 +67,8 @@
             }
             StyleRoot.Pop(Style);
 
+            DrawCanvasBase(spriteBatch);
+
             spriteBatch.End();
         }
 

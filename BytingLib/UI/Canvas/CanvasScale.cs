@@ -205,6 +205,8 @@
             }
             StyleRoot.Pop(Style);
 
+            DrawCanvasBase(spriteBatch);
+
             spriteBatch.End();
 
             if (takeUIScreenshot != null 
