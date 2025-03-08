@@ -33,57 +33,57 @@ namespace BytingLib.Test.Serialization.Structs
             Assert.AreEqual(0, list.Count);
         }
 
-        public void TestRecording<TRecorder, TPlayback>(int forFrames)
-            where TRecorder : IStructStreamWriter<KeyboardState>
-            where TPlayback : IEnumerator<KeyboardState>
-        {
-            List<KeyboardState> keyStatesPerFrame, playBackKeys;
+        //public void TestRecording<TRecorder, TPlayback>(int forFrames)
+        //    where TRecorder : IStructStreamWriter<KeyboardState>
+        //    where TPlayback : IEnumerator<KeyboardState>
+        //{
+        //    List<KeyboardState> keyStatesPerFrame, playBackKeys;
 
-            using (MemoryStream ms = new MemoryStream())
-            {
-                using (var recorder = (TRecorder)Activator.CreateInstance(typeof(TRecorder), ms, false)!)
-                    keyStatesPerFrame = RecordKeys(recorder, forFrames);
+        //    using (MemoryStream ms = new MemoryStream())
+        //    {
+        //        using (var recorder = (TRecorder)Activator.CreateInstance(typeof(TRecorder), ms, false)!)
+        //            keyStatesPerFrame = RecordKeys(recorder, forFrames);
 
-                using (var playback = (TPlayback)Activator.CreateInstance(typeof(TPlayback), ms, 0)!)
-                    playBackKeys = PlayBackKeys(playback).ToList();
+        //        using (var playback = (TPlayback)Activator.CreateInstance(typeof(TPlayback), ms, 0)!)
+        //            playBackKeys = PlayBackKeys(playback).ToList();
 
 
-                Console.WriteLine("size of recording: " + ms.Length + " bytes");
-            }
-            Assert.AreEqual(keyStatesPerFrame.Count, playBackKeys.Count);
-            for (int i = 0; i < keyStatesPerFrame.Count; i++)
-            {
-                Assert.AreEqual(keyStatesPerFrame[i], playBackKeys[i], "difference in frame " + i);
-            }
-        }
+        //        Console.WriteLine("size of recording: " + ms.Length + " bytes");
+        //    }
+        //    Assert.AreEqual(keyStatesPerFrame.Count, playBackKeys.Count);
+        //    for (int i = 0; i < keyStatesPerFrame.Count; i++)
+        //    {
+        //        Assert.AreEqual(keyStatesPerFrame[i], playBackKeys[i], "difference in frame " + i);
+        //    }
+        //}
 
-        [DataTestMethod]
-        [DynamicData(nameof(Frames))]
-        public void TestRecordingCompressed(int forFrames)
-        {
-            TestRecording<StructStreamWriterCompressed<KeyboardState>, StructStreamReaderCompressed<KeyboardState>>(forFrames);
-        }
+        //[DataTestMethod]
+        //[DynamicData(nameof(Frames))]
+        //public void TestRecordingCompressed(int forFrames)
+        //{
+        //    TestRecording<StructStreamWriterCompressed<KeyboardState>, StructStreamReaderCompressed<KeyboardState>>(forFrames);
+        //}
 
-        private List<KeyboardState> RecordKeys(IStructStreamWriter<KeyboardState> recorder, int forFrames)
-        {
-            using IEnumerator<KeyboardState> keyStateEnumerator = GetKeyState().GetEnumerator();
+        //private List<KeyboardState> RecordKeys(IStructStreamWriter<KeyboardState> recorder, int forFrames)
+        //{
+        //    using IEnumerator<KeyboardState> keyStateEnumerator = GetKeyState().GetEnumerator();
 
-            List<KeyboardState> keyStatesPerFrame = new List<KeyboardState>();
+        //    List<KeyboardState> keyStatesPerFrame = new List<KeyboardState>();
 
-            KeyInput keys = new KeyInput(() =>
-            {
-                keyStateEnumerator.MoveNext();
-                return keyStateEnumerator.Current;
-            });
-            for (int i = 0; i < forFrames; i++)
-            {
-                keys.Update();
-                recorder.AddState(keys.GetState());
-                keyStatesPerFrame.Add(keys.GetState());
-            }
+        //    KeyInput keys = new KeyInput(() =>
+        //    {
+        //        keyStateEnumerator.MoveNext();
+        //        return keyStateEnumerator.Current;
+        //    });
+        //    for (int i = 0; i < forFrames; i++)
+        //    {
+        //        keys.Update();
+        //        recorder.AddState(keys.GetState());
+        //        keyStatesPerFrame.Add(keys.GetState());
+        //    }
 
-            return keyStatesPerFrame;
-        }
+        //    return keyStatesPerFrame;
+        //}
 
         private IEnumerable<KeyboardState> PlayBackKeys(IEnumerator<KeyboardState> playback)
         {

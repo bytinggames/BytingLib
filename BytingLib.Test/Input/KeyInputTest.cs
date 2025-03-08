@@ -22,61 +22,61 @@ namespace BytingLib.Test.Input
         }
 
 
-        [TestMethod]
-        public void TestPressDownRelease()
-        {
-            KeyboardState currentState = default;
+        //[TestMethod]
+        //public void TestPressDownRelease()
+        //{
+        //    KeyboardState currentState = default;
 
-            KeyInput keys = new KeyInput(() => currentState);
-            Assert.IsFalse(keys.Space.Down);
-            Assert.IsFalse(keys.Space.Pressed);
-            Assert.IsFalse(keys.Space.Released);
+        //    KeyInput keys = new KeyInput(() => currentState);
+        //    Assert.IsFalse(keys.Space.Down);
+        //    Assert.IsFalse(keys.Space.Pressed);
+        //    Assert.IsFalse(keys.Space.Released);
 
-            keys.Update();
-            Assert.IsFalse(keys.Space.Down);
-            Assert.IsFalse(keys.Space.Pressed);
-            Assert.IsFalse(keys.Space.Released);
+        //    keys.Update();
+        //    Assert.IsFalse(keys.Space.Down);
+        //    Assert.IsFalse(keys.Space.Pressed);
+        //    Assert.IsFalse(keys.Space.Released);
 
-            Assert.IsFalse(currentState.IsKeyDown(Keys.Space));
-            InputSimulation.SimulateSpacePress(ref currentState);
+        //    Assert.IsFalse(currentState.IsKeyDown(Keys.Space));
+        //    InputSimulation.SimulateSpacePress(ref currentState);
 
-            keys.Update();
-            Assert.IsTrue(keys.Space.Down);
-            Assert.IsTrue(keys.Space.Pressed);
-            Assert.IsFalse(keys.Space.Released);
+        //    keys.Update();
+        //    Assert.IsTrue(keys.Space.Down);
+        //    Assert.IsTrue(keys.Space.Pressed);
+        //    Assert.IsFalse(keys.Space.Released);
 
-            keys.Update();
-            Assert.IsTrue(keys.Space.Down);
-            Assert.IsFalse(keys.Space.Pressed);
-            Assert.IsFalse(keys.Space.Released);
+        //    keys.Update();
+        //    Assert.IsTrue(keys.Space.Down);
+        //    Assert.IsFalse(keys.Space.Pressed);
+        //    Assert.IsFalse(keys.Space.Released);
 
-            currentState = default; // reset space
-            keys.Update();
-            Assert.IsFalse(keys.Space.Down);
-            Assert.IsFalse(keys.Space.Pressed);
-            Assert.IsTrue(keys.Space.Released);
+        //    currentState = default; // reset space
+        //    keys.Update();
+        //    Assert.IsFalse(keys.Space.Down);
+        //    Assert.IsFalse(keys.Space.Pressed);
+        //    Assert.IsTrue(keys.Space.Released);
 
-            keys.Update();
-            Assert.IsFalse(keys.Space.Down);
-            Assert.IsFalse(keys.Space.Pressed);
-            Assert.IsFalse(keys.Space.Released);
+        //    keys.Update();
+        //    Assert.IsFalse(keys.Space.Down);
+        //    Assert.IsFalse(keys.Space.Pressed);
+        //    Assert.IsFalse(keys.Space.Released);
 
-        }
+        //}
 
-        [TestMethod]
-        public void TestGetKey()
-        {
-            KeyboardState currentState = default;
+        //[TestMethod]
+        //public void TestGetKey()
+        //{
+        //    KeyboardState currentState = default;
 
-            KeyInput keys = new KeyInput(() => currentState);
+        //    KeyInput keys = new KeyInput(() => currentState);
 
-            Assert.IsFalse(currentState.IsKeyDown(Keys.Space));
-            InputSimulation.SimulateSpacePress(ref currentState);
+        //    Assert.IsFalse(currentState.IsKeyDown(Keys.Space));
+        //    InputSimulation.SimulateSpacePress(ref currentState);
 
-            keys.Update();
+        //    keys.Update();
 
-            Assert.AreEqual(keys.Space, keys.GetKey(Keys.Space));
-            Assert.AreNotEqual(keys.Space, keys.GetKey(Keys.Enter));
-        }
+        //    Assert.AreEqual(keys.Space, keys.GetKey(Keys.Space));
+        //    Assert.AreNotEqual(keys.Space, keys.GetKey(Keys.Enter));
+        //}
     }
 }

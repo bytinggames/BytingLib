@@ -116,5 +116,21 @@
             var y = angles.Sum(MathF.Sin) / angles.Count;
             return MathF.Atan2(y, x);
         }
+
+        public static float ToFovX(float fovY, float aspectRatio)
+        {
+            float a = MathF.Tan(fovY / 2f);
+            a *= aspectRatio;
+            return MathF.Atan(a) * 2f;
+        }
+        public static float ToFovY(float fovX, float aspectRatio)
+        {
+            float a = MathF.Tan(fovX / 2f);
+            a /= aspectRatio;
+            a = MathF.Atan(a);
+            a *= 2f;
+            return a;
+        }
+
     }
 }
