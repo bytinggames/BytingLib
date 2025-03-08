@@ -136,5 +136,12 @@
 
             return scale;
         }
+
+        public static float ProjectionToFovY(this Matrix projection)
+        {
+            float P11 = projection[1, 1];  // Extract P[1,1]
+            float fovY = 2 * MathF.Atan(1 / P11);  // Compute FOV in radians
+            return MathHelper.ToDegrees(fovY); // Convert to degrees
+        }
     }
 }

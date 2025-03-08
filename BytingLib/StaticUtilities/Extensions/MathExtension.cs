@@ -127,10 +127,7 @@
         {
             float a = MathF.Tan(fovX / 2f);
             a /= aspectRatio;
-            a = MathF.Atan(a);
-            a *= 2f;
-            return a;
+            return MathF.Atan(a) * 2f;
         }
-
     }
 }
