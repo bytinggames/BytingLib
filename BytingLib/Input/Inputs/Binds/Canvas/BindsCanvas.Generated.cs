@@ -10,10 +10,14 @@ namespace BytingLib
 		protected readonly Vector2Func mousePosition;
 		protected readonly BoolFunc click;
 		protected readonly IntFunc scroll;
+		protected readonly BoolFunc enter;
+		protected readonly Vector2Func navigate;
 
 		public virtual InputVector2State MousePosition => mousePosition.GetState(updater);
 		public virtual InputBoolState Click => click.GetState(updater);
 		public virtual InputIntState Scroll => scroll.GetState(updater);
+		public virtual InputBoolState Enter => enter.GetState(updater);
+		public virtual InputVector2State Navigate => navigate.GetState(updater);
 
 		public InputCanvas(BindsCanvas binds, InputUpdater updater)
 		{
@@ -22,6 +26,8 @@ namespace BytingLib
 			InitInput(out mousePosition, new(() => binds.MousePosition));
 			InitInput(out click, new(() => binds.Click));
 			InitInput(out scroll, new(() => binds.Scroll));
+			InitInput(out enter, new(() => binds.Enter));
+			InitInput(out navigate, new(() => binds.Navigate));
 
 			
 		}

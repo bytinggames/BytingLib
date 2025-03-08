@@ -11,6 +11,8 @@
         public Ref<Effect>? Effect { get; set; }
         protected Rect? LastRenderRect { get; private set; }
         public Matrix Transform { get; protected set; } = Matrix.Identity;
+        public Element? FocusedElement { get; set; }
+        public ICanvasFocus? FocusManager { get; set; }
 
         //private bool scissorTest;
         protected readonly RasterizerState rasterizerState = CreateDefaultRasterizerState();
@@ -58,6 +60,96 @@
                 {
                     Children[i].Update(Input);
                 }
+
+                if (Input.Input.Navigate.Value != Vector2.Zero)
+                {
+                    Vector2 navigate = Input.Input.Navigate.Value;
+                    Navigate(navigate);
+                }
+
+                if (Input.Input.Enter.Pressed)
+                {
+                    if (FocusedElement != null)
+                    {
+                        if (FocusedElement is ICanFocus canFocus)
+                        {
+                            canFocus.ClickFromFocus();
+                        }
+                    }
+                }
+            }
+        }
+
+        public void Navigate(Vector2 navigate)
+        {
+            float bestScore = float.NegativeInfinity;
+            Element? bestScoreElement = null;
+            navigate.Normalize();
+            Vector2 navigateOrth = new Vector2(-navigate.Y, navigate.X);
+            bool currentlyFocused = FocusedElement != null;
+            Vector2 focusCenter = FocusedElement?.AbsoluteRect?.GetCenter() ?? this.AbsoluteRect.GetCenter();
+            Vector2? focusCenterScreenWrap = null;
+            var cr = new PointF(focusCenter).DistanceTo(AbsoluteRect, -navigate);
+            bool anyNonWrapperScored = false;
+            if (cr.DistanceReversed.HasValue)
+            {
+                focusCenterScreenWrap = focusCenter - navigate * cr.DistanceReversed.Value;
+            }
+            foreach (var child in GetAllChildren().OfType<ICanFocus>())
+            {
+                if (!child.CanFocus
+                    || child == FocusedElement)
+                {
+                    continue;
+                }
+
+                Element element = (Element)child;
+                //Vector2 currentFocusCenter = focusCenter;
+                Vector2 elementCenter = element.AbsoluteRect.GetCenter();
+
+                Vector2 dist = elementCenter - focusCenter;
+                float distOnDirection = Vector2.Dot(navigate, dist);
+                float myScore = 0f;
+                bool screenWrap = distOnDirection < 0f;
+                if (screenWrap)
+                {
+                    // wrong direction
+                    // try to wrap around the screen, but with a much worse score
+                    if (anyNonWrapperScored || !focusCenterScreenWrap.HasValue)
+                    {
+                        // no chance
+                        continue;
+                    }
+                    dist = elementCenter - focusCenterScreenWrap.Value;
+                    distOnDirection = Vector2.Dot(navigate, dist);
+                    myScore -= 100000f; // score penalty for screen wrapping. They compete in their own category and only have a chance if only screen wrappers compete.
+                }
+
+                float orthogonalDistance = MathF.Abs(Vector2.Dot(navigateOrth, dist));
+                if (orthogonalDistance > distOnDirection
+                    && !currentlyFocused) // if nothing is focused, take the next best thing to focus
+                {
+                    // more to the the orthogonal direction than to the correct direction
+                    continue;
+                }
+
+                myScore += -distOnDirection - orthogonalDistance * 2f;
+
+                if (myScore > bestScore)
+                {
+                    bestScore = myScore;
+                    bestScoreElement = element;
+
+                    if (!screenWrap)
+                    {
+                        anyNonWrapperScored = true;
+                    }
+                }
+            }
+
+            if (bestScoreElement != null)
+            {
+                FocusedElement = bestScoreElement;
             }
         }
 
@@ -79,6 +171,14 @@
         }
 
         public abstract void DrawBatch(SpriteBatch spriteBatch);
+
+        protected void DrawCanvasBase(SpriteBatch spriteBatch)
+        {
+            if (FocusedElement != null && FocusManager != null)
+            {
+                FocusManager.Draw(spriteBatch, FocusedElement);
+            }
+        }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {

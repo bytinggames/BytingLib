@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Microsoft.Xna.Framework.Input;
+using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace BytingLib
@@ -12,6 +13,12 @@ namespace BytingLib
         protected static InputBool Or(params InputBool[] inputs) => new BoolOr(inputs);
         protected static InputBool Not(InputBool input) => new BoolNot(input);
         protected static InputBool Func(Func<InputBool> func) => new BoolFunc(func);
+        protected static Vector2FromBools ArrowsOrWasdOrDpad =>
+            new Vector2FromBools(
+                Or(Keys.Up, Keys.W, Buttons.DPadUp), 
+                Or(Keys.Left, Keys.A, Buttons.DPadLeft), 
+                Or(Keys.Down, Keys.S, Buttons.DPadDown), 
+                Or(Keys.Right, Keys.D, Buttons.DPadRight));
 
         public IEnumerable<PropertyInfo> GetRemappableProperties()
         {

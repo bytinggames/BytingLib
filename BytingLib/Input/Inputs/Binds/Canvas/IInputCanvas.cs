@@ -6,6 +6,8 @@
         public InputBoolState Click { get; }
         public InputIntState Scroll { get; }
         public InputUpdater Updater { get; }
+        public InputVector2State Navigate { get; }
+        public InputBoolState Enter { get; }
         void SetMousePosition(Vector2 position);
     }
 }
