@@ -1,17 +1,5 @@
 ﻿namespace BytingLib.UI
 {
-    struct ElementIteration
-    {
-        public Element Element { get; set; }
-        public Rect Rect { get; set; }
-
-        public ElementIteration(Element element, Rect rect)
-        {
-            Element = element;
-            Rect = rect;
-        }
-    }
-
     public class Element : IDisposable
     {
         public Element? Parent { get; private set; }
@@ -57,6 +45,7 @@
         private bool setChildrenHeightToMaxChildHeight = false;
         private bool hover;
         private OnWhileHoverDelegate? currentTooltipAction;
+        public UINavigationStart NavigationStart { get; set; }
 
         public float Size(int dimension)
         {

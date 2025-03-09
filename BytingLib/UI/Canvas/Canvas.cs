@@ -11,12 +11,28 @@
         public Ref<Effect>? Effect { get; set; }
         protected Rect? LastRenderRect { get; private set; }
         public Matrix Transform { get; protected set; } = Matrix.Identity;
-        public Element? FocusedElement { get; set; }
+        private Element? focusedElement;
+        public Action? OnEnterWhenUnfocused { get; set; }
         public ICanvasFocus? FocusManager { get; set; }
+        public bool FocusIfUnfocused { get; set; }
+        public event Action? OnFocusStart;
 
         //private bool scissorTest;
         protected readonly RasterizerState rasterizerState = CreateDefaultRasterizerState();
         protected readonly RasterizerState rasterizerStateScissor;
+
+        public Element? FocusedElement
+        {
+            get => focusedElement;
+            set
+            {
+                if (focusedElement == null && value != null)
+                {
+                    OnFocusStart?.Invoke();
+                }
+                focusedElement = value;
+            }
+        }
 
         public Canvas(Func<Rect> getRenderRect, IInputCanvas input, GameWindow window, StyleRoot style)
         {
@@ -67,22 +83,34 @@
 
         private void UpdateNavigation()
         {
-            if (FocusManager == null)
+            if (FocusManager != null)
             {
-                return;
-            }
+                if (FocusIfUnfocused)
+                {
+                    FocusIfUnfocused = false;
+                    if (FocusedElement == null)
+                    {
+                        Navigate(Vector2.Zero);
+                    }
+                }
 
-            if (Input.Input.Navigate.Value != Vector2.Zero)
-            {
-                Vector2 navigate = Input.Input.Navigate.Value;
-                Navigate(navigate);
+                if (Input.Input.Navigate.Value != Vector2.Zero)
+                {
+                    Vector2 navigate = Input.Input.Navigate.Value;
+                    Navigate(navigate);
+                }
             }
 
             if (Input.Input.Enter.Pressed)
             {
-                if (FocusedElement != null)
+                if (FocusedElement == null)
                 {
-                    if (FocusedElement is ICanFocus canFocus)
+                    OnEnterWhenUnfocused?.Invoke();
+                }
+                else
+                {
+                    if (FocusManager != null
+                        && FocusedElement is ICanFocus canFocus)
                     {
                         canFocus.ClickFromFocus();
                     }
@@ -92,6 +120,28 @@
 
         public void Navigate(Vector2 navigate)
         {
+            // if no element is focused yet, see if a child provides a starting point
+            Element? navigateFrom = null;
+            if (FocusedElement == null)
+            {
+                navigateFrom = GetAllVisibleChildren().FirstOrDefault(f => f.NavigationStart != UINavigationStart.None);
+                if (navigateFrom != null 
+                    && (navigateFrom.NavigationStart == UINavigationStart.ToThisElement || navigate == Vector2.Zero))// if navigation is zero, it means we navigate to the marked navigation start
+                {
+                    FocusedElement = navigateFrom;
+                    return;
+                }
+                // if we didn't find a start element, make sure to start from the center and since we have to navigate into some direction, choose upwards
+                if (navigate == Vector2.Zero)
+                {
+                    navigate = new Vector2(0f, -1f);
+                }
+            }
+            else if (navigate == Vector2.Zero)
+            {
+                return; // direction required
+            }
+
             if (MathF.Abs(navigate.X) >= 0.5f
                 && FocusedElement is SliderInt slider)
             {
@@ -104,7 +154,9 @@
             navigate.Normalize();
             Vector2 navigateOrth = new Vector2(-navigate.Y, navigate.X);
             bool currentlyFocused = FocusedElement != null;
-            Rect focusRect = FocusedElement?.AbsoluteRect ?? new Rect(this.AbsoluteRect.GetCenter(), Vector2.One);
+            Rect focusRect = FocusedElement?.AbsoluteRect 
+                ?? navigateFrom?.AbsoluteRect
+                ?? new Rect(this.AbsoluteRect.GetCenter(), Vector2.One);
             Vector2 focusCenter = focusRect.GetCenter();
             Vector2 focusScreenWrapCenter = Vector2.Zero;
             Rect? focusRectScreenWrap = null;
