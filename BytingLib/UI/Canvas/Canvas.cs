@@ -67,6 +67,11 @@
 
         private void UpdateNavigation()
         {
+            if (FocusManager == null)
+            {
+                return;
+            }
+
             if (Input.Input.Navigate.Value != Vector2.Zero)
             {
                 Vector2 navigate = Input.Input.Navigate.Value;
