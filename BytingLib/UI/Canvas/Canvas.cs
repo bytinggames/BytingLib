@@ -87,13 +87,17 @@
             navigate.Normalize();
             Vector2 navigateOrth = new Vector2(-navigate.Y, navigate.X);
             bool currentlyFocused = FocusedElement != null;
-            Vector2 focusCenter = FocusedElement?.AbsoluteRect?.GetCenter() ?? this.AbsoluteRect.GetCenter();
-            Vector2? focusCenterScreenWrap = null;
-            var cr = new PointF(focusCenter).DistanceTo(AbsoluteRect, -navigate);
+            Rect focusRect = FocusedElement?.AbsoluteRect ?? new Rect(this.AbsoluteRect.GetCenter(), Vector2.One);
+            Vector2 focusCenter = focusRect.GetCenter();
+            Vector2 focusScreenWrapCenter = Vector2.Zero;
+            Rect? focusRectScreenWrap = null;
+            var cr = focusRect.DistanceTo(AbsoluteRect, -navigate);
             bool anyNonWrapperScored = false;
             if (cr.DistanceReversed.HasValue)
             {
-                focusCenterScreenWrap = focusCenter - navigate * cr.DistanceReversed.Value;
+                focusRectScreenWrap = focusRect.CloneRect();
+                focusRectScreenWrap.Pos -= navigate * cr.DistanceReversed.Value;
+                focusScreenWrapCenter = focusRectScreenWrap.GetCenter();
             }
             foreach (var child in GetAllChildren().OfType<ICanFocus>())
             {
@@ -104,10 +108,9 @@
                 }
 
                 Element element = (Element)child;
-                //Vector2 currentFocusCenter = focusCenter;
-                Vector2 elementCenter = element.AbsoluteRect.GetCenter();
+                Vector2 dist = focusRect.DistanceToRect(element.AbsoluteRect);
+                Vector2 centerDist = element.AbsoluteRect.GetCenter() - focusCenter;
 
-                Vector2 dist = elementCenter - focusCenter;
                 float distOnDirection = Vector2.Dot(navigate, dist);
                 float myScore = 0f;
                 bool screenWrap = distOnDirection < 0f;
@@ -115,25 +118,28 @@
                 {
                     // wrong direction
                     // try to wrap around the screen, but with a much worse score
-                    if (anyNonWrapperScored || !focusCenterScreenWrap.HasValue)
+                    if (anyNonWrapperScored || focusRectScreenWrap == null)
                     {
                         // no chance
                         continue;
                     }
-                    dist = elementCenter - focusCenterScreenWrap.Value;
+                    dist = focusRectScreenWrap.DistanceToRect(element.AbsoluteRect);
+                    centerDist = element.AbsoluteRect.GetCenter() - focusScreenWrapCenter;
                     distOnDirection = Vector2.Dot(navigate, dist);
                     myScore -= 100000f; // score penalty for screen wrapping. They compete in their own category and only have a chance if only screen wrappers compete.
                 }
 
                 float orthogonalDistance = MathF.Abs(Vector2.Dot(navigateOrth, dist));
                 if (orthogonalDistance > distOnDirection
-                    && !currentlyFocused) // if nothing is focused, take the next best thing to focus
+                    && currentlyFocused) // if nothing is focused, take the next best thing to focus
                 {
                     // more to the the orthogonal direction than to the correct direction
                     continue;
                 }
 
-                myScore += -distOnDirection - orthogonalDistance * 2f;
+                float orthogonalCenterDistance = MathF.Abs(Vector2.Dot(navigateOrth, centerDist));
+
+                myScore -= distOnDirection + orthogonalDistance * 2f + orthogonalCenterDistance * 0.5f;
 
                 if (myScore > bestScore)
                 {
