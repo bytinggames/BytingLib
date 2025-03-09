@@ -104,6 +104,14 @@ namespace BytingLib
                 i++;
 
                 match.List.Insert(i, thing);
+                foreach (var iteration in iterations.Where(f => f.InterfaceType == match.Type))
+                {
+                    if (iteration.Index >= i)
+                    {
+                        iteration.Index++;
+                    }
+                }
+
                 any = true;
             }
 

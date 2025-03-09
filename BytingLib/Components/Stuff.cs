@@ -6,7 +6,7 @@ namespace BytingLib
     {
         protected readonly Dictionary<Type, IList> listsOfThings = new();
         protected Dictionary<object, Action<object>> onRemoveActions = new();
-        private readonly List<Iteration> iterations = new List<Iteration>();
+        protected readonly List<Iteration> iterations = new List<Iteration>();
 
         public Stuff(params Type[] types)
             : this(true, types)
@@ -163,7 +163,7 @@ namespace BytingLib
             return listsOfThings.ContainsKey(type);
         }
 
-        class Iteration
+        public class Iteration
         {
             public Type InterfaceType { get; }
             public int Index { get; set; } = 0;
