@@ -3,7 +3,7 @@
     public class HoldToRepeat
     {
         public int HoldUpdatesToTriggerPress { get; set; } = 15;
-        public int HoldToPressInterval { get; set; } = 4;
+        public int HoldToPressInterval { get; set; } = 3;
 
         internal bool HoldIsRepeat(long currentStamp, long pressedStamp)
         {

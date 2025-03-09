@@ -216,7 +216,7 @@
             Hover = input.HoverElement == this;
         }
 
-        public void ClickFromFocus()
+        public virtual void ClickFromFocus()
         {
             DoClick();
         }

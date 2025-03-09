@@ -60,21 +60,26 @@
                 {
                     Children[i].Update(Input);
                 }
+            }
 
-                if (Input.Input.Navigate.Value != Vector2.Zero)
-                {
-                    Vector2 navigate = Input.Input.Navigate.Value;
-                    Navigate(navigate);
-                }
+            UpdateNavigation();
+        }
 
-                if (Input.Input.Enter.Pressed)
+        private void UpdateNavigation()
+        {
+            if (Input.Input.Navigate.Value != Vector2.Zero)
+            {
+                Vector2 navigate = Input.Input.Navigate.Value;
+                Navigate(navigate);
+            }
+
+            if (Input.Input.Enter.Pressed)
+            {
+                if (FocusedElement != null)
                 {
-                    if (FocusedElement != null)
+                    if (FocusedElement is ICanFocus canFocus)
                     {
-                        if (FocusedElement is ICanFocus canFocus)
-                        {
-                            canFocus.ClickFromFocus();
-                        }
+                        canFocus.ClickFromFocus();
                     }
                 }
             }
@@ -106,7 +111,7 @@
                 focusRectScreenWrap.Pos -= navigate * cr.DistanceReversed.Value;
                 focusScreenWrapCenter = focusRectScreenWrap.GetCenter();
             }
-            foreach (var child in GetAllVisibleChildren().OfType<ICanFocus>())
+            foreach (var child in (updateCatch ?? this).GetAllVisibleChildren().OfType<ICanFocus>())
             {
                 if (!child.CanFocus
                     || child == FocusedElement)

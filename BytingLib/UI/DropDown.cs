@@ -1,4 +1,5 @@
-﻿using YamlDotNet.Core.Tokens;
+﻿using Microsoft.Xna.Framework.Input;
+using YamlDotNet.Core.Tokens;
 
 namespace BytingLib.UI
 {
@@ -21,7 +22,7 @@ namespace BytingLib.UI
             {
                 if (mouseDown)
                 {
-                    Hide(input);
+                    RemoveFromCanvas();
                 }
             }
 
@@ -30,21 +31,21 @@ namespace BytingLib.UI
                 mouseDown = true;
                 if (!Children.Any(f => f.AbsoluteRect.CollidesWith(input.Input.MousePosition)))
                 {
-                    Hide(input);
+                    RemoveFromCanvas();
                 }
             }
             else if (input.Input.Click.Released)
             {
-                Hide(input);
+                RemoveFromCanvas();
             }
 
             base.UpdateSelf(input);
         }
 
-        private void Hide(ElementInput input)
+        public void RemoveFromCanvas()
         {
             mouseDown = false;
-            input.UnsetUpdateCatch(this);
+            canvas.Input.UnsetUpdateCatch(this);
             canvas.Remove(this);
         }
     }
@@ -56,7 +57,9 @@ namespace BytingLib.UI
         public event Action? OnClick;
         public event Action<int, object>? OnSelect;
 
-        private Element? dropDownPanel;
+        private DropDownList? dropDownPanel;
+        private Button[]? buttons;
+        private Label[]? labels;
         private readonly Func<(string Text, object Obj)[]> getOptions;
         private (string Text, object Obj)[]? options;
         private readonly Canvas canvas;
@@ -77,6 +80,13 @@ namespace BytingLib.UI
         {
             Label.Text = option.Text;
             OnSelect?.Invoke(index, option.Obj);
+
+            // in case we press enter using ui navigation, we need to hide the panel
+            dropDownPanel?.RemoveFromCanvas();
+            if (canvas.FocusedElement != null)
+            {
+                canvas.FocusedElement = this;
+            }
         }
 
         protected override void DoClick()
@@ -92,9 +102,28 @@ namespace BytingLib.UI
             dropDownPanel.Padding = new(AbsoluteRect.Left, AbsoluteRect.Bottom, 0f, 0f);
             canvas.Add(dropDownPanel);
             canvas.SetUpdateCatch(dropDownPanel);
+
+            // focus the right button in the dropdown list
+            if (canvas.FocusedElement != null
+                && labels != null
+                && buttons != null)
+            {
+                int index = Array.FindIndex(labels, f => f.Text == Label.Text);
+                if (index == -1)
+                {
+                    if (buttons.Length > 0)
+                    {
+                        canvas.FocusedElement = buttons[0];
+                    }
+                }
+                else
+                {
+                    canvas.FocusedElement = buttons[index];
+                }
+            }
         }
 
-        private Element CreateDropDownPanel()
+        private DropDownList CreateDropDownPanel()
         {
             if (options == null)
             {
@@ -102,15 +131,20 @@ namespace BytingLib.UI
             }
 
             var panel = new DropDownList(canvas);
+            buttons = new Button[options.Length];
+            labels = new Label[options.Length];
             for (int i = 0; i < options.Length; i++)
             {
                 int iRemember = i;
+
+                Button button = new Button(() => SelectOption(iRemember, options[iRemember]), Width, ListItemHeight ?? Height, Anchor)
+                {
+                    HoverStyle = HoverStyle
+                };
+                buttons[i] = button;
                 panel.Add(
-                    new Button(() => SelectOption(iRemember, options[iRemember]), Width, ListItemHeight ?? Height, Anchor)
-                    {
-                        HoverStyle = HoverStyle
-                    }.Add(
-                        new Label(options[i].Text) { Anchor = Label.Anchor }
+                    button.Add(
+                        labels[i] = new Label(options[i].Text) { Anchor = Label.Anchor }
                     )
                 );
             }

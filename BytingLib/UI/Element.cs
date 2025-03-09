@@ -290,6 +290,7 @@
                 Children.Add(children[i]);
                 children[i].Parent = this;
             }
+            SetDirty();
             return this;
         }
         public Element Add(List<Element> children)
@@ -299,6 +300,7 @@
                 Children.Add(children[i]);
                 children[i].Parent = this;
             }
+            SetDirty();
             return this;
         }
         public Element AddMaybeNull(params Element?[] children)
@@ -314,6 +316,7 @@
                 Children.Add(c);
                 c.Parent = this;
             }
+            SetDirty();
             return this;
         }
         public Element AddEnumerable(IEnumerable<Element> children)
@@ -323,6 +326,7 @@
                 Children.Add(c);
                 c.Parent = this;
             }
+            SetDirty();
             return this;
         }
 
@@ -333,6 +337,7 @@
                 Children.Remove(children[i]);
                 children[i].Parent = null;
             }
+            SetDirty();
             return this;
         }
         public Element RemoveEnumerable(IEnumerable<Element> children)
@@ -342,6 +347,7 @@
                 Children.Remove(c);
                 c.Parent = null;
             }
+            SetDirty();
             return this;
         }
 
