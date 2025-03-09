@@ -7,8 +7,6 @@
         {
         }
 
-        protected long stamp;
-
         public Vector2 LastValue { get; private set; }
         public Vector2 Value { get; private set; }
         public Vector2 Delta => Updater.CurrentStamp >= 2 ? Value - LastValue : Vector2.Zero;
