@@ -99,7 +99,7 @@
                 focusRectScreenWrap.Pos -= navigate * cr.DistanceReversed.Value;
                 focusScreenWrapCenter = focusRectScreenWrap.GetCenter();
             }
-            foreach (var child in GetAllChildren().OfType<ICanFocus>())
+            foreach (var child in GetAllVisibleChildren().OfType<ICanFocus>())
             {
                 if (!child.CanFocus
                     || child == FocusedElement)
@@ -108,6 +108,10 @@
                 }
 
                 Element element = (Element)child;
+                if (element.AbsoluteRect == null)
+                {
+                    continue;
+                }
                 Vector2 dist = focusRect.DistanceToRect(element.AbsoluteRect);
                 Vector2 centerDist = element.AbsoluteRect.GetCenter() - focusCenter;
 

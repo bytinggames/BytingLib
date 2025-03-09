@@ -509,5 +509,21 @@
                 }
             }
         }
+        public IEnumerable<Element> GetAllChildren(Predicate<Element> goDeeper)
+        {
+            foreach (var child in Children)
+            {
+                if (!goDeeper(child))
+                {
+                    continue;
+                }
+                yield return child;
+                foreach (var c in child.GetAllChildren(goDeeper))
+                {
+                    yield return c;
+                }
+            }
+        }
+        public IEnumerable<Element> GetAllVisibleChildren() => GetAllChildren(f => f.Visible);
     }
 }
