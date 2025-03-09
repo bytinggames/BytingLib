@@ -2,12 +2,25 @@
 {
     public class SimpleCanvasFocus : ICanvasFocus
     {
-        public Color Color { get; set; } = Color.White * 0.5f;
+        public Color ColorArea { get; set; } = Color.White * 0.5f;
+        public Color ColorOutline { get; set; } = Color.White * 0.75f;
+        public float OutlineThickness { get; set; } = 4f;
 
-        public void Draw(SpriteBatch spriteBatch, Element element)
+        public virtual void Draw(SpriteBatch spriteBatch, Element element)
         {
-            element.AbsoluteRect.Draw(spriteBatch, Color);
-            element.AbsoluteRect.Outline().ThickenOutside(4f).Draw(spriteBatch, Color.White * 0.75f);
+            element.AbsoluteRect.Draw(spriteBatch, ColorArea);
+            DrawOutline(spriteBatch, element.AbsoluteRect.Outline());
+        }
+
+        protected void DrawPolygonWithOutline(SpriteBatch spriteBatch, Polygon polygon)
+        {
+            polygon.Draw(spriteBatch, ColorArea);
+            DrawOutline(spriteBatch, polygon.Outline());
+        }
+
+        protected void DrawOutline(SpriteBatch spriteBatch, PrimitiveLineRing ring)
+        {
+            ring.ThickenOutside(OutlineThickness).Draw(spriteBatch, ColorOutline);
         }
     }
 }
