@@ -112,8 +112,9 @@
                 Vector2 centerDist = element.AbsoluteRect.GetCenter() - focusCenter;
 
                 float distOnDirection = Vector2.Dot(navigate, dist);
+                float centerDistOnDirection = Vector2.Dot(navigate, centerDist);
                 float myScore = 0f;
-                bool screenWrap = distOnDirection < 0f;
+                bool screenWrap = centerDistOnDirection <= 0f;
                 if (screenWrap)
                 {
                     // wrong direction
@@ -125,6 +126,7 @@
                     }
                     dist = focusRectScreenWrap.DistanceToRect(element.AbsoluteRect);
                     centerDist = element.AbsoluteRect.GetCenter() - focusScreenWrapCenter;
+                    centerDistOnDirection = Vector2.Dot(navigate, centerDist);
                     distOnDirection = Vector2.Dot(navigate, dist);
                     myScore -= 100000f; // score penalty for screen wrapping. They compete in their own category and only have a chance if only screen wrappers compete.
                 }
@@ -139,7 +141,9 @@
 
                 float orthogonalCenterDistance = MathF.Abs(Vector2.Dot(navigateOrth, centerDist));
 
-                myScore -= distOnDirection + orthogonalDistance * 2f + orthogonalCenterDistance * 0.5f;
+                myScore -= distOnDirection
+                    + MathF.Abs(centerDistOnDirection) * 0.01f // just in case elements are overlapping
+                    + orthogonalDistance * 2f + orthogonalCenterDistance * 0.5f;
 
                 if (myScore > bestScore)
                 {
