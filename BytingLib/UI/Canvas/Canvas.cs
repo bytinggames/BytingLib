@@ -82,6 +82,13 @@
 
         public void Navigate(Vector2 navigate)
         {
+            if (MathF.Abs(navigate.X) >= 0.5f
+                && FocusedElement is SliderInt slider)
+            {
+                slider.Value += navigate.X > 0 ? 1 : -1;
+                return;
+            }
+
             float bestScore = float.NegativeInfinity;
             Element? bestScoreElement = null;
             navigate.Normalize();
