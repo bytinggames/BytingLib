@@ -46,6 +46,7 @@
         private bool hover;
         private OnWhileHoverDelegate? currentTooltipAction;
         public UINavigationStart NavigationStart { get; set; }
+        public float NavigationStartPriority { get; set; }
         public event Action? OnEnterFromNavigation;
 
         public float Size(int dimension)
@@ -527,6 +528,13 @@
         public virtual void ClickFromFocus()
         {
             OnEnterFromNavigation?.Invoke();
+        }
+
+        public Element SetNavigationStart(float priority = 0f, UINavigationStart navigationStart = UINavigationStart.ToThisElement)
+        {
+            NavigationStartPriority = priority;
+            NavigationStart = navigationStart;
+            return this;
         }
     }
 }

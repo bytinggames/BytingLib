@@ -158,7 +158,9 @@
                     }
                 }
 
-                navigateFrom = GetAllVisibleChildren().FirstOrDefault(f => f.NavigationStart != UINavigationStart.None);
+                navigateFrom = GetAllVisibleChildren()
+                    .Where(f => (f is not IEnabled enabled || enabled.Enabled) && f.NavigationStart != UINavigationStart.None)
+                    .MaxBy(f => f.NavigationStartPriority);
                 if (navigateFrom != null 
                     && (navigateFrom.NavigationStart == UINavigationStart.ToThisElement || navigate == Vector2.Zero))// if navigation is zero, it means we navigate to the marked navigation start
                 {

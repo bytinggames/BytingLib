@@ -1,6 +1,6 @@
 ﻿namespace BytingLib.UI
 {
-    public abstract class ButtonParent : Element
+    public abstract class ButtonParent : Element, IEnabled
     {
         private bool down;
         private bool enabled = true;
