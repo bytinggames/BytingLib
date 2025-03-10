@@ -74,6 +74,7 @@
         {
             // reset hover element
             Input.HoverElement = null;
+            Input.NavigateElement = FocusedElement;
 
             if (updateCatch != null)
             {

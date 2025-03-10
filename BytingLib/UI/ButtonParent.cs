@@ -213,7 +213,7 @@
 
             base.UpdateHoverElement(input);
 
-            Hover = input.HoverElement == this;
+            Hover = input.HoverElement == this || input.NavigateElement == this;
         }
 
         public override void ClickFromFocus()

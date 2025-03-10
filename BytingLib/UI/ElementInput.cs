@@ -9,6 +9,7 @@
         public Action<Element?> SetUpdateCatch { get; }
         public Action<Element> UnsetUpdateCatch { get; }
         public Element? FocusElement { get; set; }
+        public Element? NavigateElement { get; set; }
         public Element? HoverElement { get; set; }
         public GameWindow Window { get; set; }
 
@@ -39,6 +40,11 @@
 
         public bool CanHover(Rect rect, Element element)
         {
+            if (NavigateElement == element)
+            {
+                return true;
+            }
+
             if (HoverElement == null || element == HoverElement)
             {
                 return rect.CollidesWith(Input.MousePosition);

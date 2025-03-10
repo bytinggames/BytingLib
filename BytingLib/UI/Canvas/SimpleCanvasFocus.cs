@@ -8,6 +8,12 @@
 
         public virtual void Draw(SpriteBatch spriteBatch, Element element)
         {
+            if (element is ButtonParent)
+            {
+                // hovering already shows that navigation is on that button
+                return;
+            }
+
             element.AbsoluteRect.Draw(spriteBatch, ColorArea);
             DrawOutline(spriteBatch, element.AbsoluteRect.Outline());
         }
