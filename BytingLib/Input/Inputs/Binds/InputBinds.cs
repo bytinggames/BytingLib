@@ -13,6 +13,9 @@ namespace BytingLib
         protected static InputBool Or(params InputBool[] inputs) => new BoolOr(inputs);
         protected static InputBool Not(InputBool input) => new BoolNot(input);
         protected static InputBool Func(Func<InputBool> func) => new BoolFunc(func);
+        protected static InputVector2 Wasd => new Vector2FromBools(Keys.W, Keys.A, Keys.S, Keys.D);
+        protected static InputVector2 Arrows => new Vector2FromBools(Keys.Up, Keys.Left, Keys.Down, Keys.Right);
+        protected static InputVector2 DPad => new Vector2FromBools(Buttons.DPadUp, Buttons.DPadLeft, Buttons.DPadDown, Buttons.DPadRight);
         protected static Vector2FromBools ArrowsOrWasdOrDpad =>
             new Vector2FromBools(
                 Or(Keys.Up, Keys.W, Buttons.DPadUp), 
