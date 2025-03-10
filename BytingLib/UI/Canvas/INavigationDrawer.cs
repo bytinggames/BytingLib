@@ -1,6 +1,6 @@
 ﻿namespace BytingLib.UI
 {
-    public interface ICanvasFocus
+    public interface INavigationDrawer
     {
         void Draw(SpriteBatch spriteBatch, Element element);
     }

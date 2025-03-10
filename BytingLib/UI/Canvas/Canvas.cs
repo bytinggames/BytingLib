@@ -11,36 +11,36 @@
         public Ref<Effect>? Effect { get; set; }
         protected Rect? LastRenderRect { get; private set; }
         public Matrix Transform { get; protected set; } = Matrix.Identity;
-        private Element? focusedElement;
-        public Action? OnEnterWhenUnfocused { get; set; }
-        public ICanvasFocus? FocusManager { get; set; }
-        public bool FocusIfUnfocused { get; set; }
-        public event Action? OnFocusStart;
-        public Vector2? FocusStartNearPosition { get; set; }
+        private Element? navigateElement;
+        public Action? OnEnterWithoutNavigation { get; set; }
+        public INavigationDrawer? NavigationDrawer { get; set; }
+        public bool BeginNavigation { get; set; }
+        public event Action? OnNavigationStart;
+        public Vector2? NavigateToPosition { get; set; }
 
         //private bool scissorTest;
         protected readonly RasterizerState rasterizerState = CreateDefaultRasterizerState();
         protected readonly RasterizerState rasterizerStateScissor;
 
-        public Element? FocusedElement
+        public Element? NavigateElement
         {
-            get => focusedElement;
+            get => navigateElement;
             set
             {
-                if (focusedElement != null)
+                if (navigateElement != null)
                 {
-                    focusedElement.Hover = false;
+                    navigateElement.Hover = false;
                 }
 
-                if (focusedElement == null && value != null)
+                if (navigateElement == null && value != null)
                 {
-                    OnFocusStart?.Invoke();
+                    OnNavigationStart?.Invoke();
                 }
-                focusedElement = value;
+                navigateElement = value;
 
-                if (focusedElement != null)
+                if (navigateElement != null)
                 {
-                    focusedElement.Hover = true;
+                    navigateElement.Hover = true;
                 }
             }
         }
@@ -74,7 +74,7 @@
         {
             // reset hover element
             Input.HoverElement = null;
-            Input.NavigateElement = FocusedElement;
+            Input.NavigateElement = NavigateElement;
 
             if (updateCatch != null)
             {
@@ -95,20 +95,20 @@
 
         private void UpdateNavigation()
         {
-            if (FocusManager != null)
+            if (NavigationDrawer != null)
             {
-                if (FocusStartNearPosition.HasValue)
+                if (NavigateToPosition.HasValue)
                 {
-                    FocusNearest(FocusStartNearPosition.Value);
+                    NavigateToPositionNow(NavigateToPosition.Value);
 
-                    FocusStartNearPosition = null;
-                    FocusIfUnfocused = false;
+                    NavigateToPosition = null;
+                    BeginNavigation = false;
                 }
 
-                if (FocusIfUnfocused)
+                if (BeginNavigation)
                 {
-                    FocusIfUnfocused = false;
-                    if (FocusedElement == null)
+                    BeginNavigation = false;
+                    if (NavigateElement == null)
                     {
                         Navigate(Vector2.Zero, false);
                     }
@@ -128,16 +128,16 @@
 
             if (Input.Input.Enter.Pressed)
             {
-                if (FocusedElement == null)
+                if (NavigateElement == null)
                 {
-                    OnEnterWhenUnfocused?.Invoke();
+                    OnEnterWithoutNavigation?.Invoke();
                 }
                 else
                 {
-                    if (FocusManager != null
-                        && FocusedElement is ICanFocus canFocus)
+                    if (NavigationDrawer != null
+                        && NavigateElement is ICanBeNavigated canNavigate)
                     {
-                        canFocus.ClickFromFocus();
+                        canNavigate.ActivateFromNavigation();
                     }
                 }
             }
@@ -145,9 +145,9 @@
 
         public void Navigate(Vector2 navigate, bool navigateWithLetters)
         {
-            // if no element is focused yet, see if a child provides a starting point
+            // if no element is navigated to yet, see if a child provides a starting point
             Element? navigateFrom = null;
-            if (FocusedElement == null)
+            if (NavigateElement == null)
             {
                 if (Input.FocusElement is TextInput)
                 {
@@ -164,7 +164,7 @@
                 if (navigateFrom != null 
                     && (navigateFrom.NavigationStart == UINavigationStart.ToThisElement || navigate == Vector2.Zero))// if navigation is zero, it means we navigate to the marked navigation start
                 {
-                    FocusedElement = navigateFrom;
+                    NavigateElement = navigateFrom;
                     return;
                 }
                 // if we didn't find a start element, make sure to start from the center and since we have to navigate into some direction, choose upwards
@@ -179,12 +179,12 @@
             }
 
             if (MathF.Abs(navigate.X) >= 0.5f
-                && FocusedElement is SliderInt slider)
+                && NavigateElement is SliderInt slider)
             {
                 slider.Value += navigate.X > 0 ? 1 : -1;
                 return;
             }
-            if (FocusedElement is TextInput textInput)
+            if (NavigateElement is TextInput textInput)
             {
                 if (navigateWithLetters)
                 {
@@ -196,7 +196,7 @@
                 }
                 else
                 {
-                    if (Input.FocusElement == FocusedElement)
+                    if (Input.FocusElement == NavigateElement)
                     {
                         Input.FocusElement = null;
                     }
@@ -208,28 +208,28 @@
             Element? bestScoreElement = null;
             navigate.Normalize();
             Vector2 navigateOrth = new Vector2(-navigate.Y, navigate.X);
-            bool currentlyFocused = FocusedElement != null;
-            Rect focusRect = FocusedElement?.AbsoluteRect 
+            bool currentlyNavigating = NavigateElement != null;
+            Rect navigateRect = NavigateElement?.AbsoluteRect 
                 ?? navigateFrom?.AbsoluteRect
                 ?? new Rect(this.AbsoluteRect.GetCenter(), Vector2.One);
 
-            focusRect = focusRect.CloneRect();
-            focusRect.Grow(-2f); // make a bit smaller so there's always 1px distance to next ui element, even if stacked without spacing
+            navigateRect = navigateRect.CloneRect();
+            navigateRect.Grow(-2f); // make a bit smaller so there's always 1px distance to next ui element, even if stacked without spacing
 
-            Vector2 focusCenter = focusRect.GetCenter();
-            Vector2 focusScreenWrapCenter = Vector2.Zero;
-            Rect? focusRectScreenWrap = null;
-            var cr = focusRect.DistanceTo(AbsoluteRect, -navigate);
+            Vector2 navigateCenter = navigateRect.GetCenter();
+            Vector2 navigateScreenWrapCenter = Vector2.Zero;
+            Rect? navigateRectScreenWrap = null;
+            var cr = navigateRect.DistanceTo(AbsoluteRect, -navigate);
             bool anyNonWrapperScored = false;
             if (cr.DistanceReversed.HasValue)
             {
-                focusRectScreenWrap = focusRect.CloneRect();
-                focusRectScreenWrap.Pos -= navigate * cr.DistanceReversed.Value;
-                focusScreenWrapCenter = focusRectScreenWrap.GetCenter();
+                navigateRectScreenWrap = navigateRect.CloneRect();
+                navigateRectScreenWrap.Pos -= navigate * cr.DistanceReversed.Value;
+                navigateScreenWrapCenter = navigateRectScreenWrap.GetCenter();
             }
-            foreach (var child in (updateCatch ?? this).GetAllVisibleChildren().OfType<ICanFocus>().Where(f => f.CanFocus))
+            foreach (var child in (updateCatch ?? this).GetAllVisibleChildren().OfType<ICanBeNavigated>().Where(f => f.CanBeNavigated))
             {
-                if (child == FocusedElement)
+                if (child == NavigateElement)
                 {
                     continue;
                 }
@@ -239,8 +239,8 @@
                 {
                     continue;
                 }
-                Vector2 dist = focusRect.DistanceToRect(element.AbsoluteRect);
-                Vector2 centerDist = element.AbsoluteRect.GetCenter() - focusCenter;
+                Vector2 dist = navigateRect.DistanceToRect(element.AbsoluteRect);
+                Vector2 centerDist = element.AbsoluteRect.GetCenter() - navigateCenter;
 
                 float centerDistOnDirection = Vector2.Dot(navigate, centerDist);
                 float myScore = 0f;
@@ -256,13 +256,13 @@
                 {
                     // wrong direction
                     // try to wrap around the screen, but with a much worse score
-                    if (anyNonWrapperScored || focusRectScreenWrap == null)
+                    if (anyNonWrapperScored || navigateRectScreenWrap == null)
                     {
                         // no chance
                         continue;
                     }
-                    dist = focusRectScreenWrap.DistanceToRect(element.AbsoluteRect);
-                    centerDist = element.AbsoluteRect.GetCenter() - focusScreenWrapCenter;
+                    dist = navigateRectScreenWrap.DistanceToRect(element.AbsoluteRect);
+                    centerDist = element.AbsoluteRect.GetCenter() - navigateScreenWrapCenter;
                     myScore -= 100000f; // score penalty for screen wrapping. They compete in their own category and only have a chance if only screen wrappers compete.
                 }
 
@@ -284,12 +284,11 @@
 
             if (bestScoreElement != null)
             {
-                FocusedElement = bestScoreElement;
+                NavigateElement = bestScoreElement;
 
-                if (FocusedElement is TextInput textInput2)
+                if (NavigateElement is TextInput textInput2)
                 {
                     Input.FocusElement = textInput2;
-                    //textInput2.Focus();
                 }
             }
         }
@@ -315,9 +314,9 @@
 
         protected void DrawCanvasBase(SpriteBatch spriteBatch)
         {
-            if (FocusedElement != null && FocusManager != null)
+            if (NavigateElement != null && NavigationDrawer != null)
             {
-                FocusManager.Draw(spriteBatch, FocusedElement);
+                NavigationDrawer.Draw(spriteBatch, NavigateElement);
             }
         }
 
@@ -361,16 +360,17 @@
             }
         }
 
-        public void FocusNearest(Vector2 focus)
+        /// <summary>Warning: some AbsoluteRects might not be initialized. When unsure, use NavigateToNearest property instead.</summary>
+        public void NavigateToPositionNow(Vector2 atPosition)
         {
-            ICanFocus? nearest = GetAllVisibleChildren()
+            ICanBeNavigated? nearest = GetAllVisibleChildren()
                 .Where(f => f.AbsoluteRect != null)
-                .OfType<ICanFocus>()
-                .Where(f => f.CanFocus)
-                .MinBy(f => ((Element)f).AbsoluteRect.DistanceToPoint(focus).LengthSquared());
+                .OfType<ICanBeNavigated>()
+                .Where(f => f.CanBeNavigated)
+                .MinBy(f => ((Element)f).AbsoluteRect.DistanceToPoint(atPosition).LengthSquared());
             if (nearest != null)
             {
-                FocusedElement = (Element)nearest;
+                NavigateElement = (Element)nearest;
             }
         }
     }

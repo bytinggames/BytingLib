@@ -83,9 +83,9 @@ namespace BytingLib.UI
 
             // in case we press enter using ui navigation, we need to hide the panel
             dropDownPanel?.RemoveFromCanvas();
-            if (canvas.FocusedElement != null)
+            if (canvas.NavigateElement != null)
             {
-                canvas.FocusedElement = this;
+                canvas.NavigateElement = this;
             }
         }
 
@@ -103,8 +103,8 @@ namespace BytingLib.UI
             canvas.Add(dropDownPanel);
             canvas.SetUpdateCatch(dropDownPanel);
 
-            // focus the right button in the dropdown list
-            if (canvas.FocusedElement != null
+            // navigate to the right button in the dropdown list
+            if (canvas.NavigateElement != null
                 && labels != null
                 && buttons != null)
             {
@@ -113,12 +113,12 @@ namespace BytingLib.UI
                 {
                     if (buttons.Length > 0)
                     {
-                        canvas.FocusedElement = buttons[0];
+                        canvas.NavigateElement = buttons[0];
                     }
                 }
                 else
                 {
-                    canvas.FocusedElement = buttons[index];
+                    canvas.NavigateElement = buttons[index];
                 }
             }
         }

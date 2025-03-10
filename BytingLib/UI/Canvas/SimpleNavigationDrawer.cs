@@ -1,6 +1,6 @@
 ﻿namespace BytingLib.UI
 {
-    public class SimpleCanvasFocus : ICanvasFocus
+    public class SimpleNavigationDrawer : INavigationDrawer
     {
         public Color ColorArea { get; set; } = Color.White * 0.5f;
         public Color ColorOutline { get; set; } = Color.White * 0.75f;

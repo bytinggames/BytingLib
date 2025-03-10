@@ -20,7 +20,7 @@
         private bool doSelectAllOnClick;
         public int? MaxTextLength { get; set; }
 
-        public override bool CanFocus => true;
+        public override bool CanBeNavigated => true;
 
         public TextInput(GameSpeed updateSpeed, string text = "", float width = 0, float height = 0, 
             KeyInputString.AllowNewLine allowNewLine = KeyInputString.AllowNewLine.Never, Predicate<char>? validateChar = null,

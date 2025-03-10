@@ -1,6 +1,6 @@
 ﻿namespace BytingLib.UI
 {
-    public class Element : IDisposable, ICanFocus
+    public class Element : IDisposable, ICanBeNavigated
     {
         public Element? Parent { get; private set; }
         public List<Element> Children { get; } = new List<Element>();
@@ -87,7 +87,7 @@
 
         public Style? Style { get; set; }
 
-        public virtual bool CanFocus => currentTooltipAction != null;
+        public virtual bool CanBeNavigated => currentTooltipAction != null;
 
         protected virtual void DrawSelf(SpriteBatch spriteBatch, StyleRoot style) { }
         protected virtual void DrawSelfPost(SpriteBatch spriteBatch, StyleRoot style) { }
@@ -525,7 +525,7 @@
         }
         public IEnumerable<Element> GetAllVisibleChildren() => GetAllChildren(f => f.Visible);
 
-        public virtual void ClickFromFocus()
+        public virtual void ActivateFromNavigation()
         {
             OnEnterFromNavigation?.Invoke();
         }
