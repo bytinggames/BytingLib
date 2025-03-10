@@ -1,6 +1,6 @@
 ﻿namespace BytingLib.UI
 {
-    public abstract class ButtonParent : Element, ICanFocus
+    public abstract class ButtonParent : Element
     {
         private bool down;
         private bool enabled = true;
@@ -23,7 +23,7 @@
 
         public Style? HoverStyle { get; set; }
         public Style? DisabledStyle { get; set; }
-        public virtual bool CanFocus => Enabled;
+        public override bool CanFocus => Enabled;
 
         public ButtonParent(float width = 0f, float height = 0f, Vector2? anchor = null, Padding? padding = null)
         {
@@ -216,7 +216,7 @@
             Hover = input.HoverElement == this;
         }
 
-        public virtual void ClickFromFocus()
+        public override void ClickFromFocus()
         {
             DoClick();
         }

@@ -2,7 +2,7 @@
 
 namespace BytingLib.UI
 {
-    public class SliderInt : Element, ICanFocus
+    public class SliderInt : Element
     {
         private int _steps;
         public int Steps
@@ -61,7 +61,7 @@ namespace BytingLib.UI
         public event Action<SliderInt>? OnDragBegin;
         /// <summary>Also called when disposing this element while the user is still dragging the slider.</summary>
         public event Action<SliderInt>? OnDragEnd;
-        public bool CanFocus { get; set; } = true;
+        public override bool CanFocus => true;
 
         private float AbsoluteInnerLeft => AbsoluteRect.Left + KnobWidth / 2f;
         private float AbsoluteInnerRight => AbsoluteRect.Right - KnobWidth / 2f;
@@ -154,11 +154,6 @@ namespace BytingLib.UI
             }
 
             base.DisposeSelf();
-        }
-
-        public void ClickFromFocus()
-        {
-            throw new NotImplementedException();
         }
     }
 }

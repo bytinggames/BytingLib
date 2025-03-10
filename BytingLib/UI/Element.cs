@@ -1,6 +1,6 @@
 ﻿namespace BytingLib.UI
 {
-    public class Element : IDisposable
+    public class Element : IDisposable, ICanFocus
     {
         public Element? Parent { get; private set; }
         public List<Element> Children { get; } = new List<Element>();
@@ -84,6 +84,8 @@
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public Style? Style { get; set; }
+
+        public virtual bool CanFocus => currentTooltipAction != null;
 
         protected virtual void DrawSelf(SpriteBatch spriteBatch, StyleRoot style) { }
         protected virtual void DrawSelfPost(SpriteBatch spriteBatch, StyleRoot style) { }
@@ -520,5 +522,9 @@
             }
         }
         public IEnumerable<Element> GetAllVisibleChildren() => GetAllChildren(f => f.Visible);
+
+        public virtual void ClickFromFocus()
+        {
+        }
     }
 }

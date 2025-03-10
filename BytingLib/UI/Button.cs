@@ -1,11 +1,5 @@
 ﻿namespace BytingLib.UI
 {
-    public interface ICanFocus
-    {
-        bool CanFocus { get; }
-        void ClickFromFocus();
-    }
-
     public class Button : ButtonParent
     {
         /// <summary>Used for stuff that should happen immediately, like sound effects</summary>

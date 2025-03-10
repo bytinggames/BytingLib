@@ -27,11 +27,21 @@
             get => focusedElement;
             set
             {
+                if (focusedElement != null)
+                {
+                    focusedElement.Hover = false;
+                }
+
                 if (focusedElement == null && value != null)
                 {
                     OnFocusStart?.Invoke();
                 }
                 focusedElement = value;
+
+                if (focusedElement != null)
+                {
+                    focusedElement.Hover = true;
+                }
             }
         }
 
