@@ -166,6 +166,10 @@
             Rect focusRect = FocusedElement?.AbsoluteRect 
                 ?? navigateFrom?.AbsoluteRect
                 ?? new Rect(this.AbsoluteRect.GetCenter(), Vector2.One);
+
+            focusRect = focusRect.CloneRect();
+            focusRect.Grow(-2f); // make a bit smaller so there's always 1px distance to next ui element, even if stacked without spacing
+
             Vector2 focusCenter = focusRect.GetCenter();
             Vector2 focusScreenWrapCenter = Vector2.Zero;
             Rect? focusRectScreenWrap = null;
@@ -192,9 +196,15 @@
                 Vector2 dist = focusRect.DistanceToRect(element.AbsoluteRect);
                 Vector2 centerDist = element.AbsoluteRect.GetCenter() - focusCenter;
 
-                float distOnDirection = Vector2.Dot(navigate, dist);
                 float centerDistOnDirection = Vector2.Dot(navigate, centerDist);
                 float myScore = 0f;
+
+                if (centerDistOnDirection == 0f)
+                {
+                    // makes no sense to go to completely orthogonal element
+                    continue;
+                }
+
                 bool screenWrap = centerDistOnDirection <= 0f;
                 if (screenWrap)
                 {
@@ -207,24 +217,12 @@
                     }
                     dist = focusRectScreenWrap.DistanceToRect(element.AbsoluteRect);
                     centerDist = element.AbsoluteRect.GetCenter() - focusScreenWrapCenter;
-                    centerDistOnDirection = Vector2.Dot(navigate, centerDist);
-                    distOnDirection = Vector2.Dot(navigate, dist);
                     myScore -= 100000f; // score penalty for screen wrapping. They compete in their own category and only have a chance if only screen wrappers compete.
                 }
 
-                float orthogonalDistance = MathF.Abs(Vector2.Dot(navigateOrth, dist));
-                if (orthogonalDistance > distOnDirection
-                    && currentlyFocused) // if nothing is focused, take the next best thing to focus
-                {
-                    // more to the the orthogonal direction than to the correct direction
-                    continue;
-                }
-
-                float orthogonalCenterDistance = MathF.Abs(Vector2.Dot(navigateOrth, centerDist));
-
-                myScore -= distOnDirection
-                    + MathF.Abs(centerDistOnDirection) * 0.01f // just in case elements are overlapping
-                    + orthogonalDistance * 2f + orthogonalCenterDistance * 0.5f;
+                float inDirection = Vector2.Dot(Vector2.Normalize(dist + centerDist * 0.01f), navigate);
+                inDirection = MathF.Pow(inDirection, screenWrap ? 1f : 4f); // make it more unlikely to move orthogonally
+                myScore -= (dist.Length() + centerDist.Length() * 0.1f /* not as important. more of a tie breaker */) / inDirection;
 
                 if (myScore > bestScore)
                 {
