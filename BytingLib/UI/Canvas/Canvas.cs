@@ -16,6 +16,7 @@
         public ICanvasFocus? FocusManager { get; set; }
         public bool FocusIfUnfocused { get; set; }
         public event Action? OnFocusStart;
+        public Vector2? FocusStartNearPosition { get; set; }
 
         //private bool scissorTest;
         protected readonly RasterizerState rasterizerState = CreateDefaultRasterizerState();
@@ -85,6 +86,14 @@
         {
             if (FocusManager != null)
             {
+                if (FocusStartNearPosition.HasValue)
+                {
+                    FocusNearest(FocusStartNearPosition.Value);
+
+                    FocusStartNearPosition = null;
+                    FocusIfUnfocused = false;
+                }
+
                 if (FocusIfUnfocused)
                 {
                     FocusIfUnfocused = false;
@@ -168,10 +177,9 @@
                 focusRectScreenWrap.Pos -= navigate * cr.DistanceReversed.Value;
                 focusScreenWrapCenter = focusRectScreenWrap.GetCenter();
             }
-            foreach (var child in (updateCatch ?? this).GetAllVisibleChildren().OfType<ICanFocus>())
+            foreach (var child in (updateCatch ?? this).GetAllVisibleChildren().OfType<ICanFocus>().Where(f => f.CanFocus))
             {
-                if (!child.CanFocus
-                    || child == FocusedElement)
+                if (child == FocusedElement)
                 {
                     continue;
                 }
@@ -300,6 +308,19 @@
             {
                 SetDirty();
                 LastRenderRect = newRenderRect;
+            }
+        }
+
+        public void FocusNearest(Vector2 focus)
+        {
+            ICanFocus? nearest = GetAllVisibleChildren()
+                .Where(f => f.AbsoluteRect != null)
+                .OfType<ICanFocus>()
+                .Where(f => f.CanFocus)
+                .MinBy(f => ((Element)f).AbsoluteRect.DistanceToPoint(focus).LengthSquared());
+            if (nearest != null)
+            {
+                FocusedElement = (Element)nearest;
             }
         }
     }

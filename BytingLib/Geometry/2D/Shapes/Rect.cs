@@ -515,6 +515,25 @@ namespace BytingLib
             }
             return dist;
         }
+
+        public Vector2 DistanceToPoint(Vector2 pos)
+        {
+            Vector2 dist = pos - GetCenter();
+            Vector2 distSign = dist.GetSign();
+            // make sure distance is subtracted by rectangle sizes
+            dist -= distSign * Size / 2f;
+            Vector2 distSignAfterSizeReduction = dist.GetSign();
+            // account for collision
+            if (distSign.X != distSignAfterSizeReduction.X)
+            {
+                dist.X = 0f;
+            }
+            if (distSign.Y != distSignAfterSizeReduction.Y)
+            {
+                dist.Y = 0f;
+            }
+            return dist;
+        }
     }
 
     public static class RectExtension
