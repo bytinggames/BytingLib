@@ -17,6 +17,7 @@
         public bool BeginNavigation { get; set; }
         public event Action? OnNavigationStart;
         public Vector2? NavigateToPosition { get; set; }
+        public event Action<Element>? OnNavigate;
 
         //private bool scissorTest;
         protected readonly RasterizerState rasterizerState = CreateDefaultRasterizerState();
@@ -145,6 +146,22 @@
 
         public void Navigate(Vector2 navigate, bool navigateWithLetters)
         {
+            Element? navigateTo = NavigateInner(navigate, navigateWithLetters);
+
+            if (navigateTo != null)
+            {
+                NavigateElement = navigateTo;
+
+                if (NavigateElement is TextInput textInput2)
+                {
+                    Input.FocusElement = textInput2;
+                }
+                OnNavigate?.Invoke(NavigateElement);
+            }
+        }
+
+        private Element? NavigateInner(Vector2 navigate, bool navigateWithLetters)
+        {
             // if no element is navigated to yet, see if a child provides a starting point
             Element? navigateFrom = null;
             if (NavigateElement == null)
@@ -154,18 +171,17 @@
                     if (MathF.Abs(navigate.X) >= 0.5f
                         || navigateWithLetters)
                     {
-                        return;
+                        return null;
                     }
                 }
 
                 navigateFrom = GetAllVisibleChildren()
                     .Where(f => (f is not IEnabled enabled || enabled.Enabled) && f.NavigationStart != UINavigationStart.None)
                     .MaxBy(f => f.NavigationStartPriority);
-                if (navigateFrom != null 
+                if (navigateFrom != null
                     && (navigateFrom.NavigationStart == UINavigationStart.ToThisElement || navigate == Vector2.Zero))// if navigation is zero, it means we navigate to the marked navigation start
                 {
-                    NavigateElement = navigateFrom;
-                    return;
+                    return navigateFrom;
                 }
                 // if we didn't find a start element, make sure to start from the center and since we have to navigate into some direction, choose upwards
                 if (navigate == Vector2.Zero)
@@ -175,24 +191,24 @@
             }
             else if (navigate == Vector2.Zero)
             {
-                return; // direction required
+                return null; // direction required
             }
 
             if (MathF.Abs(navigate.X) >= 0.5f
                 && NavigateElement is SliderInt slider)
             {
                 slider.Value += navigate.X > 0 ? 1 : -1;
-                return;
+                return null;
             }
             if (NavigateElement is TextInput textInput)
             {
                 if (navigateWithLetters)
                 {
-                    return;
+                    return null;
                 }
                 if (MathF.Abs(navigate.X) >= 0.5f)
                 {
-                    return;
+                    return null;
                 }
                 else
                 {
@@ -209,7 +225,7 @@
             navigate.Normalize();
             Vector2 navigateOrth = new Vector2(-navigate.Y, navigate.X);
             bool currentlyNavigating = NavigateElement != null;
-            Rect navigateRect = NavigateElement?.AbsoluteRect 
+            Rect navigateRect = NavigateElement?.AbsoluteRect
                 ?? navigateFrom?.AbsoluteRect
                 ?? new Rect(this.AbsoluteRect.GetCenter(), Vector2.One);
 
@@ -282,15 +298,7 @@
                 }
             }
 
-            if (bestScoreElement != null)
-            {
-                NavigateElement = bestScoreElement;
-
-                if (NavigateElement is TextInput textInput2)
-                {
-                    Input.FocusElement = textInput2;
-                }
-            }
+            return bestScoreElement;
         }
 
         public override void Update(ElementInput input)
