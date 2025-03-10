@@ -14,7 +14,7 @@ namespace BytingLib
         public InputVector2 Navigate { get; set; } = new Vector2MaxLength(
             new Vector2PressedPerAxis(ArrowsOrDpad, true), 
             new Vector2PressedCircular(new Vector2GamePadStick(null), true));
-        public InputVector2 NavigateWithLetters { get; set; } = new Vector2FromBools(Keys.W, Keys.A, Keys.S, Keys.D);
+        public InputVector2 NavigateWithLetters { get; set; } = new Vector2PressedPerAxis(Wasd, true);
 
         #endregion
     }
