@@ -20,6 +20,8 @@
         private bool doSelectAllOnClick;
         public int? MaxTextLength { get; set; }
 
+        public override bool CanFocus => true;
+
         public TextInput(GameSpeed updateSpeed, string text = "", float width = 0, float height = 0, 
             KeyInputString.AllowNewLine allowNewLine = KeyInputString.AllowNewLine.Never, Predicate<char>? validateChar = null,
             int? maxTextLength = null)
@@ -157,130 +159,134 @@
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
-            if (mouseClick)
+            if (keyInputString?.InputString != null)
             {
-                mouseClick = false;
-                // set cursor to mouse click position
-                Vector2 relativeMousePos = GlobalToLocalSpace(style, mousePos);
-                keyInputString!.InputString!.Cursor = DrawSpaceToTextSpace(relativeMousePos, style);
-                keyInputString!.InputString!.SelectStart = null;
-
-                if (doSelectAllOnClick && keyInputString?.InputString != null)
+                if (mouseClick)
                 {
-                    doSelectAllOnClick = false;
-                    keyInputString?.InputString.SelectAll();
-                }
-            }
-            if (mouseHold)
-            {
-                mouseHold = false;
-                Vector2 relativeMousePos = GlobalToLocalSpace(style, mousePos);
-                int selectPos = DrawSpaceToTextSpace(relativeMousePos, style);
-                keyInputString!.InputString!.SelectStart = selectPos == keyInputString!.InputString!.Cursor ? null : selectPos;
-            }
+                    mouseClick = false;
+                    // set cursor to mouse click position
+                    Vector2 relativeMousePos = GlobalToLocalSpace(style, mousePos);
+                    keyInputString!.InputString!.Cursor = DrawSpaceToTextSpace(relativeMousePos, style);
+                    keyInputString!.InputString!.SelectStart = null;
 
-            if (moveCursorVertically != null)
-            {
-                string drawnText = CreateTextToDraw(style, out List<(int Index, int Add)>? textLengthChanges);
-                if (textLengthChanges != null)
-                {
-                    Vector2 localPos = TextSpaceToLocalSpace(keyInputString!.InputString!.Cursor, style, drawnText, textLengthChanges);
-                    localPos.Y += style.LineSpacing * moveCursorVertically.Value;
-                    keyInputString!.InputString!.Cursor = DrawSpaceToTextSpace(localPos, style);
-                }
-
-                moveCursorVertically = null;
-            }
-
-            if (style.FontColor.IsNotTransparent())
-            {
-                if (drawFocused)
-                {
-                    if (cursorChanged)
+                    if (doSelectAllOnClick && keyInputString?.InputString != null)
                     {
-                        string drawnText = CreateTextToDraw(style, out List<(int Index, int Add)>? textLengthChanges);
-                        if (textLengthChanges != null)
+                        doSelectAllOnClick = false;
+                        keyInputString?.InputString.SelectAll();
+                    }
+                }
+                if (mouseHold)
+                {
+                    mouseHold = false;
+                    Vector2 relativeMousePos = GlobalToLocalSpace(style, mousePos);
+                    int selectPos = DrawSpaceToTextSpace(relativeMousePos, style);
+                    keyInputString!.InputString!.SelectStart = selectPos == keyInputString!.InputString!.Cursor ? null : selectPos;
+                }
+
+                if (moveCursorVertically != null)
+                {
+                    string drawnText = CreateTextToDraw(style, out List<(int Index, int Add)>? textLengthChanges);
+                    if (textLengthChanges != null)
+                    {
+                        Vector2 localPos = TextSpaceToLocalSpace(keyInputString!.InputString!.Cursor, style, drawnText, textLengthChanges);
+                        localPos.Y += style.LineSpacing * moveCursorVertically.Value;
+                        keyInputString!.InputString!.Cursor = DrawSpaceToTextSpace(localPos, style);
+                    }
+
+                    moveCursorVertically = null;
+                }
+
+
+                if (style.FontColor.IsNotTransparent())
+                {
+                    if (drawFocused)
+                    {
+                        if (cursorChanged)
                         {
-                            float lineSpacing = style.LineSpacing;
-
-                            cursorChanged = false;
-                            Vector2 cursorDrawPos = TextSpaceToLocalSpace(keyInputString!.InputString!.Cursor, style, drawnText, textLengthChanges);
-                            cursorDrawPos = LocalToGlobalSpace(style, cursorDrawPos, drawnText);
-
-                            cursorDraw = new Rect(cursorDrawPos, new Vector2(2, lineSpacing));
-
-                            if (keyInputString!.InputString!.SelectStart != null)
+                            string drawnText = CreateTextToDraw(style, out List<(int Index, int Add)>? textLengthChanges);
+                            if (textLengthChanges != null)
                             {
-                                Vector2 selectDrawPos = TextSpaceToLocalSpace(keyInputString!.InputString!.SelectStart.Value, style, drawnText, textLengthChanges);
-                                selectDrawPos = LocalToGlobalSpace(style, selectDrawPos, drawnText);
+                                float lineSpacing = style.LineSpacing;
 
-                                Vector2 selectPosOnCursorLine = new Vector2(selectDrawPos.X, cursorDrawPos.Y);
-                                if (selectDrawPos.Y < cursorDrawPos.Y)
-                                {
-                                    selectPosOnCursorLine.X = AbsoluteRect.Left;
-                                }
-                                else if (selectDrawPos.Y > cursorDrawPos.Y)
-                                {
-                                    selectPosOnCursorLine.X = AbsoluteRect.Right;
-                                }
+                                cursorChanged = false;
+                                Vector2 cursorDrawPos = TextSpaceToLocalSpace(keyInputString!.InputString!.Cursor, style, drawnText, textLengthChanges);
+                                cursorDrawPos = LocalToGlobalSpace(style, cursorDrawPos, drawnText);
 
-                                selectDraw = new()
+                                cursorDraw = new Rect(cursorDrawPos, new Vector2(2, lineSpacing));
+
+                                if (keyInputString!.InputString!.SelectStart != null)
+                                {
+                                    Vector2 selectDrawPos = TextSpaceToLocalSpace(keyInputString!.InputString!.SelectStart.Value, style, drawnText, textLengthChanges);
+                                    selectDrawPos = LocalToGlobalSpace(style, selectDrawPos, drawnText);
+
+                                    Vector2 selectPosOnCursorLine = new Vector2(selectDrawPos.X, cursorDrawPos.Y);
+                                    if (selectDrawPos.Y < cursorDrawPos.Y)
+                                    {
+                                        selectPosOnCursorLine.X = AbsoluteRect.Left;
+                                    }
+                                    else if (selectDrawPos.Y > cursorDrawPos.Y)
+                                    {
+                                        selectPosOnCursorLine.X = AbsoluteRect.Right;
+                                    }
+
+                                    selectDraw = new()
                             {
                                 // cursor line
                                 new Rect(cursorDrawPos, selectPosOnCursorLine - cursorDrawPos + new Vector2(0f, lineSpacing)),
                             };
 
-                                if (selectDrawPos.Y != cursorDrawPos.Y)
-                                {
-                                    // add select start line
-                                    Vector2 selectPosOnSelectLine = selectDrawPos;
-                                    if (selectDrawPos.Y < cursorDrawPos.Y)
+                                    if (selectDrawPos.Y != cursorDrawPos.Y)
                                     {
-                                        selectPosOnSelectLine.X = AbsoluteRect.Right;
+                                        // add select start line
+                                        Vector2 selectPosOnSelectLine = selectDrawPos;
+                                        if (selectDrawPos.Y < cursorDrawPos.Y)
+                                        {
+                                            selectPosOnSelectLine.X = AbsoluteRect.Right;
+                                        }
+                                        else
+                                        {
+                                            selectPosOnSelectLine.X = AbsoluteRect.Left;
+                                        }
+                                        selectDraw.Add(new Rect(selectDrawPos, selectPosOnSelectLine - selectDrawPos + new Vector2(0f, lineSpacing)));
                                     }
-                                    else
-                                    {
-                                        selectPosOnSelectLine.X = AbsoluteRect.Left;
-                                    }
-                                    selectDraw.Add(new Rect(selectDrawPos, selectPosOnSelectLine - selectDrawPos + new Vector2(0f, lineSpacing)));
-                                }
 
-                                // add lines in between
-                                if (MathF.Abs(selectDrawPos.Y - cursorDrawPos.Y) > lineSpacing * 1.5f)
+                                    // add lines in between
+                                    if (MathF.Abs(selectDrawPos.Y - cursorDrawPos.Y) > lineSpacing * 1.5f)
+                                    {
+                                        float top, bottom;
+                                        if (selectDrawPos.Y < cursorDrawPos.Y)
+                                        {
+                                            top = selectDrawPos.Y + lineSpacing;
+                                            bottom = cursorDrawPos.Y;
+                                        }
+                                        else
+                                        {
+                                            top = cursorDrawPos.Y + lineSpacing;
+                                            bottom = selectDrawPos.Y;
+                                        }
+                                        selectDraw.Add(new Rect(AbsoluteRect.Left, top, AbsoluteRect.Width, bottom - top));
+                                    }
+                                }
+                                else
                                 {
-                                    float top, bottom;
-                                    if (selectDrawPos.Y < cursorDrawPos.Y)
-                                    {
-                                        top = selectDrawPos.Y + lineSpacing;
-                                        bottom = cursorDrawPos.Y;
-                                    }
-                                    else
-                                    {
-                                        top = cursorDrawPos.Y + lineSpacing;
-                                        bottom = selectDrawPos.Y;
-                                    }
-                                    selectDraw.Add(new Rect(AbsoluteRect.Left, top, AbsoluteRect.Width, bottom - top));
+                                    selectDraw = null;
                                 }
                             }
-                            else
+                        }
+
+                        if (cursorDraw != null)
+                        {
+                            if ((updateSpeed.TotalMSF() - lastMSCursorOrSelectionChanged) % 1000 < 500)
                             {
-                                selectDraw = null;
+                                cursorDraw.Draw(spriteBatch, style.FontColor.Value);
                             }
                         }
-                    }
-
-                    if (cursorDraw != null)
-                    {
-                        if ((updateSpeed.TotalMSF() - lastMSCursorOrSelectionChanged) % 1000 < 500)
+                        if (selectDraw != null)
                         {
-                            cursorDraw.Draw(spriteBatch, style.FontColor.Value);
-                        }
-                    }
-                    if (selectDraw != null)
-                    {
-                        for (int i = 0; i < selectDraw.Count; i++)
-                        {
-                            selectDraw[i].Draw(spriteBatch, style.FontColor.Value * 0.5f);
+                            for (int i = 0; i < selectDraw.Count; i++)
+                            {
+                                selectDraw[i].Draw(spriteBatch, style.FontColor.Value * 0.5f);
+                            }
                         }
                     }
                 }

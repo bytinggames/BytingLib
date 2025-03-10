@@ -12,8 +12,9 @@ namespace BytingLib
         public InputInt Scroll { get; set; } = new IntMouseWheel();
         public InputBool Enter { get; set; } = Or(Keys.Enter, Keys.Space, Buttons.A, Buttons.Start);
         public InputVector2 Navigate { get; set; } = new Vector2MaxLength(
-            new Vector2PressedPerAxis(ArrowsOrWasdOrDpad, true), 
+            new Vector2PressedPerAxis(ArrowsOrDpad, true), 
             new Vector2PressedCircular(new Vector2GamePadStick(null), true));
+        public InputVector2 NavigateWithLetters { get; set; } = new Vector2FromBools(Keys.W, Keys.A, Keys.S, Keys.D);
 
         #endregion
     }

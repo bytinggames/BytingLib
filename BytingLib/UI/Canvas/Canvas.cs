@@ -110,14 +110,19 @@
                     FocusIfUnfocused = false;
                     if (FocusedElement == null)
                     {
-                        Navigate(Vector2.Zero);
+                        Navigate(Vector2.Zero, false);
                     }
                 }
 
                 if (Input.Input.Navigate.Value != Vector2.Zero)
                 {
                     Vector2 navigate = Input.Input.Navigate.Value;
-                    Navigate(navigate);
+                    Navigate(navigate, false);
+                }
+                if (Input.Input.NavigateWithLetters.Value != Vector2.Zero)
+                {
+                    Vector2 navigate = Input.Input.NavigateWithLetters.Value;
+                    Navigate(navigate, true);
                 }
             }
 
@@ -138,12 +143,21 @@
             }
         }
 
-        public void Navigate(Vector2 navigate)
+        public void Navigate(Vector2 navigate, bool navigateWithLetters)
         {
             // if no element is focused yet, see if a child provides a starting point
             Element? navigateFrom = null;
             if (FocusedElement == null)
             {
+                if (Input.FocusElement is TextInput)
+                {
+                    if (MathF.Abs(navigate.X) >= 0.5f
+                        || navigateWithLetters)
+                    {
+                        return;
+                    }
+                }
+
                 navigateFrom = GetAllVisibleChildren().FirstOrDefault(f => f.NavigationStart != UINavigationStart.None);
                 if (navigateFrom != null 
                     && (navigateFrom.NavigationStart == UINavigationStart.ToThisElement || navigate == Vector2.Zero))// if navigation is zero, it means we navigate to the marked navigation start
@@ -167,6 +181,25 @@
             {
                 slider.Value += navigate.X > 0 ? 1 : -1;
                 return;
+            }
+            if (FocusedElement is TextInput textInput)
+            {
+                if (navigateWithLetters)
+                {
+                    return;
+                }
+                if (MathF.Abs(navigate.X) >= 0.5f)
+                {
+                    return;
+                }
+                else
+                {
+                    if (Input.FocusElement == FocusedElement)
+                    {
+                        Input.FocusElement = null;
+                    }
+                    textInput.LooseFocus();
+                }
             }
 
             float bestScore = float.NegativeInfinity;
@@ -250,6 +283,12 @@
             if (bestScoreElement != null)
             {
                 FocusedElement = bestScoreElement;
+
+                if (FocusedElement is TextInput textInput2)
+                {
+                    Input.FocusElement = textInput2;
+                    //textInput2.Focus();
+                }
             }
         }
 

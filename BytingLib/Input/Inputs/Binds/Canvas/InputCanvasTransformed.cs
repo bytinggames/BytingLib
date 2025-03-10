@@ -7,6 +7,7 @@
         public InputIntState Scroll => sourceInput.Scroll;
         public InputUpdater Updater => sourceInput.Updater;
         public InputVector2State Navigate => sourceInput.Navigate;
+        public InputVector2State NavigateWithLetters => sourceInput.NavigateWithLetters;
         public InputBoolState Enter => sourceInput.Enter;
 
         private static InputVector2State Transform(InputVector2State state, Func<Matrix> getUITransform)

@@ -19,6 +19,12 @@ namespace BytingLib
                 Or(Keys.Left, Keys.A, Buttons.DPadLeft), 
                 Or(Keys.Down, Keys.S, Buttons.DPadDown), 
                 Or(Keys.Right, Keys.D, Buttons.DPadRight));
+        protected static Vector2FromBools ArrowsOrDpad =>
+            new Vector2FromBools(
+                Or(Keys.Up, Buttons.DPadUp),
+                Or(Keys.Left, Buttons.DPadLeft),
+                Or(Keys.Down, Buttons.DPadDown),
+                Or(Keys.Right, Buttons.DPadRight));
 
         public IEnumerable<PropertyInfo> GetRemappableProperties()
         {

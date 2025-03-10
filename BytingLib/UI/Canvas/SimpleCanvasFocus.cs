@@ -15,7 +15,10 @@
             }
 
             element.AbsoluteRect.Draw(spriteBatch, ColorArea);
-            DrawOutline(spriteBatch, element.AbsoluteRect.Outline());
+            if (element is not TextInput)
+            {
+                DrawOutline(spriteBatch, element.AbsoluteRect.Outline());
+            }
         }
 
         protected void DrawPolygonWithOutline(SpriteBatch spriteBatch, Polygon polygon)
