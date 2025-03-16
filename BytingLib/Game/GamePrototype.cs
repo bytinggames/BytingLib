@@ -30,6 +30,7 @@ namespace BytingLib
         private readonly int screenshotsRandSecondsOffset;
         private int lastRandomScreenshotMinute;
         protected bool f11ToToggleFullscreen = true;
+        protected bool uiNavigationEnabled = false;
 
         private bool pauseUpdate;
 
@@ -102,7 +103,7 @@ namespace BytingLib
 
             InitWindowAndGraphics(vsync);
 
-            mouseVisibilityManager = new MouseVisibilityManager(gameWrapper, windowManager);
+            mouseVisibilityManager = new MouseVisibilityManager(gameWrapper, windowManager, () => uiNavigationEnabled, () => inputCanvas.MousePosition.Delta != Vector2.Zero);
         }
 
         private void Screenshotter_OnTakeScreenshot()

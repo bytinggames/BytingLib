@@ -6,6 +6,8 @@ namespace BytingLib
     {
         private readonly IMouseVisible mouseVisible;
         private readonly IResolution res;
+        private readonly Func<bool> uiNavigationEnabled;
+        private readonly Func<bool> mouseMoved;
         private readonly bool setVisibleToOnDispose;
 
         public bool CenterIfAppearing { get; set; } = true;
@@ -13,10 +15,12 @@ namespace BytingLib
 
         public event Action? OnAppear, OnHide;
 
-        public MouseVisibilityManager(IMouseVisible mouseVisible, IResolution res)
+        public MouseVisibilityManager(IMouseVisible mouseVisible, IResolution res, Func<bool> uiNavigationEnabled, Func<bool> mouseMoved)
         {
             this.mouseVisible = mouseVisible;
             this.res = res;
+            this.uiNavigationEnabled = uiNavigationEnabled;
+            this.mouseMoved = mouseMoved;
             setVisibleToOnDispose = mouseVisible.IsMouseVisible;
         }
 
@@ -36,7 +40,33 @@ namespace BytingLib
 
             if (mouseVisible.IsMouseVisible != visibleSetTo)
             {
-                SetVisibleTo(visibleSetTo);
+                if (visibleSetTo)
+                {
+                    if (uiNavigationEnabled())
+                    {
+                        // key ui navigation
+
+                        if (mouseMoved())
+                        {
+                            // allow mouse navigation
+                            SetVisibleTo(visibleSetTo);
+                        }
+                        else
+                        {
+                            // keep mouse in corner so it doesn't interfere
+                            Mouse.SetPosition(0, 0);
+                        }
+                    }
+                    else
+                    {
+                        // mouse ui navigation
+                        SetVisibleTo(visibleSetTo);
+                    }
+                }
+                else
+                {
+                    SetVisibleTo(visibleSetTo);
+                }
             }
         }
 
