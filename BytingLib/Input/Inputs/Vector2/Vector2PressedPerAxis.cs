@@ -9,10 +9,11 @@
         }
     }
 
-    public class Vector2PressedPerAxis(InputVector2 child, bool holdToRepeat) : InputVector2<Vector2PressedPerAxisState>
+    public class Vector2PressedPerAxis(InputVector2 Child, bool HoldToRepeat) : InputVector2<Vector2PressedPerAxisState>
     {
-        public InputVector2 Child { get; } = child;
-        public HoldToRepeat? HoldToRepeat { get; set; } = holdToRepeat ? new HoldToRepeat() : null;
+        public InputVector2 Child { get; } = Child;
+        public bool HoldToRepeat { get; set; } = HoldToRepeat;
+        public HoldToRepeat? HoldToRepeatInstance { get; set; } = HoldToRepeat ? new HoldToRepeat() : null;
         public float ThresholdActive { get; set; } = 0.6f;
         public float ThresholdInactive { get; set; } = 0.4f;
 
@@ -44,10 +45,10 @@
                         state.StampPressed[i] = state.Updater.CurrentStamp;
                         output[i] = value[i];
                     }
-                    else if (HoldToRepeat != null)
+                    else if (HoldToRepeatInstance != null)
                     {
                         // held
-                        if (HoldToRepeat.HoldIsRepeat(state.Updater.CurrentStamp, state.StampPressed[i]!.Value))
+                        if (HoldToRepeatInstance.HoldIsRepeat(state.Updater.CurrentStamp, state.StampPressed[i]!.Value))
                         {
                             output[i] = MathF.Sign(value[i]);
                         }

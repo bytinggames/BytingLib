@@ -9,10 +9,11 @@
         }
     }
 
-    public class Vector2PressedCircular(InputVector2 child, bool holdToRepeat) : InputVector2<InputVector2PressedState>
+    public class Vector2PressedCircular(InputVector2 Child, bool HoldToRepeat) : InputVector2<InputVector2PressedState>
     {
-        public InputVector2 Child { get; } = child;
-        public HoldToRepeat? HoldToRepeat { get; set; } = holdToRepeat ? new HoldToRepeat() : null;
+        public InputVector2 Child { get; } = Child;
+        public bool HoldToRepeat { get; set; } = HoldToRepeat;
+        public HoldToRepeat? HoldToRepeatInstance { get; set; } = HoldToRepeat ? new HoldToRepeat() : null;
         public float ThresholdActiveSquared { get; set; } = MathF.Pow(0.6f, 2f);
         public float ThresholdInactiveSquared { get; set; } = MathF.Pow(0.4f, 2f);
 
@@ -38,10 +39,10 @@
                     state.StampPressed = state.Updater.CurrentStamp;
                     return Vector2.Normalize(childState.Value);
                 }
-                else if (HoldToRepeat != null)
+                else if (HoldToRepeatInstance != null)
                 {
                     // held
-                    if (HoldToRepeat.HoldIsRepeat(state.Updater.CurrentStamp, state.StampPressed.Value))
+                    if (HoldToRepeatInstance.HoldIsRepeat(state.Updater.CurrentStamp, state.StampPressed.Value))
                     {
                         return Vector2.Normalize(childState.Value);
                     }

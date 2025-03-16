@@ -45,6 +45,19 @@ namespace BytingLib
         {
         }
 
+        public void SetDefault()
+        {
+            var binds = Activator.CreateInstance(GetType()) as InputBinds;
+            if (binds == null)
+            {
+                return;
+            }
+            BindsSerializer serializer = new();
+
+            // reset to default
+            serializer.Deserialize("{}", this);
+        }
+
         /// <summary>Experimental. Only used for debugging</summary>
         public void SetDefaultAndControllerBinds()
         {
