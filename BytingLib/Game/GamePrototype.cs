@@ -31,6 +31,8 @@ namespace BytingLib
         private int lastRandomScreenshotMinute;
         protected bool f11ToToggleFullscreen = true;
         protected bool uiNavigationEnabled = false;
+        /// <summary>Disable to prevent any input</summary>
+        protected bool updateSourceInput = true;
 
         private bool pauseUpdate;
 
@@ -130,7 +132,10 @@ namespace BytingLib
 
         public sealed override void UpdateActive(GameTime gameTime)
         {
-            input.PreUpdate(); // this updates the input queue
+            if (updateSourceInput)
+            {
+                input.PreUpdate(); // this updates the input queue
+            }
             globalInputUpdater.Update();
             metaInputUpdater.Update();
 
