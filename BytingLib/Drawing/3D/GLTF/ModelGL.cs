@@ -55,7 +55,8 @@ namespace BytingLib
 
             gltfDirRelativeToContent = gltfDirectory.Substring(contentRootDirectory.Length);
             gltfDirRelativeToContent = gltfDirRelativeToContent.Replace('\\', '/');
-            if (gltfDirRelativeToContent.StartsWith('/'))
+            if (gltfDirRelativeToContent.StartsWith('/')
+                && contentRootDirectory != "") // absolute linux paths start with a / and shouldn't be removed
             {
                 gltfDirRelativeToContent = gltfDirRelativeToContent.Substring(1);
             }
