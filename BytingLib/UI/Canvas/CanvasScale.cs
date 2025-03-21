@@ -135,7 +135,7 @@
 
             base.UpdateTree();
         }
-        public override void DrawBatch(SpriteBatch spriteBatch)
+        public override void DrawBatch(SpriteBatch spriteBatch, float extrapolation)
         {
             if (!Visible)
             {

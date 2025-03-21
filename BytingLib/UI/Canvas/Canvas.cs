@@ -318,7 +318,7 @@
             }
         }
 
-        public abstract void DrawBatch(SpriteBatch spriteBatch);
+        public abstract void DrawBatch(SpriteBatch spriteBatch, float extrapolation);
 
         protected void DrawCanvasBase(SpriteBatch spriteBatch)
         {

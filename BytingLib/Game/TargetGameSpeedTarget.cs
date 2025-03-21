@@ -28,6 +28,8 @@ namespace BytingLib
             }
         }
 
+        public float Extrapolation => interval == null ? 0f : (float)Math.Clamp(seconds / interval.Value, 0d, 1d);
+
         public bool ShouldSkip(TimeSpan monogameTargetElapsedTime)
         {
             if (Interval != null
