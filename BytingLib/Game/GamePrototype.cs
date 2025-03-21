@@ -1,6 +1,5 @@
 ﻿using BytingLib.Markup;
 using BytingLib.Serialization;
-using System.Diagnostics;
 
 namespace BytingLib
 {
@@ -25,9 +24,6 @@ namespace BytingLib
         /// <summary>Only used for input that shouldn't be recorded (Fullscreen Toggle for example or Replay interrupt).
         /// The difference to inputDev</summary>
         protected readonly InputMeta inputMeta;
-        protected double? targetElapsedUpdateSeconds;
-        private double elapsedUpdateSeconds;
-        private readonly Stopwatch updateRateStopwatch = new();
 
         private readonly bool randomScreenshots;
         protected readonly Screenshotter screenshotter;
@@ -64,8 +60,8 @@ namespace BytingLib
                 screenshotsRandSecondsOffset = new Random().Next(60);
             }
 
-            updateSpeed = new GameSpeed(g.TargetElapsedTime);
-            drawSpeed = new GameSpeed(g.TargetElapsedTime);
+            updateSpeed = new GameSpeed(TimeSpan.FromSeconds(g.TargetGameSpeed.Update.Interval ?? 1d / 60d));
+            drawSpeed = new GameSpeed(TimeSpan.FromSeconds(g.TargetGameSpeed.Update.Interval ?? 1d / 60d));
 
             var converters = new Dictionary<Type, Func<string, object>>()
             {
@@ -136,11 +132,6 @@ namespace BytingLib
 
         public sealed override void UpdateActive(GameTime gameTime)
         {
-            if (ShouldSkipUpdate())
-            {
-                return;
-            }
-
             if (updateSourceInput)
             {
                 input.PreUpdate(); // this updates the input queue
@@ -199,36 +190,6 @@ namespace BytingLib
 
             double targetMS = gameWrapper.IsFixedTimeStep ? gameWrapper.TargetElapsedTime.TotalMilliseconds - 1 : 15;
             MainThread.ExecuteActions((int)targetMS);
-        }
-
-        private bool ShouldSkipUpdate()
-        {
-            if (targetElapsedUpdateSeconds != null)
-            {
-                if (!updateRateStopwatch.IsRunning)
-                {
-                    updateRateStopwatch.Start();
-                }
-                else
-                {
-                    elapsedUpdateSeconds += updateRateStopwatch.Elapsed.TotalSeconds;
-                    updateRateStopwatch.Restart();
-                    if (elapsedUpdateSeconds >= targetElapsedUpdateSeconds)
-                    {
-                        elapsedUpdateSeconds -= targetElapsedUpdateSeconds.Value;
-                        // if update was delayed for too long (1 more update in the future), just reset the elapsedSeconds, or else we won't have our target update rate
-                        if (elapsedUpdateSeconds >= targetElapsedUpdateSeconds)
-                        {
-                            elapsedUpdateSeconds = 0;
-                        }
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
 
         private int GetIterations()

@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using System.Diagnostics;
+
+namespace BytingLib
 {
     public class GameWrapper : Game, IMouseVisible
     {
@@ -9,12 +11,13 @@
         private bool previousUpdateWasActive = true;
         private bool previousDrawWasActive = true;
         public bool IsExited { get; private set; }
+        public TargetGameSpeed TargetGameSpeed { get; }
 
         /// <summary>Is set by Activated and Deactivated events. Maybe this is more precise than base.IsActive. Needs testing.</summary>
         public new bool IsActive { get; private set; }
 
         /// <summary>more than 16 msaaSamples is not recommended (made everything a bit pale on my system)</summary>
-        public GameWrapper(Func<GameWrapper, IGameBase> createMyGame, int? msaaSamples)
+        public GameWrapper(Func<GameWrapper, IGameBase> createMyGame, int? msaaSamples, TargetGameSpeed targetGameSpeed)
         {
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -34,9 +37,15 @@
 
             this.createMyGame = createMyGame;
             this.msaaSamples = msaaSamples;
-
+            this.TargetGameSpeed = targetGameSpeed;
+            targetGameSpeed.SetTargetElapsedSeconds += SetTargetElapsedSeconds;
             Activated += GameWrapper_Activated;
             Deactivated += GameWrapper_Deactivated;
+        }
+
+        void SetTargetElapsedSeconds(double frameTime)
+        {
+            TargetElapsedTime = TimeSpan.FromSeconds(frameTime);
         }
 
         private void GameWrapper_Activated(object? sender, EventArgs e)
@@ -73,13 +82,16 @@
                 game?.OnActivate();
             }
 
-            if (IsActive)
+            if (!TargetGameSpeed.Update.ShouldSkip(TargetElapsedTime))
             {
-                game?.UpdateActive(gameTime);
-            }
-            else
-            {
-                game?.UpdateInactive(gameTime);
+                if (IsActive)
+                {
+                    game?.UpdateActive(gameTime);
+                }
+                else
+                {
+                    game?.UpdateInactive(gameTime);
+                }
             }
 
             if (!IsActive && previousUpdateWasActive)
@@ -97,6 +109,15 @@
             previousUpdateWasActive = IsActive;
 
             base.Update(gameTime);
+        }
+
+        protected override bool BeginDraw()
+        {
+            if (TargetGameSpeed.Draw.ShouldSkip(TargetElapsedTime))
+            {
+                return false;
+            }
+            return base.BeginDraw();
         }
 
         protected override void Draw(GameTime gameTime)
@@ -117,6 +138,7 @@
 
         protected override void Dispose(bool disposing)
         {
+            TargetGameSpeed.SetTargetElapsedSeconds -= SetTargetElapsedSeconds;
             game?.Dispose();
             game = null;
 
