@@ -6,6 +6,7 @@ namespace BytingLib
     {
         private double? interval;
         private double seconds;
+        private double lastUpdateSeconds;
         private readonly Stopwatch stopwatch = new();
         public double? MaxElapsedTime { get; set; }
         private TimeSpan intervalTimeSpan;
@@ -28,7 +29,7 @@ namespace BytingLib
             }
         }
 
-        public float Extrapolation => interval == null ? 0f : (float)Math.Clamp(seconds / interval.Value, 0d, 1d);
+        public float Extrapolation => interval == null ? 0f : (float)Math.Clamp((seconds - lastUpdateSeconds) / interval.Value, 0d, 1d);
 
         public bool ShouldSkip(TimeSpan monogameTargetElapsedTime)
         {
@@ -48,6 +49,7 @@ namespace BytingLib
                     if (seconds >= Interval)
                     {
                         seconds -= Interval.Value;
+                        lastUpdateSeconds = seconds;
                     }
                     else
                     {
