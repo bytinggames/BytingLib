@@ -63,7 +63,7 @@ namespace BytingLib
             }
 
             updateSpeed = new GameSpeed(TimeSpan.FromSeconds(g.TargetGameSpeed.Update.Interval ?? 1d / 60d));
-            drawSpeed = new GameSpeed(TimeSpan.FromSeconds(g.TargetGameSpeed.Update.Interval ?? 1d / 60d));
+            drawSpeed = new GameSpeed(TimeSpan.FromSeconds(1d / 60d));
 
             var converters = new Dictionary<Type, Func<string, object>>()
             {
