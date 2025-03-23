@@ -13,7 +13,7 @@ namespace BytingLib
         private TimeSpan intervalTimeSpan;
         public GameTime GameTime { get; } = new();
 
-        public double? Interval
+        public double? IntervalSeconds
         {
             get => intervalSeconds;
             set
@@ -53,11 +53,11 @@ namespace BytingLib
                     double elapsed = stopwatch.Elapsed.TotalSeconds;
                     stopwatch.Restart();
 
-                    elapsed = Math.Min(elapsed, MaxElapsedTime ?? (Interval.Value * 10));
+                    elapsed = Math.Min(elapsed, MaxElapsedTime ?? (IntervalSeconds.Value * 10));
                     seconds += elapsed;
-                    if (seconds >= Interval)
+                    if (seconds >= IntervalSeconds)
                     {
-                        seconds -= Interval.Value;
+                        seconds -= IntervalSeconds.Value;
                         lastUpdateSecondsTimestamp = seconds;
                         GameTime.TotalGameTime += intervalTimeSpan;
                         GameTime.ElapsedGameTime = intervalTimeSpan;
@@ -72,10 +72,10 @@ namespace BytingLib
             return false;
         }
 
-        [MemberNotNullWhen(false, nameof(Interval))]
+        [MemberNotNullWhen(false, nameof(IntervalSeconds))]
         private bool IsMonoGameResponsible(TimeSpan monogameTargetElapsedTime)
         {
-            return Interval == null
+            return IntervalSeconds == null
                 || monogameTargetElapsedTime == intervalTimeSpan;
         }
     }

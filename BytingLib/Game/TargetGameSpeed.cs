@@ -10,7 +10,7 @@
         {
             Update = new TargetGameSpeedTarget(_ => UpdateGameTickInterval());
             Draw = new TargetGameSpeedTarget(_ => UpdateGameTickInterval());
-            Update.Interval = updateInterval;
+            Update.IntervalSeconds = updateInterval;
         }
 
         private void UpdateGameTickInterval()
@@ -20,7 +20,7 @@
                 return;
             }
             double targetElapsed;
-            if (Draw.Interval == null && Update.Interval == null)
+            if (Draw.IntervalSeconds == null && Update.IntervalSeconds == null)
             {
                 // default, when Draw.Interval and Update.Interval are unset
                 targetElapsed = 1d / 60d;
@@ -28,13 +28,13 @@
             else
             {
                 targetElapsed = double.MaxValue;
-                if (Draw.Interval != null)
+                if (Draw.IntervalSeconds != null)
                 {
-                    targetElapsed = Draw.Interval.Value;
+                    targetElapsed = Draw.IntervalSeconds.Value;
                 }
-                if (Update.Interval != null)
+                if (Update.IntervalSeconds != null)
                 {
-                    targetElapsed = Math.Min(Update.Interval.Value, targetElapsed);
+                    targetElapsed = Math.Min(Update.IntervalSeconds.Value, targetElapsed);
                 }
                 if (targetElapsed <= 0)
                 {
