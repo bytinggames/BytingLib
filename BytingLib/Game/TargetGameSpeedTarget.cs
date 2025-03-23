@@ -3,14 +3,17 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace BytingLib
 {
-    public class TargetGameSpeedTarget(Action<double?> onIntervalChange)
+    public class TargetGameSpeedTarget(Action<double?> onIntervalChange, bool realOrFixedTime)
     {
         private double? intervalSeconds;
         private double seconds;
         private double lastUpdateSecondsTimestamp;
         private readonly Stopwatch stopwatch = new();
-        public double? MaxElapsedTime { get; set; }
         private TimeSpan intervalTimeSpan;
+        private readonly bool realOrFixedTime = realOrFixedTime;
+        private Stopwatch stopwatchRealtime = new();
+
+        public double? MaxElapsedTime { get; set; }
         public GameTime GameTime { get; } = new();
 
         public double? IntervalSeconds
@@ -35,32 +38,71 @@ namespace BytingLib
 
         public bool ShouldSkip(TimeSpan monogameTargetElapsedTime)
         {
-            if (IsMonoGameResponsible(monogameTargetElapsedTime)) // if monogame already updates at the same interval, we don't need to filter updates
+            if (ShouldSkipInner(monogameTargetElapsedTime))
             {
-                GameTime.TotalGameTime += monogameTargetElapsedTime;
+                return true;
+            }
+            else
+            {
+                if (realOrFixedTime)
+                {
+                    // real time
+                    if (stopwatchRealtime.IsRunning)
+                    {
+                        TimeSpan elapsed = stopwatchRealtime.Elapsed;
+                        stopwatchRealtime.Restart();
+                        GameTime.ElapsedGameTime = elapsed;
+                    }
+                    else
+                    {
+                        stopwatchRealtime.Start();
+                        // if time isn't measured yet, use fixed time
+                        SetElapsedToFixedTime(monogameTargetElapsedTime);
+                    }
+                }
+                else
+                {
+                    // fixed time
+                    SetElapsedToFixedTime(monogameTargetElapsedTime);
+                }
+                GameTime.TotalGameTime += GameTime.ElapsedGameTime;
+
+                return false;
+            }
+
+        }
+
+        private void SetElapsedToFixedTime(TimeSpan monogameTargetElapsedTime)
+        {
+            if (IntervalSeconds == null)
+            {
                 GameTime.ElapsedGameTime = monogameTargetElapsedTime;
             }
             else
             {
+                GameTime.ElapsedGameTime = TimeSpan.FromSeconds(IntervalSeconds.Value);
+            }
+        }
+
+        private bool ShouldSkipInner(TimeSpan monogameTargetElapsedTime)
+        {
+            if (!IsMonoGameResponsible(monogameTargetElapsedTime)) // if monogame already updates at the same interval, we don't need to filter updates
+            {
                 if (!stopwatch.IsRunning)
                 {
                     stopwatch.Start();
-                    GameTime.TotalGameTime += intervalTimeSpan;
-                    GameTime.ElapsedGameTime = intervalTimeSpan;
                 }
                 else
                 {
                     double elapsed = stopwatch.Elapsed.TotalSeconds;
                     stopwatch.Restart();
 
-                    elapsed = Math.Min(elapsed, MaxElapsedTime ?? (IntervalSeconds.Value * 10));
+                    elapsed = Math.Min(elapsed, MaxElapsedTime ?? (IntervalSeconds.Value * 10)); // update up to 10 updates
                     seconds += elapsed;
                     if (seconds >= IntervalSeconds)
                     {
                         seconds -= IntervalSeconds.Value;
                         lastUpdateSecondsTimestamp = seconds;
-                        GameTime.TotalGameTime += intervalTimeSpan;
-                        GameTime.ElapsedGameTime = intervalTimeSpan;
                     }
                     else
                     {

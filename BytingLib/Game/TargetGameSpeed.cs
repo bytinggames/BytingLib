@@ -8,8 +8,8 @@
 
         public TargetGameSpeed(double? updateInterval)
         {
-            Update = new TargetGameSpeedTarget(_ => UpdateGameTickInterval());
-            Draw = new TargetGameSpeedTarget(_ => UpdateGameTickInterval());
+            Update = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), false);
+            Draw = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), true);
             Update.IntervalSeconds = updateInterval;
         }
 
