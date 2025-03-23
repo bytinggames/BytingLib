@@ -1,24 +1,26 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BytingLib
 {
     public class TargetGameSpeedTarget(Action<double?> onIntervalChange)
     {
-        private double? interval;
+        private double? intervalSeconds;
         private double seconds;
-        private double lastUpdateSeconds;
+        private double lastUpdateSecondsTimestamp;
         private readonly Stopwatch stopwatch = new();
         public double? MaxElapsedTime { get; set; }
         private TimeSpan intervalTimeSpan;
+        public GameTime GameTime { get; } = new();
 
         public double? Interval
         {
-            get => interval;
+            get => intervalSeconds;
             set
             {
-                if (value != interval)
+                if (value != intervalSeconds)
                 {
-                    interval = value;
+                    intervalSeconds = value;
                     if (value != null)
                     {
                         intervalTimeSpan = TimeSpan.FromSeconds(value.Value);
@@ -29,27 +31,36 @@ namespace BytingLib
             }
         }
 
-        public float Extrapolation => interval == null ? 0f : (float)Math.Clamp((seconds - lastUpdateSeconds) / interval.Value, 0d, 1d);
+        public float Extrapolation => intervalSeconds == null ? 0f : (float)Math.Clamp((seconds - lastUpdateSecondsTimestamp) / intervalSeconds.Value, 0d, 1d);
 
         public bool ShouldSkip(TimeSpan monogameTargetElapsedTime)
         {
-            if (Interval != null
-                && monogameTargetElapsedTime != intervalTimeSpan) // if monogame already updates at the same interval, we don't need to filter updates
+            if (IsMonoGameResponsible(monogameTargetElapsedTime)) // if monogame already updates at the same interval, we don't need to filter updates
+            {
+                GameTime.TotalGameTime += monogameTargetElapsedTime;
+                GameTime.ElapsedGameTime = monogameTargetElapsedTime;
+            }
+            else
             {
                 if (!stopwatch.IsRunning)
                 {
                     stopwatch.Start();
+                    GameTime.TotalGameTime += intervalTimeSpan;
+                    GameTime.ElapsedGameTime = intervalTimeSpan;
                 }
                 else
                 {
                     double elapsed = stopwatch.Elapsed.TotalSeconds;
+                    stopwatch.Restart();
+
                     elapsed = Math.Min(elapsed, MaxElapsedTime ?? (Interval.Value * 10));
                     seconds += elapsed;
-                    stopwatch.Restart();
                     if (seconds >= Interval)
                     {
                         seconds -= Interval.Value;
-                        lastUpdateSeconds = seconds;
+                        lastUpdateSecondsTimestamp = seconds;
+                        GameTime.TotalGameTime += intervalTimeSpan;
+                        GameTime.ElapsedGameTime = intervalTimeSpan;
                     }
                     else
                     {
@@ -57,7 +68,15 @@ namespace BytingLib
                     }
                 }
             }
+
             return false;
+        }
+
+        [MemberNotNullWhen(false, nameof(Interval))]
+        private bool IsMonoGameResponsible(TimeSpan monogameTargetElapsedTime)
+        {
+            return Interval == null
+                || monogameTargetElapsedTime == intervalTimeSpan;
         }
     }
 }

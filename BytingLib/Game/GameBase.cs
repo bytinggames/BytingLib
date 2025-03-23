@@ -58,7 +58,7 @@
 
         public abstract void DrawActive(GameTime gameTime);
 
-        public virtual void DrawInactiveOnce()
+        public virtual void DrawInactiveOnce(GameTime gameTime)
         {
             // draw black blend to hint to the user, that the window isn't active
             spriteBatch.Begin();

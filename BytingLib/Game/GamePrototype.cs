@@ -289,7 +289,7 @@ namespace BytingLib
 
         protected abstract Scene? GetTopmostScene();
 
-        public override void DrawInactiveOnce()
+        public override void DrawInactiveOnce(GameTime gameTime)
         {
             //#if DEBUG
             //            base.DrawInactiveOnce();

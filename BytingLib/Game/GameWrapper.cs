@@ -86,11 +86,11 @@ namespace BytingLib
             {
                 if (IsActive)
                 {
-                    game?.UpdateActive(gameTime);
+                    game?.UpdateActive(TargetGameSpeed.Update.GameTime);
                 }
                 else
                 {
-                    game?.UpdateInactive(gameTime);
+                    game?.UpdateInactive(TargetGameSpeed.Update.GameTime);
                 }
             }
 
@@ -124,11 +124,11 @@ namespace BytingLib
         {
             if (IsActive)
             {
-                game?.DrawActive(gameTime);
+                game?.DrawActive(TargetGameSpeed.Draw.GameTime);
             }
             else if (previousDrawWasActive)
             {
-                game?.DrawInactiveOnce();
+                game?.DrawInactiveOnce(TargetGameSpeed.Draw.GameTime);
             }
 
             previousDrawWasActive = IsActive;
