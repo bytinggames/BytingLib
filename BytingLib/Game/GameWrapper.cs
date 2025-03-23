@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace BytingLib
+﻿namespace BytingLib
 {
     public class GameWrapper : Game, IMouseVisible
     {
@@ -12,6 +10,7 @@ namespace BytingLib
         private bool previousDrawWasActive = true;
         public bool IsExited { get; private set; }
         public TargetGameSpeed TargetGameSpeed { get; }
+        private bool firstFrameClear = true;
 
         /// <summary>Is set by Activated and Deactivated events. Maybe this is more precise than base.IsActive. Needs testing.</summary>
         public new bool IsActive { get; private set; }
@@ -43,7 +42,7 @@ namespace BytingLib
             Deactivated += GameWrapper_Deactivated;
         }
 
-        void SetTargetElapsedSeconds(double frameTime)
+        private void SetTargetElapsedSeconds(double frameTime)
         {
             TargetElapsedTime = TimeSpan.FromSeconds(frameTime);
         }
@@ -58,7 +57,7 @@ namespace BytingLib
             IsActive = false;
         }
 
-        void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
+        private void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
         {
             if (msaaSamples != null)
             {
@@ -122,6 +121,12 @@ namespace BytingLib
 
         protected override void Draw(GameTime gameTime)
         {
+            if (firstFrameClear)
+            {
+                GraphicsDevice.Clear(Color.Black);
+                firstFrameClear = false;
+            }
+
             if (IsActive)
             {
                 game?.DrawActive(TargetGameSpeed.Draw.GameTime);
