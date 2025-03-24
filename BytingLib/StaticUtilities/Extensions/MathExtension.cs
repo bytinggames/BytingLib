@@ -129,5 +129,17 @@
             a /= aspectRatio;
             return MathF.Atan(a) * 2f;
         }
+
+        public static float GetInterpolationFactor(float interpolationOnNormalElapsedRate, float elapsedFactor)
+        {
+            // example: interpolationFactor = 0.3
+            // I went from interpolationFactor = 0.3 to 1-e^(-0.3566 * elapsedFactor) to make it fps independent
+            // how did I get the number 0.3566?, I just set
+            // 0.3 = 1-e^(-x)
+            // -ln(0.7) = x
+            float x = -MathF.Log(1f - interpolationOnNormalElapsedRate);
+            x = 1f - MathF.Exp(-x * elapsedFactor);
+            return x;
+        }
     }
 }
