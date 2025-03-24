@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace BytingLib
 {
-    public class TargetGameSpeedTarget(Action<double?> onIntervalChange, bool realOrFixedTime)
+    public class TargetGameSpeedTarget(Action<double?> onIntervalChange, bool realOrFixedTime, bool unlimitedTicksOnDisabledTimeStep)
     {
         private double? intervalSeconds;
         private double seconds;
@@ -12,6 +12,7 @@ namespace BytingLib
         private TimeSpan intervalTimeSpan;
         private readonly bool realOrFixedTime = realOrFixedTime;
         private Stopwatch stopwatchRealtime = new();
+        private readonly bool unlimitedTicksOnDisabledTimeStep = unlimitedTicksOnDisabledTimeStep;
 
         public double? MaxElapsedTime { get; set; }
         public GameTime GameTime { get; } = new();
@@ -36,9 +37,10 @@ namespace BytingLib
 
         public float Extrapolation => intervalSeconds == null ? 0f : (float)Math.Clamp((seconds - lastUpdateSecondsTimestamp) / intervalSeconds.Value, 0d, 1d);
 
-        public bool ShouldSkip(TimeSpan monogameTargetElapsedTime)
+        /// <summary>If fixedTimeStep is set to false, the target elapsed time is ignored by monogame (like it should be)</summary>
+        public bool ShouldSkip(TimeSpan monogameTargetElapsedTime, bool fixedTimeStep)
         {
-            if (ShouldSkipInner(monogameTargetElapsedTime))
+            if (ShouldSkipInner(monogameTargetElapsedTime, fixedTimeStep))
             {
                 return true;
             }
@@ -84,9 +86,9 @@ namespace BytingLib
             }
         }
 
-        private bool ShouldSkipInner(TimeSpan monogameTargetElapsedTime)
+        private bool ShouldSkipInner(TimeSpan monogameTargetElapsedTime, bool fixedTimeStep)
         {
-            if (!IsMonoGameResponsible(monogameTargetElapsedTime)) // if monogame already updates at the same interval, we don't need to filter updates
+            if (!IsMonoGameResponsible(monogameTargetElapsedTime, fixedTimeStep)) // if monogame already updates at the same interval, we don't need to filter updates
             {
                 if (!stopwatch.IsRunning)
                 {
@@ -115,10 +117,11 @@ namespace BytingLib
         }
 
         [MemberNotNullWhen(false, nameof(IntervalSeconds))]
-        private bool IsMonoGameResponsible(TimeSpan monogameTargetElapsedTime)
+        private bool IsMonoGameResponsible(TimeSpan monogameTargetElapsedTime, bool fixedTimeStep)
         {
             return IntervalSeconds == null
-                || monogameTargetElapsedTime == intervalTimeSpan;
+                || (monogameTargetElapsedTime == intervalTimeSpan && fixedTimeStep)
+                || (!fixedTimeStep && unlimitedTicksOnDisabledTimeStep);
         }
     }
 }

@@ -81,7 +81,7 @@
                 game?.OnActivate();
             }
 
-            if (!TargetGameSpeed.Update.ShouldSkip(TargetElapsedTime))
+            if (!TargetGameSpeed.Update.ShouldSkip(TargetElapsedTime, IsFixedTimeStep))
             {
                 if (IsActive)
                 {
@@ -91,6 +91,10 @@
                 {
                     game?.UpdateInactive(TargetGameSpeed.Update.GameTime);
                 }
+            }
+            else
+            {
+
             }
 
             if (!IsActive && previousUpdateWasActive)
@@ -112,7 +116,7 @@
 
         protected override bool BeginDraw()
         {
-            if (TargetGameSpeed.Draw.ShouldSkip(TargetElapsedTime))
+            if (TargetGameSpeed.Draw.ShouldSkip(TargetElapsedTime, IsFixedTimeStep))
             {
                 return false;
             }
