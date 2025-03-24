@@ -9,12 +9,14 @@
         private bool previousUpdateWasActive = true;
         private bool previousDrawWasActive = true;
         public bool IsExited { get; private set; }
+        public TargetGameSpeed TargetGameSpeed { get; }
+        private bool firstFrameClear = true;
 
         /// <summary>Is set by Activated and Deactivated events. Maybe this is more precise than base.IsActive. Needs testing.</summary>
         public new bool IsActive { get; private set; }
 
         /// <summary>more than 16 msaaSamples is not recommended (made everything a bit pale on my system)</summary>
-        public GameWrapper(Func<GameWrapper, IGameBase> createMyGame, int? msaaSamples)
+        public GameWrapper(Func<GameWrapper, IGameBase> createMyGame, int? msaaSamples, TargetGameSpeed targetGameSpeed)
         {
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -34,9 +36,15 @@
 
             this.createMyGame = createMyGame;
             this.msaaSamples = msaaSamples;
-
+            this.TargetGameSpeed = targetGameSpeed;
+            targetGameSpeed.SetTargetElapsedSeconds += SetTargetElapsedSeconds;
             Activated += GameWrapper_Activated;
             Deactivated += GameWrapper_Deactivated;
+        }
+
+        private void SetTargetElapsedSeconds(double frameTime)
+        {
+            TargetElapsedTime = TimeSpan.FromSeconds(frameTime);
         }
 
         private void GameWrapper_Activated(object? sender, EventArgs e)
@@ -49,7 +57,7 @@
             IsActive = false;
         }
 
-        void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
+        private void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
         {
             if (msaaSamples != null)
             {
@@ -73,13 +81,20 @@
                 game?.OnActivate();
             }
 
-            if (IsActive)
+            if (!TargetGameSpeed.Update.ShouldSkip(TargetElapsedTime, IsFixedTimeStep))
             {
-                game?.UpdateActive(gameTime);
+                if (IsActive)
+                {
+                    game?.UpdateActive(TargetGameSpeed.Update.GameTime);
+                }
+                else
+                {
+                    game?.UpdateInactive(TargetGameSpeed.Update.GameTime);
+                }
             }
             else
             {
-                game?.UpdateInactive(gameTime);
+
             }
 
             if (!IsActive && previousUpdateWasActive)
@@ -99,15 +114,30 @@
             base.Update(gameTime);
         }
 
+        protected override bool BeginDraw()
+        {
+            if (TargetGameSpeed.Draw.ShouldSkip(TargetElapsedTime, IsFixedTimeStep))
+            {
+                return false;
+            }
+            return base.BeginDraw();
+        }
+
         protected override void Draw(GameTime gameTime)
         {
+            if (firstFrameClear)
+            {
+                GraphicsDevice.Clear(Color.Black);
+                firstFrameClear = false;
+            }
+
             if (IsActive)
             {
-                game?.DrawActive(gameTime);
+                game?.DrawActive(TargetGameSpeed.Draw.GameTime);
             }
             else if (previousDrawWasActive)
             {
-                game?.DrawInactiveOnce();
+                game?.DrawInactiveOnce(TargetGameSpeed.Draw.GameTime);
             }
 
             previousDrawWasActive = IsActive;
@@ -117,6 +147,7 @@
 
         protected override void Dispose(bool disposing)
         {
+            TargetGameSpeed.SetTargetElapsedSeconds -= SetTargetElapsedSeconds;
             game?.Dispose();
             game = null;
 

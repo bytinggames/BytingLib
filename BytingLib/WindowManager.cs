@@ -237,6 +237,11 @@ namespace BytingLib
             }
         }
 
+        public int GetScreenRefreshRate()
+        {
+            return GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.RefreshRate;
+        }
+
         /// <summary>Only supported on Windows</summary>
         public void MaximizeWindow()
         {

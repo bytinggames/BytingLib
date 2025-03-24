@@ -15,9 +15,9 @@
         string? newText;
         bool showInstantlyWhileMoving;
         /// <summary>This variable might have been fast forwarded, if showInstantlyWhileMoving is set</summary>
-        int mouseStillForFrames;
+        float mouseStillForSeconds;
         Vector2? lastOriginPos;
-        public int NoMouseMovementToShowInFrames { get; set; } = 15;
+        public float NoMouseMovementToShowInSeconds { get; set; } = 15f / 60f; // 15 frames at 60fps
         public float TooltipOffset { get; set; } = 32f;
         public bool ShowBelowMouseOrHoverElement { get; set; } = false;
 
@@ -35,23 +35,23 @@
 
         protected override void UpdateSelf(ElementInput input)
         {
-            bool mouseConsideredMoved = mouseStillForFrames < NoMouseMovementToShowInFrames && input.Input.MousePosition.Delta.LengthSquared() > MaxMouseMoveSquaredConsideredStill;
+            bool mouseConsideredMoved = mouseStillForSeconds < NoMouseMovementToShowInSeconds && input.Input.MousePosition.Delta.LengthSquared() > MaxMouseMoveSquaredConsideredStill;
             if (mouseConsideredMoved && !showInstantlyWhileMoving
                 || newHover == null
                 || lastHover != newHover
                 || newText == null)
             {
-                mouseStillForFrames = 0;
+                mouseStillForSeconds = 0;
                 lastOriginPos = null;
             }
             else
             {
-                mouseStillForFrames++;
+                mouseStillForSeconds += input.UpdateSpeed.DeltaSecondsF();
             }
 
-            if (showInstantlyWhileMoving && mouseStillForFrames < NoMouseMovementToShowInFrames && newHover != null)
+            if (showInstantlyWhileMoving && mouseStillForSeconds < NoMouseMovementToShowInSeconds && newHover != null)
             {
-                mouseStillForFrames = NoMouseMovementToShowInFrames;
+                mouseStillForSeconds = NoMouseMovementToShowInSeconds;
             }
 
 
@@ -61,7 +61,7 @@
             }
             else
             {
-                if (mouseStillForFrames >= NoMouseMovementToShowInFrames)
+                if (mouseStillForSeconds >= NoMouseMovementToShowInSeconds)
                 {
                     if (newText != lastText)
                     {
@@ -176,7 +176,7 @@
 
         public override void Draw(SpriteBatch spriteBatch, StyleRoot style)
         {
-            if (mouseStillForFrames >= NoMouseMovementToShowInFrames)
+            if (mouseStillForSeconds >= NoMouseMovementToShowInSeconds)
             {
                 base.Draw(spriteBatch, style);
             }
@@ -195,7 +195,7 @@
 
         public bool IsTooltipStartShowingThisUpdate()
         {
-            return mouseStillForFrames == NoMouseMovementToShowInFrames;
+            return mouseStillForSeconds == NoMouseMovementToShowInSeconds;
         }
 
         protected override void UpdateTreeModifyRect(Rect rect)

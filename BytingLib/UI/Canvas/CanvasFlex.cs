@@ -5,7 +5,8 @@
     /// </summary>
     public class CanvasFlex : Canvas, IDrawBatch
     {
-        public CanvasFlex(Func<Rect> getRenderRect, IInputCanvas input, GameWindow window, StyleRoot style) : base(getRenderRect, input, window, style)
+        public CanvasFlex(Func<Rect> getRenderRect, IInputCanvas input, GameWindow window, StyleRoot style, GameSpeed updateSpeed)
+            : base(getRenderRect, input, window, style, updateSpeed)
         {
         }
 
@@ -40,7 +41,7 @@
             base.UpdateTree();
         }
 
-        public override void DrawBatch(SpriteBatch spriteBatch)
+        public override void DrawBatch(SpriteBatch spriteBatch, float extrapolation)
         {
             if (!Visible)
             {

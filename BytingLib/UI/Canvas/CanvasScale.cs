@@ -19,8 +19,9 @@
         private string? takeUIScreenshot;
         InputCanvasTransformed? inputTransformed;
 
-        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, IResolution graphicsResolution, IInputCanvas input, GameWindow window, StyleRoot style)
-            : base(getRenderRect, input, window, style)
+        public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, IResolution graphicsResolution, IInputCanvas input,
+            GameWindow window, StyleRoot style, GameSpeed updateSpeed)
+            : base(getRenderRect, input, window, style, updateSpeed)
         {
             Width = defaultResX;
             Height = defaultResY;
@@ -31,10 +32,10 @@
             this.graphicsResolution = graphicsResolution;
         }
 
-        protected override ElementInput CreateElementInput(IInputCanvas input, GameWindow window)
+        protected override ElementInput CreateElementInput(IInputCanvas input, GameWindow window, GameSpeed updateSpeed)
         {
             inputTransformed = new InputCanvasTransformed(input, () => Matrix.Invert(GetTransform()));
-            return new ElementInput(inputTransformed, SetUpdateCatch, UnsetUpdateCatch, window);
+            return new ElementInput(inputTransformed, SetUpdateCatch, UnsetUpdateCatch, window, updateSpeed);
         }
 
         private Matrix GetTransform()
@@ -135,7 +136,7 @@
 
             base.UpdateTree();
         }
-        public override void DrawBatch(SpriteBatch spriteBatch)
+        public override void DrawBatch(SpriteBatch spriteBatch, float extrapolation)
         {
             if (!Visible)
             {

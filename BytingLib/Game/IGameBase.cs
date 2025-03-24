@@ -7,6 +7,6 @@
         void DrawActive(GameTime gameTime);
         void OnActivate();
         void OnDeactivate();
-        void DrawInactiveOnce();
+        void DrawInactiveOnce(GameTime gameTime);
     }
 }

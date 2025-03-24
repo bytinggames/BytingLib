@@ -9,12 +9,14 @@ namespace BytingLib
         /// <summary>Used for creating markup elements</summary>
         protected readonly Creator creator;
         protected readonly InputStuff input;
+        protected readonly InputStuff inputGlobalAndDraw;
         protected readonly DefaultPaths basePaths;
         protected readonly SaveStateManager saveStateManager;
         protected readonly MouseVisibilityManager mouseVisibilityManager;
         private readonly InputControlGameSpeed? inputGameSpeed;
         private readonly InputInputRecordings? inputInputRecordings;
         protected readonly InputUpdater globalInputUpdater;
+        protected readonly InputUpdater globalAndDrawInputUpdater;
         protected readonly InputUpdater metaInputUpdater;
         protected readonly BindsCanvas bindsCanvas = new();
         protected readonly BindsMeta bindsMeta = new();
@@ -60,8 +62,8 @@ namespace BytingLib
                 screenshotsRandSecondsOffset = new Random().Next(60);
             }
 
-            updateSpeed = new GameSpeed(g.TargetElapsedTime);
-            drawSpeed = new GameSpeed(g.TargetElapsedTime);
+            updateSpeed = new GameSpeed(TimeSpan.FromSeconds(g.TargetGameSpeed.Update.IntervalSeconds ?? 1d / 60d));
+            drawSpeed = new GameSpeed(TimeSpan.FromSeconds(1d / 60d));
 
             var converters = new Dictionary<Type, Func<string, object>>()
             {
@@ -81,8 +83,10 @@ namespace BytingLib
             creator = new Creator("BytingLib.Markup", new[] { typeof(MarkupRoot).Assembly }, new object[] { contentCollector }, typeof(MarkupShortcutAttribute), converters);
 
             input = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, inputInputRecordings);
+            inputGlobalAndDraw = new InputStuff(mouseWithActivationClick, windowManager, g, paths, f => startRecordingPlayback = f, startRecordingInstantly, inputInputRecordings);
 
             globalInputUpdater = new(() => input.FullInput, "Global");
+            globalAndDrawInputUpdater = new(() => inputGlobalAndDraw.FullInput, "Draw");
             metaInputUpdater = new(input.GetRealInput, "Meta");
 
             inputCanvas = Use(new InputCanvas(bindsCanvas, globalInputUpdater));
@@ -134,9 +138,12 @@ namespace BytingLib
         {
             if (updateSourceInput)
             {
-                input.PreUpdate(); // this updates the input queue
+                // this updates the input queue
+                input.PreUpdate();
+                inputGlobalAndDraw.PreUpdate();
             }
             globalInputUpdater.Update();
+            globalAndDrawInputUpdater.Update();
             metaInputUpdater.Update();
 
             int iterations = GetIterations();
@@ -147,6 +154,7 @@ namespace BytingLib
                 if (i + 1 < iterations)
                 {
                     globalInputUpdater.Update();
+                    globalAndDrawInputUpdater.Update();
                 }
             }
 
@@ -234,6 +242,7 @@ namespace BytingLib
             updateSpeed.OnRefresh(gameTime);
 
             input.Update();
+            inputGlobalAndDraw.Update();
 
             if (f11ToToggleFullscreen && inputMeta.ToggleFullscreen.Pressed)
             {
@@ -266,6 +275,12 @@ namespace BytingLib
                 gDevice.Clear(Color.Black);
                 return;
             }
+
+            // this updates the input queue
+            inputGlobalAndDraw.PreUpdate();
+            inputGlobalAndDraw.Update();
+            globalAndDrawInputUpdater.Update();
+
             DrawIteration(gameTime);
         }
 
@@ -274,7 +289,7 @@ namespace BytingLib
 
         protected abstract Scene? GetTopmostScene();
 
-        public override void DrawInactiveOnce()
+        public override void DrawInactiveOnce(GameTime gameTime)
         {
             //#if DEBUG
             //            base.DrawInactiveOnce();
@@ -288,6 +303,7 @@ namespace BytingLib
             screenshotter?.Dispose();
 
             input.Dispose();
+            inputGlobalAndDraw.Dispose();
 
             base.Dispose();
         }

@@ -2,6 +2,6 @@
 {
     public interface IBeforeDraw
     {
-        void BeforeDraw();
+        void BeforeDraw(Scene? popup, float extrapolation);
     }
 }

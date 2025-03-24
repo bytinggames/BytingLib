@@ -46,11 +46,11 @@
             }
         }
 
-        public Canvas(Func<Rect> getRenderRect, IInputCanvas input, GameWindow window, StyleRoot style)
+        public Canvas(Func<Rect> getRenderRect, IInputCanvas input, GameWindow window, StyleRoot style, GameSpeed updateSpeed)
         {
             this.getRenderRect = getRenderRect;
             StyleRoot = style;
-            Input = CreateElementInput(input, window);
+            Input = CreateElementInput(input, window, updateSpeed);
 
             rasterizerStateScissor = CreateDefaultRasterizerState();
             rasterizerStateScissor.ScissorTestEnable = true;
@@ -66,9 +66,9 @@
 
         protected bool TreeDirty => treeDirty;
 
-        protected virtual ElementInput CreateElementInput(IInputCanvas input, GameWindow window)
+        protected virtual ElementInput CreateElementInput(IInputCanvas input, GameWindow window, GameSpeed updateSpeed)
         {
-            return new ElementInput(input, SetUpdateCatch, UnsetUpdateCatch, window);
+            return new ElementInput(input, SetUpdateCatch, UnsetUpdateCatch, window, updateSpeed);
         }
 
         public void Update()
@@ -318,7 +318,7 @@
             }
         }
 
-        public abstract void DrawBatch(SpriteBatch spriteBatch);
+        public abstract void DrawBatch(SpriteBatch spriteBatch, float extrapolation);
 
         protected void DrawCanvasBase(SpriteBatch spriteBatch)
         {

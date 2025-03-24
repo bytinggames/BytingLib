@@ -30,17 +30,17 @@
             ForEach<IDraw>(f => f.Draw(spriteBatch));
         }
 
-        public void DrawBatch(SpriteBatch spriteBatch)
+        public void DrawBatch(SpriteBatch spriteBatch, float extrapolation)
         {
             if (IsVisible())
             {
-                DrawBatchInner(spriteBatch);
+                DrawBatchInner(spriteBatch, extrapolation);
             }
 
-            PopupScene?.DrawBatch(spriteBatch);
+            PopupScene?.DrawBatch(spriteBatch, extrapolation);
         }
 
-        protected virtual void DrawBatchInner(SpriteBatch spriteBatch)
+        protected virtual void DrawBatchInner(SpriteBatch spriteBatch, float extrapolation)
         {
             DrawBegin(spriteBatch);
 
@@ -48,7 +48,7 @@
 
             DrawEnd(spriteBatch);
 
-            ForEach<IDrawBatch>(f => f.DrawBatch(spriteBatch));
+            ForEach<IDrawBatch>(f => f.DrawBatch(spriteBatch, extrapolation));
         }
 
         public virtual void Update()

@@ -12,15 +12,17 @@
         public Element? NavigateElement { get; set; }
         public Element? HoverElement { get; set; }
         public GameWindow Window { get; set; }
+        public GameSpeed UpdateSpeed { get; set; }
 
         private readonly Element hoverOutsideOfScissorRect = new Element();
 
-        public ElementInput(IInputCanvas input, Action<Element?> setUpdateCatch, Action<Element> unsetUpdateCatch, GameWindow window)
+        public ElementInput(IInputCanvas input, Action<Element?> setUpdateCatch, Action<Element> unsetUpdateCatch, GameWindow window, GameSpeed updateSpeed)
         {
             Input = input;
             SetUpdateCatch = setUpdateCatch;
             UnsetUpdateCatch = unsetUpdateCatch;
             Window = window;
+            UpdateSpeed = updateSpeed;
         }
 
         public void DoWhileHoverOutsideOfScissorRect(Action actionWhileHoverDisabled)
