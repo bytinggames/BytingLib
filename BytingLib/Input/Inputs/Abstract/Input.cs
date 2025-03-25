@@ -4,6 +4,12 @@
     {
         public abstract IEnumerable<Input> GetChildren();
 
+        public IEnumerable<Input> GetAllChildren()
+        {
+            return GetChildren()
+                .SelectMany(child => child.GetAllChildren().Prepend(child));
+        }
+
         public void Update(InputUpdater updater, FullInput input)
         {
             if (updater.HasAlreadyUpdated(this))
