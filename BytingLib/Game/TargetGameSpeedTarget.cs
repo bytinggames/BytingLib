@@ -15,6 +15,8 @@ namespace BytingLib
         private readonly bool unlimitedTicksOnDisabledTimeStep = unlimitedTicksOnDisabledTimeStep;
 
         public double? MaxElapsedTime { get; set; }
+        /// <summary>Only used if MaxElapsedTime = null. Then max elapsed time is set to IntervalSeconds * MaxElapsedTimeFactor</summary>
+        public double MaxElapsedTimeFactor { get; set; } = 10d;
         public GameTime GameTime { get; } = new();
 
         public double? IntervalSeconds
@@ -52,6 +54,13 @@ namespace BytingLib
                     if (stopwatchRealtime.IsRunning)
                     {
                         TimeSpan elapsed = stopwatchRealtime.Elapsed;
+
+                        double maxElapsed = GetMaxElapsedTime(IntervalSeconds ?? monogameTargetElapsedTime.TotalSeconds);
+                        if (elapsed.TotalSeconds > maxElapsed)
+                        {
+                            elapsed = TimeSpan.FromSeconds(maxElapsed);
+                        }
+
                         stopwatchRealtime.Restart();
                         GameTime.ElapsedGameTime = elapsed;
                     }
@@ -99,7 +108,7 @@ namespace BytingLib
                     double elapsed = stopwatch.Elapsed.TotalSeconds;
                     stopwatch.Restart();
 
-                    elapsed = Math.Min(elapsed, MaxElapsedTime ?? (IntervalSeconds.Value * 10)); // update up to 10 updates
+                    elapsed = Math.Min(elapsed, GetMaxElapsedTime(IntervalSeconds.Value)); // update up to 10 updates
                     seconds += elapsed;
                     if (seconds >= IntervalSeconds)
                     {
@@ -114,6 +123,11 @@ namespace BytingLib
             }
 
             return false;
+        }
+
+        private double GetMaxElapsedTime(double intervalSeconds)
+        {
+            return MaxElapsedTime ?? intervalSeconds * MaxElapsedTimeFactor;
         }
 
         [MemberNotNullWhen(false, nameof(IntervalSeconds))]

@@ -9,7 +9,10 @@
         public TargetGameSpeed(double? updateInterval)
         {
             Update = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), false, false);
-            Draw = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), true, true);
+            Draw = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), true, true)
+            {
+                MaxElapsedTimeFactor = 2 // only elapse at max 2 frames, when lagging or leaving window
+            };
             Update.IntervalSeconds = updateInterval;
         }
 
