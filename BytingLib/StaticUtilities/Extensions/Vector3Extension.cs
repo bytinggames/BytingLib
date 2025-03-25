@@ -151,8 +151,8 @@
         public static Vector3 LerpRotation(Vector3 r1, Vector3 r2, float lerp)
         {
             r1.X += r1.X.AngleDistance(r2.X) * lerp;
-            r1.Y += r1.X.AngleDistance(r2.Y) * lerp;
-            r1.Z += r1.X.AngleDistance(r2.Z) * lerp;
+            r1.Y += r1.Y.AngleDistance(r2.Y) * lerp;
+            r1.Z += r1.Z.AngleDistance(r2.Z) * lerp;
             return r1;
         }
     }
