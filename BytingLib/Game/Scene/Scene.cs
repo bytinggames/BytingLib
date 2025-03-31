@@ -4,6 +4,8 @@
     {
         public Scene? PopupScene { get; protected set; }
         public bool DrawUnderlyingParents { get; set; } = true;
+        /// <summary>Enables calling Update() on Parent instead of UpdateBelowPopup()</summary>
+        public bool UpdateUnderlyingParents { get; set; } = false;
 
         public event Action<Scene>? OnPopupOpen;
         public event Action<Scene>? OnBeforePopupClose;
@@ -55,10 +57,14 @@
         {
             if (PopupScene != null)
             {
-                ForEach<IUpdateWhenBelowPopup>(f => f.UpdateWhenBelowPopup(PopupScene));
+                if (!PopupScene.UpdateUnderlyingParents)
+                {
+                    ForEach<IUpdateWhenBelowPopup>(f => f.UpdateWhenBelowPopup(PopupScene));
+                }
                 PopupScene.Update();
             }
-            else
+            
+            if (PopupScene == null || PopupScene.UpdateUnderlyingParents)
             {
                 ForEach<IUpdate>(f => f.Update());
             }
