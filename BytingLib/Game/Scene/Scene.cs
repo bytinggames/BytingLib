@@ -79,13 +79,18 @@
             }
         }
 
-        public void RemovePopupScene()
+        public void RemovePopupScene() => RemovePopupScene(true);
+
+        public void RemovePopupScene(bool disposePopup)
         {
             if (PopupScene != null)
             {
                 OnBeforePopupClose?.Invoke(PopupScene);
 
-                PopupScene?.Dispose();
+                if (disposePopup)
+                {
+                    PopupScene?.Dispose();
+                }
                 PopupScene = null;
             }
         }
