@@ -29,6 +29,10 @@
         {
             return 1f - MathF.Pow(1f - x, 3f);
         }
+        public static float EaseOutPow(float x, float exp)
+        {
+            return 1f - MathF.Pow(1f - x, exp);
+        }
 
         public static float EaseInSine(float x)
         {
@@ -41,6 +45,10 @@
         public static float EaseInCubic(float x)
         {
             return x * x * x;
+        }
+        public static float EaseInPow(float x, float exp)
+        {
+            return MathF.Pow(x, exp);
         }
 
         public static float Linear(float x) => x;
@@ -113,6 +121,30 @@
               : x >= 1f
               ? 1f
               : MathF.Pow(2f, -10f * x) * MathF.Sin((x * 10f - 0.75f) * c4) + 1f;
+        }
+
+        public static float EaseMiddleSine(float x)
+        {
+            x = Math.Clamp(x, 0f, 1f);
+            return 1f - MathF.Acos((x - 0.5f) * 2f) / MathHelper.Pi;
+        }
+        public static float EaseMiddlePow(float x, float exp)
+        {
+            return Split(x, x => EaseOutPow(x, exp), x => EaseInPow(x, exp));
+        }
+
+        public static float Split(float x, Func<float, float> toMiddle, Func<float, float> fromMiddle)
+        {
+            if (x < 0.5f)
+            {
+                x *= 2f;
+                return toMiddle(x) * 0.5f;
+            }
+            else
+            {
+                x = (x - 0.5f) * 2f;
+                return fromMiddle(x) * 0.5f + 0.5f;
+            }
         }
     }
 }
