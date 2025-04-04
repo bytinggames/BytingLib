@@ -27,14 +27,14 @@
 
         public void Register(InputUpdater updater, bool updateToInitialize)
         {
-            if (IsRegistered(updater))
-            {
-                return;
-            }
-
             foreach (var child in GetChildren())
             {
                 child.Register(updater, updateToInitialize);
+            }
+
+            if (IsRegistered(updater))
+            {
+                return;
             }
 
             RegisterSelf(updater);
