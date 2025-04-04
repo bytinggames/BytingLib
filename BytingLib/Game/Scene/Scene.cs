@@ -62,12 +62,21 @@
                     ForEach<IUpdateWhenBelowPopup>(f => f.UpdateWhenBelowPopup(PopupScene));
                 }
                 PopupScene.Update();
+
+                if (PopupScene != null && PopupScene.UpdateUnderlyingParents)
+                {
+                    UpdateInner();
+                }
             }
-            
-            if (PopupScene == null || PopupScene.UpdateUnderlyingParents)
+            else
             {
-                ForEach<IUpdate>(f => f.Update());
+                UpdateInner();
             }
+        }
+
+        private void UpdateInner()
+        {
+            ForEach<IUpdate>(f => f.Update());
         }
 
         public void SetPopupScene(Scene? scene)
