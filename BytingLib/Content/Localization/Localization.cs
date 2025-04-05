@@ -180,15 +180,7 @@ namespace BytingLib
                     return;
                 }
 
-                string? value;
-                if (endsWithPlus)
-                {
-                    value = "{+}";
-                }
-                else
-                {
-                    value = GetCell(lineIndex, languageColumn, localizationLines);
-                }
+                string? value = GetCell(lineIndex, languageColumn, localizationLines);
 
                 if (string.IsNullOrEmpty(value))
                 {
