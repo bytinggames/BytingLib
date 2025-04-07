@@ -136,12 +136,8 @@ namespace BytingLib
 
         public sealed override void UpdateActive(GameTime gameTime)
         {
-            if (updateSourceInput)
-            {
-                // this updates the input queue
-                input.PreUpdate();
-                inputGlobalAndDraw.PreUpdate();
-            }
+            UpdateSourceInput();
+
             globalInputUpdater.Update();
             globalAndDrawInputUpdater.Update();
             metaInputUpdater.Update();
@@ -241,8 +237,7 @@ namespace BytingLib
         {
             updateSpeed.OnRefresh(gameTime);
 
-            input.Update();
-            inputGlobalAndDraw.Update();
+            UpdateSourceInput();
 
             if (f11ToToggleFullscreen && inputMeta.ToggleFullscreen.Pressed)
             {
@@ -257,6 +252,16 @@ namespace BytingLib
             UpdateIteration(gameTime);
 
             mouseVisibilityManager.UpdateEnd(GetTopmostScene());
+        }
+
+        private void UpdateSourceInput()
+        {
+            if (updateSourceInput)
+            {
+                // this updates the input queue
+                input.PreUpdate();
+                inputGlobalAndDraw.PreUpdate();
+            }
         }
 
         protected virtual bool ShouldSwapScreen() => inputMeta.SwapScreen.Pressed;
@@ -277,7 +282,10 @@ namespace BytingLib
             }
 
             // this updates the input queue
-            inputGlobalAndDraw.PreUpdate();
+            if (updateSourceInput)
+            {
+                inputGlobalAndDraw.PreUpdate();
+            }
             inputGlobalAndDraw.Update();
             globalAndDrawInputUpdater.Update();
 
