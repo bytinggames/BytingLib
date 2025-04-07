@@ -29,6 +29,8 @@ namespace BytingLib
         public GamePadDeadZone GamePadDeadZoneRight { get; set; } = GamePadDeadZone.IndependentAxes;
         public FullInput FullInput => inputSource.Current;
         private readonly Func<MouseState> getMouseState;
+        /// <summary>Used for blocking every input except the window resolution. Used for replay to video conversion f.ex.</summary>
+        public bool BlockSourceInput { get; set; }
 
         public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths,
             Action<Action> startRecordingPlayback, bool startRecordingInstantly, InputInputRecordings? inputInputRecordings)
@@ -62,11 +64,20 @@ namespace BytingLib
 
         public FullInput GetRealInput()
         {
-            return new FullInput(getMouseState(),
-                CurrentKeyState,
-                GamePad.GetState(0),
-                new MetaInputState(game.IsActivatedThisFrame()),
-                windowManager.Resolution);
+            if (BlockSourceInput)
+            {
+                var input = new FullInput();
+                input.WindowResolution = windowManager.Resolution;
+                return input;
+            }
+            else
+            {
+                return new FullInput(getMouseState(),
+                    CurrentKeyState,
+                    GamePad.GetState(0),
+                    new MetaInputState(game.IsActivatedThisFrame()),
+                    windowManager.Resolution);
+            }
         }
 
         private void InputSource_OnUpdate(FullInput obj)
@@ -81,8 +92,11 @@ namespace BytingLib
 
         public void PreUpdate()
         {
-            CurrentMouseState = Mouse.GetState();
-            CurrentKeyState = Keyboard.GetState();
+            if (!BlockSourceInput)
+            {
+                CurrentMouseState = Mouse.GetState();
+                CurrentKeyState = Keyboard.GetState();
+            }
             inputSource.Update();
         }
 

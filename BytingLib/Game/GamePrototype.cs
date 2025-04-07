@@ -256,12 +256,12 @@ namespace BytingLib
 
         private void UpdateSourceInput()
         {
-            if (updateSourceInput)
-            {
-                // this updates the input queue
-                input.PreUpdate();
-                inputGlobalAndDraw.PreUpdate();
-            }
+            input.BlockSourceInput = !updateSourceInput;
+            inputGlobalAndDraw.BlockSourceInput = !updateSourceInput;
+
+            // this updates the input queue
+            input.PreUpdate();
+            inputGlobalAndDraw.PreUpdate();
         }
 
         protected virtual bool ShouldSwapScreen() => inputMeta.SwapScreen.Pressed;
@@ -282,10 +282,8 @@ namespace BytingLib
             }
 
             // this updates the input queue
-            if (updateSourceInput)
-            {
-                inputGlobalAndDraw.PreUpdate();
-            }
+            inputGlobalAndDraw.BlockSourceInput = !updateSourceInput;
+            inputGlobalAndDraw.PreUpdate();
             inputGlobalAndDraw.Update();
             globalAndDrawInputUpdater.Update();
 
