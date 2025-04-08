@@ -34,6 +34,32 @@
             return 1f - MathF.Pow(1f - x, exp);
         }
 
+        public static float EaseOutBounce(float x)
+        {
+            float n1 = 7.5625f;
+            float d1 = 2.75f;
+
+            if (x < 1f / d1)
+            {
+                return n1 * x * x;
+            }
+            else if (x < 2f / d1)
+            {
+                x -= 1.5f / d1;
+                return n1 * x * x + 0.75f;
+            }
+            else if (x < 2.5f / d1)
+            {
+                x -= 2.25f / d1;
+                return n1 * x * x + 0.9375f;
+            }
+            else
+            {
+                x -= 2.625f / d1;
+                return n1 * x * x + 0.984375f;
+            }
+        }
+
         public static float EaseInSine(float x)
         {
             return 1f - MathF.Cos(x * MathF.PI / 2f);
@@ -121,6 +147,17 @@
               : x >= 1f
               ? 1f
               : MathF.Pow(2f, -10f * x) * MathF.Sin((x * 10f - 0.75f) * c4) + 1f;
+        }
+
+        public static float EaseOutElastic(float x, float scale = 10f)
+        {
+            const float c4 = 2f * MathF.PI / 3f;
+
+            return x <= 0f
+              ? 0f
+              : x >= 1f
+              ? 1f
+              : MathF.Pow(2f, -scale * x) * MathF.Sin((x * scale - 0.75f) * c4) + 1f;
         }
 
         public static float EaseMiddleSine(float x)
