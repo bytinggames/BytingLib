@@ -6,10 +6,13 @@
         public TargetGameSpeedTarget Draw { get; }
         public Action<double>? SetTargetElapsedSeconds;
 
-        public TargetGameSpeed(double? updateInterval)
+        /// <summary>
+        /// set constantDrawDelta to true, if you want to do recordings f.ex. set it to false if you want to support dynamic fps
+        /// </summary>
+        public TargetGameSpeed(double? updateInterval, bool constantDrawDelta)
         {
             Update = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), false, false);
-            Draw = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), true, true)
+            Draw = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), !constantDrawDelta, !constantDrawDelta)
             {
                 MaxElapsedTimeFactor = 2 // only elapse at max 2 frames, when lagging or leaving window
             };
