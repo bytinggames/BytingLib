@@ -62,7 +62,7 @@
         /// <param name="rangeOutMax">Output range upper bound</param>
         public static float MapRangeClamped(this float value, float rangeInMin, float rangeInMax, float rangeOutMin, float rangeOutMax)
         {
-            return Math.Clamp(value.MapRange(rangeInMin, rangeInMax, rangeOutMin, rangeOutMax), rangeOutMin, rangeOutMax);
+            return Math.Clamp(value.MapRange(rangeInMin, rangeInMax, rangeOutMin, rangeOutMax), Math.Min(rangeOutMin, rangeOutMax), Math.Max(rangeOutMin, rangeOutMax));
         }
 
         public static bool NearlyEqual(this float a, float b, float maxDifference)
