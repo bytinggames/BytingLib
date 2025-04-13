@@ -385,7 +385,7 @@
             element.Parent = this;
         }
 
-        public Element SetStyle(Style style)
+        public Element SetStyle(Style? style)
         {
             Style = style;
             return this;
