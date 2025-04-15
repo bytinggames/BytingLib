@@ -450,6 +450,61 @@ namespace BytingLib
             return new float[] { (float)((sqrt + partNextToSqrt) / (2 * bdfPow)), (float)((-sqrt + partNextToSqrt) / (2 * bdfPow)) };
         }
 
+        public static Vector3 DistVectorTriangle(Vector3 pos, Triangle3 tri)
+        {
+            Vector3 onTri = ClosestVectorOnTriangle(pos, tri.PosA, tri.PosB, tri.Pos);
+            return onTri - pos;
+        }
+
+        // source: https://github.com/RenderKit/embree/blob/master/tutorials/common/math/closest_point.h
+        // https://stackoverflow.com/a/74395029/6866837
+        public static Vector3 ClosestVectorOnTriangle(Vector3 p, Vector3 a, Vector3 b, Vector3 c)
+        {
+            Vector3 ab = b - a;
+            Vector3 ac = c - a;
+            Vector3 ap = p - a;
+
+            float d1 = Vector3.Dot(ab, ap);
+            float d2 = Vector3.Dot(ac, ap);
+            if (d1 <= 0f && d2 <= 0f) { return a; }// #1
+
+            Vector3 bp = p - b;
+            float d3 = Vector3.Dot(ab, bp);
+            float d4 = Vector3.Dot(ac, bp);
+            if (d3 >= 0f && d4 <= d3) { return b; } // #2
+
+            Vector3 cp = p - c;
+            float d5 = Vector3.Dot(ab, cp);
+            float d6 = Vector3.Dot(ac, cp);
+            if (d6 >= 0f && d5 <= d6) { return c; } // #3
+
+            float vc = d1 * d4 - d3 * d2;
+            if (vc <= 0f && d1 >= 0f && d3 <= 0f)
+            {
+                float v = d1 / (d1 - d3);
+                return a + v * ab; // #4
+            }
+
+            float vb = d5 * d2 - d1 * d6;
+            if (vb <= 0f && d2 >= 0f && d6 <= 0f)
+            {
+                float v = d2 / (d2 - d6);
+                return a + v * ac; // #5
+            }
+
+            float va = d3 * d6 - d5 * d4;
+            if (va <= 0f && (d4 - d3) >= 0f && (d5 - d6) >= 0f)
+            {
+                float v = (d4 - d3) / ((d4 - d3) + (d5 - d6));
+                return b + v * (c - b); // #6
+            }
+
+            float denom = 1f / (va + vb + vc);
+            float vFinal = vb * denom;
+            float wFinal = vc * denom;
+            return a + vFinal * ab + wFinal * ac; // #0
+        }
+
         #endregion
 
         #region Sphere
