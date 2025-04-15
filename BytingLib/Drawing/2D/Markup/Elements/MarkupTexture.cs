@@ -22,6 +22,11 @@ namespace BytingLib.Markup
         private bool confinesToLineSpacing = false;
         public override bool ConfinesToLineSpacing => confinesToLineSpacing;
 
+        public void ToLineSpacing()
+        {
+            confinesToLineSpacing = true;
+        }
+
         public MarkupTexture(IContentCollector content, string texName)
         {
             SetTexture(content, texName);
