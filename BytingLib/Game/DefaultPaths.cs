@@ -6,6 +6,7 @@ namespace BytingLib
     {
         public string GameAppDataDir { get; }
         public string InputRecordingsDir { get; }
+        /// <summary>The directory pointing to the jsons can be accessed via GetSaveStateJsonDir()</summary>
         public string SaveStateDir { get; }
         public string StatsDir { get; }
         public string ScreenshotsDir { get; }
@@ -100,5 +101,16 @@ namespace BytingLib
 
         public string GetNewScreenshotPng() => GetNewScreenshotWithoutEnding() + ".png";
         internal string GetNewRandomScreenshotPng() => GetNewRandomScreenshotWithoutEnding() + ".png";
+
+        public string GetSaveStateJsonDir(string environment)
+        {
+            if (string.IsNullOrEmpty(environment))
+            {
+                environment = "default";
+            }
+            string dir = Path.Combine(SaveStateDir, "saves_" + environment);
+            Directory.CreateDirectory(dir);
+            return dir;
+        }
     }
 }

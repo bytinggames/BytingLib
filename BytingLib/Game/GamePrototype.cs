@@ -51,7 +51,7 @@ namespace BytingLib
         public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter, HotReloadType hotReloadType,
             bool mouseWithActivationClick = false,
             bool vsync = true, bool startRecordingInstantly = true, bool enableGameSpeedKeys = false,
-            bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool enableRecordingKeys = true)
+            bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool enableRecordingKeys = true, string saveStateEnvironment = "")
             : base(g, hotReloadType, contentConverter, clearHotReloadOutputPath)
         {
             MainThread.Initialize(); // tell the main thread which thread actually is the main thread
@@ -102,7 +102,7 @@ namespace BytingLib
             }
 
             basePaths = paths;
-            saveStateManager = new SaveStateManager(paths.SaveStateDir, false);
+            saveStateManager = new SaveStateManager(paths.GetSaveStateJsonDir(saveStateEnvironment), false);
 
             screenshotter = new Screenshotter(gDevice, paths);
             screenshotter.OnTakeScreenshot += Screenshotter_OnTakeScreenshot;
