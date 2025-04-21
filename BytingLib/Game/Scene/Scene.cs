@@ -110,6 +110,20 @@
             }
         }
 
+        public bool RemovePopupSceneRecursively(Scene popupToRemove)
+        {
+            if (PopupScene == null)
+            {
+                return false;
+            }
+            if (PopupScene == popupToRemove)
+            {
+                RemovePopupScene();
+                return true;
+            }
+            return PopupScene.RemovePopupSceneRecursively(popupToRemove);
+        }
+
         public Scene GetTopmostScene()
         {
             if (PopupScene == null)
