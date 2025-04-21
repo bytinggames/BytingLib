@@ -44,15 +44,7 @@ namespace BytingLib
             }
             else
             {
-                if (appdataNextToExe)
-                {
-                    GameAppDataDir = Path.Combine(AppContext.BaseDirectory, "UserData");
-                }
-                else
-                {
-                    string appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    GameAppDataDir = Path.Combine(appDataDir, gameName);
-                }
+                GameAppDataDir = GetAppDataDir(appdataNextToExe);
             }
 #endif
             InputRecordingsDir = Path.Combine(GameAppDataDir, "input-recordings");
@@ -69,6 +61,24 @@ namespace BytingLib
             SettingsDebugFile = Path.Combine(GameAppDataDir, "settings.debug.yaml");
             SettingsExampleFile = Path.Combine(GameAppDataDir, "settings.example.yaml");
             CrashLogFile = Path.Combine(GameAppDataDir, "crash.log");
+        }
+
+        public static string GetAppDataDir(bool nextToExe)
+        {
+            string? gameName = Assembly.GetEntryAssembly()?.GetName().Name;
+            if (gameName == null)
+            {
+                throw new BytingException("couldn't read game name");
+            }
+            if (nextToExe)
+            {
+                return Path.Combine(AppContext.BaseDirectory, "UserData");
+            }
+            else
+            {
+                string appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                return Path.Combine(appDataDir, gameName);
+            }
         }
 
         public static string GetCurrentDateTimeFilename() => DateTimeToFilename(DateTime.Now);
