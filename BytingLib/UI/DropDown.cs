@@ -66,13 +66,18 @@ namespace BytingLib.UI
         public Label Label { get; }
         public float? ListItemHeight { get; set; }
 
-        public Dropdown(string text, Func<(string Text, object Obj)[]> getOptions, Canvas canvas, float width, float height, Vector2? anchor = null, Padding? padding = null)
+        public Dropdown(string text, Func<(string Text, object Obj)[]> getOptions, Canvas canvas, float width, float height, Ref<Texture2D> dropDownArrowTexture, Vector2? anchor = null, Padding? padding = null)
             : base(width, height, anchor, padding)
         {
             this.getOptions = getOptions;
             this.canvas = canvas;
 
-            Add(Label = new Label(text));
+            Add(
+                new PanelStack(32f, false).Add(
+                    Label = new Label(text, -1f, 0f, false),
+                    new PanelTexture(dropDownArrowTexture)
+                )
+            );
             Label.Anchor = new Vector2(0f, 0.5f);
         }
 
