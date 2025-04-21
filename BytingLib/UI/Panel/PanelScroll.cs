@@ -9,6 +9,39 @@
         {
         }
 
+        public float Scroll
+        {
+            get
+            {
+                if (Padding == null)
+                {
+                    return 0f;
+                }
+                return -Padding.Top;
+            }
+            set
+            {
+                if (Padding == null)
+                {
+                    Padding = new Padding(0f);
+                }
+                if (value < 0f)
+                {
+                    value = 0f;
+                }
+                else
+                {
+                    float maxY = GetMaxScrollY();
+                    if (value > maxY)
+                    {
+                        value = maxY;
+                    }
+                }
+
+                Padding.Top = -value;
+            }
+        }
+
         public override void Update(ElementInput input)
         {
             if (input.Input.Scroll != 0)
@@ -34,8 +67,7 @@
                 }
                 else
                 {
-                    float maxY = Children.Max(f => f.GetSizeTopToBottom(1, new Vector2(float.PositiveInfinity, float.PositiveInfinity)));
-                    maxY -= AbsoluteRect.Size.Y;
+                    float maxY = GetMaxScrollY();
                     if (-y > maxY)
                     {
                         y = -maxY;
@@ -64,6 +96,27 @@
             }
 
             base.Update(input);
+        }
+
+        private float GetMaxScrollY()
+        {
+            if (Children.Count == 0)
+            {
+                return 0f;
+            }
+            float maxY = Children.Max(f => f.GetSizeTopToBottom(1, new Vector2(float.PositiveInfinity, float.PositiveInfinity)));
+            if (AbsoluteRect == null)
+            {
+                if (Height > 0f)
+                {
+                    maxY -= Height;
+                }
+            }
+            else
+            {
+                maxY -= AbsoluteRect.Height;
+            }
+            return maxY;
         }
     }
 }
