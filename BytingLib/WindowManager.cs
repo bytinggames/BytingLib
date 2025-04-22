@@ -136,11 +136,11 @@ namespace BytingLib
 
         private int GetTargetBackBufferWidth()
         {
-            return GetScreenHeight();
+            return GetScreenWidth();
         }
         private int GetTargetBackBufferHeight()
         {
-            return GetScreenHeight() + (FullScreenPlus1Pixel ? 1 : 0)
+            return GetScreenHeight() + (FullScreenPlus1Pixel ? 1 : 0);
         }
 
         public void SetFullscreen(bool fullscreen)
