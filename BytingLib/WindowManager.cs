@@ -114,8 +114,8 @@ namespace BytingLib
                     Window.Position = new Point(bounds.X, bounds.Y);
                 }
 
-                graphics.PreferredBackBufferWidth = GetScreenWidth();
-                graphics.PreferredBackBufferHeight = GetScreenHeight() + (FullScreenPlus1Pixel ? 1 : 0);
+                graphics.PreferredBackBufferWidth = GetTargetBackBufferWidth();
+                graphics.PreferredBackBufferHeight = GetTargetBackBufferHeight();
 
                 if (realFullscreen)
                 {
@@ -134,11 +134,37 @@ namespace BytingLib
             OnResolutionChanged?.Invoke(Resolution);
         }
 
+        private int GetTargetBackBufferWidth()
+        {
+            return GetScreenHeight();
+        }
+        private int GetTargetBackBufferHeight()
+        {
+            return GetScreenHeight() + (FullScreenPlus1Pixel ? 1 : 0)
+        }
+
         public void SetFullscreen(bool fullscreen)
         {
             if (fullscreen != IsFullscreen())
             {
                 ToggleFullscreen();
+            }
+        }
+
+        /// <summary>This doesn't trigger going to fullscreen.</summary>
+        public void SetFullScreenPlus1PixelMode(bool borderless)
+        {
+            if (FullScreenPlus1Pixel == borderless)
+            {
+                return;
+            }
+            FullScreenPlus1Pixel = borderless;
+            if (IsFullscreen())
+            {
+                // update resolution
+                graphics.PreferredBackBufferWidth = GetTargetBackBufferWidth();
+                graphics.PreferredBackBufferHeight = GetTargetBackBufferHeight();
+                graphics.ApplyChanges();
             }
         }
 
