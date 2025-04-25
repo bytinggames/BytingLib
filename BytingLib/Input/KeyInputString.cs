@@ -150,28 +150,37 @@ namespace BytingLib
                     {
                         InputString.Copy();
                     }
-
                     break;
+
                 case Keys.V:
                     if (control)
                     {
                         InputString.Paste();
                     }
-
                     break;
+
                 case Keys.X:
                     if (control)
                     {
                         InputString.Cut();
                     }
-
                     break;
+
                 case Keys.A:
                     if (control)
                     {
                         InputString.SelectAll();
                     }
+                    break;
 
+                case Keys.Home: // Pos1 key
+                    InputString.StopSelectOnLeftSide();
+                    InputString.Cursor = 0;
+                    break;
+
+                case Keys.End:
+                    InputString.StopSelectOnRight();
+                    InputString.Cursor = InputString.Text.Length;
                     break;
             }
         }
