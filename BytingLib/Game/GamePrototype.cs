@@ -11,6 +11,7 @@ namespace BytingLib
         protected readonly InputStuff input;
         protected readonly InputStuff inputGlobalAndDraw;
         protected readonly DefaultPaths basePaths;
+        private readonly bool allowScreenshots;
         protected readonly SaveStateManager saveStateManager;
         protected readonly MouseVisibilityManager mouseVisibilityManager;
         private readonly InputControlGameSpeed? inputGameSpeed;
@@ -51,7 +52,8 @@ namespace BytingLib
         public GamePrototype(GameWrapper g, DefaultPaths paths, ContentConverter contentConverter, HotReloadType hotReloadType,
             bool mouseWithActivationClick = false,
             bool vsync = true, bool startRecordingInstantly = true, bool enableGameSpeedKeys = false,
-            bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool enableRecordingKeys = true, string saveStateEnvironment = "")
+            bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool enableRecordingKeys = true, string saveStateEnvironment = "",
+            bool allowScreenshots = true)
             : base(g, hotReloadType, contentConverter, clearHotReloadOutputPath)
         {
             MainThread.Initialize(); // tell the main thread which thread actually is the main thread
@@ -102,6 +104,7 @@ namespace BytingLib
             }
 
             basePaths = paths;
+            this.allowScreenshots = allowScreenshots;
             saveStateManager = new SaveStateManager(paths.GetSaveStateJsonDir(saveStateEnvironment), false);
 
             screenshotter = new Screenshotter(gDevice, paths);
@@ -156,7 +159,7 @@ namespace BytingLib
 
             ScreenshotType screenshot = ScreenshotType.None;
 
-            if (inputMeta.Screenshot.Pressed)
+            if (inputMeta.Screenshot.Pressed && allowScreenshots)
             {
                 OnFrameBeforeScreenshot?.Invoke();
                 takeScreenshotNextFrame = inputMeta.ScreenshotDelayed.Down ? 5 : 1;
