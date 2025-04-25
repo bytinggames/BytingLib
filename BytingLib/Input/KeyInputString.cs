@@ -174,12 +174,27 @@ namespace BytingLib
                     break;
 
                 case Keys.Home: // Pos1 key
-                    InputString.StopSelectOnLeftSide();
+                    if (shift)
+                    {
+                        InputString.EnsureSelect();
+                    }
+                    else
+                    {
+                        InputString.SelectStart = null;
+                    }
+
                     InputString.Cursor = 0;
                     break;
 
                 case Keys.End:
-                    InputString.StopSelectOnRight();
+                    if (shift)
+                    {
+                        InputString.EnsureSelect();
+                    }
+                    else
+                    {
+                        InputString.SelectStart = null;
+                    }
                     InputString.Cursor = InputString.Text.Length;
                     break;
             }
