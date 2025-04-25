@@ -18,6 +18,14 @@ namespace BytingLib.Markup
         {
             set => ScaleXY = new Vector2(value);
         }
+        public float ScaleX
+        {
+            set => ScaleXY = new Vector2(value, ScaleXY.Y);
+        }
+        public float ScaleY
+        {
+            set => ScaleXY = new Vector2(ScaleXY.X, value);
+        }
 
         private bool confinesToLineSpacing = false;
         public override bool ConfinesToLineSpacing => confinesToLineSpacing;
