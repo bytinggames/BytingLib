@@ -2,6 +2,12 @@
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
+$if Configuration=Debug
+/processorParam:Defines=DEBUG
+$endif
+$if Configuration=Release
+/processorParam:Defines=RELEASE
+$endif
 /build:{0}
 
 ^.*\.fbx$
