@@ -271,6 +271,18 @@ namespace BytingLib
 
         public sealed override void DrawActive(GameTime gameTime)
         {
+            int iterations = GetIterations();
+            if (iterations != 1)
+            {
+                // artificially manipulate game time via speed controls (to speed up animations f.ex.)
+                TimeSpan elapsed = gameTime.ElapsedGameTime;
+                gameTime.TotalGameTime -= elapsed;
+                elapsed = TimeSpan.FromMilliseconds(drawSpeed.TargetMSPerTick);
+                elapsed *= iterations;
+                gameTime.TotalGameTime += elapsed;
+                gameTime.ElapsedGameTime = elapsed;
+            }
+
             drawSpeed.OnRefresh(gameTime);
 
             if (lastScreenshotTaken.HasValue)
