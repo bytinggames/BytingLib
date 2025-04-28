@@ -127,15 +127,7 @@
 
         public static float BouncePow(float x, float exponent)
         {
-            x = BounceLinear(x);
-            x *= 2f;
-            x -= 1f;
-            float sign = MathF.Sign(x);
-            x = MathF.Pow(MathF.Abs(x), exponent);
-            x *= sign;
-            x += 1f;
-            x /= 2f;
-            return x;
+            return -MathF.Pow(x * 2f - 1f, exponent) + 1f;
         }
 
         public static float EaseOutElastic(float x)
