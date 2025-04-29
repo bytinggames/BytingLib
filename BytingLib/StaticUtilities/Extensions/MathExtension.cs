@@ -141,5 +141,12 @@
             x = 1f - MathF.Exp(-x * elapsedFactor);
             return x;
         }
+
+        public static float GetDecayFactor(float factorOn60Ups, float deltaSeconds)
+        {
+            float decayPerSecond = MathF.Pow(factorOn60Ups, 60f);
+            float decayThisFrame = MathF.Pow(decayPerSecond, deltaSeconds);
+            return decayThisFrame;
+        }
     }
 }
