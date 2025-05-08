@@ -18,6 +18,7 @@
         public event Action? OnNavigationStart;
         public Vector2? NavigateToPosition { get; set; }
         public event Action<Element>? OnNavigate;
+        public bool AllowNavigation { get; set; } = true;
 
         //private bool scissorTest;
         protected readonly RasterizerState rasterizerState = CreateDefaultRasterizerState();
@@ -96,6 +97,11 @@
 
         private void UpdateNavigation()
         {
+            if (!AllowNavigation)
+            {
+                return;
+            }
+
             if (NavigationDrawer != null)
             {
                 if (NavigateToPosition.HasValue)
