@@ -453,6 +453,11 @@ namespace BytingLib
             var indices = GetCellIndices(lineIndex, ref column, localizationLines);
             if (indices == null)
             {
+                if (localizationLines[lineIndex].EndsWith("{+}"))
+                {
+                    return "{+}";
+                }
+
                 return null;
             }
 
