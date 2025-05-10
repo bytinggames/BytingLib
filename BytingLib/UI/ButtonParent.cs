@@ -24,6 +24,8 @@
         public Style? HoverStyle { get; set; }
         public Style? DisabledStyle { get; set; }
         public override bool CanBeNavigated => Enabled;
+        public event Action<ElementInput>? OnHoldBegin;
+        public event Action<ElementInput>? OnHoldSustain;
 
         public ButtonParent(float width = 0f, float height = 0f, Vector2? anchor = null, Padding? padding = null)
         {
@@ -72,7 +74,11 @@
 
             if (down)
             {
-                if (!input.Input.Click.Down)
+                if (input.Input.Click.Down)
+                {
+                    OnHoldSustain?.Invoke(input);
+                }
+                else
                 {
                     if (Hover)
                     {
@@ -94,6 +100,8 @@
                 down = true;
                 input.SetUpdateCatch(this);
                 SetDirty();
+
+                OnHoldBegin?.Invoke(input);
             }
             return true;
         }

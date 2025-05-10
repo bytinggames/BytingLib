@@ -98,25 +98,46 @@
             base.Update(input);
         }
 
-        private float GetMaxScrollY()
+        internal float GetMaxScrollY()
         {
             if (Children.Count == 0)
             {
                 return 0f;
             }
-            float maxY = Children.Max(f => f.GetSizeTopToBottom(1, new Vector2(float.PositiveInfinity, float.PositiveInfinity)));
+            float maxY = GetTotalHeight();
+            maxY -= GetShownHeight();
+            return maxY;
+        }
+
+        internal float GetTotalHeight()
+        {
+            return Children.Max(f => f.GetSizeTopToBottom(1, new Vector2(float.PositiveInfinity, float.PositiveInfinity)));
+        }
+
+        internal float GetShownHeight()
+        {
             if (AbsoluteRect == null)
             {
                 if (Height > 0f)
                 {
-                    maxY -= Height;
+                    return Height;
                 }
+                return 0f;
             }
             else
             {
-                maxY -= AbsoluteRect.Height;
+                return AbsoluteRect.Height;
             }
-            return maxY;
+        }
+
+        public void ScrollUp()
+        {
+            Scroll -= ScrollSpeed;
+        }
+
+        public void ScrollDown()
+        {
+            Scroll += ScrollSpeed;
         }
     }
 }

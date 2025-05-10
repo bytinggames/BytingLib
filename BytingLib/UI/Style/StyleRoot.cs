@@ -10,6 +10,7 @@
         public Vector2 MarkupTextureScale => GetOverrideMultiply(f => f.MarkupTextureScale);
         public Vector2 FontScale => GetOverrideMultiply(f => f.FontScale);
         public Ref<Animation> ButtonAnimation => GetOverride(f => f.ButtonAnimation)!;
+        public Ref<Texture2D> ScrollArrow => GetOverride(f => f.ScrollArrow)!;
         public Padding? ButtonPadding => GetOverride(f => f.ButtonPadding);
         public bool ButtonPaddingToButtonBorder => GetOverride(f => f.ButtonPaddingToButtonBorder)!.Value;
         public float RoundPositionTo => GetOverride(f => f.RoundPositionTo)!.Value;
