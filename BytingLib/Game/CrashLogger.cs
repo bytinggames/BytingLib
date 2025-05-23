@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using System.Reflection;
+
+namespace BytingLib
 {
     public class CrashLogger
     {
@@ -8,14 +10,14 @@
         }
         public static void Catch(string message, string crashLogFilePath, string fontAssetName)
         {
-            message = DateTime.UtcNow.ToString("dd.MM.yyyy HH:mm:ss") + " UTC: Game crashed.\n" + message;
+            message = "Game crashed (" + DateTime.UtcNow.ToString("dd.MM.yyyy HH:mm:ss") + " UTC)\n\n" + message;
             AppendLog(crashLogFilePath, message);
 
             try
             {
-                string displayMessage = message + "\n\nlogged to file: " + crashLogFilePath;
+                string displayMessage = GetPopupMessage(message, crashLogFilePath);
                 Console.WriteLine(displayMessage); // this gets printed to linux terminal
-                using var messageBox = new MessageBox(message, fontAssetName);
+                using var messageBox = new MessageBox(displayMessage, fontAssetName);
                 messageBox.Run();
             }
             catch (Exception e2)
@@ -24,6 +26,12 @@
                 AppendLog(crashLogFilePath, message);
             }
         }
+
+        private static string GetPopupMessage(string message, string crashLogFilePath)
+        {
+            return message + "\n\nlogged to file: " + crashLogFilePath + "\n\nv" + Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+        }
+
         static void AppendLog(string logFile, string message)
         {
             File.AppendAllText(logFile, "\n" + message + "\n");
@@ -43,9 +51,9 @@
 
                 try
                 {
-                    string displayMessage = message + "\n\nlogged to file: " + crashLogFilePath;
+                    string displayMessage = GetPopupMessage(message, crashLogFilePath);
                     Console.WriteLine(displayMessage); // this gets printed to linux terminal
-                    using var messageBox = new MessageBox(message, fontAssetName);
+                    using var messageBox = new MessageBox(displayMessage, fontAssetName);
                     messageBox.Run();
                 }
                 catch (Exception e2)
