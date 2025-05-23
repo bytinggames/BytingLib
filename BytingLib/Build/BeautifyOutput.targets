@@ -47,6 +47,16 @@
 			DestinationFolder="$(PublishDir)libraries/x86"
 			/>
 		
-		<RemoveDir Directories="$(PublishDir)x64;$(PublishDir)x86" />
+		<!-- move linux steam libs -->
+		<ItemGroup>
+			<_CopyItems3 Include="$(PublishDir)runtimes/linux-x64/native/*.*" />
+		</ItemGroup>
+		<Move
+			SourceFiles="@(_CopyItems3)"
+			DestinationFolder="$(PublishDir)libraries"
+			/>
+
+		<RemoveDir Directories="$(PublishDir)x64;$(PublishDir)x86;$(PublishDir)runtimes" />
+		
 	</Target>
 </Project>
