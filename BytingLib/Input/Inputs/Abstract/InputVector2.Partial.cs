@@ -6,7 +6,7 @@ namespace BytingLib
     [JsonDerivedType(typeof(Vector2FromBools), "Vector2FromBools")]
     [JsonDerivedType(typeof(Vector2Mouse), "Vector2Mouse")]
     [JsonDerivedType(typeof(Vector2MouseMoveLinear), "Vector2MouseMoveLinear")]
-    [JsonDerivedType(typeof(Vector2Gyro), "Vector2GyroAsMouse")]
+    [JsonDerivedType(typeof(Vector2Gyro), "Vector2Gyro")]
     [JsonDerivedType(typeof(Vector2Transform), "Vector2Transform")]
     [JsonDerivedType(typeof(Vector2PressedPerAxis), "Vector2PressedPerAxis")]
     [JsonDerivedType(typeof(Vector2PressedCircular), "Vector2PressedCircular")]
