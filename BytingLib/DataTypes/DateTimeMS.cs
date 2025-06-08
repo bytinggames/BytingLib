@@ -24,6 +24,8 @@ namespace BytingLib
         const string FormatDate = "yyyy-MM-dd";
         const string FormatTime = "HH-mm-ss";
         const string FormatFractions = "fff";
+        public const string DateTimeSeparator = "_";
+        public const string TimeFractionsSeperator = "-";
 
         public DateTimeMS()
         {
@@ -40,6 +42,16 @@ namespace BytingLib
         public DateTimeMS(long ms)
         {
             MS = ms;
+        }
+
+        public DateTimeMS(string dateTimeUtc)
+        {
+            var d = DateTime.ParseExact(dateTimeUtc, 
+                FormatDate + DateTimeSeparator + FormatTime + TimeFractionsSeperator + FormatFractions, 
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+
+            MS = new DateTimeOffset(d).ToUnixTimeMilliseconds();
         }
 
         public static DateTimeMS Now => new DateTimeMS(DateTime.UtcNow);
