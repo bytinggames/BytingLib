@@ -81,6 +81,21 @@ namespace BytingLib
         }
     }
 
+    public class BoolFuncValue(Func<bool> getValue) : InputBoolSimple
+    {
+        private readonly Func<bool> getValue = getValue;
+
+        protected override bool CalculateValue(FullInput input, InputBoolState state)
+        {
+            return getValue();
+        }
+
+        public override IEnumerable<Input> GetChildren()
+        {
+            yield break;
+        }
+    }
+
     public class BoolConst(bool value) : InputBoolSimple
     {
         public bool Value { get; } = value;
@@ -195,6 +210,21 @@ namespace BytingLib
         }
     }
 
+    public class IntFuncValue(Func<int> getValue) : InputIntSimple
+    {
+        private readonly Func<int> getValue = getValue;
+
+        protected override int CalculateValue(FullInput input, InputIntState state)
+        {
+            return getValue();
+        }
+
+        public override IEnumerable<Input> GetChildren()
+        {
+            yield break;
+        }
+    }
+
     public class IntConst(int value) : InputIntSimple
     {
         public int Value { get; } = value;
@@ -306,6 +336,21 @@ namespace BytingLib
         public override IEnumerable<Input> GetChildren()
         {
             yield return getVector2();
+        }
+    }
+
+    public class Vector2FuncValue(Func<Vector2> getValue) : InputVector2Simple
+    {
+        private readonly Func<Vector2> getValue = getValue;
+
+        protected override Vector2 CalculateValue(FullInput input, InputVector2State state)
+        {
+            return getValue();
+        }
+
+        public override IEnumerable<Input> GetChildren()
+        {
+            yield break;
         }
     }
 

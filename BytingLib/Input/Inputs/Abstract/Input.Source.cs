@@ -80,6 +80,21 @@ namespace BytingLib
         }
     }
 
+    public class FloatFuncValue(Func<float> getValue) : InputFloatSimple
+    {
+        private readonly Func<float> getValue = getValue;
+
+        protected override float CalculateValue(FullInput input, InputFloatState state)
+        {
+            return getValue();
+        }
+
+        public override IEnumerable<Input> GetChildren()
+        {
+            yield break;
+        }
+    }
+
     public class FloatConst(float value) : InputFloatSimple
     {
         public float Value { get; } = value;

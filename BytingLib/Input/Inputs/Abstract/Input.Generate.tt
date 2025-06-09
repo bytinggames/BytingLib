@@ -14,7 +14,7 @@
     };
 
 	string code = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, 
-	@"BytingLib\BytingLib\Input\Inputs\Abstract\Input.Source.cs"));
+	@"..\BytingLib\BytingLib\Input\Inputs\Abstract\Input.Source.cs"));
 
 	int beginningIndex = code.IndexOf('{');
 	beginningIndex++;
