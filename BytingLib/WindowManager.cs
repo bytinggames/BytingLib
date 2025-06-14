@@ -334,14 +334,19 @@ namespace BytingLib
 
         public bool SetTopMost(bool setTopMost)
         {
+#if WINDOWS
             IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);
             return SetWindowPos(hwnd, setTopMost ? HWND_TOPMOST : 0, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
+#endif
+            return false;
         }
 
         public void SetActive()
         {
+#if WINDOWS
             IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);
             SetForegroundWindow(hwnd);
+#endif
         }
     }
 }
