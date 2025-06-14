@@ -34,6 +34,20 @@ namespace BytingLib
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
+        [DllImport("user32.dll")]
+        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+        static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        const uint SWP_NOSIZE = 0x0001;
+        const uint SWP_NOMOVE = 0x0002;
+        const uint SWP_SHOWWINDOW = 0x0040;
+
+        [DllImport("user32.dll")]
+        /// <summary>Focuses on window. Makes it active.</summary>
+        static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetActiveWindow(IntPtr hwnd);
+
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
@@ -316,6 +330,18 @@ namespace BytingLib
             graphics.PreferredBackBufferWidth = resolution.X;
             graphics.PreferredBackBufferHeight = resolution.Y;
             graphics.ApplyChanges();
+        }
+
+        public bool SetTopMost(bool setTopMost)
+        {
+            IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);
+            return SetWindowPos(hwnd, setTopMost ? HWND_TOPMOST : 0, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
+        }
+
+        public void SetActive()
+        {
+            IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);
+            SetForegroundWindow(hwnd);
         }
     }
 }
