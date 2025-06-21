@@ -162,6 +162,28 @@
                 {
                     Input.FocusElement = textInput2;
                 }
+
+                var scroll = navigateTo.GetParents().OfType<PanelScroll>().FirstOrDefault();
+                if (scroll != null)
+                {
+                    if (!navigateTo.AbsoluteRect.IsEnclosedIn(scroll.AbsoluteRect))
+                    {
+                        float scrollBy = 0f;
+                        if (navigateTo.AbsoluteRect.Top < scroll.AbsoluteRect.Top)
+                        {
+                            scrollBy = navigateTo.AbsoluteRect.Top - scroll.AbsoluteRect.Top;
+                        }
+                        else if (navigateTo.AbsoluteRect.Bottom > scroll.AbsoluteRect.Bottom)
+                        {
+                            scrollBy = navigateTo.AbsoluteRect.Bottom - scroll.AbsoluteRect.Bottom;
+                        }
+                        if (scrollBy != 0f)
+                        {
+                            scroll.Scroll += scrollBy;
+                        }
+                    }
+                }
+
                 OnNavigate?.Invoke(NavigateElement);
             }
         }

@@ -536,5 +536,17 @@
             NavigationStart = navigationStart;
             return this;
         }
+
+        public IEnumerable<Element> GetParents()
+        {
+            if (Parent != null)
+            {
+                yield return Parent;
+                foreach (var p in Parent.GetParents())
+                {
+                    yield return p;
+                }
+            }
+        }
     }
 }
