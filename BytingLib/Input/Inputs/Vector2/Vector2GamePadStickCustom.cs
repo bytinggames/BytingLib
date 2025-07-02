@@ -13,7 +13,7 @@ namespace BytingLib
         public float CurveExponent { get; }
         public float Sensitivity { get; }
 
-        const float SpeedFactor = 50f;
+        const float SpeedFactor = 25f;
 
         public Vector2GamePadStickCustom(
             bool? leftOrRight,
