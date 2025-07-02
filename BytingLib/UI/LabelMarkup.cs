@@ -193,11 +193,7 @@ namespace BytingLib.UI
 
         public Vector2 MeasureSize(StyleRoot style)
         {
-            if (style.FontBold != null && style.FontBoldColor.IsNotTransparent())
-            {
-                return style.FontBold.Value.MeasureString(Text) * style.FontScale;
-            }
-            return style.Font.Value.MeasureString(Text) * style.FontScale;
+            return MeasureString(style, Text);
         }
 
         public override void SetDirty()
