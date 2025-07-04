@@ -66,13 +66,31 @@ namespace BytingLib
         /// <summary>
         /// Setting replaceOrAdd to false is only used for debugging (only supports Bool and Vector2 and creates new references each time you call this method)
         /// </summary>
-        public void Deserialize(string json, InputBinds binds, bool replaceOrAdd = true)
+        public void Deserialize(string json, InputBinds binds, bool replaceOrAdd = true, bool onlyOverrideIfDefinedInJson = false)
         {
+            HashSet<string>? propsDefinedInJson = null;
+
+            if (onlyOverrideIfDefinedInJson)
+            {
+                propsDefinedInJson = new();
+                using (JsonDocument doc = JsonDocument.Parse(json))
+                {
+                    foreach (var element in doc.RootElement.EnumerateObject())
+                    {
+                        propsDefinedInJson.Add(element.Name);
+                    }
+                }
+            }
+
             var newBinds = JsonSerializer.Deserialize(json, binds.GetType(), options);
             if (newBinds != null)
             {
                 foreach (var prop in binds.GetRemappableProperties())
                 {
+                    if (onlyOverrideIfDefinedInJson && !propsDefinedInJson!.Contains(prop.Name))
+                    {
+                        continue;
+                    }
                     var newVal = prop.GetValue(newBinds);
                     if (newVal is Input newInput)
                     {
