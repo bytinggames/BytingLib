@@ -2,6 +2,14 @@
 
 namespace BytingLib
 {
+    [JsonDerivedType(typeof(Vector4Relative), "Vector4Relative")]
+    [JsonDerivedType(typeof(Vector4Absolute), "Vector4Absolute")]
+    [JsonDerivedType(typeof(Vector4MaxLength), "Vector4MaxLength")]
+    public abstract partial class InputVector4 : Input
+    {
+        public abstract InputVector4State GetState(InputUpdater updater);
+    }
+
     public abstract class InputVector4<State> : InputVector4 where State : InputVector4State
     {
         private readonly Dictionary<InputUpdater, State> states = new();
@@ -43,13 +51,6 @@ namespace BytingLib
                 states.Remove(updaters[i]);
             }
         }
-    }
-
-    [JsonDerivedType(typeof(Vector4Relative), "Vector4Relative")]
-    [JsonDerivedType(typeof(Vector4Absolute), "Vector4Absolute")]
-    public abstract partial class InputVector4 : Input
-    {
-        public abstract InputVector4State GetState(InputUpdater updater);
     }
 
     public class InputVector4State : InputState<Vector4>
