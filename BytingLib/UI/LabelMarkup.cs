@@ -119,7 +119,8 @@ namespace BytingLib.UI
 
         private Vector2 GetJumpOffset()
         {
-            return ((Parent ?? this).AbsoluteRect?.Pos ?? Vector2.Zero) + new Vector2(Padding?.Left ?? 0f, Padding?.Top ?? 0f);
+            var referenceObj = Parent ?? this;
+            return (referenceObj.AbsoluteRect?.Pos ?? Vector2.Zero) + new Vector2(referenceObj.Padding?.Left ?? 0f, referenceObj.Padding?.Top ?? 0f);
         }
 
         protected override void DisposeSelf()
