@@ -121,5 +121,10 @@
         {
             return new Vector2(arr[0], arr[1]);
         }
+
+        public static Vector4 XYXY(this Vector2 v)
+        {
+            return new Vector4(v.X, v.Y, v.X, v.Y);
+        }
     }
 }

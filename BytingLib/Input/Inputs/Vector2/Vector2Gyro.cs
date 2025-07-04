@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    /// <summary>Without mouse acceleration</summary>
+    /// <summary>Returns the rotation speed of the gyro, not the rotation distance. So polling in a smaller interval won't result in smaller values. Those values are "relative" then and not "absolute"</summary>
     public class Vector2Gyro : InputVector2<Vector2GyroState>
     {
         private readonly InputBool windowActive = new BoolWindowActive();
