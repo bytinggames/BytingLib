@@ -852,11 +852,12 @@ namespace BytingLib
 
                 if (ReversePrecisionForDistSphereTriangle)
                 {
-                    i = (sideReversed + 1) % 3;
-                    j = (i + 1) % 3;
-                    var crReversed = DistSphereLine(sphere, Line3.FromTwoPoints(tri[i], tri[j]), dir);
-                    cr.AxisColReversed = crReversed.AxisColReversed;
-                    cr.DistanceReversed = crReversed.DistanceReversed;
+                    using (UseReversePrecisionForDistSphereTriangle(false)) // makes sure to not calculate the reverse of the reverse, which we already have.
+                    {
+                        var crReverse = DistSphereTriangle(sphere, tri, -dir); // TODO: this could be optimized, as it repeats some of the steps already calculated above.
+                        cr.DistanceReversed = -crReverse.Distance;
+                        cr.AxisColReversed = crReverse.AxisCol;
+                    }
                 }
 
                 return cr;
