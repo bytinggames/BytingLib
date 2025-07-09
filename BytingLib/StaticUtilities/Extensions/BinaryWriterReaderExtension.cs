@@ -54,6 +54,15 @@
             return color;
         }
 
+        public static void Write(this BinaryWriter writer, DateTime dateTime)
+        {
+            writer.Write(dateTime.ToBinary());
+        }
+        public static DateTime ReadDateTime(this BinaryReader reader)
+        {
+            return DateTime.FromBinary(reader.ReadInt64());
+        }
+
         public static void Write(this BinaryWriter writer, Rect rect)
         {
             writer.Write(rect.X);
