@@ -504,7 +504,7 @@
                 }
             }
             center = (min + max) / 2f;
-            shift = MathF.Sin(angle);
+            shift = MathF.Tan(angle);
         }
 
         public IEnumerable<Vector2> GetGlobalVertices()
