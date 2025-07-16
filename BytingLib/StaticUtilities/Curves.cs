@@ -161,6 +161,11 @@
         {
             return Split(x, x => EaseOutPow(x, exp), x => EaseInPow(x, exp));
         }
+        public static float EaseMiddleSlanted(float x, float exp, float slant)
+        {
+            float f = (x - 0.5f) * 2f;
+            return (MathF.Abs(MathF.Pow(f, exp)) * MathF.Sign(f) + slant * f) / ((1 + slant) * 2f) + 0.5f; // see desmos
+        }
 
         public static float Split(float x, Func<float, float> toMiddle, Func<float, float> fromMiddle)
         {
