@@ -48,6 +48,7 @@
         public UINavigationStart NavigationStart { get; set; }
         public float NavigationStartPriority { get; set; }
         public event Action? OnEnterFromNavigation;
+        protected virtual IShape HoverDetectShape => AbsoluteRect;
 
         public float Size(int dimension)
         {
@@ -103,7 +104,7 @@
                 && AbsoluteRect != null)
             {
                 //bool alreadyHovering = input.HoverElementForTooltip == this;
-                Hover = input.CanHover(AbsoluteRect, this);
+                Hover = input.CanHover(HoverDetectShape, this);
                 if (Hover && OnHoverSustain != null)
                 {
                     var results = OnHoverSustain.GetInvocationList().Select(x => (bool)x.DynamicInvoke(this, input)!);

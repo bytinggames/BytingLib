@@ -40,7 +40,7 @@
             }
         }
 
-        public bool CanHover(Rect rect, Element element)
+        public bool CanHover(IShape shape, Element element)
         {
             if (NavigateElement == element)
             {
@@ -49,7 +49,7 @@
 
             if (HoverElement == null || element == HoverElement)
             {
-                return rect.CollidesWith(Input.MousePosition);
+                return shape.CollidesWith(Input.MousePosition);
             }
             return false;
         }
