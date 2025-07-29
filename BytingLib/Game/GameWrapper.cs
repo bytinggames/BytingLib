@@ -6,6 +6,7 @@
         public readonly GraphicsDeviceManager Graphics;
         private readonly Func<GameWrapper, IGameBase> createMyGame;
         private readonly int? msaaSamples;
+        private readonly bool alwaysActive;
         private bool previousUpdateWasActive = true;
         private bool previousDrawWasActive = true;
         public bool IsExited { get; private set; }
@@ -16,7 +17,7 @@
         public new bool IsActive { get; private set; }
 
         /// <summary>more than 16 msaaSamples is not recommended (made everything a bit pale on my system)</summary>
-        public GameWrapper(Func<GameWrapper, IGameBase> createMyGame, int? msaaSamples, TargetGameSpeed targetGameSpeed)
+        public GameWrapper(Func<GameWrapper, IGameBase> createMyGame, int? msaaSamples, TargetGameSpeed targetGameSpeed, bool alwaysActive = false)
         {
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -37,9 +38,15 @@
             this.createMyGame = createMyGame;
             this.msaaSamples = msaaSamples;
             this.TargetGameSpeed = targetGameSpeed;
+            this.alwaysActive = alwaysActive;
             targetGameSpeed.SetTargetElapsedSeconds += SetTargetElapsedSeconds;
             Activated += GameWrapper_Activated;
             Deactivated += GameWrapper_Deactivated;
+
+            if (alwaysActive)
+            {
+                IsActive = true;
+            }
         }
 
         private void SetTargetElapsedSeconds(double frameTime)
@@ -54,7 +61,10 @@
 
         private void GameWrapper_Deactivated(object? sender, EventArgs e)
         {
-            IsActive = false;
+            if (!alwaysActive)
+            {
+                IsActive = false;
+            }
         }
 
         private void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
