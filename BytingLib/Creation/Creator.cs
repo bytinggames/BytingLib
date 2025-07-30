@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using BytingLib.Markup;
+using System.Globalization;
 using System.Reflection;
 
 namespace BytingLib
@@ -229,8 +230,16 @@ namespace BytingLib
         {
             var ctors = constructorType.GetConstructors();
 
-            string[] split = GetParameterStrings(reader);
-            ConstructorInfo? ctorInfo = GetMatchingConstructor(ctors, split, out bool lastParameterIsParamsAttribute);
+            string[] parameters;
+            if (constructorType == typeof(MarkupEscape))
+            {
+                parameters = GetParameterStringsForMarkupEscape(reader);
+            }
+            else
+            {
+                parameters = GetParameterStrings(reader);
+            }
+            ConstructorInfo? ctorInfo = GetMatchingConstructor(ctors, parameters, out bool lastParameterIsParamsAttribute);
             if (ctorInfo == null)
             {
                 throw new Exception("no matching constructor found for type " + constructorType.Name);
@@ -238,7 +247,18 @@ namespace BytingLib
 
             var parameterInfos = ctorInfo.GetParameters().ToArray();
 
-            return GetParameters(split, parameterInfos.Select(f => f.ParameterType).ToArray(), lastParameterIsParamsAttribute);
+            return GetParameters(parameters, parameterInfos.Select(f => f.ParameterType).ToArray(), lastParameterIsParamsAttribute);
+        }
+
+        private string[] GetParameterStringsForMarkupEscape(ScriptReaderLiteral reader)
+        {
+            string[] parameters;
+            string escapeLength = reader.ReadToChar(ParameterSeparator);
+            int escapeLengthInt = int.Parse(escapeLength);
+            string escapedString = reader.Read(escapeLengthInt);
+            reader.Move(1); // move over )
+            parameters = [escapedString];
+            return parameters;
         }
 
         private ConstructorInfo? GetMatchingConstructor(ConstructorInfo[] ctors, string[] split, out bool lastParameterIsParamsAttribute)

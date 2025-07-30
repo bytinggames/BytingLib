@@ -278,6 +278,20 @@ namespace BytingLib
         protected virtual bool SkipIfLiteral(char value) => false;
 
         public string GetString() => str;
+
+        internal string Read(int length)
+        {
+            if (length <= 0)
+            {
+                return "";
+            }
+
+            int maxLength = str.Length - Position;
+            length = Math.Min(length, maxLength);
+            string output = str.Substring(Position, length);
+            i += length;
+            return output;
+        }
     }
 
     // example: "#span(example:) @*this doesn't interpret characters like # ( ) and @, it ignores everything except the character specified after the @, in this case the literal string ends here: * #span(span is recognized again)"

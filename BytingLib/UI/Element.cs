@@ -436,6 +436,11 @@
             return this;
         }
 
+        public Element TooltipEscaped(Tooltip tooltip, string labelText, bool showInstantlyWhileMoving = false)
+        {
+            return Tooltip(tooltip, Markup.Markup.Escape(labelText), showInstantlyWhileMoving);
+        }
+
         public void RemoveTooltip()
         {
             if (currentTooltipAction != null)
