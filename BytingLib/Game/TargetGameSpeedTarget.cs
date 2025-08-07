@@ -16,7 +16,7 @@ namespace BytingLib
 
         public double? MaxElapsedTime { get; set; }
         /// <summary>Only used if MaxElapsedTime = null. Then max elapsed time is set to IntervalSeconds * MaxElapsedTimeFactor</summary>
-        public double MaxElapsedTimeFactor { get; set; } = 10d;
+        public double MaxElapsedTimeFactor { get; set; } = 3d;
         public GameTime GameTime { get; } = new();
 
         public double? IntervalSeconds
@@ -108,8 +108,15 @@ namespace BytingLib
                     double elapsed = stopwatch.Elapsed.TotalSeconds;
                     stopwatch.Restart();
 
-                    elapsed = Math.Min(elapsed, GetMaxElapsedTime(IntervalSeconds.Value)); // update up to 10 updates
                     seconds += elapsed;
+
+                    // update up to 10 updates
+                    var maxSeconds = GetMaxElapsedTime(IntervalSeconds.Value);
+                    if (seconds >= maxSeconds)
+                    {
+                        seconds = maxSeconds;
+                    }
+
                     if (seconds >= IntervalSeconds)
                     {
                         seconds -= IntervalSeconds.Value;
