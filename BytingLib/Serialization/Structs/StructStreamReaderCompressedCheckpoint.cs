@@ -10,7 +10,7 @@
         bool isFinishedCheckpoint;
         long streamPositionCheckpoint;
 
-        public StructStreamReaderCompressedCheckpoint(Stream stream, int? startPosition = null) : base(stream, startPosition)
+        public StructStreamReaderCompressedCheckpoint(Stream stream, int? startPosition = null, int[,]? insertZeroesForMigration = null) : base(stream, startPosition, insertZeroesForMigration)
         {
         }
 
