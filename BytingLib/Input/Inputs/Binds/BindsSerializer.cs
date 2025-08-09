@@ -12,12 +12,24 @@ namespace BytingLib
 
         public string Serialize(object inputBinds, bool removeDefaults = true)
         {
+            List<string>? defaultJson = null;
+            if (removeDefaults)
+            {
+                Type type = inputBinds.GetType();
+                defaultJson = GetDefaultJsonSplit(type);
+            }
+
+            return Serialize(inputBinds, defaultJson);
+        }
+
+        public string Serialize(object inputBinds, List<string>? defaultJson)
+        {
             Type type = inputBinds.GetType();
             string json = JsonSerializer.Serialize(inputBinds, type, options);
 
-            if (removeDefaults)
+            if (defaultJson != null)
             {
-                json = RemoveDefaultJson(json, GetDefaultJsonSplit(type));
+                json = RemoveDefaultJson(json, defaultJson);
             }
             return json;
         }
@@ -145,6 +157,11 @@ namespace BytingLib
                 defaultJsonSplit.Add(t, SplitJson(json)); 
             }
             return defaultJsonSplit[t];
+        }
+
+        public List<string> GetJsonSplit(object obj)
+        {
+            return SplitJson(JsonSerializer.Serialize(obj, obj.GetType(), options));
         }
 
         /// <summary>Can also be used on Inputs</summary>
