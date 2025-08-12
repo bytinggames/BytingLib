@@ -2,18 +2,18 @@
 {
     public class LocaArray
     {
-        private readonly Func<string, string> getLocaValue;
+        private readonly Dictionary<string, string> locaDict;
         private readonly string baseKey;
         public int Length { get; }
 
-        public LocaArray(Func<string, string> getLocaValue, string baseKey, int length)
+        public LocaArray(Dictionary<string, string> getLocaValue, string baseKey, int length)
         {
-            this.getLocaValue = getLocaValue;
+            this.locaDict = getLocaValue;
             this.baseKey = baseKey;
             Length = length;
         }
 
-        public string this[int index] => getLocaValue(baseKey + index);
+        public string this[int index] => locaDict[baseKey + index];
 
         public IEnumerable<string> GetElements()
         {
@@ -21,6 +21,11 @@
             {
                 yield return this[i];
             }
+        }
+
+        public bool ContainsIndex(int index)
+        {
+            return locaDict.ContainsKey(baseKey + index);
         }
     }
 }

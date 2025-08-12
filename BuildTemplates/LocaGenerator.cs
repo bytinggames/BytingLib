@@ -102,7 +102,7 @@ namespace BuildTemplates
 
                 if (MaxIndex != null)
                 {
-                    codeLines.Add($"public static LocaArray Array {{ get; }} = new(f => Dict[f], \"{BaseKeyForIndex}.\", {MaxIndex + 1});");
+                    codeLines.Add($"public static LocaArray Array {{ get; }} = new(Dict, \"{BaseKeyForIndex}.\", {MaxIndex + 1});");
                 }
 
                 string output =
