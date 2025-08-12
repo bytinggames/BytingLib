@@ -29,7 +29,30 @@ namespace BytingLib
 
         private static string GetPopupMessage(string message, string crashLogFilePath)
         {
-            return message + "\n\nlogged to file: " + crashLogFilePath + "\n\nv" + Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+            message += "\n\nlogged to file: " + crashLogFilePath + "\n\nv" + Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+            CensorUserNamePathOccurrence(ref message);
+            return message;
+        }
+
+        /// <summary>\Users\Julian\path -> \Users\[USERNAME]\path</summary>
+        public static void CensorUserNamePathOccurrence(ref string str)
+        {
+            const string search = @"\Users\";
+            int i = 0;
+            while (true)
+            {
+                i = str.IndexOf(search, i);
+                if (i == -1)
+                {
+                    break;
+                }
+                i += search.Length;
+                int i2 = str.IndexOf('\\', i);
+                if (i2 != -1)
+                {
+                    str = str.Remove(i) + "[USERNAME]" + str.Substring(i2);
+                }
+            }
         }
 
         static void AppendLog(string logFile, string message)
