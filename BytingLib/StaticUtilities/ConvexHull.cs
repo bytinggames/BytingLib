@@ -1,47 +1,57 @@
 ﻿public static class ConvexHull
 {
-    public static List<Vector2> GetConvexHull(IList<Vector2> points)
+    public static List<Vector2> BuildConvexHull(IList<Vector2> sourcePoints)
     {
-        if (points == null || points.Count <= 2)
+        if (sourcePoints == null || sourcePoints.Count < 3)
         {
-            return new List<Vector2>(); // A convex hull requires at least 3 points
+            return new List<Vector2>();
         }
 
-        // Sort points lexicographically (first by x, then by y)
-        points = points.OrderBy(p => p.X).ThenBy(p => p.Y).ToList();
+        // Copy to a modifiable list
+        var points = new List<Vector2>(sourcePoints);
 
-        List<Vector2> hull = new List<Vector2>();
-
-        // Build lower hull
-        foreach (var p in points)
+        // Sort points by X, then by Y without LINQ
+        points.Sort((a, b) =>
         {
-            while (hull.Count >= 2 && Cross(hull[hull.Count - 2], hull[hull.Count - 1], p) <= 0)
+            int compareX = a.X.CompareTo(b.X);
+            return compareX != 0 ? compareX : a.Y.CompareTo(b.Y);
+        });
+
+        var hull = new List<Vector2>();
+
+        // Build lower part
+        foreach (var pt in points)
+        {
+            while (hull.Count >= 2 && ComputeCross(hull[hull.Count - 2], hull[hull.Count - 1], pt) <= 0)
             {
                 hull.RemoveAt(hull.Count - 1);
             }
-            hull.Add(p);
+            hull.Add(pt);
         }
 
-        // Build upper hull
-        int lowerHullCount = hull.Count;
+        // Build upper part
+        int lowerCount = hull.Count;
         for (int i = points.Count - 2; i >= 0; i--)
         {
-            var p = points[i];
-            while (hull.Count > lowerHullCount && Cross(hull[hull.Count - 2], hull[hull.Count - 1], p) <= 0)
+            var pt = points[i];
+            while (hull.Count > lowerCount && ComputeCross(hull[hull.Count - 2], hull[hull.Count - 1], pt) <= 0)
             {
                 hull.RemoveAt(hull.Count - 1);
             }
-            hull.Add(p);
+            hull.Add(pt);
         }
 
-        // Remove last point because it is duplicated at the beginning
-        hull.RemoveAt(hull.Count - 1);
+        // Remove the duplicate last point
+        if (hull.Count > 0)
+        {
+            hull.RemoveAt(hull.Count - 1);
+        }
 
         return hull;
     }
 
-    private static float Cross(Vector2 o, Vector2 a, Vector2 b)
+    private static float ComputeCross(Vector2 origin, Vector2 a, Vector2 b)
     {
-        return (a.X - o.X) * (b.Y - o.Y) - (a.Y - o.Y) * (b.X - o.X);
+        return (a.X - origin.X) * (b.Y - origin.Y) - (a.Y - origin.Y) * (b.X - origin.X);
     }
 }

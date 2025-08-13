@@ -512,9 +512,9 @@
             return Vertices.Select(f => f + Pos);
         }
 
-        public static Polygon FromPointsToConvexPolygon(IList<Vector2> vertices)
+        public static Polygon CreateConvexPolygonFromPoints(IList<Vector2> vertices)
         {
-            vertices = ConvexHull.GetConvexHull(vertices);
+            vertices = ConvexHull.BuildConvexHull(vertices);
             return new Polygon(Vector2.Zero, vertices);
         }
     }
