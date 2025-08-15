@@ -74,7 +74,7 @@ namespace BytingLib
             {
                 return new FullInput(getMouseState(),
                     CurrentKeyState,
-                    GamePad.GetState(0),
+                    GamePad.GetState(0, GamePadDeadZone.None),
                     new MetaInputState(game.IsActivatedThisFrame()),
                     windowManager.Resolution);
             }
