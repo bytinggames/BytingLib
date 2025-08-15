@@ -19,6 +19,7 @@ namespace BytingLib
     [JsonDerivedType(typeof(Vector2Sum), "Vector2Sum")]
     [JsonDerivedType(typeof(Vector2GamePadStickCustom), "Vector2GamePadStickCustom")]
     [JsonDerivedType(typeof(Vector2MaxLength), "Vector2MaxLength")]
+    [JsonDerivedType(typeof(Vector2FlickStick), "Vector2FlickStick")]
     public abstract partial class InputVector2 : Input
     {
     }
