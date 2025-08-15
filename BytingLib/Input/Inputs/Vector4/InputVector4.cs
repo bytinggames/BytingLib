@@ -5,6 +5,7 @@ namespace BytingLib
     [JsonDerivedType(typeof(Vector4Relative), "Vector4Relative")]
     [JsonDerivedType(typeof(Vector4Absolute), "Vector4Absolute")]
     [JsonDerivedType(typeof(Vector4MaxLength), "Vector4MaxLength")]
+    [JsonDerivedType(typeof(Vector4Sum), "Vector4Sum")]
     public abstract partial class InputVector4 : Input
     {
         public abstract InputVector4State GetState(InputUpdater updater);
