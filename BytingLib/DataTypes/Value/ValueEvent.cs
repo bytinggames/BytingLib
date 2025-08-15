@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    public class ValueEvent<T> : IValueEvent<T>, IValueGet<T>, IValueSet<T>, IValue<T>
+    public class ValueEvent<T> : IValueEvent<T>, IValue<T>
     {
         private T _value;
         public T Value

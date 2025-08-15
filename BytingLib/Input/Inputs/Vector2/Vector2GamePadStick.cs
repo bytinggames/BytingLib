@@ -2,7 +2,7 @@
 {
     public class Vector2GamePadStick(bool? leftOrRight) : InputVector2Simple
     {
-        public bool? LeftOrRight { get; } = leftOrRight;
+        public bool? LeftOrRight { get; set; } = leftOrRight;
 
         protected override Vector2 CalculateValue(FullInput input, InputVector2State state)
         {

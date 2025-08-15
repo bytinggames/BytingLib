@@ -5,15 +5,22 @@ namespace BytingLib
     {
         private readonly InputVector2 child;
 
-        public bool? LeftOrRight { get; }
-        public bool InvertX { get; }
-        public bool InvertY { get; }
-        public float DeadZoneInner { get; }
-        public float DeadZoneOuter { get; }
-        public float CurveExponent { get; }
-        public float Sensitivity { get; }
+        public bool? LeftOrRight { get => stick.LeftOrRight; set => stick.LeftOrRight = value; }
+        public bool InvertX { get; set; }
+        public bool InvertY { get; set; }
+        public float DeadZoneInner { get => deadZone.DeadZoneInner; set => deadZone.DeadZoneInner = value; }
+        public float DeadZoneOuter { get => deadZone.DeadZoneOuter; set => deadZone.DeadZoneOuter = value; }
+        public float CurveExponent { get => pow.CurveExponent; set => pow.CurveExponent = value; }
+        public float SensitivityX { get => multiply.Factor.X / SpeedFactor; set => multiply.Factor = new Vector2(value* SpeedFactor, multiply.Factor.Y); }
+        public float SensitivityY { get => multiply.Factor.Y / SpeedFactor; set => multiply.Factor = new Vector2(multiply.Factor.X, value * SpeedFactor); }
 
         const float SpeedFactor = 25f;
+
+
+        private readonly Vector2GamePadStick stick;
+        private readonly Vector2CircularDeadzone deadZone;
+        private readonly Vector2StickPow pow;
+        private readonly Vector2Multiply2 multiply;
 
         public Vector2GamePadStickCustom(
             bool? leftOrRight,
@@ -22,20 +29,16 @@ namespace BytingLib
             float deadZoneInner = 0.2f,
             float deadZoneOuter = 0.94f,
             float curveExponent = 1.3f,
-            float sensitivity = 1f)
+            float sensitivityX = 1f,
+            float sensitivityY = 1f)
         {
-            LeftOrRight = leftOrRight;
             InvertX = invertX;
             InvertY = invertY;
-            DeadZoneInner = deadZoneInner;
-            DeadZoneOuter = deadZoneOuter;
-            CurveExponent = curveExponent;
-            Sensitivity = sensitivity;
 
-            child = new Vector2GamePadStick(leftOrRight);
-            child = new Vector2CircularDeadzone(DeadZoneInner, DeadZoneOuter, child);
-            child = new Vector2StickPow(CurveExponent, child);
-            child = new Vector2Multiply(SpeedFactor * Sensitivity, child);
+            child = stick = new Vector2GamePadStick(leftOrRight);
+            child = deadZone = new Vector2CircularDeadzone(deadZoneInner, deadZoneOuter, child);
+            child = pow = new Vector2StickPow(curveExponent, child);
+            child = multiply = new Vector2Multiply2(SpeedFactor * new Vector2(sensitivityX, sensitivityY), child);
         }
 
         protected override Vector2 CalculateValue(FullInput input, InputVector2State state)
@@ -73,6 +76,19 @@ namespace BytingLib
             {
                 return $"Right Thumb Stick";
             }
+        }
+
+        public void ResetToDefault()
+        {
+            Vector2GamePadStickCustom defaultBind = new(LeftOrRight);
+
+            CurveExponent = defaultBind.CurveExponent;
+            DeadZoneInner = defaultBind.DeadZoneInner;
+            DeadZoneOuter = defaultBind.DeadZoneOuter;
+            InvertX = defaultBind.InvertX;
+            InvertY = defaultBind.InvertY;
+            SensitivityX = defaultBind.SensitivityX;
+            SensitivityY = defaultBind.SensitivityY;
         }
     }
 }

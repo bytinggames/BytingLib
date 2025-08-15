@@ -2,7 +2,7 @@
 {
     public class Vector2Multiply(float factor, InputVector2 child) : InputVector2Simple
     {
-        public float Factor { get; } = factor;
+        public float Factor { get; set; } = factor;
         public InputVector2 Child { get; } = child;
 
         protected override Vector2 CalculateValue(FullInput input, InputVector2State state)

@@ -3,7 +3,7 @@ namespace BytingLib
 {
     public class Vector2StickPow(float curveExponent, InputVector2 child) : InputVector2Simple
     {
-        public float CurveExponent { get; } = curveExponent;
+        public float CurveExponent { get; set; } = curveExponent;
         public InputVector2 Child { get; } = child;
 
         protected override Vector2 CalculateValue(FullInput fullInput, InputVector2State state)

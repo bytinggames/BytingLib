@@ -3,8 +3,8 @@ namespace BytingLib
 {
     public class Vector2CircularDeadzone(float deadZoneInner, float deadZoneOuter, InputVector2 child) : InputVector2Simple
     {
-        public float DeadZoneInner { get; } = deadZoneInner;
-        public float DeadZoneOuter { get; } = deadZoneOuter;
+        public float DeadZoneInner { get; set; } = deadZoneInner;
+        public float DeadZoneOuter { get; set; } = deadZoneOuter;
         public InputVector2 Child { get; } = child;
 
         protected override Vector2 CalculateValue(FullInput fullInput, InputVector2State state)
