@@ -19,8 +19,8 @@ namespace BytingLib
             bool? leftOrRight,
             bool invertX = false,
             bool invertY = false,
-            float deadZoneInner = 0.05f,
-            float deadZoneOuter = 0.98f,
+            float deadZoneInner = 0.2f,
+            float deadZoneOuter = 0.94f,
             float curveExponent = 1.3f,
             float sensitivity = 1f)
         {
