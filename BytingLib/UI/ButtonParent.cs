@@ -26,6 +26,8 @@
         public override bool CanBeNavigated => Enabled;
         public event Action<ElementInput>? OnHoldBegin;
         public event Action<ElementInput>? OnHoldSustain;
+        /// <summary>Used when you have a button inside a button and you don't want the inner button to get highlighted when you hover on the outer button.</summary>
+        public bool ClearButtonStyleWithDefault { get; set; } = false;
 
         public ButtonParent(float width = 0f, float height = 0f, Vector2? anchor = null, Padding? padding = null)
         {
@@ -118,42 +120,42 @@
         {
             base.PushMyStyle(style);
 
-            if (!Enabled)
-            {
-                if (DisabledStyle != null)
-                {
-                    style.Push(DisabledStyle);
-                }
-            }
-            else if (Hover)
-            {
-                if (HoverStyle != null)
-                {
-                    style.Push(HoverStyle);
-                }
-            }
+            style.Push(GetActiveStyle());
         }
 
         protected override void PopMyStyle(StyleRoot style)
         {
             base.PopMyStyle(style);
 
+            style.Pop(GetActiveStyle());
+        }
+
+        private Style? GetActiveStyle()
+        {
             if (!Enabled)
             {
                 if (DisabledStyle != null)
                 {
-                    style.Pop(DisabledStyle);
+                    return DisabledStyle;
                 }
             }
             else if (Hover)
             {
                 if (HoverStyle != null)
                 {
-                    style.Pop(HoverStyle);
+                    return HoverStyle;
                 }
             }
+            else
+            {
+                if (ClearButtonStyleWithDefault
+                    && Style != null)
+                {
+                    return Style;
+                }
+            }
+            return null;
         }
-
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)
         {
