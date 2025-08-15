@@ -25,7 +25,10 @@ namespace BytingLib
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        
+
+        [DllImport("user32.dll")]
+        static extern bool IsZoomed(IntPtr hWnd); // used to check wether maximized window
+
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
@@ -194,9 +197,11 @@ namespace BytingLib
 
         public void SwapScreen()
         {
-            bool keepFullscreen = realFullscreen && IsFullscreen();
+            Int2 rememberRes = Resolution;
 
-            if (keepFullscreen)
+            bool keepFullscreen = IsFullscreen();
+
+            if (keepFullscreen && realFullscreen)
             {
                 graphics.ToggleFullScreen();
             }
@@ -224,12 +229,38 @@ namespace BytingLib
             }
             else
             {
+                // check if window is larger than screen
+                Int2 newRes = Resolution;
+                if (Resolution.X > screenBounds.Width)
+                {
+                    newRes.X = screenBounds.Width;
+                }
+                const int windowTabHeight = 32;
+                if (Resolution.Y > screenBounds.Height - windowTabHeight)
+                {
+                    newRes.Y = screenBounds.Height - windowTabHeight;
+                }
+                if (newRes != Resolution)
+                {
+                    SetWindowResolution(newRes);
+                }
+
+                // center window on screen
                 Window.Position = screenBounds.Center - (Resolution / 2).ToPoint();
             }
 
             if (keepFullscreen)
             {
-                graphics.ToggleFullScreen();
+                SetWindowResolution(new Int2(screenBounds.Size));
+
+                if (realFullscreen)
+                {
+                    graphics.ToggleFullScreen();
+                }
+            }
+            if (rememberRes != Resolution)
+            {
+                OnResolutionChanged?.Invoke(Resolution);
             }
         }
 
@@ -323,6 +354,16 @@ namespace BytingLib
                 Window.Position = rememberPosition;
             }
 #endif
+        }
+
+        private bool IsMaximized()
+        {
+#if WINDOWS
+            IntPtr hwnd = FindWindowByCaption(IntPtr.Zero, windowCaption);
+            return IsZoomed(hwnd);
+#endif
+
+            return false;
         }
 
         public void SetWindowResolution(Int2 resolution)
