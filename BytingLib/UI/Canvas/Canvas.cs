@@ -5,6 +5,8 @@
         private Element? updateCatch;
         public Color? ClearColor { get; set; }
         protected readonly Func<Rect> getRenderRect;
+        protected readonly WindowManager windowManager;
+
         public ElementInput Input { get; }
         public StyleRoot StyleRoot { get; set; }
         private bool treeDirty = true;
@@ -47,11 +49,12 @@
             }
         }
 
-        public Canvas(Func<Rect> getRenderRect, IInputCanvas input, GameWindow window, StyleRoot style, GameSpeed updateSpeed)
+        public Canvas(Func<Rect> getRenderRect, IInputCanvas input, WindowManager windowManager, StyleRoot style, GameSpeed updateSpeed)
         {
             this.getRenderRect = getRenderRect;
+            this.windowManager = windowManager;
             StyleRoot = style;
-            Input = CreateElementInput(input, window, updateSpeed);
+            Input = CreateElementInput(input, windowManager, updateSpeed);
 
             rasterizerStateScissor = CreateDefaultRasterizerState();
             rasterizerStateScissor.ScissorTestEnable = true;
@@ -67,9 +70,9 @@
 
         protected bool TreeDirty => treeDirty;
 
-        protected virtual ElementInput CreateElementInput(IInputCanvas input, GameWindow window, GameSpeed updateSpeed)
+        protected virtual ElementInput CreateElementInput(IInputCanvas input, WindowManager windowManager, GameSpeed updateSpeed)
         {
-            return new ElementInput(input, SetUpdateCatch, UnsetUpdateCatch, window, updateSpeed);
+            return new ElementInput(input, SetUpdateCatch, UnsetUpdateCatch, windowManager.Window, updateSpeed);
         }
 
         public void Update()

@@ -99,6 +99,10 @@ namespace BytingLib
         {
             return new Int2(v1.X / i2, v1.Y / i2);
         }
+        public static Int2 operator /(Int2 v1, float v)
+        {
+            return new Int2((int)(v1.X / v), (int)(v1.Y / v));
+        }
 
         public override int GetHashCode()
         {

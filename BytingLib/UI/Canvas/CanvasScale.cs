@@ -13,6 +13,7 @@
         public float MinAspectRatio { get; set; }
         public float MaxAspectRatio { get; set; }
         public CanvasScaling Scaling { get; set; } = CanvasScaling.Default;
+        public bool IndependentOfResolutionScale { get; set; }
         private float scale;
         // must only be used for non-replay related stuff
         private readonly IResolution graphicsResolution;
@@ -20,8 +21,8 @@
         InputCanvasTransformed? inputTransformed;
 
         public CanvasScale(int defaultResX, int defaultResY, Func<Rect> getRenderRect, IResolution graphicsResolution, IInputCanvas input,
-            GameWindow window, StyleRoot style, GameSpeed updateSpeed)
-            : base(getRenderRect, input, window, style, updateSpeed)
+            WindowManager windowManager, StyleRoot style, GameSpeed updateSpeed)
+            : base(getRenderRect, input, windowManager, style, updateSpeed)
         {
             Width = defaultResX;
             Height = defaultResY;
@@ -32,10 +33,10 @@
             this.graphicsResolution = graphicsResolution;
         }
 
-        protected override ElementInput CreateElementInput(IInputCanvas input, GameWindow window, GameSpeed updateSpeed)
+        protected override ElementInput CreateElementInput(IInputCanvas input, WindowManager windowManager, GameSpeed updateSpeed)
         {
-            inputTransformed = new InputCanvasTransformed(input, () => Matrix.Invert(GetTransform()));
-            return new ElementInput(inputTransformed, SetUpdateCatch, UnsetUpdateCatch, window, updateSpeed);
+            inputTransformed = new InputCanvasTransformed(input, () => Matrix.Invert(GetTransform() * Matrix.CreateScale(windowManager.Upscale)));
+            return new ElementInput(inputTransformed, SetUpdateCatch, UnsetUpdateCatch, windowManager.Window, updateSpeed);
         }
 
         private Matrix GetTransform()
@@ -67,6 +68,10 @@
                 * Matrix.CreateScale(new Vector3(scale, scale, 1f))
                 * Matrix.CreateTranslation(new Vector3(renderRect.Size / 2f, 0f).GetRound());
 
+            if (IndependentOfResolutionScale)
+            {
+                Transform *= Matrix.CreateScale(new Vector3(windowManager.Upscale, windowManager.Upscale, 1f));
+            }
             if (TransformPre != null)
             {
                 Transform = TransformPre.Value * Transform;
@@ -169,7 +174,7 @@
             }
 
             SetDirtyIfResChanged();
-
+            
             SamplerState samplerState = IsScalingPixelated() 
                 && MathF.Abs(0.5f - ((scale + 0.5f) % 1)) < 0.01f // check if scale is roughly a whole number (1, 2, 3, etc.)
                 ? SamplerState.PointClamp : SamplerState.LinearClamp;

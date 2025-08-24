@@ -8,6 +8,9 @@ namespace BytingLib
     /// </summary>
     public class WindowManager : IResolution
     {
+        public ValueEvent<float> RenderScale { get; } = new(1f);
+        public float Upscale => 1f / RenderScale.Value;
+
         public GameWindow Window { get; }
         private readonly bool realFullscreen;
         private readonly GraphicsDeviceManager graphics;
@@ -74,21 +77,41 @@ namespace BytingLib
             this.graphics = graphics;
 
             window.ClientSizeChanged += Window_ClientSizeChanged;
+            RenderScale.OnChange += RenderScale_OnChange;
         }
 
-        public Int2 Resolution => new Int2(GetViewportWidth(), GetViewportHeight());
-        public int ResolutionX => GetViewportWidth();
-        public int ResolutionY => GetViewportHeight();
+        /// <summary>The render resolution</summary>
+        public Int2 Resolution => new Int2(ResolutionX, ResolutionY);
+        public int ResolutionX => Math.Max(1, (int)(WindowWidth / Upscale));
+        public int ResolutionY => Math.Max(1, (int)(WindowHeight / Upscale));
+
+        private Int2 WindowResolution => new Int2(WindowWidth, WindowHeight);
+        private int WindowWidth => graphics.GraphicsDevice.PresentationParameters.Bounds.Width;
+        private int WindowHeight => graphics.GraphicsDevice.PresentationParameters.Bounds.Height;
 
 
         private void Window_ClientSizeChanged(object? sender, EventArgs e)
         {
-            if (graphics.PreferredBackBufferWidth != ResolutionX || graphics.PreferredBackBufferHeight != ResolutionY)
+            // there's a bug, where the window size is 2px larger than the actual draw size.
+            // if we would set the draw size to the window size, this process would repeat endlessly, making the window grow forever
+            if (!Window.IsBorderless
+                && graphics.PreferredBackBufferWidth == WindowWidth - 2
+                && graphics.PreferredBackBufferHeight == WindowHeight - 8)
             {
-                SetWindowResolution(new Int2(ResolutionX, ResolutionY));
+                return;
+            }
+
+            if (graphics.PreferredBackBufferWidth != WindowWidth || graphics.PreferredBackBufferHeight != WindowHeight)
+            {
+                SetBackBufferSize(new Int2(WindowWidth, WindowHeight));
 
                 OnResolutionChanged?.Invoke(Resolution);
             }
+        }
+
+        private void RenderScale_OnChange(float newUpscale)
+        {
+            OnResolutionChanged?.Invoke(Resolution);
         }
 
         public void ToggleFullscreen()
@@ -185,16 +208,6 @@ namespace BytingLib
             }
         }
 
-        private int GetViewportWidth()
-        {
-            return Math.Max(1, graphics.GraphicsDevice.Viewport.Width);
-        }
-
-        private int GetViewportHeight()
-        {
-            return Math.Max(1, graphics.GraphicsDevice.Viewport.Height);
-        }
-
         public void SwapScreen()
         {
             Int2 rememberRes = Resolution;
@@ -230,28 +243,28 @@ namespace BytingLib
             else
             {
                 // check if window is larger than screen
-                Int2 newRes = Resolution;
-                if (Resolution.X > screenBounds.Width)
+                Int2 newWindowRes = WindowResolution;
+                if (WindowResolution.X > screenBounds.Width)
                 {
-                    newRes.X = screenBounds.Width;
+                    newWindowRes.X = screenBounds.Width;
                 }
                 const int windowTabHeight = 32;
-                if (Resolution.Y > screenBounds.Height - windowTabHeight)
+                if (WindowResolution.Y > screenBounds.Height - windowTabHeight)
                 {
-                    newRes.Y = screenBounds.Height - windowTabHeight;
+                    newWindowRes.Y = screenBounds.Height - windowTabHeight;
                 }
-                if (newRes != Resolution)
+                if (newWindowRes != WindowResolution)
                 {
-                    SetWindowResolution(newRes);
+                    SetBackBufferSize(newWindowRes);
                 }
 
                 // center window on screen
-                Window.Position = screenBounds.Center - (Resolution / 2).ToPoint();
+                Window.Position = screenBounds.Center - (WindowResolution / 2).ToPoint();
             }
 
             if (keepFullscreen)
             {
-                SetWindowResolution(new Int2(screenBounds.Size));
+                SetBackBufferSize(new Int2(screenBounds.Size));
 
                 if (realFullscreen)
                 {
@@ -366,10 +379,10 @@ namespace BytingLib
             return false;
         }
 
-        public void SetWindowResolution(Int2 resolution)
+        public void SetBackBufferSize(Int2 backBufferSize)
         {
-            graphics.PreferredBackBufferWidth = resolution.X;
-            graphics.PreferredBackBufferHeight = resolution.Y;
+            graphics.PreferredBackBufferWidth = backBufferSize.X;
+            graphics.PreferredBackBufferHeight = backBufferSize.Y;
             graphics.ApplyChanges();
         }
 

@@ -5,8 +5,8 @@
     /// </summary>
     public class CanvasFlex : Canvas, IDrawBatch
     {
-        public CanvasFlex(Func<Rect> getRenderRect, IInputCanvas input, GameWindow window, StyleRoot style, GameSpeed updateSpeed)
-            : base(getRenderRect, input, window, style, updateSpeed)
+        public CanvasFlex(Func<Rect> getRenderRect, IInputCanvas input, WindowManager windowManager, StyleRoot style, GameSpeed updateSpeed)
+            : base(getRenderRect, input, windowManager, style, updateSpeed)
         {
         }
 
