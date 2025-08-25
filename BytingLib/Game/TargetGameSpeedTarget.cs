@@ -6,8 +6,7 @@ namespace BytingLib
     public class TargetGameSpeedTarget(
         Action<double?> onIntervalChange, 
         bool realOrFixedTime, 
-        bool unlimitedTicksOnDisabledTimeStep,
-        bool updateOrDraw)
+        bool unlimitedTicksOnDisabledTimeStep)
     {
         private double? intervalSeconds;
         private double seconds;
@@ -17,7 +16,7 @@ namespace BytingLib
         private readonly bool realOrFixedTime = realOrFixedTime;
         private Stopwatch stopwatchRealtime = new();
         private readonly bool unlimitedTicksOnDisabledTimeStep = unlimitedTicksOnDisabledTimeStep;
-        private readonly bool updateOrDraw = updateOrDraw;
+        private bool isRunningSlow;
 
         public double? MaxElapsedTime { get; set; }
         /// <summary>Only used if MaxElapsedTime = null. Then max elapsed time is set to IntervalSeconds * MaxElapsedTimeFactor</summary>
@@ -47,6 +46,8 @@ namespace BytingLib
         /// <summary>If fixedTimeStep is set to false, the target elapsed time is ignored by monogame (like it should be)</summary>
         public bool ShouldSkip(TimeSpan monogameTargetElapsedTime, bool fixedTimeStep)
         {
+            isRunningSlow = false;
+
             if (ShouldSkipInner(monogameTargetElapsedTime, fixedTimeStep))
             {
                 return true;
@@ -128,6 +129,8 @@ namespace BytingLib
                     {
                         seconds -= IntervalSeconds.Value;
                         lastUpdateSecondsTimestamp = seconds;
+
+                        isRunningSlow = seconds >= IntervalSeconds;
                     }
                     else
                     {
@@ -148,13 +151,13 @@ namespace BytingLib
         private bool IsMonoGameResponsible(TimeSpan monogameTargetElapsedTime, bool fixedTimeStep)
         {
             return IntervalSeconds == null
-                || (monogameTargetElapsedTime == intervalTimeSpan && fixedTimeStep)
-                || (!fixedTimeStep && unlimitedTicksOnDisabledTimeStep && updateOrDraw); // even if monogame is responsible with unlimited FPS, still feel free to skip draws to get consistent update rates
+                || monogameTargetElapsedTime == intervalTimeSpan && fixedTimeStep
+                || !fixedTimeStep && unlimitedTicksOnDisabledTimeStep;
         }
 
         public bool IsRunningSlow()
         {
-            return seconds >= IntervalSeconds * 0.5f;
+            return isRunningSlow;
         }
     }
 }
