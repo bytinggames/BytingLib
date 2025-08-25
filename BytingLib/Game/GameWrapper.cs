@@ -12,6 +12,7 @@
         public bool IsExited { get; private set; }
         public TargetGameSpeed TargetGameSpeed { get; }
         private bool firstFrameClear = true;
+        private int drawCounter = 0;
 
         /// <summary>Is set by Activated and Deactivated events. Maybe this is more precise than base.IsActive. Needs testing.</summary>
         public new bool IsActive { get; private set; }
@@ -126,7 +127,14 @@
 
         protected override bool BeginDraw()
         {
-            if (TargetGameSpeed.Draw.ShouldSkip(TargetElapsedTime, IsFixedTimeStep))
+            drawCounter++;
+            
+            if (
+                // once every 60 ticks let at least draw once, so we at least have 1 fps
+                // if update is running slow, skip draws
+                drawCounter % 60 != 0 && TargetGameSpeed.Update.IsRunningSlow()
+                || TargetGameSpeed.Draw.ShouldSkip(TargetElapsedTime, IsFixedTimeStep)
+                )
             {
                 return false;
             }

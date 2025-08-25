@@ -11,8 +11,8 @@
         /// </summary>
         public TargetGameSpeed(double? updateInterval, bool constantDrawDelta)
         {
-            Update = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), false, false);
-            Draw = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), !constantDrawDelta, !constantDrawDelta)
+            Update = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), false, false, true);
+            Draw = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), !constantDrawDelta, !constantDrawDelta, false)
             {
                 MaxElapsedTimeFactor = 2 // only elapse at max 2 frames, when lagging or leaving window
             };
