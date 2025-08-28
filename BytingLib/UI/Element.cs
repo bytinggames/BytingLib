@@ -88,7 +88,8 @@
 
         public Style? Style { get; set; }
 
-        public virtual bool CanBeNavigated => !BlockNavigation && currentTooltipAction != null;
+        public bool CanBeNavigated => !BlockNavigation && CanBeNavigatedOverride;
+        protected virtual bool CanBeNavigatedOverride => currentTooltipAction != null;
         public bool BlockNavigation { get; set; }
 
         protected virtual void DrawSelf(SpriteBatch spriteBatch, StyleRoot style) { }

@@ -61,7 +61,7 @@ namespace BytingLib.UI
         public event Action<SliderInt>? OnDragBegin;
         /// <summary>Also called when disposing this element while the user is still dragging the slider.</summary>
         public event Action<SliderInt>? OnDragEnd;
-        public override bool CanBeNavigated => true;
+        protected override bool CanBeNavigatedOverride => true;
 
         private float AbsoluteInnerLeft => AbsoluteRect.Left + KnobWidth / 2f;
         private float AbsoluteInnerRight => AbsoluteRect.Right - KnobWidth / 2f;

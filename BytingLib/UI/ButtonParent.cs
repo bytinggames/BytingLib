@@ -23,7 +23,7 @@
 
         public Style? HoverStyle { get; set; }
         public Style? DisabledStyle { get; set; }
-        public override bool CanBeNavigated => Enabled;
+        protected override bool CanBeNavigatedOverride => Enabled;
         public event Action<ElementInput>? OnHoldBegin;
         public event Action<ElementInput>? OnHoldSustain;
         /// <summary>Used when you have a button inside a button and you don't want the inner button to get highlighted when you hover on the outer button.</summary>
