@@ -88,7 +88,8 @@
 
         public Style? Style { get; set; }
 
-        public virtual bool CanBeNavigated => currentTooltipAction != null;
+        public virtual bool CanBeNavigated => !BlockNavigation && currentTooltipAction != null;
+        public bool BlockNavigation { get; set; }
 
         protected virtual void DrawSelf(SpriteBatch spriteBatch, StyleRoot style) { }
         protected virtual void DrawSelfPost(SpriteBatch spriteBatch, StyleRoot style) { }
@@ -543,6 +544,17 @@
             return this;
         }
 
+        public Element SetNavigationStartToFirstNavigatable(float priority = 0f, UINavigationStart navigationStart = UINavigationStart.ToThisElement)
+        {
+            var firstNavigatable = GetAllChildren().Where(f => f.CanBeNavigated).FirstOrDefault();
+            if (firstNavigatable != null)
+            {
+                firstNavigatable.SetNavigationStart(priority, navigationStart);
+            }
+
+            return this;
+        }
+
         public IEnumerable<Element> GetParents()
         {
             if (Parent != null)
@@ -553,6 +565,27 @@
                     yield return p;
                 }
             }
+        }
+
+        /// <summary>Checks if rectangle is not obstructed by a PanelScroll</summary>
+        internal bool IsRectangleVisible()
+        {
+            if (!Visible
+                || AbsoluteRect == null)
+            {
+                return false;
+            }
+
+            foreach (var parent in GetParents())
+            {
+                if (parent is PanelScroll)
+                {
+                    var rectGrown = AbsoluteRect.CloneRect().Grow(16f);
+                    return parent.IsRectangleVisible()
+                        && rectGrown.CollidesWith(parent.AbsoluteRect);
+                }
+            }
+            return true;
         }
     }
 }

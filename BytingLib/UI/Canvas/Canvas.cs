@@ -272,6 +272,7 @@
             {
                 navigateRectScreenWrap = navigateRect.CloneRect();
                 navigateRectScreenWrap.Pos -= navigate * cr.DistanceReversed.Value;
+                navigateRectScreenWrap.Pos -= navigate * this.AbsoluteRect.Size.Length(); // move 1 screen further away, to punish wrapping over bounds
                 navigateScreenWrapCenter = navigateRectScreenWrap.GetCenter();
             }
             foreach (var child in (updateCatch ?? this).GetAllVisibleChildren().OfType<ICanBeNavigated>().Where(f => f.CanBeNavigated))
@@ -282,10 +283,12 @@
                 }
 
                 Element element = (Element)child;
-                if (element.AbsoluteRect == null)
+                if (element.AbsoluteRect == null
+                    || !element.IsRectangleVisible()) // check if element is inside a scroll element and not visible
                 {
                     continue;
                 }
+
                 Vector2 dist = navigateRect.DistanceToRect(element.AbsoluteRect);
                 Vector2 centerDist = element.AbsoluteRect.GetCenter() - navigateCenter;
 
@@ -298,7 +301,8 @@
                     continue;
                 }
 
-                bool screenWrap = centerDistOnDirection <= 0f;
+                bool screenWrap = Vector2.Dot(dist, navigate) <= 0f;
+
                 if (screenWrap)
                 {
                     // wrong direction
@@ -310,12 +314,43 @@
                     }
                     dist = navigateRectScreenWrap.DistanceToRect(element.AbsoluteRect);
                     centerDist = element.AbsoluteRect.GetCenter() - navigateScreenWrapCenter;
-                    myScore -= 100000f; // score penalty for screen wrapping. They compete in their own category and only have a chance if only screen wrappers compete.
                 }
 
-                float inDirection = Vector2.Dot(Vector2.Normalize(dist + centerDist * 0.01f), navigate);
-                inDirection = MathF.Pow(inDirection, screenWrap ? 1f : 4f); // make it more unlikely to move orthogonally
-                myScore -= (dist.Length() + centerDist.Length() * 0.1f /* not as important. more of a tie breaker */) / inDirection;
+                Vector2 n = Vector2.Normalize(dist + centerDist * 0.01f);
+                if (screenWrap)
+                {
+                    // prioritize finding elements that are close to the border
+                    // stretch the distance into the direction you are searching for. This will prioritize orthogonal elements -> closer to the border
+                    dist *= Vector2.One + navigate.GetAbs() * 1f;
+                }
+                else
+                {
+                    // prioritize perfectly aligned elements
+                    if (Vector2.Dot(dist, navigateOrth) == 0f)
+                    {
+                        if (MathF.Abs(dist.X) > MathF.Abs(dist.Y))
+                        {
+                            // horizontal movement
+                            if (MathF.Abs(centerDist.Y) < 8f) // a leeway of 8px
+                            {
+                                // make distance appear closer
+                                dist.X /= 4f;
+                                centerDist.X /= 4f;
+                            }
+                        }
+                        else
+                        {
+                            // vertical movement
+                            if (MathF.Abs(centerDist.X) < 8f) // a leeway of 8px
+                            {
+                                // make distance appear closer
+                                dist.Y /= 4f;
+                                centerDist.Y /= 4f;
+                            }
+                        }
+                    }
+                }
+                myScore -= dist.Length() + (navigateOrth * Vector2.Dot(navigateOrth, centerDist)).Length() * 0.1f /* not as important. more of a tie breaker */;
 
                 if (myScore > bestScore)
                 {
