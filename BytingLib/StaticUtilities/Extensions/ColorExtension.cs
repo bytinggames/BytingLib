@@ -190,39 +190,9 @@ namespace BytingLib
             return tex;
         }
 
-        static readonly CultureInfo hexToColorCultureInfo = new CultureInfo("en-GB");
         public static Color FromHex(string hex)
         {
-            if (string.IsNullOrEmpty(hex)
-                || (hex.Length != 1 && hex.Length != 3 && hex.Length != 4 && hex.Length != 6 && hex.Length != 8))
-            {
-                return Color.White;
-            }
-
-            if (hex.Length == 1)
-            {
-                hex = new string(hex[0], 6);
-            }
-            else if (hex.Length == 3)
-            {
-                hex = hex.Insert(0, hex[0].ToString()).Insert(2, hex[1].ToString()).Insert(4, hex[2].ToString());
-            }
-            else if (hex.Length == 4)
-            {
-                hex = hex[0].ToString() + hex[0] + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
-            }
-
-            byte r, g, b, a = 255;
-            byte.TryParse(hex.Substring(0, 2), NumberStyles.HexNumber, hexToColorCultureInfo, out r);
-            byte.TryParse(hex.Substring(2, 2), NumberStyles.HexNumber, hexToColorCultureInfo, out g);
-            byte.TryParse(hex.Substring(4, 2), NumberStyles.HexNumber, hexToColorCultureInfo, out b);
-
-            if (hex.Length == 8)
-            {
-                byte.TryParse(hex.Substring(6, 2), NumberStyles.HexNumber, hexToColorCultureInfo, out a);
-            }
-
-            return new Color(r, g, b, a);
+            return new Color(hex);
         }
         public static Color FromHex(int hex)
         {
@@ -231,20 +201,6 @@ namespace BytingLib
             int b = hex & 0x0000ff;
 
             return new Color(r, g, b);
-        }
-
-        public static string ToHex(this Color color)
-        {
-            string hex = "";
-            hex += color.R.ToString("X2");
-            hex += color.G.ToString("X2");
-            hex += color.B.ToString("X2");
-            if (color.A != 255)
-            {
-                hex += color.A.ToString("X2");
-            }
-
-            return hex;
         }
 
         public static float GetColorBrightness(this Color color)

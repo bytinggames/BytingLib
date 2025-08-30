@@ -16,6 +16,7 @@ namespace BytingLib.Serialization
                 new ValueEventFloatJsonConverter(),
                 new ValueEventFloatNullableJsonConverter(),
                 new ValueEventBoolJsonConverter(),
+                new ValueEventColorJsonConverter(),
                 new DateTimeMSJsonConverter(),
             }
         };
