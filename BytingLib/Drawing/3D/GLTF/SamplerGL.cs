@@ -2,9 +2,10 @@
 
 namespace BytingLib
 {
-    public class SamplerGL
+    public class SamplerGL : IDisposable
     {
         public SamplerState SamplerState { get; }
+        private bool ownSamplerState;
 
         public SamplerGL(JsonNode n)
         {
@@ -12,6 +13,7 @@ namespace BytingLib
             int? minFilter = n["minFilter"]?.GetValue<int>();
             TextureFilter textureFilter = GetTextureFilter(magFilter, minFilter);
 
+            ownSamplerState = true;
             SamplerState = new SamplerState()
             {
                 Filter = textureFilter,
@@ -100,6 +102,14 @@ namespace BytingLib
                 10497 => TextureAddressMode.Wrap,
                 _ => throw new NotImplementedException(),
             };
+        }
+
+        public void Dispose()
+        {
+            if (ownSamplerState)
+            {
+                SamplerState.Dispose();
+            }
         }
     }
 }

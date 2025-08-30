@@ -96,7 +96,7 @@ namespace BytingLib
 
             if ((n = root["samplers"]) != null)
             {
-                Samplers = new(n.AsArray(), n => new(n));
+                Samplers = new(n.AsArray(), n => disposables.Use(new SamplerGL(n)));
             }
 
             if ((n = root["images"]) != null)
