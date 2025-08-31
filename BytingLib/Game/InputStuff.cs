@@ -31,6 +31,8 @@ namespace BytingLib
         private readonly Func<MouseState> getMouseState;
         /// <summary>Used for blocking every input except the window resolution. Used for replay to video conversion f.ex.</summary>
         public bool BlockSourceInput { get; set; }
+        public Func<Vector3>? GetAdditionalGyro { get; set; }
+        public Func<Vector3>? GetAdditionalAcceleration { get; set; }
 
         public InputStuff(bool mouseWithActivationClick, WindowManager windowManager, GameWrapper game, DefaultPaths basePaths,
             Action<Action> startRecordingPlayback, bool startRecordingInstantly, InputInputRecordings? inputInputRecordings)
@@ -72,9 +74,15 @@ namespace BytingLib
             }
             else
             {
+                GamePadState gamePadState = GamePad.GetState(
+                    0, 
+                    GamePadDeadZone.None, 
+                    GamePadDeadZone.None, 
+                    GetAdditionalGyro?.Invoke() ?? Vector3.Zero,
+                    GetAdditionalAcceleration?.Invoke() ?? Vector3.Zero);
                 return new FullInput(getMouseState(),
                     CurrentKeyState,
-                    GamePad.GetState(0, GamePadDeadZone.None),
+                    gamePadState,
                     new MetaInputState(game.IsActivatedThisFrame()),
                     windowManager.Resolution);
             }
