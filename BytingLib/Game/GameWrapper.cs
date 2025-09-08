@@ -128,12 +128,14 @@
         protected override bool BeginDraw()
         {
             drawCounter++;
-            
+
+            bool shouldSkip = TargetGameSpeed.Draw.ShouldSkip(TargetElapsedTime, IsFixedTimeStep);
+
             if (
                 // once every 60 ticks let at least draw once, so we at least have 1 fps
                 // if update is running slow, skip draws
-                drawCounter % 60 != 0 && TargetGameSpeed.Update.IsRunningSlow()
-                || TargetGameSpeed.Draw.ShouldSkip(TargetElapsedTime, IsFixedTimeStep)
+                shouldSkip
+                || drawCounter % 60 != 0 && TargetGameSpeed.Update.IsRunningSlow()
                 )
             {
                 return false;
