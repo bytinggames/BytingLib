@@ -60,6 +60,7 @@ namespace BytingLib
                     if (stopwatchRealtime.IsRunning)
                     {
                         TimeSpan elapsed = stopwatchRealtime.Elapsed;
+                        stopwatchRealtime.Restart();
 
                         double maxElapsed = GetMaxElapsedTime(IntervalSeconds ?? monogameTargetElapsedTime.TotalSeconds);
                         if (elapsed.TotalSeconds > maxElapsed)
@@ -67,7 +68,6 @@ namespace BytingLib
                             elapsed = TimeSpan.FromSeconds(maxElapsed);
                         }
 
-                        stopwatchRealtime.Restart();
                         GameTime.ElapsedGameTime = elapsed;
                     }
                     else

@@ -139,31 +139,36 @@
             base.Update(gameTime);
         }
 
+        private bool BeginDrawInner()
+        {
+            if (!base.BeginDraw())
+            {
+                return false;
+            }
+            if (skipDrawCounter < 60 // only allow to skip a frame, if we haven't skipped 60 frames or more in a row
+                && !MaxTimeStepEqualsFixedTimeStep // don't skip frames, when we came from a laggy loading screen
+                && TargetGameSpeed.Update.IsRunningSlow())
+            {
+                return false;
+            }
+            if (TargetGameSpeed.Draw.ShouldSkip(TargetElapsedTime, IsFixedTimeStep))
+            {
+                return false;
+            }
+            return true;
+        }
+
         protected override bool BeginDraw()
         {
-            bool shouldSkip = TargetGameSpeed.Draw.ShouldSkip(TargetElapsedTime, IsFixedTimeStep);
-
-            if (!MaxTimeStepEqualsFixedTimeStep) // don't skip frames, when we've came from a loading screen
+            if (!BeginDrawInner())
             {
-                if (shouldSkip
-                    || TargetGameSpeed.Update.IsRunningSlow()) // if update is running slow, skip draws
-                {
-                    skipDrawCounter++;
-
-                    if (skipDrawCounter >= 60)
-                    {
-                        // once every 60 ticks let at least draw once, so we have at least 1 fps
-                        skipDrawCounter = 0;
-                        return base.BeginDraw();
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
+                skipDrawCounter++;
+                return false;
             }
+
             skipDrawCounter = 0;
-            return base.BeginDraw();
+
+            return true;
         }
 
         protected override void Draw(GameTime gameTime)
