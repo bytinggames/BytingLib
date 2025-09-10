@@ -28,6 +28,7 @@ namespace BytingLib
                 Or(Keys.Left, Buttons.DPadLeft),
                 Or(Keys.Down, Buttons.DPadDown),
                 Or(Keys.Right, Buttons.DPadRight));
+        protected static InputBool False => new BoolConst(false);
 
         public IEnumerable<PropertyInfo> GetRemappableProperties()
         {
