@@ -12,11 +12,11 @@
         public TargetGameSpeed(double? updateInterval, bool constantDrawDelta)
         {
             Update = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), false, false);
+            Update.IntervalSeconds = updateInterval;
             Draw = new TargetGameSpeedTarget(_ => UpdateGameTickInterval(), !constantDrawDelta, !constantDrawDelta)
             {
-                MaxElapsedTimeFactor = 2 // only elapse at max 2 frames, when lagging or leaving window
+                MaxElapsedTime = Update.IntervalSeconds * 10f,
             };
-            Update.IntervalSeconds = updateInterval;
         }
 
         private void UpdateGameTickInterval()

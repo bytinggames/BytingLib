@@ -12,10 +12,24 @@
         public bool IsExited { get; private set; }
         public TargetGameSpeed TargetGameSpeed { get; }
         private bool firstFrameClear = true;
-        private int drawCounter = 0;
+        private int skipDrawCounter = 0;
+        private int useMaxTimeStepEqualsFixedTimeStep = 0;
 
         /// <summary>Is set by Activated and Deactivated events. Maybe this is more precise than base.IsActive. Needs testing.</summary>
         public new bool IsActive { get; private set; }
+
+        /// <summary>
+        /// Used for when we know the game lags (f.ex. when a loading screen is happening) and we don't want to catch up with the updates afterwards
+        /// </summary>
+        public int UseMaxTimeStepEqualsFixedTimeStep
+        {
+            get => useMaxTimeStepEqualsFixedTimeStep;
+            set
+            {
+                useMaxTimeStepEqualsFixedTimeStep = value;
+                MaxTimeStepEqualsFixedTimeStep = useMaxTimeStepEqualsFixedTimeStep > 0;
+            }
+        }
 
         /// <summary>more than 16 msaaSamples is not recommended (made everything a bit pale on my system)</summary>
         public GameWrapper(Func<GameWrapper, IGameBase> createMyGame, int? msaaSamples, TargetGameSpeed targetGameSpeed, bool alwaysActive = false)
@@ -125,20 +139,36 @@
             base.Update(gameTime);
         }
 
-        protected override bool BeginDraw()
+        private bool BeginDrawInner()
         {
-            drawCounter++;
-            
-            if (
-                // once every 60 ticks let at least draw once, so we at least have 1 fps
-                // if update is running slow, skip draws
-                drawCounter % 60 != 0 && TargetGameSpeed.Update.IsRunningSlow()
-                || TargetGameSpeed.Draw.ShouldSkip(TargetElapsedTime, IsFixedTimeStep)
-                )
+            if (!base.BeginDraw())
             {
                 return false;
             }
-            return base.BeginDraw();
+            if (skipDrawCounter < 60 // only allow to skip a frame, if we haven't skipped 60 frames or more in a row
+                && !MaxTimeStepEqualsFixedTimeStep // don't skip frames, when we came from a laggy loading screen
+                && TargetGameSpeed.Update.IsRunningSlow())
+            {
+                return false;
+            }
+            if (TargetGameSpeed.Draw.ShouldSkip(TargetElapsedTime, IsFixedTimeStep))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        protected override bool BeginDraw()
+        {
+            if (!BeginDrawInner())
+            {
+                skipDrawCounter++;
+                return false;
+            }
+
+            skipDrawCounter = 0;
+
+            return true;
         }
 
         protected override void Draw(GameTime gameTime)
