@@ -40,6 +40,12 @@
             Top = Bottom = paddingY;
         }
 
+        public Padding(Vector2 padding)
+        {
+            Left = Right = padding.X;
+            Top = Bottom = padding.Y;
+        }
+
         public Padding(float left, float top, float right, float bottom)
         {
             Left = left;
