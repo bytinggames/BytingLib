@@ -161,6 +161,8 @@ namespace BytingLib
             { (TSphere3, TLine3), (a, b, dir) => DistSphereLine((Sphere3)a, (Line3)b, dir) },
             { (TSphere3, TPlane3), (a, b, dir) => DistSpherePlane((Sphere3)a, (Plane3)b, dir) },
             { (TSphere3, TTriangle3), (a, b, dir) => DistSphereTriangle((Sphere3)a, (Triangle3)b, dir) },
+            { (TSphere3, TAABB3), (a, b, dir) => DistSphereAABB((Sphere3)a, (AABB3)b, dir) },
+            { (TSphere3, TBox3), (a, b, dir) => DistSphereBox((Sphere3)a, (Box3)b, dir) },
             { (TSphere3, TCapsule3), (a, b, dir) => DistAnyCapsule((IShape3)a, (Capsule3)b, dir) },
 
             { (TAxis3, TAxis3), (a, b, dir) => DistAxisAxis((Axis3)a, (Axis3)b, dir) },
@@ -622,10 +624,7 @@ namespace BytingLib
             try
             {
                 // move sphere into box space
-                Vector3 scale = box.Transform.GetScale();
-                Matrix invertWithoutScale = Matrix.Invert(Matrix.CreateScale(Vector3.One / scale) * box.Transform);
-                sphere.Pos = Vector3.Transform(sphere.Pos, invertWithoutScale);
-                AABB3 aabb = AABB3.FromCenter(Vector3.Zero, scale.GetAbs());
+                sphere.Pos = MovePosIntoBoxSpace(sphere.Pos, box, out AABB3 aabb);
                 col = ColSphereAABB(sphere, aabb);
             }
             finally
@@ -633,6 +632,15 @@ namespace BytingLib
                 sphere.Pos = rememberSpherePos;
             }
             return col;
+        }
+
+        private static Vector3 MovePosIntoBoxSpace(Vector3 pos, Box3 box, out AABB3 aabb)
+        {
+            Vector3 scale = box.Transform.GetScale();
+            Matrix invertWithoutScale = Matrix.Invert(Matrix.CreateScale(Vector3.One / scale) * box.Transform);
+            pos = Vector3.Transform(pos, invertWithoutScale);
+            aabb = AABB3.FromCenter(Vector3.Zero, scale.GetAbs());
+            return pos;
         }
 
         public static CollisionResult3 DistSphereAxis(Sphere3 sphere, Axis3 axis, Vector3 dir)
@@ -862,6 +870,157 @@ namespace BytingLib
 
                 return cr;
             }
+        }
+
+        /// <summary>
+        /// Edge collision not performant. 
+        /// Edge collision not tested.
+        /// Reverse dist currently not supported.
+        /// TODO: probably implement with some kind of UseReversePrecisionForDistSphereTriangle()
+        /// </summary>
+        public static CollisionResult3 DistSphereAABB(Sphere3 sphere, AABB3 aabb, Vector3 dir)
+        {
+            CollisionResult3 cr = new();
+
+            #region Faces
+
+            // check each face (only one side per axis required)
+            if (dir.X > 0)
+            {
+                float realDist = aabb.X - (sphere.X + sphere.Radius);
+                if (CheckIfOnXFace(realDist, -1f))
+                {
+                    return cr;
+                }
+            }
+            else if (dir.X < 0)
+            {
+                float realDist = aabb.Max.X - (sphere.X - sphere.Radius);
+                if (CheckIfOnXFace(realDist, 1f))
+                {
+                    return cr;
+                }
+            }
+
+            if (dir.Y > 0)
+            {
+                float realDist = aabb.Y - (sphere.Y + sphere.Radius);
+                if (CheckIfOnYFace(realDist, -1f))
+                {
+                    return cr;
+                }
+            }
+            else if (dir.Y < 0)
+            {
+                float realDist = aabb.Max.Y - (sphere.Y - sphere.Radius);
+                if (CheckIfOnYFace(realDist, 1f))
+                {
+                    return cr;
+                }
+            }
+
+            if (dir.Z > 0)
+            {
+                float realDist = aabb.Z - (sphere.Z + sphere.Radius);
+                if (CheckIfOnZFace(realDist, -1f))
+                {
+                    return cr;
+                }
+            }
+            else if (dir.Z < 0)
+            {
+                float realDist = aabb.Max.Z - (sphere.Z - sphere.Radius);
+                if (CheckIfOnZFace(realDist, 1f))
+                {
+                    return cr;
+                }
+            }
+            #endregion
+
+            #region Edges & Corners
+
+            // check each edge (potentially could skip 3 of 12 on the backside. More of course, with the right algorithm)
+
+            foreach (var edge in aabb.GetEdges())
+            {
+                cr.MinResult(DistSphereLine(sphere, edge, dir));
+            }
+
+            #endregion
+
+            return cr;
+
+            bool CheckIfOnXFace(float realDist, float normalSign)
+            {
+                // check sphere x plane collision
+                float distOnDir = realDist / dir.X;
+                Vector3 spherePosOnCol = sphere.Pos + dir * distOnDir;
+                // check if collision with plane is actually on face
+                if (spherePosOnCol.Y >= aabb.Y
+                    && spherePosOnCol.Y <= aabb.Max.Y
+                    && spherePosOnCol.Z >= aabb.Z
+                    && spherePosOnCol.Z <= aabb.Max.Z)
+                {
+                    cr.Distance = distOnDir;
+                    cr.AxisCol = new Vector3(normalSign, 0f, 0f);
+                    return true;
+                }
+                return false;
+            }
+
+            bool CheckIfOnYFace(float realDist, float normalSign)
+            {
+                // check sphere y plane collision
+                float distOnDir = realDist / dir.Y;
+                Vector3 spherePosOnCol = sphere.Pos + dir * distOnDir;
+                // check if collision with plane is actually on face
+                if (spherePosOnCol.X >= aabb.X
+                    && spherePosOnCol.X <= aabb.Max.X
+                    && spherePosOnCol.Z >= aabb.Z
+                    && spherePosOnCol.Z <= aabb.Max.Z)
+                {
+                    cr.Distance = distOnDir;
+                    cr.AxisCol = new Vector3(0f, normalSign, 0f);
+                    return true;
+                }
+                return false;
+            }
+
+            bool CheckIfOnZFace(float realDist, float normalSign)
+            {
+                // check sphere z plane collision
+                float distOnDir = realDist / dir.Z;
+                Vector3 spherePosOnCol = sphere.Pos + dir * distOnDir;
+                // check if collision with plane is actually on face
+                if (spherePosOnCol.X >= aabb.X
+                    && spherePosOnCol.X <= aabb.Max.X
+                    && spherePosOnCol.Y >= aabb.Y
+                    && spherePosOnCol.Y <= aabb.Max.Y)
+                {
+                    cr.Distance = distOnDir;
+                    cr.AxisCol = new Vector3(0f, 0f, normalSign);
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        public static CollisionResult3 DistSphereBox(Sphere3 sphere, Box3 box, Vector3 dir)
+        {
+            // remember sphere pos so we can rotate and move the sphere by the box matrix
+            Vector3 rememberSpherePos = sphere.Pos;
+            CollisionResult3 cr;
+            try
+            {
+                // move sphere into box space
+                sphere.Pos = MovePosIntoBoxSpace(sphere.Pos, box, out AABB3 aabb);
+                cr = DistSphereAABB(sphere, aabb, dir);
+            }
+            finally
+            {
+                sphere.Pos = rememberSpherePos;
+            }
+            return cr;
         }
 
         #endregion

@@ -94,5 +94,39 @@
         {
             return Min + (Max - Min) * normalizedPosInside;
         }
+
+        public IEnumerable<Vector3> GetCorners()
+        {
+            // this order is used in GetEdges()
+            yield return Pos;
+            yield return Pos + new Vector3(Size.X, 0f, 0f);
+            yield return Pos + new Vector3(Size.X, Size.Y, 0f);
+            yield return Pos + new Vector3(0f, Size.Y, 0f);
+            Vector3 posZ = Pos + new Vector3(0f, 0f, Size.Z);
+            yield return posZ;
+            yield return posZ + new Vector3(Size.X, 0f, 0f);
+            yield return posZ + new Vector3(Size.X, Size.Y, 0f);
+            yield return posZ + new Vector3(0f, Size.Y, 0f);
+        }
+
+        public IEnumerable<Line3> GetEdges()
+        {
+            Vector3[] corners = GetCorners().ToArray();
+            // bottom
+            yield return new(corners[0], corners[1]);
+            yield return new(corners[1], corners[2]);
+            yield return new(corners[2], corners[3]);
+            yield return new(corners[3], corners[0]);
+            // top
+            yield return new(corners[4], corners[5]);
+            yield return new(corners[5], corners[6]);
+            yield return new(corners[6], corners[7]);
+            yield return new(corners[7], corners[4]);
+            // sides
+            yield return new(corners[0], corners[4]);
+            yield return new(corners[1], corners[5]);
+            yield return new(corners[2], corners[6]);
+            yield return new(corners[3], corners[7]);
+        }
     }
 }
