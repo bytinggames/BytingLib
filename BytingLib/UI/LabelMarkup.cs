@@ -108,7 +108,7 @@ namespace BytingLib.UI
             {
                 RoundPositionTo = style.RoundPositionTo,
                 MinLineHeight = MinLineHeight,
-                TotalMilliseconds = style.TotalMilliseconds,
+                TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset,
                 TextureColor = style.TextureColor ?? Color.White,
                 TextureScale = style.MarkupTextureScale,
                 CropSuperfluousHeightThatIsLargerThanLineHeight = CropSuperfluousHeightThatIsLargerThanLineHeight,
