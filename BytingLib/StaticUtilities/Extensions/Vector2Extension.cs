@@ -126,5 +126,26 @@
         {
             return new Vector4(v.X, v.Y, v.X, v.Y);
         }
+
+
+        static readonly Vector2[] dir8 = [
+            new Vector2(1f, 0f),
+            Vector2.Normalize(new Vector2(1f, 1f)),
+            new Vector2(0f, 1f),
+            Vector2.Normalize(new Vector2(-1f, 1f)),
+            new Vector2(-1f, 0f),
+            Vector2.Normalize(new Vector2(-1f, -1f)),
+            new Vector2(0f, -1f),
+            Vector2.Normalize(new Vector2(1f, -1f)),
+            ];
+        public static Vector2 To8Dir(this Vector2 v)
+        {
+            float angle = v.ToAngle();
+            // make positive
+            angle = (angle + MathHelper.TwoPi) % MathHelper.TwoPi;
+            int angleIndex = (int)MathF.Round(angle / MathHelper.PiOver4);
+            angleIndex = Math.Clamp(angleIndex, 0, 7);
+            return dir8[angleIndex];
+        }
     }
 }

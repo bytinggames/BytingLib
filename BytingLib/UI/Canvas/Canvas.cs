@@ -202,6 +202,8 @@
 
         private Element? NavigateInner(Vector2 navigate, bool navigateWithLetters)
         {
+            navigate = navigate.To8Dir();
+
             // if no element is navigated to yet, see if a child provides a starting point
             Element? navigateFrom = null;
             if (NavigateElement == null)
