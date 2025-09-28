@@ -107,24 +107,29 @@
             {
                 //bool alreadyHovering = input.HoverElementForTooltip == this;
                 Hover = input.CanHover(HoverDetectShape, this);
-                if (Hover && OnHoverSustain != null)
-                {
-                    var results = OnHoverSustain.GetInvocationList().Select(x => (bool)x.DynamicInvoke(this, input)!);
-                    // if any invocation returned true, catch the hover ability
-                    if (results.ToArray() // to array forces all subscribers to get invoked. Otherwise with .Any() it would stop once true is returned.
-                        .Any(f => f))
-                    {
-                        input.HoverElement = this;
-                        if (input.NavigateElement != this)
-                        {
-                            input.NavigateElement = null;
-                        }
-                    }
-                }
+                TriggerOnHoverSustain(input);
             }
             else if (input.HoverElement != this)
             {
                 Hover = false;
+            }
+        }
+
+        internal void TriggerOnHoverSustain(ElementInput input)
+        {
+            if (Hover && OnHoverSustain != null)
+            {
+                var results = OnHoverSustain.GetInvocationList().Select(x => (bool)x.DynamicInvoke(this, input)!);
+                // if any invocation returned true, catch the hover ability
+                if (results.ToArray() // to array forces all subscribers to get invoked. Otherwise with .Any() it would stop once true is returned.
+                    .Any(f => f))
+                {
+                    input.HoverElement = this;
+                    if (input.NavigateElement != this)
+                    {
+                        input.NavigateElement = null;
+                    }
+                }
             }
         }
 

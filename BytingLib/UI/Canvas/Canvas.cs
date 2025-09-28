@@ -104,6 +104,16 @@
             }
 
             NavigateElement = Input.NavigateElement;
+            // if nothing has been hovered and we use ui navigation currently, then hover the navigated element
+            if (NavigateElement != null
+                && Input.HoverElement == null
+                && NavigateElement.IsHoverEnabled)
+            {
+                Input.HoverElement = NavigateElement;
+                NavigateElement.Hover = true;
+                NavigateElement.TriggerOnHoverSustain(Input);
+            }
+
             UpdateNavigation();
         }
 
