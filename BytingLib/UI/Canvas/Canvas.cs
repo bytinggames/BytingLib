@@ -275,9 +275,14 @@
             navigate.Normalize();
             Vector2 navigateOrth = new Vector2(-navigate.Y, navigate.X);
             bool currentlyNavigating = NavigateElement != null;
-            Rect navigateRect = NavigateElement?.AbsoluteRect
+            Rect? navigateRect = NavigateElement?.AbsoluteRect
                 ?? navigateFrom?.AbsoluteRect
-                ?? new Rect(this.AbsoluteRect.GetCenter(), Vector2.One);
+                ?? (AbsoluteRect == null ? null : new Rect(this.AbsoluteRect.GetCenter(), Vector2.One));
+
+            if (navigateRect == null)
+            {
+                return null;
+            }
 
             navigateRect = navigateRect.CloneRect();
             navigateRect.Grow(-2f); // make a bit smaller so there's always 1px distance to next ui element, even if stacked without spacing
