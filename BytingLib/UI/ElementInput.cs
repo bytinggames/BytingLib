@@ -42,14 +42,10 @@
 
         public bool CanHover(IShape shape, Element element)
         {
-            if (NavigateElement == element)
-            {
-                return true;
-            }
-
             if (HoverElement == null || element == HoverElement)
             {
-                return shape.CollidesWith(Input.MousePosition);
+                return (NavigateElement == null || Input.MousePosition.Delta != Vector2.Zero)
+                    && shape.CollidesWith(Input.MousePosition);
             }
             return false;
         }

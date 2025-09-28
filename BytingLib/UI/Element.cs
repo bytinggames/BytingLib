@@ -115,6 +115,10 @@
                         .Any(f => f))
                     {
                         input.HoverElement = this;
+                        if (input.NavigateElement != this)
+                        {
+                            input.NavigateElement = null;
+                        }
                     }
                 }
             }

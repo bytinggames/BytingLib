@@ -21,6 +21,7 @@
         public Vector2? NavigateToPosition { get; set; }
         public event Action<Element>? OnNavigate;
         public bool AllowNavigation { get; set; } = true;
+        private bool firstUpdate = true;
 
         //private bool scissorTest;
         protected readonly RasterizerState rasterizerState = CreateDefaultRasterizerState();
@@ -77,6 +78,13 @@
 
         public void Update()
         {
+            if (firstUpdate)
+            {
+                firstUpdate = false;
+                // update navigation once, to prioritize navigation over dead mouse hover
+                UpdateNavigation();
+            }
+
             // reset hover element
             Input.HoverElement = null;
             Input.NavigateElement = NavigateElement;
@@ -95,6 +103,7 @@
                 }
             }
 
+            NavigateElement = Input.NavigateElement;
             UpdateNavigation();
         }
 
@@ -206,9 +215,17 @@
                     }
                 }
 
-                navigateFrom = GetAllVisibleChildren()
-                    .Where(f => (f is not IEnabled enabled || enabled.Enabled) && f.NavigationStart != UINavigationStart.None)
-                    .MaxBy(f => f.NavigationStartPriority);
+                if (Input.HoverElement != null
+                    && Input.HoverElement.CanBeNavigated)
+                {
+                    navigateFrom = Input.HoverElement;
+                }
+                else
+                {
+                    navigateFrom = GetAllVisibleChildren()
+                        .Where(f => (f is not IEnabled enabled || enabled.Enabled) && f.NavigationStart != UINavigationStart.None && f.CanBeNavigated)
+                        .MaxBy(f => f.NavigationStartPriority);
+                }
                 if (navigateFrom != null
                     && (navigateFrom.NavigationStart == UINavigationStart.ToThisElement || navigate == Vector2.Zero))// if navigation is zero, it means we navigate to the marked navigation start
                 {
