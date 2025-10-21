@@ -29,5 +29,9 @@
         {
             return t >= TriangleColType.Edge0 && t <= TriangleColType.Edge2;
         }
+        public static int GetEdgeIndex(this TriangleColType t)
+        {
+            return t - TriangleColType.Edge0;
+        }
     }
 }
