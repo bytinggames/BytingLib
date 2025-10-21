@@ -74,7 +74,7 @@
         public static float AngleTo(this Vector3 vec1, Vector3 vec2)
         {
             float dot = Vector3.Dot(vec1, vec2) / (vec1.Length() * vec2.Length());
-            return MathF.Acos(dot);
+            return MathF.Acos(Math.Clamp(dot, -1f, 1f));
         }
         public static Vector3 GetNonParallelVector(this Vector3 v)
         {
