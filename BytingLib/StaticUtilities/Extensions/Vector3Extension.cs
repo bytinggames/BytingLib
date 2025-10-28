@@ -155,5 +155,18 @@
             r1.Z += r1.Z.AngleDistance(r2.Z) * lerp;
             return r1;
         }
+
+        public static bool NearlyEqual(this Vector3 v, float x, float y, float z, float maxDifference)
+        {
+            return v.X.NearlyEqual(x, maxDifference)
+                && v.Y.NearlyEqual(y, maxDifference)
+                && v.Z.NearlyEqual(z, maxDifference);
+        }
+        public static bool NearlyEqual(this Vector3 v1, Vector3 v2, float maxDifference)
+        {
+            return v1.X.NearlyEqual(v2.X, maxDifference)
+                && v1.Y.NearlyEqual(v2.Y, maxDifference)
+                && v1.Z.NearlyEqual(v2.Z, maxDifference);
+        }
     }
 }
