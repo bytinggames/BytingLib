@@ -18,8 +18,7 @@
 
         public Triangle3(Triangle3 tri)
         {
-            Vertices = new Vector3[3];
-            tri.Vertices.CopyTo(Vertices, 0);
+            Vertices = [tri.Vertices[0], tri.Vertices[1], tri.Vertices[2]];
         }
 
         public Vector3 Pos
