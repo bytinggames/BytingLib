@@ -34,6 +34,21 @@
             return box;
         }
 
+        public static BoundingBox Grow(this BoundingBox box, Vector3 grow)
+        {
+            box.Min -= grow;
+            box.Max += grow;
+            return box;
+        }
+
+        public static BoundingBox Grow(this BoundingBox box, float grow)
+        {
+            Vector3 growV = new Vector3(grow);
+            box.Min -= growV;
+            box.Max += growV;
+            return box;
+        }
+
         public static float DistanceSquaredTo(this BoundingBox box, Vector3 v)
         {
             Vector3 inside = MoveVectorInside(box, v);
