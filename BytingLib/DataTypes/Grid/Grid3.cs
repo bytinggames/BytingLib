@@ -243,6 +243,11 @@
 
         public bool CoordContainsAny(Int3 c) => Lists.ContainsKey(c);
 
+        public IEnumerable<T> GetEntities(IBoundingBox boundingBoxObject)
+        {
+            return GetEntities(GetCoords(boundingBoxObject));
+        }
+
         public IEnumerable<T> GetEntities(BoundingBox boundingBox)
         {
             return GetEntities(GetCoords(boundingBox));
