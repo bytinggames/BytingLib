@@ -124,6 +124,12 @@
             // start and the final result.
             float theta = MathF.Acos(dot) * amount;
             Vector3 RelativeVec = end - start * dot;
+
+            if (RelativeVec == Vector3.Zero)
+            {
+                return Vector3.Lerp(start, end, amount);
+            }
+
             RelativeVec.Normalize();
 
             // Orthonormal basis
