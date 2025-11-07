@@ -334,18 +334,28 @@
             }
             return poly;
         }
-        public static Polygon GetCone(Vector2 pos, float radius, float angleStart, float angle, int vertices)
+        public static Polygon GetCone(Vector2 pos, float radius, float angleStart, float angle, int cornerVertices)
         {
             Polygon poly = new Polygon(pos, new List<Vector2>() { Vector2.Zero });
-            float a = angleStart;
-            float plus = angle / (vertices - 1);
-            for (int i = 0; i < vertices; i++)
+
+            foreach (var v in GetConeVertices(angleStart, angle, cornerVertices))
             {
-                poly.Vertices.Add(new Vector2((float)Math.Cos(a) * radius, (float)Math.Sin(a) * radius));
-                a += plus;
+                poly.Vertices.Add(v * radius);
             }
             return poly;
         }
+
+        public static IEnumerable<Vector2> GetConeVertices(float angleStart, float angle, int cornerVertices)
+        {
+            float a = angleStart;
+            float plus = angle / (cornerVertices - 1);
+            for (int i = 0; i < cornerVertices; i++)
+            {
+                yield return new Vector2((float)Math.Cos(a), (float)Math.Sin(a));
+                a += plus;
+            }
+        }
+
         /*public static Polygon GetCircle(Vector2 pos, float radius, int vertices)
         {
             Polygon poly = new Polygon(pos, new List<Vector2>());
