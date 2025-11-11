@@ -4,14 +4,19 @@
     {
         public readonly Vector3[] Vertices;
 
+        public Triangle3()
+        {
+            Vertices = new Vector3[3];
+        }
+
         public Triangle3(Vector3 vertex1, Vector3 vertex2, Vector3 vertex3)
         {
-            Vertices = new Vector3[]
-            {
+            Vertices =
+            [
                 vertex1,
                 vertex2,
                 vertex3
-            };
+            ];
         }
 
         public static Triangle3 Create(Vector3 pos, Vector3 a, Vector3 b) => new Triangle3(pos, pos + a, pos + b);
@@ -65,8 +70,16 @@
                 Vertices[2].Z += relative;
             }
         }
-        public Vector3 PosA => Vertices[1];
-        public Vector3 PosB => Vertices[2];
+        public Vector3 PosA
+        {
+            get => Vertices[1];
+            set => Vertices[1] = value;
+        }
+        public Vector3 PosB
+        {
+            get => Vertices[2];
+            set => Vertices[2] = value;
+        }
 
         public Vector3 DirA
         {

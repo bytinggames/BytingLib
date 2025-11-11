@@ -17,6 +17,16 @@
             f += minValue;
             return f;
         }
+        public static float NextSinglePow(this Random rand, float minValue, float maxValue, float power)
+        {
+            float f = rand.NextSingle();
+            f = f * 2f - 1f; // [-1; 1]
+            f = MathF.Sign(f) * MathF.Pow(MathF.Abs(f), power);
+            f = f * 0.5f + 0.5f; // [0; 1]
+            f *= maxValue - minValue;
+            f += minValue;
+            return f;
+        }
         public static Vector2 NextVector2(this Random rand)
         {
             return new Vector2(rand.NextSingle(),
