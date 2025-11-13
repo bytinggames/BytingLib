@@ -59,14 +59,15 @@
             return new BoundingBox(Vector3.Min(Pos, Pos2), Vector3.Max(Pos, Pos2));
         }
 
-        public Vector3 DistanceToVector(Vector3 v)
+        public Vector3 DistanceToVector(Vector3 v) => DistanceToVector(v, out _);
+        public Vector3 DistanceToVector(Vector3 v, out float onLine)
         {
             // check if v lies between Pos and Pos2
             Vector3 dir = Dir;
             float dirLength = dir.Length();
             Vector3 dir1 = dir / dirLength;
             Vector3 dist = v - Pos;
-            float onLine = Vector3.Dot(dist, dir1) / dirLength;
+            onLine = Vector3.Dot(dist, dir1) / dirLength;
             if (onLine >= 0f && onLine <= 1f) // 0.1f puffer
             {
                 // v lies between Pos and Pos2
