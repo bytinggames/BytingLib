@@ -17,7 +17,7 @@ namespace BytingPipeline
             return typeof(ModelGL).AssemblyQualifiedName ?? "";
         }
 
-        protected override void Write(ContentWriter output, GLTFContentJson value)
+        public override void Write(ContentWriter output, GLTFContentJson value)
         {
             output.Write(value.Json);
         }

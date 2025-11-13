@@ -17,7 +17,7 @@ namespace BytingPipeline
             return typeof(Animation).AssemblyQualifiedName ?? "";
         }
 
-        protected override void Write(ContentWriter output, AnimationContent value)
+        public override void Write(ContentWriter output, AnimationContent value)
         {
             output.Write(value.Json);
         }

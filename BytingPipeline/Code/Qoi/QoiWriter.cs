@@ -17,7 +17,7 @@ namespace BytingPipeline
             return typeof(Texture2D).AssemblyQualifiedName ?? "";
         }
 
-        protected override void Write(ContentWriter output, QoiTextureContent value)
+        public override void Write(ContentWriter output, QoiTextureContent value)
         {
             value.Write(output);
         }

@@ -33,5 +33,16 @@ namespace BytingLib
             list.RemoveAt(index);
             return get;
         }
+
+        public static void RemoveAll<T>(this IList<T> list, Func<T, int, bool> removeOnCondition)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (removeOnCondition(list[i], i))
+                {
+                    list.RemoveAt(i--);
+                }
+            }
+        }
     }
 }
