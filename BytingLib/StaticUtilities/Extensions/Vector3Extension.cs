@@ -144,12 +144,12 @@
             return new Vector3(arr[0], arr[1], arr[2]);
         }
 
-        public static Vector3 BlenderToGame(this Vector3 v)
+        public static Vector3 FromBlender(this Vector3 v)
         {
             return new Vector3(v.X, v.Z, -v.Y);
         }
 
-        public static Vector3 GameToBlender(this Vector3 v)
+        public static Vector3 ToBlender(this Vector3 v)
         {
             return new Vector3(v.X, -v.Z, v.Y);
         }
