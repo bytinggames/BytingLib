@@ -60,6 +60,7 @@
         }
 
         public Vector3 DistanceToVector(Vector3 v) => DistanceToVector(v, out _);
+        /// <summary>onLine is not clamped to [0,1]</summary>
         public Vector3 DistanceToVector(Vector3 v, out float onLine)
         {
             // check if v lies between Pos and Pos2
