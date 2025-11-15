@@ -531,7 +531,8 @@ namespace BytingLib
                 throw new Exception("there should always be a distance, because the sphere is moved towards the triangle plane");
             }
 
-            if (cr.Distance.Value > 0 || cr.DistanceReversed.Value < 0)
+            if (cr.Distance.Value >= 0 // >= because otherwise the Collision.ColPolygonCircle would check for a circle with radius of 0, which wouldn't make much sense I think
+                || cr.DistanceReversed.Value <= 0) // <= 0 or else we'll get a float.NaN at the sqrt below.
             {
                 return false;
             }
