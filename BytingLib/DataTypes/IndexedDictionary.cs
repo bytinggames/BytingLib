@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace BytingLib
 {
+    /// <summary>Not tested much. Use at own risk!</summary>
     public class IndexedDictionary<Key, Value> : IDictionary<Key, Value> where Key : notnull
     {
         private readonly IDictionary<Key, int> dictionary;
