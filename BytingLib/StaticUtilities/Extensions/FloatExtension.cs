@@ -69,5 +69,14 @@
         {
             return MathF.Abs(a - b) <= maxDifference;
         }
+
+        public static float Clamp(this float f, float min, float max)
+        {
+            return Math.Clamp(f, min, max);
+        }
+        public static float Clamp(this float f, float maxAndMinNegative)
+        {
+            return Math.Clamp(f, -maxAndMinNegative, maxAndMinNegative);
+        }
     }
 }
