@@ -6,6 +6,7 @@ namespace BytingLib
     [JsonDerivedType(typeof(IntMouseWheel), "IntMouseWheel")]
     [JsonDerivedType(typeof(IntNumber), "IntNumber")]
     [JsonDerivedType(typeof(IntOnChange), "IntOnChange")]
+    [JsonDerivedType(typeof(IntEnterWhileHold), "IntEnterWhileHold")]
     public abstract partial class InputInt : Input
     {
     }
