@@ -13,7 +13,7 @@
 
         public HotReloadContent? HotReloadContent { get; }
 
-        public GameBase(GameWrapper g, HotReloadType hotReloadType, ContentConverter contentConverter, bool clearHotReloadOutputPath = true)
+        public GameBase(GameWrapper g, HotReloadType hotReloadType, ContentConverter contentConverter, bool clearHotReloadOutputPath = true, string additionalContentHeader = "")
         {
             gameWrapper = g;
             gDevice = g.GraphicsDevice;
@@ -31,7 +31,7 @@
             switch (hotReloadType)
             {
                 case HotReloadType.Modding:
-                    HotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod", contentConverter);
+                    HotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod", contentConverter, true, additionalContentHeader);
                     contentRawPipe.ContentManagers.Insert(0, HotReloadContent.TempContentRaw);
                     break;
                 case HotReloadType.Debug:
@@ -39,7 +39,8 @@
                         contentCollector,
                         Path.Combine("..", "..", "..", "Content"),
                         contentConverter,
-                        clearHotReloadOutputPath);
+                        clearHotReloadOutputPath,
+                        additionalContentHeader);
                     contentRawPipe.ContentManagers.Insert(0, HotReloadContent.TempContentRaw);
                     break;
             }

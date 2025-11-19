@@ -47,7 +47,7 @@ namespace BytingLib
         }
 
 
-        public ContentBuilder(string modContentDir, string tempOutputPath, string tempPath, ContentConverter contentConverter)
+        public ContentBuilder(string modContentDir, string tempOutputPath, string tempPath, ContentConverter contentConverter, string additionalHeader = "")
         {
             this.modContentDir = modContentDir;
             this.tempOutputPath = tempOutputPath;
@@ -113,6 +113,7 @@ namespace BytingLib
 /define:Configuration={Configuration}
 /define:RuntimeIdentifier={RuntimeIdentifier}
 /define:ConfigRuntime={Configuration}_{RuntimeIdentifier}
+{additionalHeader}
 ";
 
             string sourceHeader = mainContent.Remove(begin);

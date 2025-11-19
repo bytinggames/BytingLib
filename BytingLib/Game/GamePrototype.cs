@@ -53,8 +53,8 @@ namespace BytingLib
             bool mouseWithActivationClick = false,
             bool vsync = true, bool startRecordingInstantly = true, bool enableGameSpeedKeys = false,
             bool randomScreenshots = false, bool clearHotReloadOutputPath = true, bool enableRecordingKeys = true, string saveStateEnvironment = "",
-            bool allowScreenshots = true)
-            : base(g, hotReloadType, contentConverter, clearHotReloadOutputPath)
+            bool allowScreenshots = true, string additionalContentHeader = "")
+            : base(g, hotReloadType, contentConverter, clearHotReloadOutputPath, additionalContentHeader)
         {
             MainThread.Initialize(); // tell the main thread which thread actually is the main thread
 

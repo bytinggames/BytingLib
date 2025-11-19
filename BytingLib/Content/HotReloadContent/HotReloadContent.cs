@@ -19,7 +19,8 @@ namespace BytingLib
 
         readonly Dictionary<string, List<string>> dependencies = new Dictionary<string, List<string>>();
 
-        public HotReloadContent(IServiceProvider serviceProvider, IContentCollector content, string hotReloadContentPath, ContentConverter contentConverter, bool clearHotReloadOutputPath = true)
+        public HotReloadContent(IServiceProvider serviceProvider, IContentCollector content, string hotReloadContentPath, ContentConverter contentConverter, 
+            bool clearHotReloadOutputPath = true, string additionalHeader = "")
         {
             this.content = content;
             this.contentConverter = contentConverter;
@@ -57,7 +58,7 @@ namespace BytingLib
                     Directory.Delete(tempOutputPath, true);
                 }
             }
-            ContentBuilder = new ContentBuilder(sourceContentDir, tempOutputPath, tempPath, contentConverter);
+            ContentBuilder = new ContentBuilder(sourceContentDir, tempOutputPath, tempPath, contentConverter, additionalHeader);
 
             TempContentRaw = new ContentManagerRaw(serviceProvider, ContentBuilder.OutputPath);
 
