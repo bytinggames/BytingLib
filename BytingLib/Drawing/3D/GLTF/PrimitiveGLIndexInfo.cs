@@ -69,11 +69,6 @@ namespace BytingLib
             {
                 var tmpPtr = dataHandle.AddrOfPinnedObject();
 
-                if (IndexElementSize == IndexElementSize.ThirtyTwoBits)
-                {
-                    throw new BytingException("t array must be of type int when reading from a 32 bit index buffer");
-                }
-
                 int stride = IndexElementSize == IndexElementSize.ThirtyTwoBits ? 4 : 2;
 
                 switch (IndexElementSize)
