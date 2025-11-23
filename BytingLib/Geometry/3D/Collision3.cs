@@ -152,6 +152,7 @@ namespace BytingLib
             { (TShapeCollection3, TCylinder3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
             { (TShapeCollection3, TShapeCollection3), (a, b, dir) => DistShapeCollectionObject((IShape3Collection)a, b, dir) },
 
+            { (TVector3, TVector3), (a, b, dir) => DistVectorVector((Vector3)a, (Vector3)b, dir) },
             { (TVector3, TPlane3), (a, b, dir) => DistVectorPlane((Vector3)a, (Plane3)b, dir) },
             { (TVector3, TSphere3), (a, b, dir) => DistVectorSphere((Vector3)a, (Sphere3)b, dir) },
             { (TVector3, TTriangle3), (a, b, dir) => DistVectorTriangle((Vector3)a, (Triangle3)b, dir) },
@@ -366,6 +367,47 @@ namespace BytingLib
                 && vec.X < 0.5f
                 && vec.Y < 0.5f
                 && vec.Z < 0.5f;
+        }
+
+        /// <summary>Not tested yet.</summary>
+        public static CollisionResult3 DistVectorVector(Vector3 vec1, Vector3 vec2, Vector3 dir)
+        {
+            if (dir == Vector3.Zero)
+            {
+                return new();
+            }
+
+            Vector3 actualDistance = vec2 - vec1;
+            Vector3 divided = actualDistance / dir;
+
+            // check if not parallel
+            if (Vector3.Dot(actualDistance, divided) != 0f)
+            {
+                return new();
+            }
+
+            CollisionResult3 cr = new();
+            cr.AxisCol = Vector3.Normalize(-dir);
+            cr.AxisColReversed = -cr.AxisCol;
+            if (divided.X != 0f)
+            {
+                cr.Distance = divided.X;
+            }
+            else if (divided.Y != 0f)
+            {
+                cr.Distance = divided.Y;
+            }
+            else if (divided.Z != 0f)
+            {
+                cr.Distance = divided.Z;
+            }
+            else
+            {
+                // points lying on each other
+                cr.Distance = 0f;
+            }
+            cr.DistanceReversed = -cr.Distance;
+            return cr;
         }
 
         public static CollisionResult3 DistVectorSphere(Vector3 vec, Sphere3 sphere, Vector3 dir)
