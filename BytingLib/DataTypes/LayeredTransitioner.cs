@@ -75,6 +75,14 @@ namespace BytingLib
             }
         }
 
+        public LayeredTransitioner<TValue> Clone()
+        {
+            var clone = (LayeredTransitioner<TValue>)MemberwiseClone();
+            clone.transitions = transitions.Select(f => f.Clone()).ToList();
+
+            return clone;
+        }
+
         class Transition<T>
         {
             readonly T endValue;
@@ -106,6 +114,12 @@ namespace BytingLib
             }
 
             public T GetEndValue() => endValue;
+
+            internal Transition<T> Clone()
+            {
+                var clone = (Transition<T>)MemberwiseClone();
+                return clone;
+            }
         }
     }
 }

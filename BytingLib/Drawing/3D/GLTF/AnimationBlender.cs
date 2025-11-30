@@ -92,5 +92,14 @@
         {
             return model.Value.Animations?.Get(index);
         }
+
+        public AnimationBlender Clone()
+        {
+            AnimationBlender clone = (AnimationBlender)MemberwiseClone();
+
+            clone.transitioner = transitioner.Clone();
+
+            return clone;
+        }
     }
 }
