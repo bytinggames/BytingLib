@@ -78,5 +78,15 @@
         {
             return Math.Clamp(f, -maxAndMinNegative, maxAndMinNegative);
         }
+
+        public static float Wrap(this float n, float wrapRange)
+        {
+            n %= wrapRange;
+            if (n < 0)
+            {
+                n += wrapRange;
+            }
+            return n;
+        }
     }
 }
