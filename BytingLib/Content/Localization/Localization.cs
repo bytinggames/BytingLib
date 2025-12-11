@@ -38,7 +38,88 @@ namespace BytingLib
 
         private static string[] CsvFileToLines(string file)
         {
-            return File.ReadAllLines(file, Encoding.UTF8); // file.Replace("\r", "").Split(new char[] { '\n' });
+            string[] lines = File.ReadAllLines(file, Encoding.UTF8);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                bool anyStars = false;
+                for (int j = 0; j < lines[i].Length; j++)
+                {
+                    if (lines[i][j] == '*')
+                    {
+                        anyStars = true;
+                        break;
+                    }
+                }
+                if (anyStars)
+                {
+                    ReplaceStars(ref lines[i]);
+                }
+            }
+
+            return lines;
+        }
+
+        private static void ReplaceStars(ref string str)
+        {
+            StringBuilder builder = new(str);
+            char? c;
+            int i = 0;
+            while ((c = ReadChar()) != null )
+            {
+                if (c == '{')
+                {
+                    c = ReadChar();
+                    if (c == '*')
+                    {
+                        // open
+                        int bracketStart = i - 2;
+                        string idStr = "";
+                        while ((c = ReadChar()) != null)
+                        {
+                            if (c == '}')
+                            {
+                                break;
+                            }
+                            idStr += c;
+                        }
+                        if (c == null)
+                        {
+                            throw new Exception("unexpected end");
+                        }
+                        int id;
+                        if (idStr == "")
+                        {
+                            id = 1;
+                        }
+                        else
+                        {
+                            id = int.Parse(idStr);
+                        }
+
+                        builder.Remove(bracketStart + 1, 2 + idStr.Length); //  remove *2}      { remains
+                        builder.Insert(bracketStart + 1, $">{id}{{"); //        insert >2{      {>2{ remains
+                    }
+                    else if (c == '/' && ReadChar() == '*' && ReadChar() == '}')
+                    {
+                        // close
+                        int bracketStart = i - 4;
+                        builder.Remove(bracketStart, 3); //     remove {/*      } remains
+                        builder.Insert(bracketStart, '}'); //   insert }        }} remains
+                    }
+                }
+            }
+
+            str = builder.ToString();
+
+            char? ReadChar()
+            {
+                if (i >= builder.Length)
+                {
+                    return null;
+                }
+                return builder[i++];
+            }
         }
 
         public void Reload()
