@@ -603,10 +603,22 @@ namespace BytingLib
                     {
                         if (localizationLines[lineIndex][^1] == textMarker)
                         {
-                            index = localizationLines[lineIndex].Length - 1;
+                            // end reached. this is the last column
+                            if (column > 0)
+                            {
+                                return null;
+                            }
+                            index = localizationLines[lineIndex].Length;
+                        }
+                        else
+                        {
+                            throw new Exception("end of \" escaped string not found in " + localizationLines[lineIndex]);
                         }
                     }
-                    index++; // skip over "
+                    else
+                    {
+                        index++; // skip over "
+                    }
                 }
                 else
                 {
