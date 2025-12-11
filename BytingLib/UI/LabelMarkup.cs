@@ -61,7 +61,7 @@ namespace BytingLib.UI
                 //textFill.DrawPolygon(spriteBatch);
                 //textFill.TextFill?.DrawSegments(spriteBatch, Color.Blue * 0.1f);
 
-                if (!AutoSetSizeToText)
+                if (!AutoSetSizeToText) // AutoSizeText is handled in Label.UpdateTreeBeginSelf()
                 {
                     UpdateMarkupWrapped(style);
                 }
