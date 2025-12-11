@@ -170,7 +170,14 @@ namespace BytingLib.UI
                 if (AutoSetSizeToText)
                 {
                     Vector2 size = newMarkup.GetSizeSubstring(GetDefaultSetting(null, style), new(newMarkup.Root)); //settings
-                    Width = size.X;
+                    if (KeepInitialWidthAsWidth)
+                    {
+                        Width = InitialWidth;
+                    }
+                    else
+                    {
+                        Width = size.X;
+                    }
                     Height = size.Y;
                 }
             }

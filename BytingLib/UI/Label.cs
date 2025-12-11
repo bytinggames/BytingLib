@@ -16,6 +16,7 @@
             }
         }
         public bool AutoSetSizeToText { get; set; }
+        public bool KeepInitialWidthAsWidth { get; set; }
         protected string? textToDraw;
         protected string TextToDraw => textToDraw ?? Text;
         public float InitialWidth { get; set; }
@@ -75,7 +76,6 @@
             if (AutoSetSizeToText)
             {
                 SetSizeToText(style);
-                AutoSetSizeToText = false; // not 100% sure if this is a good idea, but it fixes anchoring of text in leaderboard popups
             }
             base.UpdateTreeBeginSelf(style);
         }
