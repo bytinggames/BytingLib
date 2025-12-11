@@ -10,9 +10,14 @@ namespace BytingLib.Markup
         {
         }
 
-        static string AppendAfterSentence(string text, string append)
+        public MarkupAfterSentence(Creator creator, string text, string append, string extraSentenceEndingCharacters)
+            : base(creator, AppendAfterSentence(text, append, extraSentenceEndingCharacters))
         {
-            return Regex.Replace(text, "[;.!?！。．？‼⁇⁈⁉]", f => f + append);
+        }
+
+        static string AppendAfterSentence(string text, string append, string extraSentenceEndingCharacters = "")
+        {
+            return Regex.Replace(text, "[;.!?！。．？‼⁇⁈⁉"+ extraSentenceEndingCharacters + "]", f => f + append);
         }
     }
 }
