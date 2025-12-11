@@ -21,7 +21,7 @@
         {
             if (settings.TotalMilliseconds % 1000 < 500)
             {
-                float lineSpacing = settings.LineSpacing;
+                float lineSpacing = MathF.Max(settings.MinLineHeight, settings.LineSpacing);
                 settings.SpriteBatch.DrawRectangle(settings.Anchor.Rectangle(Math.Max(1, lineSpacing / 12), lineSpacing), Color);
             }
         }

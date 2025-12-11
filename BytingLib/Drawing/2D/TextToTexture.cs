@@ -95,7 +95,8 @@ namespace BytingLib
                     markupSettings.TextureScale,
                     markupSettings.VerticalSpaceBetweenLines * fontSize,
                     paddingNormalized,
-                    markupSettings.VerticalAlignInLine);
+                    markupSettings.VerticalAlignInLine,
+                    markupSettings.MinLineHeight);
             });
             return tex;
         }
@@ -177,7 +178,8 @@ namespace BytingLib
         }
 
         public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color backgroundColor, List<List<Vector2>> polygons, 
-            TextFillObject.PolyType polyType, TextWrap splitMethod, Vector2 anchor, Vector2 texSize, Vector2? textureScale = null, float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null, float anchorInLineY = 0.5f)
+            TextFillObject.PolyType polyType, TextWrap splitMethod, Vector2 anchor, Vector2 texSize, Vector2? textureScale = null, 
+            float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null, float anchorInLineY = 0.5f, float minLineHeight = 0f)
         {
             textureScale ??= Vector2.One;
             //if (textures.ContainsKey((text, font.Value, backgroundColor, textureScale)))
@@ -193,6 +195,7 @@ namespace BytingLib
                 TextureScale = textureScale.Value
             };
             TextFillObject textFill = new(text, polygons, polyType, splitMethod, false, true, true);
+            textFill.MinLineHeight = minLineHeight;
             textFill.Anchor = anchor;
             textFill.AnchorInLineY = anchorInLineY;
             textFill.PaddingNormalized = paddingNormalized;

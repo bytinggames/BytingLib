@@ -212,7 +212,7 @@ namespace BytingLib.Markup
             // crop to line spacing, when:
             if (allElementsConfineToLineSpacing) // all elements in the line support LineSpacing
             {
-                float lineSpacing = settings.LineSpacing;
+                float lineSpacing = MathF.Max(settings.MinLineHeight, settings.LineSpacing);
                 if (lineSize.Y > lineSpacing)
                 {
                     if (!settings.CropSuperfluousHeightThatIsLargerThanLineHeight)
@@ -236,7 +236,7 @@ namespace BytingLib.Markup
         {
             croppedBecauseOfLineHeight = null;
 
-            Vector2 lineSize = new Vector2(0, settings.MinLineHeight);
+            Vector2 lineSize = new Vector2(0, 0);
             bool allElementsConfineToLineSpacing = true;
             foreach (var element in line)
             {
@@ -286,10 +286,20 @@ namespace BytingLib.Markup
             {
                 return null;
             }
+
+            // this change is not tested very much
+            if (lineSize == Vector2.Zero && startOrEndFound == 1)
+            {
+                return null;
+            }
+
+            lineSize.Y = MathF.Max(lineSize.Y, settings.MinLineHeight);
+
             // crop to line spacing, when:
             if (allElementsConfineToLineSpacing) // all elements in the line support LineSpacing
             {
-                float lineSpacing = settings.LineSpacing;
+                float lineSpacing = MathF.Max(settings.MinLineHeight, settings.LineSpacing);
+                
                 if (lineSize.Y > lineSpacing)
                 {
                     if (!settings.CropSuperfluousHeightThatIsLargerThanLineHeight)

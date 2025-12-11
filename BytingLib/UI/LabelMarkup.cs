@@ -7,7 +7,7 @@ namespace BytingLib.UI
         MarkupRoot? markup;
         private readonly Creator creator;
 
-        public float MinLineHeight { get; set; }
+        private readonly float minLineHeight;
         public double AnimationMillisecondsOffset { get; set; }
         /// <summary>see <see cref="MarkupSettings.CropSuperfluousHeightThatIsLargerThanLineHeight"/></summary>
         public bool CropSuperfluousHeightThatIsLargerThanLineHeight { get; set; } = false;
@@ -25,14 +25,16 @@ namespace BytingLib.UI
             }
         }
 
-        public LabelMarkup(string text, Creator creator, float width = 0f, float height = 0f, bool setSizeToText = true, TextWrap wrap = TextWrap.AllowMidWordIfSpaceNotPossible)
+        public LabelMarkup(string text, Creator creator, float width = 0f, float height = 0f, bool setSizeToText = true, TextWrap wrap = TextWrap.AllowMidWordIfSpaceNotPossible, float minLineHeight = 0f)
             : base(text, width, height, setSizeToText)
         {
             this.creator = creator;
+            this.minLineHeight = minLineHeight;
 
             if (width != 0f)
             {
                 textFill = new TextFillObject(text, new(), TextFillObject.PolyType.Normalized01, wrap, true);
+                textFill.MinLineHeight = minLineHeight;
                 if (width < 0f)
                 {
                     this.AutoSetSizeToText = false;
@@ -74,7 +76,7 @@ namespace BytingLib.UI
                     markup.Draw(new MarkupSettings(spriteBatch, style.FontBold, AbsoluteRect.GetAnchor(Anchor), style.FontBoldColor, Anchor.X, GetFontScale(style), Tilt)
                     {
                         RoundPositionTo = style.RoundPositionTo,
-                        MinLineHeight = MinLineHeight,
+                        MinLineHeight = minLineHeight,
                         TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset,
                         ForceTextColor = true,
                         TextureColor = style.TextureColor ?? Color.White, // not sure if this should be the default for textures drawn with a bold font
@@ -107,7 +109,7 @@ namespace BytingLib.UI
                 Tilt)
             {
                 RoundPositionTo = style.RoundPositionTo,
-                MinLineHeight = MinLineHeight,
+                MinLineHeight = minLineHeight,
                 TotalMilliseconds = style.TotalMilliseconds - AnimationMillisecondsOffset,
                 TextureColor = style.TextureColor ?? Color.White,
                 TextureScale = style.MarkupTextureScale,

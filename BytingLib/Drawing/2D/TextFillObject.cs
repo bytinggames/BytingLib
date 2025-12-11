@@ -23,6 +23,7 @@ namespace BytingLib
         public string? MarkupTextOutput { get; private set; }
         public Padding? PaddingNormalized { get; set; }
         public bool IterativeFitting { get; set; }
+        public float MinLineHeight { get; set; } = 0f;
 
         public TextFillObject(string text, List<List<Vector2>> polygons, PolyType polyType, TextWrap splitMethod, bool relativeJumps, bool borderLeft = true, bool borderRight = true)
         {
@@ -128,7 +129,8 @@ namespace BytingLib
 
             ApplyPaddingToClone(ref rect);
 
-            TextFill = new TextFill(Text, font, rect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, relativeJumps, borderLeft, borderRight, creator, IterativeFitting, AnchorInLineY);
+            TextFill = new TextFill(Text, font, rect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, relativeJumps, 
+                borderLeft, borderRight, creator, IterativeFitting, AnchorInLineY, MinLineHeight);
         }
 
         private void ApplyPaddingToClone(ref Rect rect)

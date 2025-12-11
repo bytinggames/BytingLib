@@ -13,7 +13,7 @@ namespace BytingLib
         List<Rect> segments = new();
 
         public TextFill(string text, Ref<SpriteFont> font, Rect containerRect, Vector2 anchor, bool globalAnchor, List<List<Vector2>> polygons, TextWrap splitMethod, bool relativeJumps,
-            bool borderLeft = true, bool borderRight = true, Creator? creator = null, bool iterative = true, float anchorInLineY = 0.5f)
+            bool borderLeft = true, bool borderRight = true, Creator? creator = null, bool iterative = true, float anchorInLineY = 0.5f, float minLineSpacing = 0f)
         {
             this.anchor = anchor;
             this.globalAnchor = globalAnchor;
@@ -42,7 +42,7 @@ namespace BytingLib
                 }
             }
 
-            float defaultLineHeight = font.Value.LineSpacing * FontScale.Y;
+            float defaultLineHeight = MathF.Max(minLineSpacing, font.Value.LineSpacing) * FontScale.Y;
             float textHeightEstimation = containerRect.Height;
 
             bool correctOverflow;
@@ -146,7 +146,7 @@ namespace BytingLib
                         }
                     }
 
-                    defaultLineHeight = font.Value.LineSpacing * FontScale.Y;
+                    defaultLineHeight = MathF.Max(minLineSpacing, font.Value.LineSpacing) * FontScale.Y;
                 }
                 else
                 {
