@@ -5,6 +5,7 @@ namespace BytingLib
     public partial class Localization : ILocaChanger
     {
         private readonly char separator;
+        private readonly bool convertStars;
         private const char textMarker = '"';
         private const char adder = '.';
         private const char nestedLevel = '\t';
@@ -23,10 +24,12 @@ namespace BytingLib
         public string[]? CsvOutput { get; private set; }
 
 
-        public Localization(string csvFile, string languageKey, string defaultLanguage = "en", bool fallbackToFirstLanguage = true, bool resolveValues = true, bool skipPluses = false, Localization? locaOverride = null, char separator = ';')
+        public Localization(string csvFile, string languageKey, string defaultLanguage = "en", bool fallbackToFirstLanguage = true, bool resolveValues = true, 
+            bool skipPluses = false, Localization? locaOverride = null, char separator = ';', bool convertStars = true)
         {
             this.csvFile = csvFile;
             this.separator = separator;
+            this.convertStars = convertStars;
             LanguageKey = languageKey;
             this.defaultLanguage = defaultLanguage;
             this.fallbackToFirstLanguage = fallbackToFirstLanguage;
@@ -36,24 +39,27 @@ namespace BytingLib
             Initialize();
         }
 
-        private static string[] CsvFileToLines(string file)
+        private static string[] CsvFileToLines(string file, bool convertStars)
         {
             string[] lines = File.ReadAllLines(file, Encoding.UTF8);
 
-            for (int i = 0; i < lines.Length; i++)
+            if (convertStars)
             {
-                bool anyStars = false;
-                for (int j = 0; j < lines[i].Length; j++)
+                for (int i = 0; i < lines.Length; i++)
                 {
-                    if (lines[i][j] == '*')
+                    bool anyStars = false;
+                    for (int j = 0; j < lines[i].Length; j++)
                     {
-                        anyStars = true;
-                        break;
+                        if (lines[i][j] == '*')
+                        {
+                            anyStars = true;
+                            break;
+                        }
                     }
-                }
-                if (anyStars)
-                {
-                    ReplaceStars(ref lines[i]);
+                    if (anyStars)
+                    {
+                        ReplaceStars(ref lines[i]);
+                    }
                 }
             }
 
@@ -147,14 +153,14 @@ namespace BytingLib
 
         private void Initialize()
         {
-            InitializeInner();
+            InitializeInner(convertStars);
 
             TriggerReloadSubs();
         }
 
-        private void InitializeInner()
+        private void InitializeInner(bool convertStars)
         {
-            string[] localizationLines = CsvFileToLines(csvFile);
+            string[] localizationLines = CsvFileToLines(csvFile, convertStars);
 
             if (locaOverride != null)
             {
@@ -593,6 +599,13 @@ namespace BytingLib
                 {
                     index++; // skip over "
                     index = localizationLines[lineIndex].IndexOf(textMarker.ToString() + separator, index + 1);
+                    if (index == -1)
+                    {
+                        if (localizationLines[lineIndex][^1] == textMarker)
+                        {
+                            index = localizationLines[lineIndex].Length - 1;
+                        }
+                    }
                     index++; // skip over "
                 }
                 else
@@ -725,7 +738,7 @@ namespace BytingLib
 
             for (int i = 0; i < locas.Length; i++)
             {
-                locas[i] = new(locaFile, columns[i], defaultLanguageKey, false, false, true);
+                locas[i] = new(locaFile, columns[i], defaultLanguageKey, false, false, true, null, ';', false);
             }
 
             string[] keys = locas[0].dictionary.Keys.ToArray();
@@ -769,9 +782,9 @@ namespace BytingLib
             string[] columns = translatedLines[0].Split([separator]);
             string targetLanguage = columns[targetLanguageColumnIndex];
 
-            Localization translated = new(translatorFile, targetLanguage, defaultLanguageKey, false, false, true, null, separator);
+            Localization translated = new(translatorFile, targetLanguage, defaultLanguageKey, false, false, true, null, separator, false);
 
-            Localization loca = new(locaFile, targetLanguage, defaultLanguageKey, false, false, true, translated);
+            Localization loca = new(locaFile, targetLanguage, defaultLanguageKey, false, false, true, translated, ';', false);
 
             if (loca.CsvOutput != null)
             {
