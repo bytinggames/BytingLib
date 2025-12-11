@@ -98,7 +98,10 @@ namespace BytingLib
                         }
 
                         builder.Remove(bracketStart + 1, 2 + idStr.Length); //  remove *2}      { remains
-                        builder.Insert(bracketStart + 1, $">{id}{{"); //        insert >2{      {>2{ remains
+                        string newStr = $">{id}{{";
+                        int insertInto = bracketStart + 1;
+                        builder.Insert(insertInto, newStr); //        insert >2{      {>2{ remains
+                        i = insertInto + newStr.Length;
                     }
                     else if (c == '/' && ReadChar() == '*' && ReadChar() == '}')
                     {
@@ -106,6 +109,7 @@ namespace BytingLib
                         int bracketStart = i - 4;
                         builder.Remove(bracketStart, 3); //     remove {/*      } remains
                         builder.Insert(bracketStart, '}'); //   insert }        }} remains
+                        i = bracketStart + 2;
                     }
                 }
             }
