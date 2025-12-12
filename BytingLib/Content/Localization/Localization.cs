@@ -104,9 +104,9 @@ namespace BytingLib
                         }
 
                         builder.Remove(bracketStart + 1, 2 + idStr.Length); //  remove *2}      { remains
-                        string newStr = $">{id}{{";
+                        string newStr = $".{id}{{";
                         int insertInto = bracketStart + 1;
-                        builder.Insert(insertInto, newStr); //        insert >2{      {>2{ remains
+                        builder.Insert(insertInto, newStr); //        insert .2{      {.2{ remains
                         i = insertInto + newStr.Length;
                     }
                     else if (c == '/' && ReadChar() == '*' && ReadChar() == '}')
@@ -337,23 +337,12 @@ namespace BytingLib
                                 else if (command[0] < '0' || command[0] > '9')
                                 {
                                     // loca key
-                                    if (command[0] == '.')
-                                    {
-                                        // relative key
-                                        string currentKey = keyDirectory;
-                                        if (currentKey != "")
-                                        {
-                                            currentKey += ".";
-                                        }
-                                        currentKey += command.Substring(1);
-                                        replacement = InnerE(currentKey);
-                                    }
-                                    else if (command[0] == ':')
+                                    if (command[0] == ':')
                                     {
                                         // relative upwards key
                                         string currentKey = keyDirectory;
                                         int k;
-                                        for (k = 1; k < command.Length && command[k - 1] == ':'; k++)
+                                        for (k = 2; k < command.Length && command[k - 1] == ':'; k++)
                                         {
                                             currentKey = currentKey.Remove(currentKey.LastIndexOf('.'));
                                         }
@@ -367,11 +356,11 @@ namespace BytingLib
 
                                         replacement = InnerE(currentKey);
                                     }
-                                    else if (command[0] == '>')
+                                    else if (command[0] == '.')
                                     {
                                         // relative downwards key (equal to .currentNode.)
                                         string currentKey = key;
-                                        currentKey += "." + command.Substring(1);
+                                        currentKey += command;
                                         replacement = InnerE(currentKey);
                                     }
                                     else
