@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace BytingLib
 {
@@ -44,7 +45,21 @@ namespace BytingLib
 
         private static string[] CsvFileToLines(string file)
         {
-            return File.ReadAllLines(file, Encoding.UTF8);
+            string[] lines = File.ReadAllLines(file, Encoding.UTF8);
+            ReplaceParameterTags(lines);
+            return lines;
+        }
+
+        private static void ReplaceParameterTags(string[] lines)
+        {
+            for (int i = 0; i < lines.Length; i++)
+            {
+                lines[i] = Regex.Replace(
+    lines[i],
+    @"<_([0-9]+)>.*?</_\1>",
+    "{$1}"
+);
+            }
         }
 
         public void Reload()
