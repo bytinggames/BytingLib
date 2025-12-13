@@ -326,7 +326,7 @@ namespace BytingLib
                         if (replacement != null)
                         {
                             line = line.Remove(beforeWholeTag) + replacement + line.Substring(afterWholeTag);
-                            afterWholeTag = beforeWholeTag + replacement.Length;
+                            afterWholeTag = beforeWholeTag + replacement.Length - 1;
                         }
                     }
                 }
@@ -378,7 +378,6 @@ namespace BytingLib
                                 int beforeTag = i;
                                 (string innerTag, string[]? innerParameters) = ParseTagRecursively(ref line, ref i);
                                 ReplaceTag(ref line, beforeTag, ref i, innerTag, innerParameters);
-                                i--;
                             }
                         }
                         i++;
