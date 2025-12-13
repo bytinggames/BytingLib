@@ -674,14 +674,17 @@ namespace BytingLib
 
         public static string CsvExportForTranslator(string locaFile, string[] columns, string defaultLanguageKey = "en", char separator = ';')
         {
-            Localization[] locas = new Localization[columns.Length];
+            Localization?[] locas = new Localization?[columns.Length];
 
             for (int i = 0; i < locas.Length; i++)
             {
-                locas[i] = new(locaFile, columns[i], defaultLanguageKey, false, false, true);
+                if (DoesLanguageExist(locaFile, columns[i]))
+                {
+                    locas[i] = new(locaFile, columns[i], defaultLanguageKey, false, false, true);
+                }
             }
 
-            string[] keys = locas[0].dictionary.Keys.ToArray();
+            string[] keys = locas.FirstOrDefault(f => f != null)!.dictionary.Keys.ToArray();
 
             // first row (csv head / columns)
             string csv = "key";
@@ -699,11 +702,20 @@ namespace BytingLib
                 csv += key;
                 for (int j = 0; j < locas.Length; j++)
                 {
-                    csv += separator + locas[j].dictionary[key];
+                    csv += separator;
+                    if (locas[j] != null)
+                    {
+                        csv += locas[j]!.dictionary[key];
+                    }
                 }
             }
 
             return csv;
+        }
+
+        private static bool DoesLanguageExist(string locaFile, string language, char separator = ';')
+        {
+            return File.ReadLines(locaFile).First().Split([separator]).Any(f => f == language);
         }
 
         public static void CsvImportFromTranslator(string locaFile, string translatorFile, char separator, int targetLanguageColumnIndex = 2, string defaultLanguageKey = "en")
