@@ -11,7 +11,7 @@ namespace BytingLib
         private const char tagClose = '>';
         private const char tagSlash = '/';
         private const char nestedLevel = '\t';
-        private const char parameterSplit = '|';
+        private const char parameterSplit = '§';
         private const char plus = '+';
         private string csvFile;
         private readonly string defaultLanguage;
@@ -180,6 +180,9 @@ namespace BytingLib
 
             void ParseLine(int lineIndex, string keyDirectory, string localKey)
             {
+                if (keyDirectory == ("hud_dontCrouch") && localKey == "upRamp")
+                { }
+
                 bool endsWithPlus = localizationLines[lineIndex].EndsWith($";<{plus}/>");
                 if (skipPluses && endsWithPlus)
                 {
@@ -187,9 +190,6 @@ namespace BytingLib
                 }
 
                 string? value = GetCell(lineIndex, languageColumn, localizationLines);
-
-                if (value.Contains("wide"))
-                { }
 
                 if (string.IsNullOrEmpty(value))
                 {

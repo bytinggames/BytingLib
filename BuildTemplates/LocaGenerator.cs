@@ -90,7 +90,6 @@ $@"
 
         static string GenerateLoca(Dictionary<string, string> dictionary)
         {
-
             Folder root = new(null, "Loca");
 
             foreach (var (key, value) in dictionary)
