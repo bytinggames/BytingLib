@@ -217,19 +217,7 @@ namespace BytingLib
 
                 if (resolveValues)
                 {
-                    #region value commands <_some_key>, <some_key>, <Some_key> and <+/>
-
-                    for (int j = 0; j < value.Length; j++)
-                    {
-                        if (value[j] == tagOpen)
-                        {
-                            int beforeTag = j;
-                            (string tag, string[]? args) = ParseTagRecursively(ref value, ref j);
-                            ReplaceTag(ref value, beforeTag, ref j,  tag, args);
-                        }
-                    }
-
-                    #endregion
+                    ParseRawLocaString(ref value);
 
                     value = value.Replace("\\n", "\n");
                 }
@@ -256,6 +244,21 @@ namespace BytingLib
                     }
                 }
 
+
+                void ParseRawLocaString(ref string value)
+                {
+                    // value commands <_some_key>, <some_key>, <Some_key> and <+/>
+                    for (int j = 0; j < value.Length; j++)
+                    {
+                        if (value[j] == tagOpen)
+                        {
+                            int beforeTag = j;
+                            (string tag, string[]? args) = ParseTagRecursively(ref value, ref j);
+                            ReplaceTag(ref value, beforeTag, ref j, tag, args);
+                        }
+                    }
+                }
+
                 void ReplaceTag(ref string line, int beforeWholeTag, ref int afterWholeTag, string tag, string[]? args)
                 {
                     if (tag.Length > 0)
@@ -265,6 +268,10 @@ namespace BytingLib
                         {
                             // use same as language defaultLanguageIndex (en)
                             replacement = GetCell(lineIndex, defaultLanguageIndex, localizationLines);
+                            if (replacement != null)
+                            {
+                                ParseRawLocaString(ref replacement);
+                            }
                         }
                         else
                         {
@@ -357,6 +364,12 @@ namespace BytingLib
                             if (secondTag)
                             {
                                 int parametersEnd = i; // before </
+                                i = line.IndexOf(tagClose, i + 1);
+                                if (i == -1)
+                                {
+                                    throw new Exception("</ wasn't closed");
+                                }
+                                i++;
                                 string parameters = line.Substring(parametersStart, parametersEnd - parametersStart);
                                 return (tag, parameters.Split(parameterSplit));
                             }
