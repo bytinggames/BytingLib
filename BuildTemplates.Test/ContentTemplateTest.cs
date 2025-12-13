@@ -2,6 +2,7 @@ using BytingLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
+using System.Threading;
 
 namespace BuildTemplates.Test
 {
@@ -73,6 +74,7 @@ namespace BuildTemplates.Test
             ProcessorToDataType.Add("CollisionModelProcessor", "CollisionModelBytes");
             ProcessorToDataType.Add("TextureStampProcessor", "Texture2D");
             ProcessorToDataType.Add("TextureShrinkProcessor", "Texture2D");
+            ProcessorToDataType.Add("ShortcutProcessor", "ShortcutContent");
             DataTypeToVarExtension.Add("CollisionModelBytes", "Col");
             //RuntimeTypes.Add("CollisionModelBytes", typeof(CollisionModelBytes));
         }

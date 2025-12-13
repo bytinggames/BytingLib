@@ -1,5 +1,4 @@
 ﻿using BytingLib;
-using System.Collections.Generic;
 
 namespace BuildTemplates
 {
@@ -14,32 +13,6 @@ namespace BuildTemplates
 
             return GenerateLoca(dictionary);
         }
-
-        //public static string Generate(string contentPath, string nameSpace)
-        //{
-        //    string locaCode = "";
-
-        //    foreach (var file in Directory.EnumerateFiles(contentPath, "*.loca", SearchOption.AllDirectories))
-        //    {
-        //        string csvContent = File.ReadAllText(file);
-        //        string[] languages = csvContent.Remove(csvContent.IndexOf('\n')).Split(new char[] { ';' }).Skip(1).ToArray();
-
-        //        //foreach (string language = languages[0];//)
-        //        string language = languages[0];
-        //        {
-        //            var lan = language.Replace("\r", "");
-        //            Localization loca = new Localization(csvContent, lan);
-        //            Dictionary<string, string> dictionary = loca.GetDictionary();
-
-
-        //            locaCode += GenerateLoca(dictionary, nameSpace);
-        //                // WAIT: is hot reloading even possible then?
-        //                // isn'T this overkill?
-        //        }
-        //    }
-
-        //    return locaCode;
-        //}
 
         class Folder
         {
@@ -102,7 +75,7 @@ namespace BuildTemplates
 
                 if (MaxIndex != null)
                 {
-                    codeLines.Add($"public static LocaArray Array {{ get; }} = new(Dict, \"{BaseKeyForIndex}.\", {MaxIndex + 1});");
+                    codeLines.Add($"public static LocaArray Array {{ get; }} = new(Dict, \"{BaseKeyForIndex}_\", {MaxIndex + 1});");
                 }
 
                 string output =
@@ -145,7 +118,7 @@ $@"
                     }
                 }
 
-                List<string> dirSplit = key.Split(new char[] { '.' }).ToList();
+                List<string> dirSplit = key.Split(['_']).ToList();
 
                 for (int i = 0; i < dirSplit.Count; i++)
                 {
@@ -157,8 +130,9 @@ $@"
                 string keyVariable = dirSplit[0];
 
                 if (parameters.Count == 0)
+                {
                     currentFolder.codeLines.Add($"public static string {keyVariable} => Dict[\"{key}\"];");
-                    //output += $"public const string {key} = \"{value}\";\n" + tabs;
+                }
                 else
                 {
                     string parameterStr = "";
@@ -169,16 +143,7 @@ $@"
                         parameterPass += (j > 0 ? ", " : "") + "s" + j;
                     }
 
-                    var sortedDict = from entry in parameters orderby entry.Key descending select entry;
-
-                    string val = value;
-                    foreach (var s in sortedDict)
-                    {
-                        val = val.Remove(s.Key) + "{s" + s.Value + "}" + val.Substring(s.Key + s.Value.ToString().Length + 2);
-                    }
-
                     currentFolder.codeLines.Add($"public static string {keyVariable}({parameterStr}) => string.Format(Dict[\"{key}\"], {parameterPass});");
-                    //output += $"public string {key}({parameterStr}) => $\"{val}\";\n" + tabs;
                 }
 
 
@@ -206,7 +171,7 @@ $@"
             }
             if (index >= 0
                 && index < key.Length - 1 
-                && key[index] == '.')
+                && key[index] == '_')
             {
                 baseKey = key.Remove(index);
                 return int.Parse(key.Substring(index + 1));

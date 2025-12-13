@@ -5,10 +5,14 @@ namespace BytingLib
     public partial class Localization : ILocaChanger
     {
         private readonly char separator;
-        private readonly bool convertStars;
         private const char textMarker = '"';
-        private const char adder = '.';
+        private const char levelSeparator = '_';
+        private const char tagOpen = '<';
+        private const char tagClose = '>';
+        private const char tagSlash = '/';
         private const char nestedLevel = '\t';
+        private const char parameterSplit = '|';
+        private const char plus = '+';
         private string csvFile;
         private readonly string defaultLanguage;
         private readonly bool fallbackToFirstLanguage;
@@ -25,11 +29,10 @@ namespace BytingLib
 
 
         public Localization(string csvFile, string languageKey, string defaultLanguage = "en", bool fallbackToFirstLanguage = true, bool resolveValues = true, 
-            bool skipPluses = false, Localization? locaOverride = null, char separator = ';', bool convertStars = true)
+            bool skipPluses = false, Localization? locaOverride = null, char separator = ';')
         {
             this.csvFile = csvFile;
             this.separator = separator;
-            this.convertStars = convertStars;
             LanguageKey = languageKey;
             this.defaultLanguage = defaultLanguage;
             this.fallbackToFirstLanguage = fallbackToFirstLanguage;
@@ -39,97 +42,9 @@ namespace BytingLib
             Initialize();
         }
 
-        private static string[] CsvFileToLines(string file, bool convertStars)
+        private static string[] CsvFileToLines(string file)
         {
-            string[] lines = File.ReadAllLines(file, Encoding.UTF8);
-
-            if (convertStars)
-            {
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    bool anyStars = false;
-                    for (int j = 0; j < lines[i].Length; j++)
-                    {
-                        if (lines[i][j] == '*')
-                        {
-                            anyStars = true;
-                            break;
-                        }
-                    }
-                    if (anyStars)
-                    {
-                        ReplaceStars(ref lines[i]);
-                    }
-                }
-            }
-
-            return lines;
-        }
-
-        private static void ReplaceStars(ref string str)
-        {
-            StringBuilder builder = new(str);
-            char? c;
-            int i = 0;
-            while ((c = ReadChar()) != null )
-            {
-                if (c == '{')
-                {
-                    c = ReadChar();
-                    if (c == '*')
-                    {
-                        // open
-                        int bracketStart = i - 2;
-                        string idStr = "";
-                        while ((c = ReadChar()) != null)
-                        {
-                            if (c == '}')
-                            {
-                                break;
-                            }
-                            idStr += c;
-                        }
-                        if (c == null)
-                        {
-                            throw new Exception("unexpected end");
-                        }
-                        int id;
-                        if (idStr == "")
-                        {
-                            id = 1;
-                        }
-                        else
-                        {
-                            id = int.Parse(idStr);
-                        }
-
-                        builder.Remove(bracketStart + 1, 2 + idStr.Length); //  remove *2}      { remains
-                        string newStr = $".{id}{{";
-                        int insertInto = bracketStart + 1;
-                        builder.Insert(insertInto, newStr); //        insert .2{      {.2{ remains
-                        i = insertInto + newStr.Length;
-                    }
-                    else if (c == '/' && ReadChar() == '*' && ReadChar() == '}')
-                    {
-                        // close
-                        int bracketStart = i - 4;
-                        builder.Remove(bracketStart, 3); //     remove {/*      } remains
-                        builder.Insert(bracketStart, '}'); //   insert }        }} remains
-                        i = bracketStart + 2;
-                    }
-                }
-            }
-
-            str = builder.ToString();
-
-            char? ReadChar()
-            {
-                if (i >= builder.Length)
-                {
-                    return null;
-                }
-                return builder[i++];
-            }
+            return File.ReadAllLines(file, Encoding.UTF8);
         }
 
         public void Reload()
@@ -153,14 +68,14 @@ namespace BytingLib
 
         private void Initialize()
         {
-            InitializeInner(convertStars);
+            InitializeInner();
 
             TriggerReloadSubs();
         }
 
-        private void InitializeInner(bool convertStars)
+        private void InitializeInner()
         {
-            string[] localizationLines = CsvFileToLines(csvFile, convertStars);
+            string[] localizationLines = CsvFileToLines(csvFile);
 
             if (locaOverride != null)
             {
@@ -221,7 +136,7 @@ namespace BytingLib
                     // add key of top element from stack to keyDirectory
                     if (keyDirectory.Length > 0)
                     {
-                        keyDirectory += adder;
+                        keyDirectory += levelSeparator;
                     }
                     keyDirectory += stack.Peek().LocalKey;
 
@@ -265,13 +180,16 @@ namespace BytingLib
 
             void ParseLine(int lineIndex, string keyDirectory, string localKey)
             {
-                bool endsWithPlus = localizationLines[lineIndex].EndsWith("{+}");
+                bool endsWithPlus = localizationLines[lineIndex].EndsWith($";<{plus}/>");
                 if (skipPluses && endsWithPlus)
                 {
                     return;
                 }
 
                 string? value = GetCell(lineIndex, languageColumn, localizationLines);
+
+                if (value.Contains("wide"))
+                { }
 
                 if (string.IsNullOrEmpty(value))
                 {
@@ -289,145 +207,28 @@ namespace BytingLib
                     else if (string.IsNullOrEmpty(value))
                     {
                         // no translation whatsoever. not even fallback english
-                        throw new Exception($"{keyDirectory}.{localKey} is missing {(fallbackToFirstLanguage ? "any" : "a")} translation at line {lineIndex + 1}.\nIf this key isn't intended to be translated, make sure there is no ';' in that line.");
+                        throw new Exception($"{keyDirectory}.{localKey} is missing {(fallbackToFirstLanguage ? "any" : "a")} translation at line {lineIndex + 1}.\nIf this key isn't intended to be translated, make sure the line ends with '<+/>'.");
                     }
                 }
 
                 string key = keyDirectory;
                 if (key != "")
                 {
-                    key += ".";
+                    key += levelSeparator;
                 }
                 key += localKey;
 
                 if (resolveValues)
                 {
-                    #region value commands {+}, {:} and {.}
+                    #region value commands <_some_key>, <some_key>, <Some_key> and <+/>
 
                     for (int j = 0; j < value.Length; j++)
                     {
-                        if (value[j] == '{')
+                        if (value[j] == tagOpen)
                         {
-                            int jStart = j;
-                            int openBlocksCount = 1;
-                            do
-                            {
-                                j++;
-                                switch (value[j])
-                                {
-                                    case '}': openBlocksCount--; break;
-                                    case '{': openBlocksCount++; break;
-                                }
-                            } while (openBlocksCount > 0 && j + 1 < value.Length);
-
-                            if (openBlocksCount > 0)
-                            {
-                                throw new Exception("didn't close all openend brackets: " + value);
-                            }
-
-                            string command = value.Substring(jStart + 1, j - jStart - 1);
-                            if (command.Length > 0)
-                            {
-                                string? replacement = null;
-                                if (command == "+")
-                                {
-                                    // use same as language defaultLanguageIndex (en)
-                                    replacement = GetCell(lineIndex, defaultLanguageIndex, localizationLines);
-                                }
-                                else if (command[0] < '0' || command[0] > '9')
-                                {
-                                    // loca key
-                                    if (command[0] == ':')
-                                    {
-                                        // relative upwards key
-                                        string currentKey = keyDirectory;
-                                        int k;
-                                        for (k = 2; k < command.Length && command[k - 1] == ':'; k++)
-                                        {
-                                            currentKey = currentKey.Remove(currentKey.LastIndexOf('.'));
-                                        }
-
-                                        if (currentKey != "")
-                                        {
-                                            currentKey += ".";
-                                        }
-
-                                        currentKey += command.Substring(k - 1);
-
-                                        replacement = InnerE(currentKey);
-                                    }
-                                    else if (command[0] == '.')
-                                    {
-                                        // relative downwards key (equal to .currentNode.)
-                                        string currentKey = key;
-                                        currentKey += command;
-                                        replacement = InnerE(currentKey);
-                                    }
-                                    else
-                                    {
-                                        // absolute key
-                                        replacement = InnerE(command);
-                                    }
-
-                                    string InnerE(string c)
-                                    {
-                                        if (c.Length == 0)
-                                        {
-                                            return "";
-                                        }
-
-                                        if (c[c.Length - 1] != '}')
-                                        {
-                                            return Localize(c);
-                                        }
-
-                                        int searchIndex = 0;
-                                        List<string> parameters = new List<string>();
-
-                                        string? realKey = null;
-
-                                        while ((searchIndex = c.IndexOf('{', searchIndex)) != -1)
-                                        {
-                                            if (realKey == null)
-                                            {
-                                                realKey = c.Remove(searchIndex);
-                                            }
-
-                                            searchIndex++;
-
-
-                                            int openBlocksCount = 1;
-                                            int end = searchIndex - 1;
-                                            do
-                                            {
-                                                end++;
-                                                switch (c[end])
-                                                {
-                                                    case '}': openBlocksCount--; break;
-                                                    case '{': openBlocksCount++; break;
-                                                }
-                                            } while (openBlocksCount > 0 && end + 1 < c.Length);
-
-                                            if (openBlocksCount > 0)
-                                            {
-                                                throw new Exception("didn't close all openend brackets: " + c);
-                                            }
-
-                                            // params inside command detected
-                                            parameters.Add(c.Substring(searchIndex, end - searchIndex));
-                                            searchIndex = end + 1;
-                                        }
-
-                                        return Get(realKey!, parameters.ToArray());
-                                    }
-                                }
-
-                                if (replacement != null)
-                                {
-                                    value = value.Remove(jStart) + replacement + value.Substring(j + 1);
-                                    j = jStart - 1;
-                                }
-                            }
+                            int beforeTag = j;
+                            (string tag, string[]? args) = ParseTagRecursively(ref value, ref j);
+                            ReplaceTag(ref value, beforeTag, ref j,  tag, args);
                         }
                     }
 
@@ -456,6 +257,126 @@ namespace BytingLib
                             SetCell(lineIndex, languageColumn, localizationLines, val);
                         }
                     }
+                }
+
+                void ReplaceTag(ref string line, int beforeWholeTag, ref int afterWholeTag, string tag, string[]? args)
+                {
+                    if (tag.Length > 0)
+                    {
+                        string? replacement = null;
+                        if (tag.Length == 1 && tag[0] == plus)
+                        {
+                            // use same as language defaultLanguageIndex (en)
+                            replacement = GetCell(lineIndex, defaultLanguageIndex, localizationLines);
+                        }
+                        else
+                        {
+                            // loca key
+                            if (tag[0] == levelSeparator)
+                            {
+                                // relative upwards key
+                                string currentKey = keyDirectory;
+                                int k;
+                                for (k = 2; k < tag.Length && tag[k - 1] == levelSeparator; k++)
+                                {
+                                    currentKey = currentKey.Remove(currentKey.LastIndexOf(levelSeparator));
+                                }
+
+                                if (currentKey != "")
+                                {
+                                    currentKey += levelSeparator;
+                                }
+
+                                currentKey += tag.Substring(k - 1);
+
+                                replacement = InnerE(currentKey, args);
+                            }
+                            else if (char.IsLower(tag[0]))
+                            {
+                                // relative downwards key (equal to .currentNode.)
+                                string currentKey = key + levelSeparator + tag;
+                                replacement = InnerE(currentKey, args);
+                            }
+                            else
+                            {
+                                // command is upper case
+                                // absolute key
+                                // make it lower case
+                                tag = tag[0].ToString().ToLower() + tag.Substring(1);
+                                replacement = InnerE(tag, args);
+                            }
+
+                            string InnerE(string c, string[]? args)
+                            {
+                                if (c.Length == 0)
+                                {
+                                    return "";
+                                }
+
+                                if (args == null)
+                                {
+                                    return Localize(c);
+                                }
+                                return Get(c, args);
+                            }
+                        }
+
+                        if (replacement != null)
+                        {
+                            line = line.Remove(beforeWholeTag) + replacement + line.Substring(afterWholeTag);
+                            afterWholeTag = beforeWholeTag + replacement.Length;
+                        }
+                    }
+                }
+
+
+
+
+                (string tag, string[]? parameters) ParseTagRecursively(ref string line, ref int i)
+                {
+                    i++; // go over <
+                    int tagCloseIndex = line.IndexOf(tagClose, i);
+                    if (tagCloseIndex == -1)
+                    {
+                        throw new Exception("tag wasn't closed");
+                    }
+                    string tag = line.Substring(i, tagCloseIndex - i);
+                    i = tagCloseIndex + 1; // go over >
+                    if (tag.EndsWith(tagSlash))
+                    {
+                        // simple <tag/>
+                        tag = tag.Remove(tag.Length - 1);
+                        return (tag, null);
+                    }
+                    int parametersStart = i;
+                    do
+                    {
+                        if (line[i] == tagOpen)
+                        {
+                            if (i + 1 >= line.Length)
+                            {
+                                throw new Exception("< tag wasn't closed with >");
+                            }
+                            bool secondTag = line[i + 1] == tagSlash;
+
+                            if (secondTag)
+                            {
+                                int parametersEnd = i; // before </
+                                string parameters = line.Substring(parametersStart, parametersEnd - parametersStart);
+                                return (tag, parameters.Split(parameterSplit));
+                            }
+                            else
+                            {
+                                int beforeTag = i;
+                                (string innerTag, string[]? innerParameters) = ParseTagRecursively(ref line, ref i);
+                                ReplaceTag(ref line, beforeTag, ref i, innerTag, innerParameters);
+                                i--;
+                            }
+                        }
+                        i++;
+                    } while (i < line.Length);
+
+                    throw new Exception("didn't close all openend brackets: " + line);
                 }
             }
 
@@ -508,6 +429,7 @@ namespace BytingLib
                 }
                 return languageColumn;
             }
+
         }
 
         void SetCell(int lineIndex, int column, string[] localizationLines, string value)
@@ -533,9 +455,9 @@ namespace BytingLib
             var indices = GetCellIndices(lineIndex, ref column, localizationLines);
             if (indices == null)
             {
-                if (localizationLines[lineIndex].EndsWith("{+}"))
+                if (localizationLines[lineIndex].EndsWith($"<{plus}/>"))
                 {
-                    return "{+}";
+                    return $"<{plus}/>";
                 }
 
                 return null;
@@ -632,23 +554,23 @@ namespace BytingLib
             return (index, previousIndex);
         }
 
-        public string Get(string key, params object[] args)
+        public string Get(string key, params object[]? args)
         {
-            int braceOpenIndex = key.IndexOf('{');
-            if (braceOpenIndex != -1)
-            {
-                int braceCloseIndex = key.IndexOf('}');
-                if (braceCloseIndex != -1)
-                {
-                    string parameters = key.Substring(braceOpenIndex + 1, braceCloseIndex - braceOpenIndex - 1);
-                    key = key.Remove(braceOpenIndex, braceCloseIndex + 1 - braceOpenIndex);
-                    args = parameters.Split(new char[] { ',' }).Concat(args).ToArray();
-                }
-                else
-                {
-                    throw new Exception("key params were opened with '{' but were not closed with '}')");
-                }
-            }
+            //int braceOpenIndex = key.IndexOf(parameterOpen);
+            //if (braceOpenIndex != -1)
+            //{
+            //    int braceCloseIndex = key.IndexOf(parameterClose);
+            //    if (braceCloseIndex != -1)
+            //    {
+            //        string parameters = key.Substring(braceOpenIndex + 1, braceCloseIndex - braceOpenIndex - 1);
+            //        key = key.Remove(braceOpenIndex, braceCloseIndex + 1 - braceOpenIndex);
+            //        args = parameters.Split(new char[] { ',' }).Concat(args).ToArray();
+            //    }
+            //    else
+            //    {
+            //        throw new Exception($"key params were opened with '{parameterOpen}' but were not closed with '{parameterClose}')");
+            //    }
+            //}
 
             string value = Localize(key);
             if (args == null || args.Length == 0)
@@ -739,7 +661,7 @@ namespace BytingLib
 
             for (int i = 0; i < locas.Length; i++)
             {
-                locas[i] = new(locaFile, columns[i], defaultLanguageKey, false, false, true, null, ';', false);
+                locas[i] = new(locaFile, columns[i], defaultLanguageKey, false, false, true);
             }
 
             string[] keys = locas[0].dictionary.Keys.ToArray();
@@ -783,9 +705,9 @@ namespace BytingLib
             string[] columns = translatedLines[0].Split([separator]);
             string targetLanguage = columns[targetLanguageColumnIndex];
 
-            Localization translated = new(translatorFile, targetLanguage, defaultLanguageKey, false, false, true, null, separator, false);
+            Localization translated = new(translatorFile, targetLanguage, defaultLanguageKey, false, false, true, null, separator);
 
-            Localization loca = new(locaFile, targetLanguage, defaultLanguageKey, false, false, true, translated, ';', false);
+            Localization loca = new(locaFile, targetLanguage, defaultLanguageKey, false, false, true, translated, ';');
 
             if (loca.CsvOutput != null)
             {
