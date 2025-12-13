@@ -1,9 +1,9 @@
 ﻿
 namespace BytingLib
 {
-    public class IntEnterWhileHold(InputBool hold, int defaultValue = -1, int? enterAtDigitCount = null) : InputInt<IntNumberWhileHoldState>
+    public class IntEnterWhileHold(InputBool child, int defaultValue = -1, int? enterAtDigitCount = null) : InputInt<IntNumberWhileHoldState>
     {
-        public InputBool Child { get; } = hold;
+        public InputBool Child { get; } = child;
         public int DefaultValue { get; } = defaultValue;
         public int? EnterAtDigitCount { get; } = enterAtDigitCount;
         private IntOnChange numberInput = new IntOnChange(new IntNumber(), -1);
