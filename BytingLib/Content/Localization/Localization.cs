@@ -460,6 +460,19 @@ namespace BytingLib
 
         void SetCell(int lineIndex, int column, string[] localizationLines, string value)
         {
+            if (value.StartsWith(textMarker))
+            {
+                if (!value.EndsWith(textMarker))
+                {
+                    throw new Exception("cell doesn't end with \"");
+                }
+
+                if (!value.Contains(separator))
+                {
+                    value = value.Substring(1, value.Length - 2).Replace(textMarker.ToString() + textMarker.ToString(), textMarker.ToString());
+                }
+            }
+
             var indices = GetCellIndices(lineIndex, ref column, localizationLines);
             if (indices == null)
             {
