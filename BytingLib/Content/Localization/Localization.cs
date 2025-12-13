@@ -98,7 +98,15 @@ namespace BytingLib
                 return;
             }
 
-            int languageColumn = GetLanguageColumn(out defaultLanguageIndex);
+            int languageColumn = GetLanguageColumn(out defaultLanguageIndex, out bool unknownLanguage);
+
+            if (locaOverride != null && unknownLanguage)
+            {
+                int separatorCounts = localizationLines[0].Count(f => f == ';');
+                int addSeparators = languageColumn - separatorCounts;
+
+                localizationLines[0] += new string(separator, addSeparators) + LanguageKey;
+            }
 
             Stack<StackItem> stack = new();
             stack.Push(new StackItem(-1, "PLACEHOLDER", false));
@@ -387,11 +395,12 @@ namespace BytingLib
                 }
             }
 
-            int GetLanguageColumn(out int defaultLanguageColumn)
+            int GetLanguageColumn(out int defaultLanguageColumn, out bool unknownLanguage)
             {
                 int i = 0;
                 int languageColumn = -1;
                 defaultLanguageColumn = -1;
+                unknownLanguage = false;
                 while (true)
                 {
                     i++; // start at column 1
@@ -407,21 +416,31 @@ namespace BytingLib
                         // last column reached
                         if (languageColumn == -1)
                         {
-                            if (LanguageKey != defaultLanguage && defaultLanguage != null)
+                            if (fallbackToFirstLanguage)
                             {
-                                // language {LanguageKey} not found
-                                // fallback to default language
-                                LanguageKey = defaultLanguage;
-                                languageColumn = defaultLanguageColumn;
-                                if (defaultLanguageColumn == -1)
+                                if (LanguageKey != defaultLanguage && defaultLanguage != null)
                                 {
-                                    throw new Exception("defaultLanguageColumn == -1 shouldn't happen");
+                                    // language {LanguageKey} not found
+                                    // fallback to default language
+                                    LanguageKey = defaultLanguage;
+                                    languageColumn = defaultLanguageColumn;
+                                    if (defaultLanguageColumn == -1)
+                                    {
+                                        throw new Exception("defaultLanguageColumn == -1 shouldn't happen");
+                                    }
+                                    break;
                                 }
-                                break;
+                                else
+                                {
+                                    throw new Exception($"language {LanguageKey} not found and no fallback language provided");
+                                }
                             }
                             else
                             {
-                                throw new Exception($"language {LanguageKey} not found and no fallback language provided");
+                                // create new column
+                                languageColumn = i;
+                                unknownLanguage = true;
+                                break;
                             }
                         }
                         else
