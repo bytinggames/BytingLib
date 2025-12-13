@@ -180,9 +180,6 @@ namespace BytingLib
 
             void ParseLine(int lineIndex, string keyDirectory, string localKey)
             {
-                if (keyDirectory == ("hud_dontCrouch") && localKey == "upRamp")
-                { }
-
                 bool endsWithPlus = localizationLines[lineIndex].EndsWith($";<{plus}/>");
                 if (skipPluses && endsWithPlus)
                 {
