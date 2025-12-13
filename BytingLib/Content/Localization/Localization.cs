@@ -298,8 +298,6 @@ namespace BytingLib
                             {
                                 // command is upper case
                                 // absolute key
-                                // make it lower case
-                                tag = tag[0].ToString().ToLower() + tag.Substring(1);
                                 replacement = InnerE(tag, args);
                             }
 
@@ -581,6 +579,16 @@ namespace BytingLib
 
         private string Localize(string key)
         {
+            if (char.IsLower(key[0]))
+            {
+                throw new Exception($"key {key} must start with upper case letter");
+            }
+
+            //if (char.IsUpper(key[0]))
+            //{
+            //    key = key[0].ToString().ToLower() + key.Substring(1);
+            //}
+
             if (!dictionary.ContainsKey(key))
             {
                 Exception e = new Exception("key not found: " + key);

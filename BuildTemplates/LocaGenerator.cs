@@ -128,6 +128,10 @@ $@"
                 Folder currentFolder = root.GetFolder(dirSplit);
                 string keyVariable = dirSplit[0];
 
+                if (char.IsUpper(keyVariable[0]))
+                {
+                    keyVariable = keyVariable[0].ToString().ToLower() + keyVariable.Substring(1);
+                }
                 if (parameters.Count == 0)
                 {
                     currentFolder.codeLines.Add($"public static string {keyVariable} => Dict[\"{key}\"];");
