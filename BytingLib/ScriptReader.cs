@@ -30,12 +30,18 @@ namespace BytingLib
 
         public virtual string ReadToCharOrEnd(out char? foundChar, params char[] chars)
         {
+            return ReadToCharOrEnd(out foundChar, out _, chars);
+        }
+        public virtual string ReadToCharOrEnd(out char? foundChar, out bool omittedCharacters, params char[] chars)
+        {
             int start = i;
             char? c;
+            omittedCharacters = false;
             while ((c = ReadChar()) != null)
             {
                 if (SkipIfLiteral(c.Value))
                 {
+                    omittedCharacters = true;
                     continue;
                 }
 

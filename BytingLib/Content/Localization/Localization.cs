@@ -13,6 +13,7 @@ namespace BytingLib
         private const char tagSlash = '/';
         private const char nestedLevel = '\t';
         private const char parameterSplit = '§';
+        private const char literalCharacter = '@';
         private const char plus = '+';
         private string csvFile;
         private readonly string defaultLanguage;
@@ -292,15 +293,28 @@ namespace BytingLib
 
                 void ParseRawLocaString(ref string value)
                 {
+                    // could be made more efficient
+
                     // value commands <_some_key>, <some_key>, <Some_key> and <+/>
-                    for (int j = 0; j < value.Length; j++)
+                    ScriptReaderLiteral reader = new ScriptReaderLiteral(value, literalCharacter);
+                    while (true)
                     {
-                        if (value[j] == tagOpen)
+                        string str = reader.ReadToCharOrEnd(out char? found, out bool omittedCharacters, tagOpen);
+                        if (omittedCharacters)
                         {
-                            int beforeTag = j;
-                            (string tag, string[]? args) = ParseTagRecursively(ref value, ref j);
-                            ReplaceTag(ref value, beforeTag, ref j, tag, args);
+                            value = str;
                         }
+                        if (found == null)
+                        {
+                            break;
+                        }
+
+                        int i = reader.Position - 1;
+                        int beforeTag = i;
+                        (string tag, string[]? args) = ParseTagRecursively(ref value, ref i);
+                        ReplaceTag(ref value, beforeTag, ref i, tag, args);
+                        reader = new(value, literalCharacter);
+                        reader.SetPosition(i + 1);
                     }
                 }
 
