@@ -46,13 +46,7 @@ namespace BytingLib
 
         private static string[] CsvFileToLines(string file)
         {
-            string[] lines = File.ReadAllLines(file, Encoding.UTF8);
-
-            // could be moved to a content processor
-            ReplaceParameterTags(lines);
-            ReplacePlussesWithTags(lines);
-
-            return lines;
+            return File.ReadAllLines(file, Encoding.UTF8);
         }
 
         private static void ReplaceParameterTags(string[] lines)
@@ -126,6 +120,13 @@ namespace BytingLib
         private void InitializeInner()
         {
             string[] localizationLines = CsvFileToLines(csvFile);
+
+            if (resolveValues)
+            {
+                // could be moved to a content processor
+                ReplaceParameterTags(localizationLines);
+                ReplacePlussesWithTags(localizationLines);
+            }
 
             if (locaOverride != null)
             {
