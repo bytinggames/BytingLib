@@ -46,7 +46,10 @@ namespace BytingLib
         private static string[] CsvFileToLines(string file)
         {
             string[] lines = File.ReadAllLines(file, Encoding.UTF8);
+
+            // could be moved to a content processor
             ReplaceParameterTags(lines);
+
             return lines;
         }
 
@@ -54,12 +57,31 @@ namespace BytingLib
         {
             for (int i = 0; i < lines.Length; i++)
             {
-                lines[i] = Regex.Replace(
-    lines[i],
-    @"<_([0-9]+)>.*?</_\1>",
-    "{$1}"
-);
+                lines[i] = ReplaceNamedArgsWithNumbers(lines[i]);
             }
+        }
+
+        static string ReplaceNamedArgsWithNumbers(string text)
+        {
+            var map = new Dictionary<string, int>();
+
+            return Regex.Replace(text, @"\{(\w+)\}", m =>
+            {
+                var key = m.Groups[1].Value;
+
+                if (!map.TryGetValue(key, out int index))
+                {
+                    if (key.Length > 0 && char.IsDigit(key[0]))
+                    {
+                        return "{" + key + "}";
+                    }
+
+                    index = map.Count;
+                    map[key] = index;
+                }
+
+                return "{" + index + "}";
+            });
         }
 
         public void Reload()
