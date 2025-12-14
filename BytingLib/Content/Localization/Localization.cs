@@ -50,6 +50,7 @@ namespace BytingLib
 
             // could be moved to a content processor
             ReplaceParameterTags(lines);
+            ReplacePlussesWithTags(lines);
 
             return lines;
         }
@@ -83,6 +84,17 @@ namespace BytingLib
 
                 return "{" + index + "}";
             });
+        }
+
+        private static void ReplacePlussesWithTags(string[] lines)
+        {
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].EndsWith($";{plus}"))
+                {
+                    lines[i] = lines[i].Remove(lines[i].Length - 1) + $"<{plus}/>";
+                }
+            }
         }
 
         public void Reload()
