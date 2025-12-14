@@ -765,7 +765,7 @@ namespace BytingLib
             return File.ReadLines(locaFile).First().Split([separator]).Any(f => f == language);
         }
 
-        public static void CsvImportFromTranslator(string locaFile, string translatorFile, char separator, int targetLanguageColumnIndex = 2, string defaultLanguageKey = "en")
+        public static void CsvImportFromTranslator(string locaFile, string translatorFile, char separator, string languageKey, string defaultLanguageKey = "en")
         {
             // either:
             // put back into tabbed csv
@@ -776,14 +776,9 @@ namespace BytingLib
             // keep translated csvs separated?
             //      +-? seperation keeps it more organized
 
+            Localization translated = new(translatorFile, languageKey, defaultLanguageKey, false, false, true, null, separator);
 
-            string[] translatedLines = File.ReadAllLines(translatorFile, Encoding.UTF8);
-            string[] columns = translatedLines[0].Split([separator]);
-            string targetLanguage = columns[targetLanguageColumnIndex];
-
-            Localization translated = new(translatorFile, targetLanguage, defaultLanguageKey, false, false, true, null, separator);
-
-            Localization loca = new(locaFile, targetLanguage, defaultLanguageKey, false, false, true, translated, ';');
+            Localization loca = new(locaFile, languageKey, defaultLanguageKey, false, false, true, translated, ';');
 
             if (loca.CsvOutput != null)
             {
