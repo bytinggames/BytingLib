@@ -1,8 +1,12 @@
-﻿namespace BytingLib
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace BytingLib
 {
     public abstract class GameBase : DisposableContainer, IGameBase
     {
         protected readonly GameWrapper gameWrapper;
+        private readonly ContentConverter contentConverter;
+        private readonly string additionalContentHeader;
         protected readonly GraphicsDevice gDevice;
         protected readonly SpriteBatch spriteBatch;
         protected readonly WindowManager windowManager;
@@ -11,7 +15,7 @@
         protected readonly GraphicsDeviceManager graphics;
         protected readonly Action Exit;
 
-        public HotReloadContent? HotReloadContent { get; }
+        public HotReloadContent? HotReloadContent { get; private set; }
 
         public GameBase(GameWrapper g, HotReloadType hotReloadType, ContentConverter contentConverter, bool clearHotReloadOutputPath = true, string additionalContentHeader = "")
         {
@@ -20,6 +24,8 @@
             graphics = g.Graphics;
             g.Window.AllowUserResizing = true;
             Exit = g.Exit;
+            this.contentConverter = contentConverter;
+            this.additionalContentHeader = additionalContentHeader;
 
             spriteBatch = new SpriteBatch(gDevice);
             disposables.Add(spriteBatch);
@@ -31,8 +37,7 @@
             switch (hotReloadType)
             {
                 case HotReloadType.Modding:
-                    HotReloadContent = new HotReloadContent(g.Services, contentCollector, "ContentMod", contentConverter, true, additionalContentHeader);
-                    contentRawPipe.ContentManagers.Insert(0, HotReloadContent.TempContentRaw);
+                    InitializeModdingHotReloadContent();
                     break;
                 case HotReloadType.Debug:
                     HotReloadContent = new HotReloadContent(g.Services,
@@ -52,6 +57,16 @@
 		bool realFullscreen = true;
 #endif
             windowManager = new WindowManager(realFullscreen, g.Window, g.Graphics);
+        }
+
+        [MemberNotNull(nameof(HotReloadContent))]
+        protected void InitializeModdingHotReloadContent()
+        {
+            if (HotReloadContent == null)
+            {
+                HotReloadContent = new HotReloadContent(gameWrapper.Services, contentCollector, "ContentMod", contentConverter, true, additionalContentHeader);
+                contentRawPipe.ContentManagers.Insert(0, HotReloadContent.TempContentRaw);
+            }
         }
 
         public abstract void UpdateActive(GameTime gameTime);

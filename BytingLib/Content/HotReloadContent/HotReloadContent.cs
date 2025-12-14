@@ -12,7 +12,7 @@ namespace BytingLib
         private readonly ContentConverter contentConverter;
         GraphicsDevice gDevice;
 
-        string sourceContentDir;
+        public string SourceContentDir { get; }
 
         /// <summary>Either localization.csv or any font changed.</summary>
         public event Action<string>? OnTextReload;
@@ -24,12 +24,12 @@ namespace BytingLib
         {
             this.content = content;
             this.contentConverter = contentConverter;
-            sourceContentDir = Path.GetFullPath(hotReloadContentPath);
+            SourceContentDir = Path.GetFullPath(hotReloadContentPath);
 
             bool expectEmptyDir;
 
-            if (Path.GetFileName(sourceContentDir) == "Content"
-                && Directory.EnumerateFiles(sourceContentDir, "*.mgcb", SearchOption.TopDirectoryOnly).Any()) // check if any mgcb file is present
+            if (Path.GetFileName(SourceContentDir) == "Content"
+                && Directory.EnumerateFiles(SourceContentDir, "*.mgcb", SearchOption.TopDirectoryOnly).Any()) // check if any mgcb file is present
             {
                 expectEmptyDir = false;
             }
@@ -41,10 +41,10 @@ namespace BytingLib
             //sourceContentDir = Paths.ModContent;// Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"../../../../Content"));
             //bool expectEmptyDir = true;
 
-            dirSupervisor = new DirectorySupervisor(sourceContentDir, GetFiles, expectEmptyDir);
+            dirSupervisor = new DirectorySupervisor(SourceContentDir, GetFiles, expectEmptyDir);
 
-            string tempPath = Path.Combine(sourceContentDir, "obj", "HotReload", "Content");
-            string tempOutputPath = Path.Combine(sourceContentDir, "bin", "HotReload", "Content");
+            string tempPath = Path.Combine(SourceContentDir, "obj", "HotReload", "Content");
+            string tempOutputPath = Path.Combine(SourceContentDir, "bin", "HotReload", "Content");
 
             if (Directory.Exists(tempPath))
             {
@@ -58,7 +58,7 @@ namespace BytingLib
                     Directory.Delete(tempOutputPath, true);
                 }
             }
-            ContentBuilder = new ContentBuilder(sourceContentDir, tempOutputPath, tempPath, contentConverter, additionalHeader);
+            ContentBuilder = new ContentBuilder(SourceContentDir, tempOutputPath, tempPath, contentConverter, additionalHeader);
 
             TempContentRaw = new ContentManagerRaw(serviceProvider, ContentBuilder.OutputPath);
 
@@ -73,10 +73,10 @@ namespace BytingLib
         private string[] GetFiles()
         {
             // get all files from top directory
-            List<string> files = Directory.GetFiles(sourceContentDir, "*.*", SearchOption.TopDirectoryOnly).ToList();
+            List<string> files = Directory.GetFiles(SourceContentDir, "*.*", SearchOption.TopDirectoryOnly).ToList();
 
             // get all files from subdirectories, excluding bin and obj
-            string[] topDirectories = Directory.GetDirectories(sourceContentDir, "*", SearchOption.TopDirectoryOnly);
+            string[] topDirectories = Directory.GetDirectories(SourceContentDir, "*", SearchOption.TopDirectoryOnly);
             foreach (var topDir in topDirectories)
             {
                 if (!topDir.EndsWith("\\bin") && !topDir.EndsWith("/bin")
@@ -100,7 +100,7 @@ namespace BytingLib
             const string includeStr = "#include \"";
             foreach (var f in allFiles.Where(f => f.EndsWith(".fx") || f.EndsWith(".fxh")))
             {
-                string localFilePath = f.Substring(sourceContentDir.Length + 1);
+                string localFilePath = f.Substring(SourceContentDir.Length + 1);
 
                 string shaderCode = File.ReadAllText(f);
                 int i = 0;
@@ -127,7 +127,7 @@ namespace BytingLib
             const string findBin = "\"uri\" : \"";
             foreach (var f in allFiles.Where(f => f.EndsWith(".gltf")))
             {
-                string localFilePath = f.Substring(sourceContentDir.Length + 1);
+                string localFilePath = f.Substring(SourceContentDir.Length + 1);
 
                 string json = File.ReadAllText(f);
                 int i = 0;
@@ -165,7 +165,7 @@ namespace BytingLib
                         }
 
                         // add dependent file
-                        changes.Modified.Add(new DirectorySupervisor.FileStamp(Path.Combine(sourceContentDir, d[j]), DateTime.Now, sourceContentDir));
+                        changes.Modified.Add(new DirectorySupervisor.FileStamp(Path.Combine(SourceContentDir, d[j]), DateTime.Now, SourceContentDir));
                     }
                 }
             }
@@ -177,7 +177,7 @@ namespace BytingLib
         public bool UpdateChanges()
         {
             // waiting for models finishing exporting
-            string modelPath = Path.Combine(sourceContentDir, "Models");
+            string modelPath = Path.Combine(SourceContentDir, "Models");
             if (Directory.Exists(modelPath))
             {
                 while (Directory.EnumerateFiles(modelPath, "*.exporting", SearchOption.AllDirectories).Any())
