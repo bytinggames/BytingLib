@@ -30,6 +30,27 @@ namespace BytingLib
                 Or(Keys.Right, Buttons.DPadRight));
         protected static InputBool False => new BoolConst(false);
 
+        protected static InputBool Modify(InputBool input, bool ctrl = false, bool shift = false, bool alt = false)
+        {
+            var c = Ctrl();
+            var s = Shift();
+            var a = Alt();
+            if (!ctrl)
+            {
+                c = Not(c);
+            }
+            if (!shift)
+            {
+                s = Not(s);
+            }
+            if (!alt)
+            {
+                a = Not(a);
+            }
+
+            return And(c, s, a, input);
+        }
+
         public IEnumerable<PropertyInfo> GetRemappableProperties()
         {
             var props = GetType().GetProperties(
