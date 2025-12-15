@@ -18,6 +18,7 @@ namespace BytingLib
         private string csvFile;
         private readonly string defaultLanguage;
         private readonly bool fallbackToFirstLanguage;
+        public bool ActuallyChangeLanguageWhenFallingBackToFirstLanguageOnInitialization { get; set; } = false;
         private readonly bool resolveValues;
         private readonly bool skipPluses;
         private readonly Localization? locaOverride;
@@ -481,7 +482,7 @@ namespace BytingLib
                         // last column reached
                         if (languageColumn == -1)
                         {
-                            if (fallbackToFirstLanguage)
+                            if (fallbackToFirstLanguage && ActuallyChangeLanguageWhenFallingBackToFirstLanguageOnInitialization)
                             {
                                 if (LanguageKey != defaultLanguage && defaultLanguage != null)
                                 {
