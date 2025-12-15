@@ -65,23 +65,36 @@ namespace BytingLib
         {
             var map = new Dictionary<string, int>();
 
-            return Regex.Replace(text, @"\{(\w+)\}", m =>
-            {
-                var key = m.Groups[1].Value;
-
-                if (!map.TryGetValue(key, out int index))
+            return Regex.Replace(
+                text,
+                @"@(.)(.*?)\1|\{\{(.*?)\}\}|\{(\w+)\}",
+                m =>
                 {
-                    if (key.Length > 0 && char.IsDigit(key[0]))
+                    // Case 1: @-escaped sequence
+                    // Case 2: {{ ... }} escaped braces
+                    // both cases return the string unchanged
+                    if (m.Groups[1].Success
+                        || m.Groups[3].Success)
+                    {
+                        return m.Groups[0].Value;
+                    }
+                    // Case 3: Named argument
+                    var key = m.Groups[4].Value;
+
+                    // Leave numeric placeholders untouched
+                    if (char.IsDigit(key[0]))
                     {
                         return "{" + key + "}";
                     }
 
-                    index = map.Count;
-                    map[key] = index;
-                }
+                    if (!map.TryGetValue(key, out int index))
+                    {
+                        index = map.Count;
+                        map[key] = index;
+                    }
 
-                return "{" + index + "}";
-            });
+                    return "{" + index + "}";
+                });
         }
 
         private static void ReplacePlussesWithTags(string[] lines)
@@ -377,7 +390,7 @@ namespace BytingLib
 
                                 replacement = InnerE(currentKey, args);
                             }
-                            else if (char.IsLower(tag[0]))
+                            else if (!char.IsUpper(tag[0]))
                             {
                                 // relative downwards key (equal to .currentNode.)
                                 string currentKey = key + levelSeparator + tag;
@@ -697,7 +710,7 @@ namespace BytingLib
 
         private string Localize(string key)
         {
-            if (char.IsLower(key[0]))
+            if (!char.IsUpper(key[0]))
             {
                 throw new Exception($"key {key} must start with upper case letter");
             }

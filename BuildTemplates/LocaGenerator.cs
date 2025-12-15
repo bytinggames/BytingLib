@@ -134,7 +134,7 @@ $@"
                 }
                 if (parameters.Count == 0)
                 {
-                    currentFolder.codeLines.Add($"public static string {keyVariable} => Dict[\"{key}\"];");
+                    currentFolder.codeLines.Add($"public static string @{keyVariable} => Dict[\"{key}\"];");
                 }
                 else
                 {
