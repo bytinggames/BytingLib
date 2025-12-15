@@ -847,9 +847,27 @@ namespace BytingLib
 
             if (loca.CsvOutput != null)
             {
-                File.WriteAllLines(locaFile, loca.CsvOutput);
+                TryWrite(locaFile, loca);
+                return;
             }
         }
 
+        private static void TryWrite(string locaFile, Localization loca)
+        {
+            if (loca.CsvOutput != null)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    try
+                    {
+                        File.WriteAllLines(locaFile, loca.CsvOutput);
+                        return;
+                    }
+                    catch { }
+                    Thread.Sleep(500);
+                }
+                File.WriteAllLines(locaFile, loca.CsvOutput);
+            }
+        }
     }
 }
