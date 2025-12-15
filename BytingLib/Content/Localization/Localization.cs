@@ -313,10 +313,10 @@ namespace BytingLib
                     ScriptReaderLiteral reader = new ScriptReaderLiteral(value, literalCharacter);
                     while (true)
                     {
-                        string str = reader.ReadToCharOrEnd(out char? found, out bool omittedCharacters, tagOpen);
+                        reader.ReadToCharOrEnd(out char? found, out bool omittedCharacters, tagOpen);
                         if (omittedCharacters)
                         {
-                            value = str;
+                            value = reader.GetString();
                         }
                         if (found == null)
                         {
