@@ -239,7 +239,8 @@ namespace BytingLib
 
             void ParseLine(int lineIndex, string keyDirectory, string localKey)
             {
-                bool endsWithPlus = localizationLines[lineIndex].EndsWith($";<{plus}/>");
+                bool endsWithPlus = localizationLines[lineIndex].EndsWith($";<{plus}/>")
+                    || localizationLines[lineIndex].EndsWith($";{plus}");
                 if (skipPluses && endsWithPlus)
                 {
                     return;
