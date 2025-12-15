@@ -24,6 +24,8 @@ namespace BytingLib
         private readonly Localization? locaOverride;
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
         private int defaultLanguageIndex;
+        private readonly bool cancelOnUnknownLanguage;
+        public bool UnknownLanguage { get; private set; }
 
         public event Action? OnLocaReload;
 
@@ -32,10 +34,11 @@ namespace BytingLib
 
 
         public Localization(string csvFile, string languageKey, string defaultLanguage = "en", bool fallbackToFirstLanguage = true, bool resolveValues = true, 
-            bool skipPluses = false, Localization? locaOverride = null, char separator = ';')
+            bool skipPluses = false, Localization? locaOverride = null, char separator = ';', bool cancelOnUnknownLanguage = false)
         {
             this.csvFile = csvFile;
             this.separator = separator;
+            this.cancelOnUnknownLanguage = cancelOnUnknownLanguage;
             LanguageKey = languageKey;
             this.defaultLanguage = defaultLanguage;
             this.fallbackToFirstLanguage = fallbackToFirstLanguage;
@@ -151,6 +154,11 @@ namespace BytingLib
             }
 
             int languageColumn = GetLanguageColumn(out defaultLanguageIndex, out bool unknownLanguage);
+            UnknownLanguage = unknownLanguage;
+            if (UnknownLanguage && cancelOnUnknownLanguage)
+            {
+                return;
+            }
 
             if (locaOverride != null && unknownLanguage)
             {
@@ -827,7 +835,13 @@ namespace BytingLib
             // keep translated csvs separated?
             //      +-? seperation keeps it more organized
 
-            Localization translated = new(translatorFile, languageKey, defaultLanguageKey, false, false, true, null, separator);
+            Localization translated = new(translatorFile, languageKey, defaultLanguageKey, false, false, true, null, separator, true);
+
+            if (translated.UnknownLanguage)
+            {
+                // cancel, if the imported csv doesn't even contain the language
+                return;
+            }
 
             Localization loca = new(locaFile, languageKey, defaultLanguageKey, false, false, true, translated, ';');
 
