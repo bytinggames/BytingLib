@@ -8,7 +8,6 @@
             get => _text;
             set
             {
-                ManipulateString.Manipulate(ref value);
                 if (_text != value)
                 {
                     _text = value;
@@ -24,19 +23,6 @@
 
         /// <summary>Does not affect positioning. Only affects visual rotation</summary>
         public float Tilt { get; set; } = 0f;
-        private ManipulateString manipulateString = ManipulateString.None;
-        public ManipulateString ManipulateString
-        {
-            get => manipulateString;
-            set
-            {
-                if (manipulateString != value)
-                {
-                    manipulateString = value;
-                    manipulateString.Manipulate(ref _text);
-                }
-            }
-        }
 
         public Label(string text, float width = 0, float height = 0, bool setSizeToText = true)
         {
@@ -101,12 +87,14 @@
 
         protected virtual string CreateTextToDraw(StyleRoot style, out List<(int Index, int Add)>? textLengthChanges)
         {
+            string text = Text;
+            style.StringEdit?.Apply(ref text);
             if (Width > 0)
             {
-                return SpriteFontExtension.WrapText(Text, Width, style.FontScale.X, str => MeasureString(style, str), out textLengthChanges);
+                return SpriteFontExtension.WrapText(text, Width, style.FontScale.X, str => MeasureString(style, str), out textLengthChanges);
             }
             textLengthChanges = null;
-            return Text;
+            return text;
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch, StyleRoot style)

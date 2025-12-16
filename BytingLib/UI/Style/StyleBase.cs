@@ -11,6 +11,7 @@
             FontColor = Color.Black;
             ButtonPaddingToButtonBorder = false;
             RoundPositionTo = 1f;
+            StringEdit = null;
         }
     }
 }

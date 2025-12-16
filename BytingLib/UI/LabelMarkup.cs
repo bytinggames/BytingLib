@@ -24,6 +24,7 @@ namespace BytingLib.UI
                 Height = -1f;
             }
         }
+        private IStringEdit? stringEditToApply;
 
         public LabelMarkup(string text, Creator creator, float width = 0f, float height = 0f, bool setSizeToText = true, TextWrap wrap = TextWrap.AllowMidWordIfSpaceNotPossible, float minLineHeight = 0f)
             : base(text, width, height, setSizeToText)
@@ -53,6 +54,9 @@ namespace BytingLib.UI
         protected override string CreateTextToDraw(StyleRoot style, out List<(int Index, int Add)>? textLengthChanges)
         {
             textLengthChanges = null;
+
+            stringEditToApply = style.StringEdit;
+
             return Text; // TODO: implement word wrapping?
         }
 
@@ -198,7 +202,14 @@ namespace BytingLib.UI
         private void UpdateMarkup()
         {
             markup?.Dispose();
+
+            // temporarily override IStringEdit auto parameter
+            object? rememberEditObject = null;
+            var t = typeof(IStringEdit);
+            creator.AutoParameters.TryGetValue(t, out rememberEditObject);
+            creator.ReplaceAutoParameter(t, stringEditToApply!);
             markup = new MarkupRoot(creator, TextToDraw); // TODO
+            creator.AutoParameters[t] = rememberEditObject!;
         }
 
         public Vector2 MeasureSize(StyleRoot style)

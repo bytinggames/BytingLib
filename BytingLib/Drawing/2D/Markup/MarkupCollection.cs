@@ -96,7 +96,9 @@
                     return new MarkupNewLine();
 
                 default:
-                    return new MarkupText(reader);
+                    creator.AutoParameters.TryGetValue(typeof(IStringEdit), out object? editObj);
+                    IStringEdit? edit = (IStringEdit?)editObj;
+                    return new MarkupText(reader,  edit);
             }
         }
 

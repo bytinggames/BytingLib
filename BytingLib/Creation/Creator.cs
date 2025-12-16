@@ -439,8 +439,7 @@ namespace BytingLib
 
         public void ReplaceAutoParameter(Type type, object value)
         {
-            AutoParameters.Remove(type);
-            AutoParameters.Add(type, value);
+            AutoParameters[type] = value;
         }
 
         /// <summary>

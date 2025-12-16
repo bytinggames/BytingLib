@@ -45,6 +45,7 @@
         private bool setChildrenHeightToMaxChildHeight = false;
         private bool hover;
         private OnWhileHoverDelegate? currentTooltipAction;
+
         public UINavigationStart NavigationStart { get; set; }
         public float NavigationStartPriority { get; set; }
         public event Action? OnEnterFromNavigation;
@@ -86,7 +87,25 @@
         public Rect AbsoluteRect { get; protected set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        public Style? Style { get; set; }
+        private Style? style;
+        public Style? Style
+        {
+            get => style;
+            set
+            {
+                if (style != value)
+                {
+                    IStringEdit mOld = GetManipulateString();
+                    style = value;
+                    IStringEdit mNew = GetManipulateString();
+
+                    if (mOld != mNew)
+                    {
+                        ApplyManipulateStringRecursive(mNew);
+                    }
+                }
+            }
+        }
 
         public bool CanBeNavigated => !BlockNavigation && CanBeNavigatedOverride;
         protected virtual bool CanBeNavigatedOverride => currentTooltipAction != null;
@@ -288,22 +307,21 @@
             return size;
         }
 
-        public Element Add(params Element[] children)
-        {
-            for (int i = 0; i < children.Length; i++)
-            {
-                Children.Add(children[i]);
-                children[i].Parent = this;
-            }
-            SetDirty();
-            return this;
-        }
-        public Element Add(List<Element> children)
+        public Element Add(params Element[] children) => Add((IList<Element>)children);
+        public Element Add(IList<Element> children)
         {
             for (int i = 0; i < children.Count; i++)
             {
                 Children.Add(children[i]);
                 children[i].Parent = this;
+            }
+            var manipulateString = GetManipulateString();
+            if (manipulateString.Exists())
+            {
+                for (int i = 0; i < children.Count; i++)
+                {
+                    children[i].ApplyManipulateStringRecursive(manipulateString);
+                }
             }
             SetDirty();
             return this;
@@ -321,15 +339,28 @@
                 Children.Add(c);
                 c.Parent = this;
             }
+            var manipulateString = GetManipulateString();
+            if (manipulateString.Exists())
+            {
+                for (int i = 0; i < children.Length; i++)
+                {
+                    children[i]?.ApplyManipulateStringRecursive(manipulateString);
+                }
+            }
             SetDirty();
             return this;
         }
         public Element AddEnumerable(IEnumerable<Element> children)
         {
+            var manipulateString = GetManipulateString();
             foreach (var c in children)
             {
                 Children.Add(c);
                 c.Parent = this;
+                if (manipulateString.Exists())
+                {
+                    c.ApplyManipulateStringRecursive(manipulateString);
+                }
             }
             SetDirty();
             return this;
@@ -395,12 +426,51 @@
         {
             Children.Insert(index, element);
             element.Parent = this;
+
+            var manipulateString = GetManipulateString();
+            if (manipulateString.Exists())
+            {
+                element.ApplyManipulateStringRecursive(manipulateString);
+            }
         }
 
         public Element SetStyle(Style? style)
         {
             Style = style;
             return this;
+        }
+
+        private IStringEdit? GetManipulateString()
+        {
+            foreach (var parent in GetParents())
+            {
+                if (parent.Style != null && parent.Style.StringEdit != null)
+                {
+                    return parent.Style.StringEdit;
+                }
+            }
+            return null;
+        }
+
+        public void SetManipulateStringRecursive(IStringEdit manipulate)
+        {
+            if (Style != null && Style.StringEdit == manipulate)
+            {
+                return;
+            }
+            if (Style == null)
+            {
+                Style = new();
+            }
+            Style.StringEdit = manipulate;
+            ApplyManipulateStringRecursive(manipulate);
+        }
+        protected virtual void ApplyManipulateStringRecursive(IStringEdit manipulate)
+        {
+            foreach (var child in Children)
+            {
+                child.ApplyManipulateStringRecursive(manipulate);
+            }
         }
 
         public Vector2 GetPaddingSize() => Padding == null ? Vector2.Zero : Padding.GetSize();
@@ -567,13 +637,11 @@
 
         public IEnumerable<Element> GetParents()
         {
-            if (Parent != null)
+            var current = Parent;
+            while (current != null)
             {
-                yield return Parent;
-                foreach (var p in Parent.GetParents())
-                {
-                    yield return p;
-                }
+                yield return current;
+                current = current.Parent;
             }
         }
 

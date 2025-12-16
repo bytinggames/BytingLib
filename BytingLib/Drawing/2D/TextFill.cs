@@ -69,7 +69,7 @@ namespace BytingLib
 
                 if (creator == null)
                 {
-                    SegmentedMarkup = new MarkupRoot(new MarkupCollection(new MarkupText(text)));
+                    SegmentedMarkup = new MarkupRoot(new MarkupCollection(new MarkupText(text, null)));
                 }
                 else
                 {

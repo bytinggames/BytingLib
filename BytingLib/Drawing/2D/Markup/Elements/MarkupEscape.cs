@@ -6,7 +6,7 @@
     [MarkupShortcut("escape")]
     class MarkupEscape : MarkupText
     {
-        public MarkupEscape(string text) : base(text)
+        public MarkupEscape(string text, IStringEdit? edit) : base(text, edit)
         {
         }
     }

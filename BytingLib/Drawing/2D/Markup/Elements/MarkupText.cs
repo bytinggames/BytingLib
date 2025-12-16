@@ -5,17 +5,20 @@
         public string Text { get; set; }
         public override bool ConfinesToLineSpacing => true;
 
-        public MarkupText(ScriptReaderLiteral reader)
+        public MarkupText(ScriptReaderLiteral reader, IStringEdit? edit)
         {
             Text = reader.ReadToCharOrEnd(out char? until, '#', '\n');
-
+            if (edit != null)
+            {
+                Text = edit.GetApplied(Text);
+            }
             if (until != null)
             {
                 reader.Move(-1);
             }
         }
 
-        public MarkupText(string text)
+        public MarkupText(string text, IStringEdit? edit)
         {
             Text = text;
         }
