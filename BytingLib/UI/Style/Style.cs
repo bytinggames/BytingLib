@@ -2,7 +2,7 @@
 {
     public class Style
     {
-        public Ref<SpriteFont>? Font { get; set; }
+        private Ref<SpriteFont>? font;
         public Ref<SpriteFont>? FontBold { get; set; }
         public Color? FontColor { get; set; }
         public Color? FontBoldColor { get; set; }
@@ -16,6 +16,17 @@
         public float? RoundPositionTo { get; set; }
         public IStringEdit? StringEdit { get; set; }
 
+        /// <summary>Setting this resets the StingEdit. Could be improved some time</summary>
+        public Ref<SpriteFont>? Font
+        {
+            get => font;
+            set
+            {
+                font = value;
+                // reset string edit, since this is mostly what we want, when setting a font
+                StringEdit = IStringEdit.None;
+            }
+        }
         public FontAndEdit FontAndEdit
         {
             set
