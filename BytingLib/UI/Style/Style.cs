@@ -27,18 +27,40 @@
                 StringEdit = IStringEdit.None;
             }
         }
-        public FontAndEdit FontAndEdit
+        public FontAndEdit? FontAndEdit
         {
             set
             {
-                Font = value.Font;
-                StringEdit = value.Edit;
+                if (value != null)
+                {
+                    Font = value.Value.Font;
+                    StringEdit = value.Value.Edit;
+                }
+                else
+                {
+                    Font = null;
+                    StringEdit = null;
+                }
             }
         }
     }
 
-    public record struct FontAndEdit(Ref<SpriteFont> Font, IStringEdit Edit)
+    public record struct FontAndEdit
     {
+        public Ref<SpriteFont> Font { get; }
+        public IStringEdit Edit { get; }
+
+        public FontAndEdit(Ref<SpriteFont> font, IStringEdit edit)
+        {
+            Font = font;
+            Edit = edit;
+        }
+        public FontAndEdit(Ref<SpriteFont> font)
+        {
+            Font = font;
+            Edit = IStringEdit.None;
+        }
+
         public static implicit operator (Ref<SpriteFont> Font, IStringEdit Edit)(FontAndEdit value)
         {
             return (value.Font, value.Edit);
