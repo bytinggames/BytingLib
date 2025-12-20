@@ -200,6 +200,7 @@ namespace BytingLib
             cmd += $"/intermediateDir:{tempPath}\r\n/outputDir:{tempOutputPath}\r\n\r\n";
 
             bool anyTasksAdded = false;
+            bool locaCopied = false;
 
             foreach (var file in changes)
             {
@@ -207,12 +208,22 @@ namespace BytingLib
                 if (fileToCode.TryGetValue(localFile, out CodePart code))
                 {
                     string addCode = code.GetCode(mgcbContents);
-                    cmd += addCode;
-                    anyTasksAdded = true;
 
                     var mgcbActions = MGCBParser.GetMGCBActions(addCode);
                     MGCBParser.Apply(mgcbActions, contentConverter);
                     itemsChanged.AddRange(mgcbActions);
+
+                    if (file.EndsWith(".loca"))
+                    {
+                        Directory.CreateDirectory(tempOutputPath);
+                        File.Copy(file, Path.Combine(tempOutputPath, Path.GetFileName(file)), true);
+                        locaCopied = true;
+                    }
+                    else
+                    {
+                        cmd += addCode;
+                        anyTasksAdded = true;
+                    }
                 }
             }
 
@@ -231,6 +242,10 @@ namespace BytingLib
 
             if (!anyTasksAdded)
             {
+                if (locaCopied)
+                {
+                    return true;
+                }
                 return false; // not necessary to build, skip it
             }
 
@@ -238,7 +253,7 @@ namespace BytingLib
 
             File.WriteAllText(contentTempFile, cmd);
 
-            string command = "dotnet mgcb-byting /@:\"" + contentTempFile + "\"";
+            string command = "dotnet123 mgcb-byting /@:\"" + contentTempFile + "\"";
             string fileName;
 #if WINDOWS
             command = "/C " + command;
@@ -283,6 +298,12 @@ namespace BytingLib
                 stdError = process.StandardError.ReadToEnd();
                 process.WaitForExit();
 
+                if (!string.IsNullOrWhiteSpace(stdError))
+                {
+                    ShowPopup("HotReloadContent build output error: " + stdError);
+                    return false;
+                }
+
                 if (!CheckOutput(stdOutput, ShowPopup))
                 {
                     return false;
@@ -303,6 +324,11 @@ namespace BytingLib
             {
                 string success = " succeeded, ";
                 int successCountEnd = str.IndexOf(success);
+                if (successCountEnd == -1)
+                {
+                    showPopup("couldn't parse " + str);
+                    return false;
+                }
                 int successCountStart = str.LastIndexOf(' ', successCountEnd - 1, successCountEnd - 1) + 1;
                 string successCountStr = str.Substring(successCountStart, successCountEnd - successCountStart);
                 int successCount;
