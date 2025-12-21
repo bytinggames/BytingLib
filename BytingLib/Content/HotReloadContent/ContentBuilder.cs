@@ -253,7 +253,7 @@ namespace BytingLib
 
             File.WriteAllText(contentTempFile, cmd);
 
-            string command = "dotnet123 mgcb-byting /@:\"" + contentTempFile + "\"";
+            string command = "dotnet mgcb-byting /@:\"" + contentTempFile + "\"";
             string fileName;
 #if WINDOWS
             command = "/C " + command;
