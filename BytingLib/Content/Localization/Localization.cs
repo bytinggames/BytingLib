@@ -210,8 +210,7 @@ namespace BytingLib
                 if (lineIndentation <= stack.Count - 1) // same level or going back?
                 {
                     StackItem top = stack.Peek();
-                    top.ChildIndex++;
-                    string localKey = GetKey(localizationLines[i], lineIndentation, top.ChildIndex, out isIntendedToBeTranslated);
+                    string localKey = GetKey(localizationLines[i], lineIndentation, ref top.NumberedIndex, out isIntendedToBeTranslated);
                     top.IsIntendedToBeTranslated = isIntendedToBeTranslated;
                     top.LocalKey = localKey;
                     top.LineIndex = i;
@@ -226,8 +225,9 @@ namespace BytingLib
                     keyDirectory += stack.Peek().LocalKey;
 
                     // add parent
-                    string localKey = GetKey(localizationLines[i], lineIndentation, 0, out isIntendedToBeTranslated);
-                    stack.Push(new StackItem(i, localKey, isIntendedToBeTranslated));
+                    int numberedIndex = 0;
+                    string localKey = GetKey(localizationLines[i], lineIndentation, ref numberedIndex, out isIntendedToBeTranslated);
+                    stack.Push(new StackItem(i, localKey, isIntendedToBeTranslated) { NumberedIndex = numberedIndex });
                 }
                 else // going too deep?
                 {
@@ -782,7 +782,7 @@ namespace BytingLib
             return i;
         }
 
-        private string GetKey(string line, int indentation, int childIndex, out bool isIntendedToBeTranslated)
+        private string GetKey(string line, int indentation, ref int numberedIndex, out bool isIntendedToBeTranslated)
         {
             int separatorIndex = line.IndexOf(separator, indentation);
             if (separatorIndex != -1)
@@ -797,7 +797,8 @@ namespace BytingLib
             }
             if (line == "#") // replace # with child index
             {
-                line = childIndex.ToString();
+                line = numberedIndex.ToString();
+                numberedIndex++;
             }
             return line;
         }

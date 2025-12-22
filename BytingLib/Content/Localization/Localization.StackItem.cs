@@ -6,12 +6,12 @@
         {
             public int LineIndex = lineIndex;
             public string LocalKey = key;
-            public int ChildIndex = 0;
+            public int NumberedIndex = 0;
             public bool IsIntendedToBeTranslated = isIntendedToBeTranslated;
 
             public override string ToString()
             {
-                return LocalKey + " " + ChildIndex;
+                return LocalKey + " " + NumberedIndex;
             }
         }
     }
