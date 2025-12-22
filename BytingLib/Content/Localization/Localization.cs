@@ -105,6 +105,10 @@ namespace BytingLib
                 {
                     lines[i] = lines[i].Remove(lines[i].Length - 1) + $"<{plus}/>";
                 }
+                else if (lines[i].EndsWith($";{plus}1"))
+                {
+                    lines[i] = lines[i].Remove(lines[i].Length - 1) + $"<{plus}1/>";
+                }
             }
         }
 
@@ -262,7 +266,9 @@ namespace BytingLib
             void ParseLine(int lineIndex, string keyDirectory, string localKey)
             {
                 bool endsWithPlus = localizationLines[lineIndex].EndsWith($";<{plus}/>")
-                    || localizationLines[lineIndex].EndsWith($";{plus}");
+                    || localizationLines[lineIndex].EndsWith($";{plus}")
+                    || localizationLines[lineIndex].EndsWith($";<{plus}1/>")
+                    || localizationLines[lineIndex].EndsWith($";{plus}1");
                 if (skipPluses && endsWithPlus)
                 {
                     return;
@@ -359,10 +365,15 @@ namespace BytingLib
                     if (tag.Length > 0)
                     {
                         string? replacement = null;
-                        if (tag.Length == 1 && tag[0] == plus)
+                        if (tag.Length >= 1 && tag[0] == plus)
                         {
+                            int sourceLanguageOffset = 0;
+                            if (tag.Length > 1)
+                            {
+                                sourceLanguageOffset = int.Parse(tag.Substring(1));
+                            }
                             // use same as language defaultLanguageIndex (en)
-                            replacement = GetCell(lineIndex, defaultLanguageIndex, localizationLines);
+                            replacement = GetCell(lineIndex, defaultLanguageIndex + sourceLanguageOffset, localizationLines);
                             if (replacement != null)
                             {
                                 ParseRawLocaString(ref replacement);
@@ -584,6 +595,10 @@ namespace BytingLib
                 if (localizationLines[lineIndex].EndsWith($"<{plus}/>"))
                 {
                     return $"<{plus}/>";
+                }
+                else if (localizationLines[lineIndex].EndsWith($"<{plus}1/>"))
+                {
+                    return $"<{plus}1/>";
                 }
 
                 return null;
