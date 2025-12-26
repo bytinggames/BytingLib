@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace BytingLib
@@ -31,6 +32,7 @@ namespace BytingLib
 
         public string LanguageKey { get; private set; }
         public string[]? CsvOutput { get; private set; }
+        public string[]? Columns { get; private set; }
 
 
         public Localization(string csvFile, string languageKey, string defaultLanguage = "en", bool fallbackToFirstLanguage = true, bool resolveValues = true, 
@@ -170,6 +172,7 @@ namespace BytingLib
                 return;
             }
 
+            Columns = localizationLines[0].Split([separator]);
             int languageColumn = GetLanguageColumn(out defaultLanguageIndex, out bool unknownLanguage);
             UnknownLanguage = unknownLanguage;
             if (UnknownLanguage && cancelOnUnknownLanguage)
