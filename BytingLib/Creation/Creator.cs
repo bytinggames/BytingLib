@@ -405,6 +405,10 @@ namespace BytingLib
                 }
                 return Convert.ChangeType(argStr, nullableUnderlyingType, CultureInfo.InvariantCulture);
             }
+            else if (expectedType == typeof(bool) && argStr == "")
+            {
+                return true;
+            }
             else
             {
                 return Convert.ChangeType(argStr, expectedType, CultureInfo.InvariantCulture);
