@@ -1,6 +1,6 @@
 ﻿namespace BytingLib
 {
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Method)]
     public class CreatorIgnoreAttribute : Attribute
     {
     }

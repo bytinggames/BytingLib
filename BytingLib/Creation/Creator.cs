@@ -185,6 +185,10 @@ namespace BytingLib
             var prop = type.GetProperty(setterName);
             if (prop != null)
             {
+                if (Attribute.IsDefined(prop, typeof(CreatorIgnoreAttribute)))
+                {
+                    throw new Exception($"property {prop.Name} is ignored");
+                }
                 prop.SetValue(obj, GetParameter(reader.ReadToCharOrEndConsiderOpenCloseBraces(Close, Open, Close), prop.PropertyType));
             }
             else
@@ -192,6 +196,10 @@ namespace BytingLib
                 var method = type.GetMethod(setterName);
                 if (method != null)
                 {
+                    if (Attribute.IsDefined(method, typeof(CreatorIgnoreAttribute)))
+                    {
+                        throw new Exception($"method {method.Name} is ignored");
+                    }
                     object[] args = GetParameters(GetParameterStrings(reader), method.GetParameters().Select(f => f.ParameterType).ToArray(), false /* no params support for methods for now */);
                     method.Invoke(obj, args);
                 }
@@ -201,6 +209,10 @@ namespace BytingLib
 
                     if (field != null)
                     {
+                        if (Attribute.IsDefined(field, typeof(CreatorIgnoreAttribute)))
+                        {
+                            throw new Exception($"method {field.Name} is ignored");
+                        }
                         field.SetValue(obj, GetParameter(reader.ReadToCharOrEndConsiderOpenCloseBraces(Close, Open, Close), field.FieldType));
                     }
                     else
@@ -518,6 +530,10 @@ namespace BytingLib
                 object? instance;
                 if (prop != null)
                 {
+                    if (prop.CustomAttributes.Any(f => f.AttributeType == typeof(CreatorIgnoreAttribute)))
+                    {
+                        throw new Exception($"property {prop.Name} is ignored");
+                    }
                     instance = prop.GetValue(obj) ?? throw new Exception($"couldn't get value from prop {p.Name} of {type}");
                 }
                 else
@@ -532,6 +548,10 @@ namespace BytingLib
 
                     if (field != null)
                     {
+                        if (field.CustomAttributes.Any(f => f.AttributeType == typeof(CreatorIgnoreAttribute)))
+                        {
+                            throw new Exception($"field {field.Name} is ignored");
+                        }
                         instance = field.GetValue(obj);// ?? throw new Exception($"couldn't get value from field {name} of {type}");
                     }
                     else
