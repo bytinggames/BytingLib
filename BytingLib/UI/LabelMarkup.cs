@@ -167,7 +167,11 @@ namespace BytingLib.UI
 
         private void UpdateMarkupWrapped(StyleRoot style)
         {
-            MarkupRoot? newMarkup = textFill?.GetMarkupIfUpdated(style.Font, creator);
+            MarkupRoot? newMarkup = null;
+            UseStringEdit(() =>
+            {
+                newMarkup = textFill?.GetMarkupIfUpdated(style.Font, creator);
+            });
             if (newMarkup != null)
             {
                 markup?.Dispose();
@@ -203,12 +207,22 @@ namespace BytingLib.UI
         {
             markup?.Dispose();
 
-            // temporarily override IStringEdit auto parameter
+            UseStringEdit(() =>
+            {
+                markup = new MarkupRoot(creator, TextToDraw);
+            });
+        }
+
+        // temporarily override IStringEdit auto parameter
+        private void UseStringEdit(Action action)
+        {
             object? rememberEditObject = null;
-            var t = typeof(IStringEdit);
+            Type t = typeof(IStringEdit);
             creator.AutoParameters.TryGetValue(t, out rememberEditObject);
             creator.ReplaceAutoParameter(t, stringEditToApply!);
-            markup = new MarkupRoot(creator, TextToDraw); // TODO
+
+            action();
+
             creator.AutoParameters[t] = rememberEditObject!;
         }
 
