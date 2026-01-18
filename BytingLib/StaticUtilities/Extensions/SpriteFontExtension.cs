@@ -121,12 +121,12 @@ namespace BytingLib
         }
 
         /// <summary>Inserts '\n' so that the width of the text is smaller than the given width.</summary>
-        public static string WrapText(this SpriteFont font, string text, float width, float fontScaleX, out List<(int Index, int Add)> textLengthChanges)
+        public static string WrapText(this SpriteFont font, string text, float width, float fontScaleX, bool insertDashOnWrap, out List<(int Index, int Add)> textLengthChanges)
         {
-            return WrapText(text, width, fontScaleX, font.MeasureString, out textLengthChanges);
+            return WrapText(text, width, fontScaleX, font.MeasureString, insertDashOnWrap, out textLengthChanges);
         }
         /// <summary>Inserts '\n' so that the width of the text is smaller than the given width.</summary>
-        public static string WrapText(string text, float width, float fontScaleX, Func<string, Vector2> measureString, out List<(int Index, int Add)> textLengthChanges)
+        public static string WrapText(string text, float width, float fontScaleX, Func<string, Vector2> measureString, bool insertDashOnWrap, out List<(int Index, int Add)> textLengthChanges)
         {
             if (width <= 0)
             {
@@ -162,14 +162,18 @@ namespace BytingLib
                     }
                     if (lastSpaceIndex != -1)
                     {
-                        i = lastSpaceIndex; 
+                        i = lastSpaceIndex;
+                        i++; // skip this space
                     }
                     else
                     {
                         // insert -
-                        Insert(i, "-", ref textLengthChanges);
+                        if (insertDashOnWrap)
+                        {
+                            Insert(i, "-", ref textLengthChanges);
+                            i++; // skip "-"
+                        }
                     }
-                    i++; // skip this space or "-"
                     Insert(i, "\n", ref textLengthChanges);
                     NewLine(i);
                 }

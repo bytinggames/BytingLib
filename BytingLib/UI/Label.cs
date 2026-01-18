@@ -91,7 +91,7 @@
             style.StringEdit?.Apply(ref text);
             if (Width > 0)
             {
-                return SpriteFontExtension.WrapText(text, Width, style.FontScale.X, str => MeasureString(style, str), out textLengthChanges);
+                return SpriteFontExtension.WrapText(text, Width, style.FontScale.X, str => MeasureString(style, str), style.InsertDashOnWrap, out textLengthChanges);
             }
             textLengthChanges = null;
             return text;

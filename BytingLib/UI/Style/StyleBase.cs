@@ -12,6 +12,7 @@
             ButtonPaddingToButtonBorder = false;
             RoundPositionTo = 1f;
             StringEdit = null;
+            InsertDashOnWrap = true;
         }
     }
 }

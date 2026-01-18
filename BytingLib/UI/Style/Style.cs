@@ -15,6 +15,7 @@
         public bool? ButtonPaddingToButtonBorder { get; set; }
         public float? RoundPositionTo { get; set; }
         public IStringEdit? StringEdit { get; set; }
+        public bool? InsertDashOnWrap { get; set; }
 
         /// <summary>Setting this resets the StingEdit. Could be improved some time</summary>
         public Ref<SpriteFont>? Font

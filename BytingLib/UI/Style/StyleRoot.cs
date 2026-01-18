@@ -15,6 +15,7 @@
         public bool ButtonPaddingToButtonBorder => GetOverride(f => f.ButtonPaddingToButtonBorder)!.Value;
         public float RoundPositionTo => GetOverride(f => f.RoundPositionTo)!.Value;
         public IStringEdit? StringEdit => GetOverride(f => f.StringEdit);
+        public bool InsertDashOnWrap => GetOverride(f => f.InsertDashOnWrap)!.Value;
 
         public StyleBase StyleBase { get; set; }
         private List<Style> styleOverrides = new();
