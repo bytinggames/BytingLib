@@ -161,14 +161,14 @@ namespace BytingLib.UI
 
             if (TextFill == null)
             {
-                UpdateMarkup();
+                UpdateMarkup(style);
             }
         }
 
         private void UpdateMarkupWrapped(StyleRoot style)
         {
             MarkupRoot? newMarkup = null;
-            UseStringEdit(() =>
+            creator.Use(style.StringEdit, () =>
             {
                 newMarkup = textFill?.GetMarkupIfUpdated(style.Font, creator);
             });
@@ -203,27 +203,14 @@ namespace BytingLib.UI
             }
         }
 
-        private void UpdateMarkup()
+        private void UpdateMarkup(StyleRoot style)
         {
             markup?.Dispose();
 
-            UseStringEdit(() =>
+            creator.Use(style.StringEdit, () =>
             {
                 markup = new MarkupRoot(creator, TextToDraw);
             });
-        }
-
-        // temporarily override IStringEdit auto parameter
-        private void UseStringEdit(Action action)
-        {
-            object? rememberEditObject = null;
-            Type t = typeof(IStringEdit);
-            creator.AutoParameters.TryGetValue(t, out rememberEditObject);
-            creator.ReplaceAutoParameter(t, stringEditToApply!);
-
-            action();
-
-            creator.AutoParameters[t] = rememberEditObject!;
         }
 
         public Vector2 MeasureSize(StyleRoot style)
