@@ -573,6 +573,10 @@ namespace BytingLib
                     value = value.Substring(1, value.Length - 2).Replace(textMarker.ToString() + textMarker.ToString(), textMarker.ToString());
                 }
             }
+            else if (value.Contains(separator))
+            {
+                value = $"\"{value}\"";
+            }
 
             var indices = GetCellIndices(lineIndex, ref column, localizationLines);
             if (indices == null)
