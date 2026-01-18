@@ -37,7 +37,7 @@ namespace BytingLib
 
             for (int i = 0; i < fontArray.Fonts.Length; i++)
             {
-                fontArray.Fonts[i].Item2.OnReload += OnIndividualFontReload;
+                fontArray.Fonts[i].Item2.Font.OnReload += OnIndividualFontReload;
             }
         }
 
@@ -45,11 +45,16 @@ namespace BytingLib
         {
             Promise<Ref<Texture2D>> tex = new(() =>
             {
-                var font = fontArray.GetFont(1f, out float actualFontSize);
-                var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.White);
+                var fontAndEdit = fontArray.GetFont(1f, out float actualFontSize);
+                var markupSettings = new MarkupSettings(spriteBatch, fontAndEdit.Font, Anchor.TopLeft(0, 0), Color.White);
                 markupSettings.VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines;
-                var drawElement = new MarkupRoot(markupCreator, text);
-                Vector2 textSize = drawElement.GetSize(markupSettings);
+
+                MarkupRoot? drawElement = null;
+                markupCreator.Use(fontAndEdit.Edit, () =>
+                {
+                    drawElement = new MarkupRoot(markupCreator, text);
+                });
+                Vector2 textSize = drawElement!.GetSize(markupSettings);
                 textSize /= actualFontSize;
 
                 int fontSize = GetRightFontSize(right.Length() * 2f /* because right only measures half the length */,
@@ -70,15 +75,20 @@ namespace BytingLib
                 {
                     return GetPixel();
                 }
-                var font = fontArray.GetFont(1f, out float actualFontSize);
-                var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.White)
+                var fontAndEdit = fontArray.GetFont(1f, out float actualFontSize);
+                var markupSettings = new MarkupSettings(spriteBatch, fontAndEdit.Font, Anchor.TopLeft(0, 0), Color.White)
                 {
                     VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines,
                     VerticalAlignInLine = anchorInLineY,
                     HorizontalAlignInLine = anchor.X
                 };
-                var drawElement = new MarkupRoot(markupCreator, text);
-                Vector2 textSize = drawElement.GetSize(markupSettings); // TODO: remove this?
+
+                MarkupRoot? drawElement = null;
+                markupCreator.Use(fontAndEdit.Edit, () =>
+                {
+                    drawElement = new MarkupRoot(markupCreator, text);
+                });
+                Vector2 textSize = drawElement!.GetSize(markupSettings); // TODO: remove this?
                 textSize /= actualFontSize;
 
                 int fontSize = GetRightFontSize(right.Length() * 2f /* because right only measures half the length */,
@@ -117,22 +127,27 @@ namespace BytingLib
             return fontSize;
         }
 
-        public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color backgroundColor, Vector2? textureScale = null, float? verticalSpaceBetweenLines = null)
+        public Ref<Texture2D> CreateTextTexture(string text, FontAndEdit fontAndEdit, Color backgroundColor, Vector2? textureScale = null, float? verticalSpaceBetweenLines = null)
         {
             textureScale ??= Vector2.One;
-            if (textures.ContainsKey((text, font.Value, backgroundColor, textureScale.Value)))
+            if (textures.ContainsKey((text, fontAndEdit.Font.Value, backgroundColor, textureScale.Value)))
             {
-                return textures[(text, font.Value, backgroundColor, textureScale.Value)].Use();
+                return textures[(text, fontAndEdit.Font.Value, backgroundColor, textureScale.Value)].Use();
             }
 
-            var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */)
+            var markupSettings = new MarkupSettings(spriteBatch, fontAndEdit.Font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */)
             {
                 TextureScale = textureScale.Value,
                 VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines
             };
-            var drawElement = new MarkupRoot(markupCreator, text);
 
-            Vector2 textSize = drawElement.GetSize(markupSettings);
+            MarkupRoot? drawElement = null;
+            markupCreator.Use(fontAndEdit.Edit, () =>
+            {
+                drawElement = new MarkupRoot(markupCreator, text);
+            });
+
+            Vector2 textSize = drawElement!.GetSize(markupSettings);
 
             RenderTarget2D? tex = null;
 
@@ -160,7 +175,7 @@ namespace BytingLib
                 return tex;
             });
 
-            var key = (text, font.Value, backgroundColor, textureScale.Value);
+            var key = (text, fontAndEdit.Font.Value, backgroundColor, textureScale.Value);
 
             AssetHolder<Texture2D> assetHolder = new AssetHolder<Texture2D>(promise, "TextToTexture_" + text, _ =>
             {
@@ -177,7 +192,7 @@ namespace BytingLib
             return assetHolder.Use();
         }
 
-        public Ref<Texture2D> CreateTextTexture(string text, Ref<SpriteFont> font, Color backgroundColor, List<List<Vector2>> polygons, 
+        public Ref<Texture2D> CreateTextTexture(string text, FontAndEdit fontAndEdit, Color backgroundColor, List<List<Vector2>> polygons, 
             TextFillObject.PolyType polyType, TextWrap splitMethod, Vector2 anchor, Vector2 texSize, Vector2? textureScale = null, 
             float? verticalSpaceBetweenLines = null, Padding? paddingNormalized = null, float anchorInLineY = 0.5f, float minLineHeight = 0f)
         {
@@ -187,7 +202,7 @@ namespace BytingLib
             //    return textures[(text, font.Value, backgroundColor, textureScale)].Use();
             //}
 
-            var markupSettings = new MarkupSettings(spriteBatch, font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */)
+            var markupSettings = new MarkupSettings(spriteBatch, fontAndEdit.Font, Anchor.TopLeft(0, 0), Color.Black /* default text color is black */)
             {
                 VerticalSpaceBetweenLines = verticalSpaceBetweenLines ?? this.verticalSpaceBetweenLines,
                 VerticalAlignInLine = anchorInLineY,
@@ -203,8 +218,11 @@ namespace BytingLib
 
             Rect rect = new Rect(Vector2.Zero, texSize);
 
-            var drawElement = textFill.GetMarkup(font, markupCreator, rect)!;
-
+            MarkupRoot? drawElement = null;
+            markupCreator.Use(fontAndEdit.Edit, () =>
+            {
+                drawElement = textFill.GetMarkup(fontAndEdit.Font, markupCreator, rect)!;
+            });
             if (drawElement == null || textFill.TextFill == null)
             {
                 return GetPixel();
@@ -282,7 +300,7 @@ namespace BytingLib
         {
             for (int i = 0; i < fontArray.Fonts.Length; i++)
             {
-                fontArray.Fonts[i].Item2.OnReload -= OnIndividualFontReload;
+                fontArray.Fonts[i].Item2.Font.OnReload -= OnIndividualFontReload;
             }
 
             disposables.Dispose();

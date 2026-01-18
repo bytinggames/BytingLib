@@ -594,5 +594,17 @@ namespace BytingLib
             str += Close;
             return str;
         }
+
+        internal void Use<T>(T temporaryAutoParameter, Action action)
+        {
+            object? rememberParameter = null;
+            Type t = typeof(T);
+            AutoParameters.TryGetValue(t, out rememberParameter);
+            ReplaceAutoParameter(t, temporaryAutoParameter!);
+
+            action();
+
+            AutoParameters[t] = rememberParameter!;
+        }
     }
 }

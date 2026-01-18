@@ -1,11 +1,13 @@
-﻿namespace BytingLib
+﻿using BytingLib.UI;
+
+namespace BytingLib
 {
     public class FontArray
     {
-        public (float, Ref<SpriteFont>)[] Fonts { get; }
+        public (float, FontAndEdit)[] Fonts { get; }
 
         /// <summary>floats must be in ascending order (1, 2, 3, etc. for example). Each float represents the maximum font size that the corresponding font supports. The last float is ignored, it has no max.</summary>
-        public FontArray((float, Ref<SpriteFont>)[] fonts)
+        public FontArray((float, FontAndEdit)[] fonts)
         {
             if (fonts.Length == 0)
             {
@@ -15,7 +17,7 @@
             this.Fonts = fonts;
         }
 
-        public Ref<SpriteFont> GetFont(float fontSize)
+        public FontAndEdit GetFont(float fontSize)
         {
             for (int i = 0; i < Fonts.Length - 1; i++) // skip last font, that is the default one
             {
@@ -27,7 +29,7 @@
             return Fonts[Fonts.Length - 1].Item2;
         }
 
-        public Ref<SpriteFont> GetFont(float fontSize, out float actualFontSize)
+        public FontAndEdit GetFont(float fontSize, out float actualFontSize)
         {
             for (int i = 0; i < Fonts.Length - 1; i++) // skip last font, that is the default one
             {
