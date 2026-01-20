@@ -37,15 +37,17 @@ namespace BuildTemplates
                 }
                 if (parent == null)
                 {
-                    codeLines.AddRange(new string[]{
+                    codeLines.AddRange([
                         "public static Dictionary<string, string> Dict;",
                         "public static Localization L;",
-                        "public static void Initialize(string languageKey)",
+                        "private static Action<string> logError;",
+                        "public static void Initialize(string languageKey, Action<string> logAnError)",
                         "{",
+                        TAB + "logError = logAnError;",
                         TAB + $"L = new Localization(\"Content/{this.className}.loca\", languageKey);",
                         TAB + "Dict = L.GetDictionary();",
                         "}"
-                    });
+                    ]);
                 }
             }
 
@@ -146,7 +148,7 @@ $@"
                         parameterPass += (j > 0 ? ", " : "") + "s" + j;
                     }
 
-                    currentFolder.codeLines.Add($"public static string {keyVariable}({parameterStr}) => string.Format(Dict[\"{key}\"], {parameterPass});");
+                    currentFolder.codeLines.Add($"public static string {keyVariable}({parameterStr}) => Dict[\"{key}\"].FormatOrLog(logError, {parameterPass});");
                 }
 
 

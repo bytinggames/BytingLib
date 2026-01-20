@@ -6,5 +6,18 @@ namespace BytingLib
     {
         public static bool TryParse(this string? str, out double value) => double.TryParse(str, NumberStyles.Any, CultureInfo.InvariantCulture, out value);
         public static bool TryParse(this string? str, out float value) => float.TryParse(str, NumberStyles.Any, CultureInfo.InvariantCulture, out value);
+        
+        public static string FormatOrLog(this string str, Action<string> log, params object?[] args)
+        {
+            try
+            {
+                return string.Format(str, args);
+            }
+            catch (Exception e)
+            {
+                log($"Error when trying to format string \"{str}\" with {args.Length} arguments.\n" + e.ToString());
+                return str;
+            }
+        }
     }
 }

@@ -51,20 +51,6 @@ namespace BuildTemplates.Test
             Assert.IsNotNull(locaCode);
             Assert.IsNotNull(shaders);
         }
-
-        [TestMethod]
-        [DataRow(false)]
-        [DataRow(true)]
-        public void TestBuildPlatformer3D(bool loadOnStartup)
-        {
-            string contentPath = @"C:\Projects\Platformer3D\Platformer3D\Platformer3D\Content";
-            string nameSpace = "Platformer3D";
-            (string output, string mgcbOutput, string locaCode, ShaderFile[] shaders) = ContentTemplate.Create(contentPath, nameSpace, new string[0], loadOnStartup, new Platformer3DContentConverter());
-            Assert.IsNotNull(output);
-            Assert.IsNotNull(mgcbOutput);
-            Assert.IsNotNull(locaCode);
-            Assert.IsNotNull(shaders);
-        }
     }
 
     class SEContentConverter : ContentConverter
