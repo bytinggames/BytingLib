@@ -98,6 +98,18 @@ namespace BytingLib
             return dateTime.ToString("yyyy.MM.dd_HH.mm.ss_fff");
         }
 
+        public static string DateTimeSecondsToFilename(DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy.MM.dd_HH.mm.ss");
+        }
+        public static string DateTimeSecondsToBase64(DateTime dateTime)
+        {
+            long ticks = new DateTimeOffset(dateTime).ToUnixTimeSeconds();
+            byte[] bytes = BitConverter.GetBytes(ticks);
+            string base64 = Convert.ToBase64String(bytes);
+            return base64;
+        }
+
         public string GetNewScreenshotWithoutEnding()
         {
             Directory.CreateDirectory(ScreenshotsDir);
