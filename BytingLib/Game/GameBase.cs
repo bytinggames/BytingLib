@@ -13,7 +13,7 @@ namespace BytingLib
         protected readonly ContentManagerRawPipe contentRawPipe;
         protected readonly IContentCollector contentCollector;
         protected readonly GraphicsDeviceManager graphics;
-        protected readonly Action Exit;
+        protected Action Exit;
 
         public HotReloadContent? HotReloadContent { get; private set; }
 
