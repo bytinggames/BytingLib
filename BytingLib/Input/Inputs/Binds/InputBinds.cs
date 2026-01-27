@@ -6,29 +6,30 @@ namespace BytingLib
 {
     public abstract class InputBinds
     {
-        protected static InputBool Ctrl() => new BoolCtrl();
-        protected static InputBool Shift() => new BoolShift();
-        protected static InputBool Alt() => new BoolAlt();
-        protected static InputBool And(params InputBool[] inputs) => new BoolAnd(inputs);
-        protected static InputBool Or(params InputBool[] inputs) => new BoolOr(inputs);
-        protected static InputBool Not(InputBool input) => new BoolNot(input);
-        protected static InputBool Func(Func<InputBool> func) => new BoolFunc(func);
-        protected static InputVector2 Wasd => new Vector2FromBools(Keys.W, Keys.A, Keys.S, Keys.D);
-        protected static InputVector2 Arrows => new Vector2FromBools(Keys.Up, Keys.Left, Keys.Down, Keys.Right);
-        protected static InputVector2 DPad => new Vector2FromBools(Buttons.DPadUp, Buttons.DPadLeft, Buttons.DPadDown, Buttons.DPadRight);
-        protected static Vector2FromBools ArrowsOrWasdOrDpad =>
+        public static InputBool Ctrl() => new BoolCtrl();
+        public static InputBool Shift() => new BoolShift();
+        public static InputBool Alt() => new BoolAlt();
+        public static InputBool And(params InputBool[] inputs) => new BoolAnd(inputs);
+        public static InputBool Or(params InputBool[] inputs) => new BoolOr(inputs);
+        public static InputBool Not(InputBool input) => new BoolNot(input);
+        public static InputBool Func(Func<InputBool> func) => new BoolFunc(func);
+        public static InputVector2 Wasd => new Vector2FromBools(Keys.W, Keys.A, Keys.S, Keys.D);
+        public static InputVector2 Arrows => new Vector2FromBools(Keys.Up, Keys.Left, Keys.Down, Keys.Right);
+        public static InputVector2 DPad => new Vector2FromBools(Buttons.DPadUp, Buttons.DPadLeft, Buttons.DPadDown, Buttons.DPadRight);
+        public static Vector2FromBools ArrowsOrWasdOrDpad =>
             new Vector2FromBools(
                 Or(Keys.Up, Keys.W, Buttons.DPadUp), 
                 Or(Keys.Left, Keys.A, Buttons.DPadLeft), 
                 Or(Keys.Down, Keys.S, Buttons.DPadDown), 
                 Or(Keys.Right, Keys.D, Buttons.DPadRight));
-        protected static Vector2FromBools ArrowsOrDpad =>
+        public static Vector2FromBools ArrowsOrDpad =>
             new Vector2FromBools(
                 Or(Keys.Up, Buttons.DPadUp),
                 Or(Keys.Left, Buttons.DPadLeft),
                 Or(Keys.Down, Buttons.DPadDown),
                 Or(Keys.Right, Buttons.DPadRight));
-        protected static InputBool False => new BoolConst(false);
+        public static InputBool False => InputBool.False;
+        public static InputBool True => InputBool.True;
 
         protected static InputBool Modify(InputBool input, bool ctrl = false, bool shift = false, bool alt = false)
         {

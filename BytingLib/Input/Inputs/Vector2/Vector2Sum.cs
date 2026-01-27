@@ -21,7 +21,7 @@
 
         public override string ToString()
         {
-            return $"Sum ({string.Join(' ', Children.Select(f => f.ToString()))})";
+            return $"Sum ({string.Join(" + ", Children.Select(f => f.ToString()))})";
         }
     }
 }

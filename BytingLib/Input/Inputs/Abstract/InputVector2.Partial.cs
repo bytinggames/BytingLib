@@ -14,6 +14,8 @@ namespace BytingLib
     [JsonDerivedType(typeof(Vector2GamePadStick), "Vector2GamePadStick")]
     [JsonDerivedType(typeof(Vector2Multiply), "Vector2Multiply")]
     [JsonDerivedType(typeof(Vector2Multiply2), "Vector2Multiply2")]
+    [JsonDerivedType(typeof(Vector2MultiplyChildren), "Vector2MultiplyChildren")]
+    [JsonDerivedType(typeof(Vector2Flip), "Vector2Flip")]
     [JsonDerivedType(typeof(Vector2SquareDeadzone), "Vector2SquareDeadzone")]
     [JsonDerivedType(typeof(Vector2StickPow), "Vector2StickPow")]
     [JsonDerivedType(typeof(Vector2Sum), "Vector2Sum")]

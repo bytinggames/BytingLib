@@ -23,5 +23,7 @@ namespace BytingLib
         public static implicit operator InputBool(Keys key) => new BoolKey(key);
         public static implicit operator InputBool(MouseButton mouseButton) => new BoolMouse(mouseButton);
         public static implicit operator InputBool(Buttons gamePadButton) => new BoolGamePad(gamePadButton);
+        public static InputBool False => new BoolConst(false);
+        public static InputBool True => new BoolConst(true);
     }
 }
