@@ -70,7 +70,7 @@
             if (SubSizeUnion && subContainers != null && subContainers.Count > 0)
             {
                 Vector2 thisSize = GetSizeChild(settings, 0, -1);
-                Vector2 subSize = subContainers.Max(f => f.GetSize(settings));
+                Vector2 subSize = Vector2Extension.GetMax(subContainers.Select(f => f.GetSize(settings)))!.Value;
                 Vector2 larger = subSize - thisSize;
                 if (larger.X > 0)
                 {
@@ -103,7 +103,7 @@
 
             if (SubSizeUnion && subContainers != null && subContainers.Count > 0)
             {
-                Vector2 subSize = subContainers.Max(f => f.GetSize(settings));
+                Vector2 subSize = Vector2Extension.GetMax(subContainers.Select(f => f.GetSize(settings)))!.Value;
                 size = Vector2.Max(size, subSize);
             }
 

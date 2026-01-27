@@ -31,10 +31,10 @@
 
         public override IEnumerable<Input> GetChildren()
         {
-            yield return Left;
-            yield return Right;
             yield return Up;
+            yield return Left;
             yield return Down;
+            yield return Right;
         }
 
         public override string ToString()

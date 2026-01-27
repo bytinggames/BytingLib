@@ -147,5 +147,20 @@
             angleIndex = Math.Clamp(angleIndex, 0, 7);
             return dir8[angleIndex];
         }
+
+        internal static Vector2? GetMax(IEnumerable<Vector2> enumerable)
+        {
+            var enumerator = enumerable.GetEnumerator();
+            if (!enumerator.MoveNext())
+            {
+                return null;
+            }
+            Vector2 v = enumerator.Current;
+            while (enumerator.MoveNext())
+            {
+                v = v.GetMax(enumerator.Current);
+            }
+            return v;
+        }
     }
 }
