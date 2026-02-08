@@ -11,6 +11,8 @@ namespace BytingLib.UI
         public double AnimationMillisecondsOffset { get; set; }
         /// <summary>see <see cref="MarkupSettings.CropSuperfluousHeightThatIsLargerThanLineHeight"/></summary>
         public bool CropSuperfluousHeightThatIsLargerThanLineHeight { get; set; } = false;
+        /// <summary>Experimental</summary>
+        public bool UseStyleFontSizeInsteadOfTextFill { get; set; }
 
         private TextFillObject? textFill;
         public TextFillObject? TextFill
@@ -99,7 +101,14 @@ namespace BytingLib.UI
 
         private Vector2 GetFontScale(StyleRoot style)
         {
-            return TextFill?.TextFill?.FontScale ?? style.FontScale;
+            if (UseStyleFontSizeInsteadOfTextFill)
+            {
+                return style.FontScale;
+            }
+            else
+            {
+                return TextFill?.TextFill?.FontScale ?? style.FontScale;
+            }
         }
 
         private MarkupSettings GetDefaultSetting(SpriteBatch spriteBatch, StyleRoot style)
