@@ -38,7 +38,7 @@
         {
             public Color Color = Color.Black;
             public float Thickness = 1f;
-            /// <summary>Wether the outline is considered when calculating the positioning (only horizontally).</summary>
+            /// <summary>Whether the outline is considered when calculating the positioning (only horizontally).</summary>
             public bool SizeUnion = true;
 
             public Line(Color color, float thickness, bool sizeUnion)

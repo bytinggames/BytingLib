@@ -19,7 +19,7 @@
         /// <summary>When invisible, Update is also not called. Not even for the children.</summary>
         public bool Visible { get; set; } = true;
         public bool IsHoverEnabled => OnHoverSustain != null || OnHoverEnter != null || OnHoverExit != null;
-        /// <summary>Wether the mouse hovers over the element. This is only updated, when <see cref="IsHoverEnabled"/> is true.</summary>
+        /// <summary>Whether the mouse hovers over the element. This is only updated, when <see cref="IsHoverEnabled"/> is true.</summary>
         public bool Hover
         {
             get => hover;
