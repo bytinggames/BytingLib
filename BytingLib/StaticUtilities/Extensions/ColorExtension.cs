@@ -509,5 +509,12 @@ namespace BytingLib
                 }
             }
         }
+
+        public static Color ToGrayscale(this Color color)
+        {
+            byte gray = (byte)(0.2126f * color.R + 0.7152f * color.G + 0.0722f * color.B);
+            color.R = color.G = color.B = gray;
+            return color;
+        }
     }
 }
