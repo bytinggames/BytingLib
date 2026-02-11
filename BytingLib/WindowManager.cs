@@ -69,6 +69,7 @@ namespace BytingLib
 #endif
 
         public bool FullScreenPlus1Pixel { get; set; } = false;
+        const int WindowTabHeight = 32;
 
         public WindowManager(bool realFullscreen, GameWindow window, GraphicsDeviceManager graphics)
         {
@@ -118,8 +119,22 @@ namespace BytingLib
         {
             if (IsFullscreen())
             {
-                graphics.PreferredBackBufferWidth = ForceWindowSize?.X ?? windowRectBeforeFullscreen.Width;
-                graphics.PreferredBackBufferHeight = ForceWindowSize?.Y ?? windowRectBeforeFullscreen.Height;
+                Int2 newWindowRes = new Int2(
+                    ForceWindowSize?.X ?? windowRectBeforeFullscreen.Width,
+                    ForceWindowSize?.Y ?? windowRectBeforeFullscreen.Height);
+                Rectangle screenBounds = GraphicsAdapter.GetCurrentDisplayBounds(Window.Handle);
+
+                if (ForceWindowSize == null && newWindowRes.X > screenBounds.Width)
+                {
+                    newWindowRes.X = screenBounds.Width;
+                }
+                if (ForceWindowSize == null && newWindowRes.Y > screenBounds.Height - WindowTabHeight)
+                {
+                    newWindowRes.Y = screenBounds.Height - WindowTabHeight;
+                }
+
+                graphics.PreferredBackBufferWidth = newWindowRes.X;
+                graphics.PreferredBackBufferHeight = newWindowRes.Y;
 
                 if (realFullscreen)
                 {
@@ -131,14 +146,13 @@ namespace BytingLib
                 }
 
                 // set position to last window position, or if that is outside of the current screen bounds, simply center the window on the current screen
-                Rectangle bounds = GraphicsAdapter.GetCurrentDisplayBounds(Window.Handle);
-                if (bounds.Contains(windowRectBeforeFullscreen.Location))
+                if (screenBounds.Contains(windowRectBeforeFullscreen.Location))
                 {
                     Window.Position = windowRectBeforeFullscreen.Location;
                 }
                 else
                 {
-                    Window.Position = bounds.Center - new Point(windowRectBeforeFullscreen.Width / 2, windowRectBeforeFullscreen.Height / 2);
+                    Window.Position = screenBounds.Center - new Point(windowRectBeforeFullscreen.Width / 2, windowRectBeforeFullscreen.Height / 2);
                 }
 
                 graphics.ApplyChanges();
@@ -242,24 +256,14 @@ namespace BytingLib
             }
             else
             {
-                // check if window is larger than screen
-                Int2 newWindowRes = WindowResolution;
-                if (WindowResolution.X > screenBounds.Width)
-                {
-                    newWindowRes.X = screenBounds.Width;
-                }
-                const int windowTabHeight = 32;
-                if (WindowResolution.Y > screenBounds.Height - windowTabHeight)
-                {
-                    newWindowRes.Y = screenBounds.Height - windowTabHeight;
-                }
+                Int2 newWindowRes = new Int2(screenBounds.Width, screenBounds.Height - WindowTabHeight);
+
+                // center window on screen
+                Window.Position = screenBounds.Center - (newWindowRes / 2).ToPoint();
                 if (newWindowRes != WindowResolution)
                 {
                     SetBackBufferSize(newWindowRes);
                 }
-
-                // center window on screen
-                Window.Position = screenBounds.Center - (WindowResolution / 2).ToPoint();
             }
 
             if (keepFullscreen)
