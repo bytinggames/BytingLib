@@ -259,9 +259,16 @@ namespace BytingLib
                 Int2 newWindowRes = new Int2(screenBounds.Width, screenBounds.Height - WindowTabHeight);
 
                 // center window on screen
-                Window.Position = screenBounds.Center - (newWindowRes / 2).ToPoint();
-                if (newWindowRes != WindowResolution)
+                bool resize = newWindowRes != WindowResolution;
+                if (resize)
                 {
+                    // do it twice, since this fixes switching to smaller screen (not being topmost)
+                    SetBackBufferSize(newWindowRes);
+                }
+                Window.Position = screenBounds.Center - (newWindowRes / 2).ToPoint();
+                if (resize)
+                {
+                    // do it twice, since this fixes switching to bigger screen
                     SetBackBufferSize(newWindowRes);
                 }
             }
