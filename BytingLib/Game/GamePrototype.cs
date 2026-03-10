@@ -37,7 +37,7 @@ namespace BytingLib
         /// <summary>Disable to prevent any input</summary>
         protected bool updateSourceInput = true;
 
-        private bool pauseUpdate;
+        protected bool PauseUpdate { get; private set; }
 
         private Action? startRecordingPlayback;
 
@@ -204,11 +204,11 @@ namespace BytingLib
             int iterations = 1;
             if (inputGameSpeed != null)
             {
-                if (!pauseUpdate && inputGameSpeed.SpeedUp100.Down)
+                if (!PauseUpdate && inputGameSpeed.SpeedUp100.Down)
                 {
                     iterations *= 100;
                 }
-                else if (!pauseUpdate && inputGameSpeed.SpeedUp10.Down)
+                else if (!PauseUpdate && inputGameSpeed.SpeedUp10.Down)
                 {
                     iterations *= 10;
                 }
@@ -216,7 +216,7 @@ namespace BytingLib
                 {
                     if (inputGameSpeed.Halt.Down)
                     {
-                        pauseUpdate = true;
+                        PauseUpdate = true;
 
                         if (inputGameSpeed.ForwardOneFrame.Pressed)
                         {
@@ -229,7 +229,7 @@ namespace BytingLib
                     }
                     else
                     {
-                        pauseUpdate = false;
+                        PauseUpdate = false;
                     }
                 }
             }
