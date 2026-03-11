@@ -44,14 +44,12 @@
         }
         public static Vector2 GetNormalizedOrZero(this Vector2 vec)
         {
-            if (vec == Vector2.Zero)
+            Vector2 v = Vector2.Normalize(vec);
+            if (float.IsNormal(v.X))
             {
-                return Vector2.Zero;
+                return v;
             }
-            else
-            {
-                return Vector2.Normalize(vec);
-            }
+            return Vector2.Zero;
         }
         internal static Vector2 XPositive(this Vector2 vec)
         {

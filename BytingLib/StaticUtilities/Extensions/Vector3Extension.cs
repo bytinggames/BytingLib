@@ -44,14 +44,12 @@
         }
         public static Vector3 GetNormalizedOrZero(this Vector3 vec)
         {
-            if (vec == Vector3.Zero)
+            Vector3 v = Vector3.Normalize(vec);
+            if (float.IsNormal(v.X))
             {
-                return Vector3.Zero;
+                return v;
             }
-            else
-            {
-                return Vector3.Normalize(vec);
-            }
+            return Vector3.Zero;
         }
         public static Vector3 GetMoveTo(this Vector3 val, Vector3 goal, float speed)
         {
