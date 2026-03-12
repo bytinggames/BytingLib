@@ -45,7 +45,7 @@
         public static Vector2 GetNormalizedOrZero(this Vector2 vec)
         {
             Vector2 v = Vector2.Normalize(vec);
-            if (float.IsNormal(v.X))
+            if (float.IsFinite(v.X))
             {
                 return v;
             }
