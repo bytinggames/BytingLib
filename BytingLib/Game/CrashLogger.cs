@@ -10,7 +10,7 @@ namespace BytingLib
         }
         public static void Catch(string message, string crashLogFilePath, string fontAssetName)
         {
-            message = "Game crashed\nPlease send this to @bytinggames on Discord.\n\n" + DateTime.UtcNow.ToString("dd.MM.yyyy HH:mm:ss") + " UTC\n\n" + message;
+            message = "Game crashed.\nPlease send this to @bytinggames on Discord.\n\n" + DateTime.UtcNow.ToString("dd.MM.yyyy HH:mm:ss") + " UTC\n\n" + message;
             AppendLog(crashLogFilePath, message);
 
             try
