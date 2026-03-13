@@ -20,6 +20,7 @@
         public StyleBase StyleBase { get; set; }
         private List<Style> styleOverrides = new();
         public double TotalMilliseconds { get; set; }
+        public Rect? ScissorRect { get; private set; }
 
         public float LineSpacing => Font.Value.LineSpacing * FontScale.Y;
 
@@ -91,7 +92,7 @@
             return Font.Value.MeasureString(text) * FontScale;
         }
 
-        public void ScissorRect(SpriteBatch spriteBatch, Rect rect, Action draw)
+        public void ScissorRectCut(SpriteBatch spriteBatch, Rect rect, Action draw)
         {
             if (SpriteBatchBegin == null)
             {
@@ -104,9 +105,14 @@
             //spriteBatch.GraphicsDevice.RasterizerState.ScissorTestEnable = true;
             SpriteBatchBegin(true, null, null, null);
             bool rememberScissorTest = spriteBatch.GraphicsDevice.RasterizerState.ScissorTestEnable;
+
             using (CodeHelper.ChangeVarTemporarily(spriteBatch.GraphicsDevice.ScissorRectangle,
                 f => spriteBatch.GraphicsDevice.ScissorRectangle = f,
                 absoluteRectWindowSpace.ToRectangle()
+                ))
+            using (CodeHelper.ChangeVarTemporarily(ScissorRect,
+                f => ScissorRect = f,
+                rect
                 ))
             {
                 draw();

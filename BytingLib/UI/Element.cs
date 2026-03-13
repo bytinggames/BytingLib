@@ -118,6 +118,27 @@
             UpdateHoverElement(input);
         }
 
+        protected virtual void DrawChildren(SpriteBatch spriteBatch, StyleRoot style)
+        {
+            if (style.ScissorRect == null)
+            {
+                for (int i = 0; i < Children.Count; i++)
+                {
+                    Children[i].Draw(spriteBatch, style);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < Children.Count; i++)
+                {
+                    if (Children[i].AbsoluteRect.CollidesWith(style.ScissorRect))
+                    {
+                        Children[i].Draw(spriteBatch, style);
+                    }
+                }
+            }
+        }
+
         protected virtual void UpdateHoverElement(ElementInput input)
         {
             if (input.HoverElement == null
@@ -163,10 +184,7 @@
 
             DrawSelf(spriteBatch, style);
 
-            for (int i = 0; i < Children.Count; i++)
-            {
-                Children[i].Draw(spriteBatch, style);
-            }
+            DrawChildren(spriteBatch, style);
 
             DrawSelfPost(spriteBatch, style);
 

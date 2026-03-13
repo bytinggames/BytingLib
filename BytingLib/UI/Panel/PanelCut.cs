@@ -22,7 +22,7 @@
 
         public override void Draw(SpriteBatch spriteBatch, StyleRoot style)
         {
-            style.ScissorRect(spriteBatch, AbsoluteRect, () =>
+            style.ScissorRectCut(spriteBatch, AbsoluteRect, () =>
             {
                 base.Draw(spriteBatch, style);
             });
