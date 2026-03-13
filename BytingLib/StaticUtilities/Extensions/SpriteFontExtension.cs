@@ -201,6 +201,11 @@ namespace BytingLib
         {
             font.Texture.Dispose();
         }
+
+        public static bool ContainsCharacters(this SpriteFont font, string text)
+        {
+            return text.Distinct().All(font.Characters.Contains);
+        }
     }
 
     //public static class SpriteFontExtension
