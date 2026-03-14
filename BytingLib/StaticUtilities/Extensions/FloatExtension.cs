@@ -88,5 +88,14 @@
             }
             return n;
         }
+        public static float WrapAngle(this float n)
+        {
+            n %= MathHelper.TwoPi;
+            if (n < 0)
+            {
+                n += MathHelper.TwoPi;
+            }
+            return n;
+        }
     }
 }
