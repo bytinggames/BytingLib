@@ -15,6 +15,7 @@
         private readonly Predicate<char>? validateChar;
         private int? moveCursorVertically;
         public event Func<bool>? OnEnter;
+        public event Action<string>? OnTextInputChanged;
         public KeyInputString.AllowNewLine AllowNewLine { get; }
         private bool doFocus;
         private bool doSelectAllOnClick;
@@ -136,7 +137,11 @@
         private void InputString_OnTextChange(InputString inputString)
         {
             cursorChanged = true;
-            Text = inputString.Text;
+            if (Text != inputString.Text)
+            {
+                Text = inputString.Text;
+                OnTextInputChanged?.Invoke(Text);
+            }
         }
 
         private void MoveCursorVertically(int byLineAmount)

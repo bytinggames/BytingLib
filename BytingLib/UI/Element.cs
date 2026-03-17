@@ -326,6 +326,26 @@
         }
 
         public Element Add(params Element[] children) => Add((IList<Element>)children);
+        // same as Add(IList<Element> children)
+        public Element Add(IEnumerable<Element> children)
+        {
+            foreach (var c in children)
+            {
+                Children.Add(c);
+                c.Parent = this;
+            }
+            var manipulateString = GetManipulateString();
+            if (manipulateString.Exists())
+            {
+                foreach (var c in children)
+                {
+                    c.ApplyManipulateStringRecursive(manipulateString);
+                }
+            }
+            SetDirty();
+            return this;
+        }
+        // same as Add(IEnumerable<Element> children)
         public Element Add(IList<Element> children)
         {
             for (int i = 0; i < children.Count; i++)
