@@ -6,9 +6,9 @@ namespace BytingLib
     {
         #region >InputMeta
 
-        public InputBool Screenshot { get; } = Modify(Keys.F12);
-        public InputBool ScreenshotAndCopy { get; } = Modify(Keys.C, true);
-        public InputBool ScreenshotAndCopyFile { get; } = Modify(Keys.C, true, false, true);
+        public InputBool Screenshot { get; } = And(Not(Keys.U), Keys.F12);
+        public InputBool ScreenshotAndCopy { get; } = And(Keys.LeftControl, Keys.C);
+        public InputBool ScreenshotAndCopyFile { get; } = And(Keys.RightControl, Keys.C);
         public InputBool ScreenshotDelayed { get; } = Shift();
         public InputBool ToggleFullscreen { get; } = Keys.F11;
         public InputBool InterruptReplay { get; } = Keys.Escape;
