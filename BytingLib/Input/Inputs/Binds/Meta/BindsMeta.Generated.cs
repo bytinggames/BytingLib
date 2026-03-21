@@ -8,12 +8,16 @@ namespace BytingLib
 		protected readonly DisposableContainer disposables = new();
 
 		protected readonly BoolFunc screenshot;
+		protected readonly BoolFunc screenshotAndCopy;
+		protected readonly BoolFunc screenshotAndCopyFile;
 		protected readonly BoolFunc screenshotDelayed;
 		protected readonly BoolFunc toggleFullscreen;
 		protected readonly BoolFunc interruptReplay;
 		protected readonly BoolFunc swapScreen;
 
 		public virtual InputBoolState Screenshot => screenshot.GetState(updater);
+		public virtual InputBoolState ScreenshotAndCopy => screenshotAndCopy.GetState(updater);
+		public virtual InputBoolState ScreenshotAndCopyFile => screenshotAndCopyFile.GetState(updater);
 		public virtual InputBoolState ScreenshotDelayed => screenshotDelayed.GetState(updater);
 		public virtual InputBoolState ToggleFullscreen => toggleFullscreen.GetState(updater);
 		public virtual InputBoolState InterruptReplay => interruptReplay.GetState(updater);
@@ -24,6 +28,8 @@ namespace BytingLib
 			this.updater = updater;
 			
 			InitInput(out screenshot, new(() => binds.Screenshot));
+			InitInput(out screenshotAndCopy, new(() => binds.ScreenshotAndCopy));
+			InitInput(out screenshotAndCopyFile, new(() => binds.ScreenshotAndCopyFile));
 			InitInput(out screenshotDelayed, new(() => binds.ScreenshotDelayed));
 			InitInput(out toggleFullscreen, new(() => binds.ToggleFullscreen));
 			InitInput(out interruptReplay, new(() => binds.InterruptReplay));

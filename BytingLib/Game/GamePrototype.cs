@@ -43,6 +43,7 @@ namespace BytingLib
 
         public event Action? OnFrameBeforeScreenshot;
         private int takeScreenshotNextFrame = -1;
+        private ScreenshotType nextScreenshot;
         private DateTime? lastScreenshotTaken;
 
         /// <summary>Only used for easy access on frames for when debugging.</summary>
@@ -159,10 +160,15 @@ namespace BytingLib
 
             ScreenshotType screenshot = ScreenshotType.None;
 
-            if (inputMeta.Screenshot.Pressed && allowScreenshots)
+            if ((inputMeta.Screenshot.Pressed || inputMeta.ScreenshotAndCopy.Pressed || inputMeta.ScreenshotAndCopyFile.Pressed)
+                && allowScreenshots)
             {
                 OnFrameBeforeScreenshot?.Invoke();
                 takeScreenshotNextFrame = inputMeta.ScreenshotDelayed.Down ? 5 : 1;
+                nextScreenshot = 
+                    inputMeta.ScreenshotAndCopyFile.Pressed ? ScreenshotType.ByUserAndCopyFile 
+                    : inputMeta.ScreenshotAndCopy.Pressed ? ScreenshotType.ByUserAndCopy 
+                    : ScreenshotType.ByUser;
             }
             else if (takeScreenshotNextFrame != -1)
             {
@@ -170,7 +176,7 @@ namespace BytingLib
                 if (takeScreenshotNextFrame == 0)
                 {
                     takeScreenshotNextFrame = -1;
-                    screenshot = ScreenshotType.ByUser;
+                    screenshot = nextScreenshot;
                 }
             }
             else if (randomScreenshots)
@@ -185,7 +191,12 @@ namespace BytingLib
             }
             if (screenshot != ScreenshotType.None)
             {
-                screenshotter.TakeScreenshot(screenshot == ScreenshotType.Random);
+                string imagePath = screenshotter.TakeScreenshot(screenshot == ScreenshotType.Random);
+                if (screenshot == ScreenshotType.ByUserAndCopy
+                    || screenshot == ScreenshotType.ByUserAndCopyFile)
+                {
+                    ImageToClipboard.Set(imagePath, screenshot == ScreenshotType.ByUserAndCopyFile);
+                }
             }
 
             if (startRecordingPlayback != null)
@@ -333,6 +344,8 @@ namespace BytingLib
         {
             None,
             ByUser,
+            ByUserAndCopy,
+            ByUserAndCopyFile,
             Random
         }
     }
