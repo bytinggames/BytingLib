@@ -8,27 +8,24 @@ namespace BytingLib
         private Texture2D? screenshotTex;
         private readonly GraphicsDevice gDevice;
         private readonly DefaultPaths paths;
-        public event Action? OnTakeScreenshot;
+        private readonly SpriteBatch spriteBatch;
 
-        public Screenshotter(GraphicsDevice gDevice, DefaultPaths paths)
+        public event Action? OnTakeScreenshot;
+        public Int2? Resolution { get; set; } = new Int2(1920, 1080);
+        public bool ResolutionAsMax { get; set; } = true;
+
+        public Screenshotter(GraphicsDevice gDevice, DefaultPaths paths, SpriteBatch spriteBatch)
         {
             this.gDevice = gDevice;
             this.paths = paths;
+            this.spriteBatch = spriteBatch;
         }
 
         public string TakeScreenshot(bool randomScreenshot, bool pngOrJpeg = true)
         {
-            CaptureScreenshotAsTexture();
             string path = randomScreenshot ? paths.GetNewRandomScreenshotWithoutEnding() : paths.GetNewScreenshotWithoutEnding();
             path += pngOrJpeg ? ".png" : ".jpg";
-            if (pngOrJpeg)
-            {
-                screenshotTex.SaveAsPng(path);
-            }
-            else
-            {
-                screenshotTex.SaveAsJpeg(path);
-            }
+            TakeScreenshot(path);
             OnTakeScreenshot?.Invoke();
 
             return path;
@@ -61,8 +58,12 @@ namespace BytingLib
             {
                 screenshotTex = new Texture2D(gDevice, w, h, false, gDevice.PresentationParameters.BackBufferFormat);
             }
-
             screenshotTex.SetData(backBuffer);
+
+            if (Resolution != null)
+            {
+                screenshotTex = screenshotTex.GetScaleToMaxRes(Resolution.Value, spriteBatch) ?? screenshotTex;
+            }
 
             return screenshotTex;
         }

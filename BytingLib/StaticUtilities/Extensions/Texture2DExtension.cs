@@ -485,6 +485,53 @@
             return x;
         }
 
+        /// <summary>If the texture is already smaller, we return null</summary>
+        public static Texture2D? GetScaleToMaxRes(this Texture2D tex, Int2 maxRes, SpriteBatch spriteBatch)
+        {
+            if (tex.Width <= maxRes.X && tex.Height <= maxRes.Y)
+            {
+                return null;
+            }
+
+            Int2 res = tex.GetSizeInt();
+            float xScale = (float)maxRes.X / res.X;
+            float yScale = (float)maxRes.Y / res.Y;
+            float minScale = MathF.Min(xScale, yScale);
+            Int2 newRes;
+            if (xScale < yScale)
+            {
+                newRes = new(maxRes.X, (int)MathF.Min(maxRes.Y, MathF.Round(res.Y * minScale)));
+            }
+            else
+            {
+                newRes = new((int)MathF.Min(maxRes.X, MathF.Round(res.X * minScale)), maxRes.Y);
+            }
+            // if only 1 pixel off the target resolution, just use the target resolution.
+            if (newRes != maxRes
+                && MathF.Abs(newRes.X - maxRes.X) <= 1f
+                && MathF.Abs(newRes.Y - maxRes.Y) <= 1f)
+            {
+                newRes = maxRes;
+            }
+
+            return tex.GetScaled(newRes, spriteBatch); 
+        }
+        public static Texture2D GetScaled(this Texture2D tex, Int2 newRes, SpriteBatch spriteBatch)
+        {
+            RenderTarget2D scaled = new(tex.GraphicsDevice, newRes.X, newRes.Y);
+
+            using (spriteBatch.GraphicsDevice.UseRenderTarget(scaled))
+            {
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone);
+
+                tex.Draw(spriteBatch, new Rect(0, 0, newRes.X, newRes.Y));
+
+                spriteBatch.End();
+            }
+
+            return scaled;
+        }
+
         #region Drawing
 
         public static void Draw(this Texture2D _texture, SpriteBatch spriteBatch, Vector2 _position, Color? _color = null, Rectangle? _sourceRectangle = null, Vector2? _scale = null, float _rotation = 0f, SpriteEffects _effects = SpriteEffects.None, float? depth = null)

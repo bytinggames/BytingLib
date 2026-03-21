@@ -108,7 +108,7 @@ namespace BytingLib
             this.allowScreenshots = allowScreenshots;
             saveStateManager = new SaveStateManager(paths.GetSaveStateJsonDir(saveStateEnvironment), false);
 
-            screenshotter = new Screenshotter(gDevice, paths);
+            screenshotter = new Screenshotter(gDevice, paths, spriteBatch);
             screenshotter.OnTakeScreenshot += Screenshotter_OnTakeScreenshot;
 
             InitWindowAndGraphics(vsync);
