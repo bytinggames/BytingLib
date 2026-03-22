@@ -124,6 +124,33 @@
             return PopupScene.RemovePopupSceneRecursively(popupToRemove);
         }
 
+        public bool Remove1PopupScene()
+        {
+            if (PopupScene != null)
+            {
+                var popupOfPopup = PopupScene.PopupScene;
+                PopupScene.RemovePopupScene(false);
+                SetPopupScene(popupOfPopup);
+                return true;
+            }
+            return false;
+        }
+
+        public void Insert1PopupScene(Scene popup)
+        {
+            if (PopupScene == null)
+            {
+                SetPopupScene(popup);
+            }
+            else
+            {
+                var oldPopup = PopupScene;
+                RemovePopupScene(false);
+                SetPopupScene(popup);
+                popup.SetPopupScene(oldPopup);
+            }
+        }
+
         public Scene GetTopmostScene()
         {
             if (PopupScene == null)
