@@ -1,5 +1,6 @@
 ﻿namespace BytingLib
 {
+    /// <summary>Whether an input is the last child is important. It has to be pressed last as well.</summary>
     public class BoolAnd : InputBoolSimple
     {
         public InputBool[] Children { get; }
@@ -23,7 +24,7 @@
                 {
                     return false;
                 }
-                shortestDownTime = s.DownTime;
+                shortestDownTime = Math.Min(shortestDownTime, s.DownTime);
             }
 
             var lastState = Children[^1];
