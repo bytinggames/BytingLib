@@ -51,6 +51,15 @@
             }
             return Vector3.Zero;
         }
+        public static Vector3 GetNormalizedOr(this Vector3 vec, Vector3 or)
+        {
+            Vector3 v = Vector3.Normalize(vec);
+            if (float.IsFinite(v.X))
+            {
+                return v;
+            }
+            return or;
+        }
         public static Vector3 GetMoveTo(this Vector3 val, Vector3 goal, float speed)
         {
             if (val == goal)

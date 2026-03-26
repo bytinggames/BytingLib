@@ -51,6 +51,15 @@
             }
             return Vector2.Zero;
         }
+        public static Vector2 GetNormalizedOr(this Vector2 vec, Vector2 or)
+        {
+            Vector2 v = Vector2.Normalize(vec);
+            if (float.IsFinite(v.X))
+            {
+                return v;
+            }
+            return or;
+        }
         internal static Vector2 XPositive(this Vector2 vec)
         {
             if (vec.X < 0 || (vec.X == 0 && vec.Y < 0))
