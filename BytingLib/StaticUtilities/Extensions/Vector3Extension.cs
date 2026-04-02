@@ -78,6 +78,18 @@
                 return val + dist * speed / distLength;
             }
         }
+        public static Vector3 GetMoveToPitchYawRoll(this Vector3 val, Vector3 goal, float speed)
+        {
+            if (val == goal)
+            {
+                return val;
+            }
+
+            val.X = val.X.GetMoveToAngle(goal.X, speed);
+            val.Y = val.Y.GetMoveToAngle(goal.Y, speed);
+            val.Z = val.Z.GetMoveToAngle(goal.Z, speed);
+            return val;
+        }
         public static float AngleTo(this Vector3 vec1, Vector3 vec2)
         {
             float dot = Vector3.Dot(vec1, vec2) / (vec1.Length() * vec2.Length());
