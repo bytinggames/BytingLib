@@ -18,7 +18,7 @@
         {
             lastDataCheckpoint = lastData.ToArray();
             lastFrameCheckpoint = lastFrame;
-            currentFrameCheckpoint = currentFrame;
+            currentFrameCheckpoint = CurrentFrame;
             frameWithNextStateChangeCheckpoint = frameWithNextStateChange;
             currentCheckpoint = Current;
             isFinishedCheckpoint = IsFinished;
@@ -33,7 +33,7 @@
             }
             lastData = lastDataCheckpoint.ToArray();
             lastFrame = lastFrameCheckpoint;
-            currentFrame = currentFrameCheckpoint;
+            CurrentFrame = currentFrameCheckpoint;
             frameWithNextStateChange = frameWithNextStateChangeCheckpoint;
             Current = currentCheckpoint;
             IsFinished = isFinishedCheckpoint;

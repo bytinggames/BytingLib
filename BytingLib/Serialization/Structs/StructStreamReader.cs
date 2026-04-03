@@ -6,7 +6,7 @@ namespace BytingLib.Serialization
     {
         protected readonly Stream stream;
         private readonly int? startPosition;
-        protected int currentFrame;
+        public int CurrentFrame { get; protected set; }
         protected int frameWithNextStateChange;
         protected byte[] intBuffer = new byte[4];
         object IEnumerator.Current => Current;
@@ -27,7 +27,7 @@ namespace BytingLib.Serialization
                 stream.Position = startPosition.Value;
             }
 
-            currentFrame = -1;
+            CurrentFrame = -1;
             frameWithNextStateChange = -1;
             Current = default;
             IsFinished = false;
@@ -96,14 +96,14 @@ namespace BytingLib.Serialization
 
         public bool MoveNext()
         {
-            currentFrame++;
+            CurrentFrame++;
 
             if (IsFinished)
             {
                 return false;
             }
 
-            if (currentFrame == frameWithNextStateChange)
+            if (CurrentFrame == frameWithNextStateChange)
             {
                 ReadStruct();
             }
