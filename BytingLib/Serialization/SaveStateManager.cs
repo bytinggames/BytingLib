@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
 
 namespace BytingLib.Serialization
 {
@@ -71,7 +72,24 @@ namespace BytingLib.Serialization
 
             if (tooNewVersion != null)
             {
-                File.Copy(filePath, Path.Combine(Path.GetDirectoryName(filePath) ?? "", Path.GetFileNameWithoutExtension(filePath) + "_backup_v" + tooNewVersion.Value + ".json"));
+                int i = 1;
+                while (true)
+                {
+                    string filename = Path.Combine(Path.GetDirectoryName(filePath) ?? "", $"{Path.GetFileNameWithoutExtension(filePath)}_backup_v{tooNewVersion.Value}_{i}.json");
+                    i++;
+                    if (!File.Exists(filename))
+                    {
+                        try
+                        {
+                            File.Copy(filePath, filename, true);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine("exception when trying to backup savestate: " + e.ToString());
+                        }
+                        break;
+                    }
+                }
             }
 
             return save;
