@@ -148,5 +148,7 @@ namespace BytingLib
                 return ySign;
             }
         }
+
+        public float AspectRatio() => (float)X / Y;
     }
 }
