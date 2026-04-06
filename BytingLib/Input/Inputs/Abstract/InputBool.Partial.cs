@@ -19,6 +19,7 @@ namespace BytingLib
     [JsonDerivedType(typeof(BoolOnPress), "BoolOnPress")]
     [JsonDerivedType(typeof(BoolOnRelease), "BoolOnRelease")]
     [JsonDerivedType(typeof(BoolDelayed), "BoolDelayed")]
+    [JsonDerivedType(typeof(BoolSequence), "BoolSequence")]
     public abstract partial class InputBool : Input
     {
         public static implicit operator InputBool(Keys key) => new BoolKey(key);

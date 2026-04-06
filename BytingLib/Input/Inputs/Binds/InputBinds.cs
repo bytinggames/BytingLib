@@ -12,6 +12,7 @@ namespace BytingLib
         public static InputBool And(params InputBool[] inputs) => new BoolAnd(inputs);
         public static InputBool Or(params InputBool[] inputs) => new BoolOr(inputs);
         public static InputBool Not(InputBool input) => new BoolNot(input);
+        public static InputBool Twice(InputBool input) => new BoolSequence(input, input);
         public static InputBool Func(Func<InputBool> func) => new BoolFunc(func);
         public static InputVector2 Wasd => new Vector2FromBools(Keys.W, Keys.A, Keys.S, Keys.D);
         public static InputVector2 Arrows => new Vector2FromBools(Keys.Up, Keys.Left, Keys.Down, Keys.Right);
