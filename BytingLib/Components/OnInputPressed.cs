@@ -14,7 +14,7 @@ namespace BytingLib
             this.alsoUpdateBelowPopup = alsoUpdateBelowPopup;
         }
 
-        public void Update()
+        public virtual void Update()
         {
             if (input().Pressed)
             {
@@ -22,7 +22,7 @@ namespace BytingLib
             }
         }
 
-        public void UpdateWhenBelowPopup(Scene popup)
+        public virtual void UpdateWhenBelowPopup(Scene popup)
         {
             if (alsoUpdateBelowPopup)
             {
