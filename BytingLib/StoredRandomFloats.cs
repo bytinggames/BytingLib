@@ -17,6 +17,11 @@
             floats.Clear();
         }
 
+        public void EnsureCapacity(int capacity)
+        {
+            floats.EnsureCapacity(capacity);
+        }
+
         public float NextSingle(float min, float max)
         {
             if (index >= floats.Count)
