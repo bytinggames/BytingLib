@@ -2,6 +2,7 @@
 {
     public class Scene : StuffDisposable, IUpdate, IDrawBatch
     {
+        public Scene? ParentScene { get; protected set; }
         public Scene? PopupScene { get; protected set; }
         public bool DrawUnderlyingParents { get; set; } = true;
         /// <summary>Enables calling Update() on Parent instead of UpdateBelowPopup()</summary>
@@ -87,6 +88,10 @@
             }
 
             PopupScene = scene;
+            if (scene != null)
+            {
+                scene.ParentScene = this;
+            }
 
             if (PopupScene != null)
             {
@@ -102,11 +107,15 @@
             {
                 OnBeforePopupClose?.Invoke(PopupScene);
 
-                if (disposePopup)
+                if (PopupScene != null)
                 {
-                    PopupScene?.Dispose();
+                    if (disposePopup)
+                    {
+                        PopupScene.Dispose();
+                    }
+                    PopupScene.ParentScene = null;
+                    PopupScene = null;
                 }
-                PopupScene = null;
             }
         }
 
@@ -122,6 +131,20 @@
                 return true;
             }
             return PopupScene.RemovePopupSceneRecursively(popupToRemove);
+        }
+
+        public bool Remove1PopupSceneRecursively(Scene popupToRemove)
+        {
+            if (PopupScene == null)
+            {
+                return false;
+            }
+            if (PopupScene == popupToRemove)
+            {
+                Remove1PopupScene();
+                return true;
+            }
+            return PopupScene.Remove1PopupSceneRecursively(popupToRemove);
         }
 
         public bool Remove1PopupScene()
