@@ -3,16 +3,16 @@ namespace BytingLib
 {
     public abstract class MeasureDurations : IDraw
     {
-        Dictionary<string, MeasureDurationItem> measurements = new();
+        public Dictionary<string, MeasureDurationItem> Measurements { get; } = new();
         int stack = 0;
 
         public IDisposable Measure(string name)
         {
             MeasureDurationItem? m;
-            if (!measurements.TryGetValue(name, out m))
+            if (!Measurements.TryGetValue(name, out m))
             {
                 m = new MeasureDurationItem(stack);
-                measurements.Add(name, m);
+                Measurements.Add(name, m);
             }
             m.MeasureBegin();
 
@@ -26,7 +26,7 @@ namespace BytingLib
         {
             string textNumbers = "";
             string textNames = "";
-            foreach (var m in measurements)
+            foreach (var m in Measurements)
             {
                 textNumbers += m.Value.StackStr + m.Value.GetAverageMS().ToString("N1") + "\n";
                 textNames += m.Value.StackStr + "    - " + m.Key + "\n";

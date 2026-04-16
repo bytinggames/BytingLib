@@ -91,6 +91,11 @@
             }
         }
 
+        public void EnsureCapacity(int capacity)
+        {
+            GetInstanceBuffer(capacity);
+        }
+
         protected virtual void DrawCustom(IShaderWorld shader)
         {
         }
