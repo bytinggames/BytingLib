@@ -193,5 +193,18 @@
                 && v1.Y.NearlyEqual(v2.Y, maxDifference)
                 && v1.Z.NearlyEqual(v2.Z, maxDifference);
         }
+
+        /// <summary>Use this before normalizing. This is not the same as v == Vector3.Zero, since the xyz components could be so small that they disappear when calling LengthSuared() on them. This would result in a NaN when normalizing.</summary>
+        public static bool HasLength(this Vector3 v, out float lengthSquared)
+        {
+            lengthSquared = v.LengthSquared();
+            return lengthSquared != 0f;
+        }
+
+        /// <summary>Use this before normalizing. This is not the same as v == Vector3.Zero, since the xyz components could be so small that they disappear when calling LengthSuared() on them. This would result in a NaN when normalizing.</summary>
+        public static bool HasLength(this Vector3 v)
+        {
+            return v.LengthSquared() != 0f;
+        }
     }
 }
