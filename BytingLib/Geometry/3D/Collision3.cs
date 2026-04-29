@@ -372,7 +372,7 @@ namespace BytingLib
         /// <summary>Not tested yet.</summary>
         public static CollisionResult3 DistVectorVector(Vector3 vec1, Vector3 vec2, Vector3 dir)
         {
-            if (dir == Vector3.Zero)
+            if (!dir.HasLength())
             {
                 return new();
             }
@@ -691,7 +691,7 @@ namespace BytingLib
             // imagine a plane, that is spanned by the axis and the cross vector of (axis x dir)
             Vector3 cross = Vector3.Cross(dir, axis.Dir);
             // parallel?
-            if (cross == Vector3.Zero)
+            if (!cross.HasLength())
             {
                 return new CollisionResult3();
             }
@@ -1445,7 +1445,7 @@ namespace BytingLib
 
             Vector3 normal = Vector3.Cross(line1.Dir, dir);
 
-            if (normal == Vector3.Zero)
+            if (!normal.HasLength())
             {
                 // line1 has same dir (or negative) as dir -> dart-like
                 // make ray check instead

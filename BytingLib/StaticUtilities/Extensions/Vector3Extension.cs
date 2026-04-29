@@ -144,7 +144,7 @@
             float theta = MathF.Acos(dot) * amount;
             Vector3 RelativeVec = end - start * dot;
 
-            if (RelativeVec == Vector3.Zero)
+            if (!RelativeVec.HasLength())
             {
                 return Vector3.Lerp(start, end, amount);
             }
