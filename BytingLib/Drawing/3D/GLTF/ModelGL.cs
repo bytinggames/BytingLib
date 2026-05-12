@@ -5,6 +5,10 @@ namespace BytingLib
     public class ModelGL : IDisposable
     {
         public int SceneIndex { get; }
+        /// <summary>The name of the gltf file</summary>
+        public string FileNameWithoutExtension { get; }
+        /// <summary>The directory to the gltf file relative to the content root</summary>
+        public string DirectoryRelativeToContent { get; }
 
         public JsonArrayCache<SceneGL>? Scenes { get; }
         internal ArrayCacheNode? Nodes { get; }
@@ -27,7 +31,6 @@ namespace BytingLib
         private readonly JsonArray? accessorsArr, bufferViewsArr, buffersArr, camerasJsonArray;
         private readonly DisposableContainer disposables = new();
         private readonly IContentCollectorUse? contentCollector;
-        private readonly string gltfDirRelativeToContent;
         private readonly string contentRootDirectory;
         private readonly GraphicsDevice? gDevice;
 
@@ -42,23 +45,24 @@ namespace BytingLib
         {
         }
         public ModelGL(string filePath, string contentRootDirectory, GraphicsDevice? gDevice, IContentCollectorUse? contentCollector)
-            :this(File.ReadAllText(filePath), Path.GetDirectoryName(filePath) ?? "", contentRootDirectory, gDevice, contentCollector)
+            :this(File.ReadAllText(filePath), Path.GetDirectoryName(filePath) ?? "", Path.GetFileNameWithoutExtension(filePath), contentRootDirectory, gDevice, contentCollector)
         {
         }
 
-        public ModelGL(string json, string gltfDirectory, string contentRootDirectory, GraphicsDevice? gDevice, IContentCollectorUse? contentCollector)
+        public ModelGL(string json, string gltfDirectory, string fileNameWithoutExtension, string contentRootDirectory, GraphicsDevice? gDevice, IContentCollectorUse? contentCollector)
         {
+            FileNameWithoutExtension = fileNameWithoutExtension;
             this.contentRootDirectory = contentRootDirectory;
             this.gDevice = gDevice;
             this.contentCollector = contentCollector;
             ChannelTargets = new DictionaryCacheChannelTargets(this);
 
-            gltfDirRelativeToContent = gltfDirectory.Substring(contentRootDirectory.Length);
-            gltfDirRelativeToContent = gltfDirRelativeToContent.Replace('\\', '/');
-            if (gltfDirRelativeToContent.StartsWith('/')
+            DirectoryRelativeToContent = gltfDirectory.Substring(contentRootDirectory.Length);
+            DirectoryRelativeToContent = DirectoryRelativeToContent.Replace('\\', '/');
+            if (DirectoryRelativeToContent.StartsWith('/')
                 && contentRootDirectory != "") // absolute linux paths start with a / and shouldn't be removed
             {
-                gltfDirRelativeToContent = gltfDirRelativeToContent.Substring(1);
+                DirectoryRelativeToContent = DirectoryRelativeToContent.Substring(1);
             }
 
             var root = JsonNode.Parse(json)!;
@@ -271,7 +275,7 @@ namespace BytingLib
 
             if (contentCollector != null)
             {
-                Ref<byte[]> wholeBuffer = disposables.Use(contentCollector.Use<byte[]>(ContentHelper.UriToContentFileWithExtension(bufferUri, gltfDirRelativeToContent)));
+                Ref<byte[]> wholeBuffer = disposables.Use(contentCollector.Use<byte[]>(ContentHelper.UriToContentFileWithExtension(bufferUri, DirectoryRelativeToContent)));
                 byte[] bufferBytes = new byte[bufferByteLength];
                 Buffer.BlockCopy(wholeBuffer.Value, bufferByteOffset, bufferBytes, 0, bufferByteLength);
 
@@ -279,7 +283,7 @@ namespace BytingLib
             }
             else
             {
-                string filePath = Path.GetFullPath(Path.Combine(contentRootDirectory, gltfDirRelativeToContent, bufferUri));
+                string filePath = Path.GetFullPath(Path.Combine(contentRootDirectory, DirectoryRelativeToContent, bufferUri));
                 byte[] bufferBytes = new byte[bufferByteLength];
                 using (var stream = File.OpenRead(filePath))
                 {
@@ -308,7 +312,7 @@ namespace BytingLib
                 return new Ref<Texture2D>(new Promise<Texture2D>((Texture2D)null!), null);
             }
 
-            return contentCollector.Use<Texture2D>(ContentHelper.UriToContentFile(imageUri, gltfDirRelativeToContent));
+            return contentCollector.Use<Texture2D>(ContentHelper.UriToContentFile(imageUri, DirectoryRelativeToContent));
         }
 
         public void Draw(IShaderWorld shader, IShaderMaterial? shaderMaterial, IShaderSkin? shaderSkin)

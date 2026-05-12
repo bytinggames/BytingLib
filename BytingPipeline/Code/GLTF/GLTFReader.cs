@@ -30,7 +30,7 @@ namespace BytingPipeline
                 throw new BytingException("gltfDirectory couldn't be read");
             }
 
-            return new ModelGL(json, gltfDirectory, input.ContentManager.RootDirectory, gDevice, contentCollector);
+            return new ModelGL(json, gltfDirectory, input.AssetName, input.ContentManager.RootDirectory, gDevice, contentCollector);
         }
     }
 }
