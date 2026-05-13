@@ -1,6 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Globalization;
 using System.Text.Json;
-using System.Globalization;
+using System.Text.Json.Serialization;
 
 namespace BytingLib
 {
@@ -134,6 +134,17 @@ namespace BytingLib
         public static bool operator >=(DateTimeMS d1, DateTimeMS d2)
         {
             return d1.MS >= d2.MS;
+        }
+
+        public DateTime ToDateTimeUtc()
+        {
+            var offset = DateTimeOffset.FromUnixTimeMilliseconds(MS);
+            return offset.UtcDateTime;
+        }
+        public DateTime ToDateTimeLocal()
+        {
+            var offset = DateTimeOffset.FromUnixTimeMilliseconds(MS);
+            return offset.LocalDateTime;
         }
     }
 }
