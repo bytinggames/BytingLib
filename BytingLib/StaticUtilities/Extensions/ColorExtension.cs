@@ -37,6 +37,10 @@ namespace BytingLib
             c2 *= (c2.A / 255f);
             return new Color(c1.R + c2.R, c1.G + c2.G, c1.B + c2.B, c1.A + c2.A);
         }
+        public static Color OverlayColors(Color c1, Color c2)
+        {
+            return new Color(c1.R + c2.R, c1.G + c2.G, c1.B + c2.B, Math.Min(byte.MaxValue, c1.A + c2.A));
+        }
 
 
         public static Color MultiplyColors(Color bottom, Color top)
