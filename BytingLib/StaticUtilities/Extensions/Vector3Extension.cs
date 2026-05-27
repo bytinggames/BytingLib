@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using System.Globalization;
+
+namespace BytingLib
 {
     public static class Vector3Extension
     {
@@ -205,6 +207,19 @@
         public static bool HasLength(this Vector3 v)
         {
             return v.LengthSquared() != 0f;
+        }
+
+        public static string ToCSharp(this Vector3? v)
+        {
+            if (v == null)
+            {
+                return "null";
+            }
+            return v.Value.ToCSharp();
+        }
+        public static string ToCSharp(this Vector3 v)
+        {
+            return $"new Vector3({v.X.ToString(CultureInfo.InvariantCulture)}f, {v.Y.ToString(CultureInfo.InvariantCulture)}f, {v.Z.ToString(CultureInfo.InvariantCulture)}f)";
         }
     }
 }
