@@ -45,6 +45,7 @@ namespace BytingLib
         private int takeScreenshotNextFrame = -1;
         private ScreenshotType nextScreenshot;
         private DateTime? lastScreenshotTaken;
+        public int DefaultIterations { get; set; } = 1;
 
         /// <summary>Only used for easy access on frames for when debugging.</summary>
         public static Func<int> DebugGetFrame { get; set; } = () => 0;
@@ -212,7 +213,7 @@ namespace BytingLib
 
         private int GetIterations()
         {
-            int iterations = 1;
+            int iterations = DefaultIterations;
             if (inputGameSpeed != null)
             {
                 if (!PauseUpdate && inputGameSpeed.SpeedUp100.Down)
