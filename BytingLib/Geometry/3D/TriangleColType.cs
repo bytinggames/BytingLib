@@ -29,9 +29,17 @@
         {
             return t >= TriangleColType.Edge0 && t <= TriangleColType.Edge2;
         }
+        public static bool IsFace(this TriangleColType t)
+        {
+            return t == TriangleColType.Face;
+        }
         public static int GetEdgeIndex(this TriangleColType t)
         {
             return t - TriangleColType.Edge0;
+        }
+        public static int GetVertexIndex(this TriangleColType t)
+        {
+            return (int)t;
         }
     }
 }
