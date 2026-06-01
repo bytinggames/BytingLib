@@ -122,5 +122,7 @@
         }
 
         public static Vector3 GetCenter(this BoundingBox box) => (box.Max + box.Min) / 2f;
+
+        public static Vector3 GetSize(this BoundingBox box) => box.Max - box.Min;
     }
 }
