@@ -7,6 +7,7 @@ namespace BytingLib.Serialization
     {
         private readonly string saveStateDir;
         public bool ThrowExceptionWhenLoadingTooNewVersion { get; set; }
+        public event Action<Exception, string>? OnException;
 
         public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions(JsonSerializerOptions.Default)
         {
@@ -64,10 +65,26 @@ namespace BytingLib.Serialization
             }
 
             string json = File.ReadAllText(filePath);
-            T? save = migrator.Deserialize(json, ThrowExceptionWhenLoadingTooNewVersion, out uint? tooNewVersion);
+            T? save = default;
+            bool threwException = false;
+            uint? tooNewVersion = null;
+
+            try
+            {
+                save = migrator.Deserialize(json, ThrowExceptionWhenLoadingTooNewVersion, out tooNewVersion);
+            }
+            catch (Exception e)
+            {
+                threwException = true;
+                OnException?.Invoke(e, "exception when trying to deserialize json: " + json);
+            }
             if (save == null)
             {
-                throw new BytingException("Couldn't load save file");
+                if (!threwException)
+                {
+                    OnException?.Invoke(new BytingException("failed to deserialize json: " + json), "");
+                }
+                return default;
             }
 
             if (tooNewVersion != null)
