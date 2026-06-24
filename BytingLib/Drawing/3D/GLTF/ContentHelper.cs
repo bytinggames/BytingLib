@@ -9,8 +9,20 @@
         }
         internal static string UriToContentFileWithExtension(string uri, string modelDirRelativeToContent)
         {
-            string fullPath = Path.GetFullPath(Path.Combine(modelDirRelativeToContent, uri));
-            fullPath = fullPath.Substring(Environment.CurrentDirectory.Length + 1);
+            string search = "/Content/";
+            int contentIndex = uri.IndexOf(search);
+            string fullPath;
+            if (contentIndex == -1)
+            {
+                fullPath = Path.Combine(modelDirRelativeToContent, uri);
+            }
+            else
+            {
+                // not sure if this is the best fix for externally referenced textures
+                // f.ex.
+                // "uri":"../../../../../../../../Users/Julian/Desktop/stuntboost_tools/SE/Content/Models/Resources/Room_Protagonist/walls_darken.exr"
+                fullPath = uri.Substring(contentIndex + search.Length);
+            }
             return fullPath.Replace('\\', '/');
         }
     }
