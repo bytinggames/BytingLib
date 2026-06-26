@@ -254,7 +254,7 @@ namespace BytingLib
             ConstructorInfo? ctorInfo = GetMatchingConstructor(ctors, parameters, out bool lastParameterIsParamsAttribute);
             if (ctorInfo == null)
             {
-                throw new Exception("no matching constructor found for type " + constructorType.Name);
+                throw new Exception("no matching constructor found for type " + constructorType.Name + " for " + reader.GetString());
             }
 
             var parameterInfos = ctorInfo.GetParameters().ToArray();
