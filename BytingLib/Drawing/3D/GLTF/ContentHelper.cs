@@ -14,7 +14,8 @@
             string fullPath;
             if (contentIndex == -1)
             {
-                fullPath = Path.Combine(modelDirRelativeToContent, uri);
+                fullPath = Path.GetFullPath(Path.Combine(modelDirRelativeToContent, uri));
+                fullPath = fullPath.Substring(Environment.CurrentDirectory.Length + 1);
             }
             else
             {
