@@ -1,6 +1,6 @@
 ﻿namespace BytingLib.Serialization
 {
-    public class StructStreamWriterCompressedCheckpoint<T> : StructStreamWriterCompressed<T> where T : struct
+    public class StructStreamWriterCompressedCheckpoint1CP<T> : StructStreamWriterCompressed<T> where T : struct
     {
         byte[]? previousDataCheckpoint;
         int lastFrameCheckpoint;
@@ -8,7 +8,7 @@
         T lastStateCheckpoint;
         long streamPositionCheckpoint;
 
-        public StructStreamWriterCompressedCheckpoint(Stream stream, bool alwaysFlush) : base(stream, alwaysFlush)
+        public StructStreamWriterCompressedCheckpoint1CP(Stream stream, bool alwaysFlush) : base(stream, alwaysFlush)
         {
         }
 
