@@ -71,39 +71,27 @@ namespace BytingLib
             return files.ToArray();
         }
 
-        public bool ShouldExampleYamlFileBeCreated()
-        {
-#if DEBUG
-            return true;
-#else
-            return programArgs.Contains("example_settings");
-#endif
-        }
-
-        public void CreateExampleYamlFileIfNotExisting(string? cSharpFile)
+        public void CreateExampleYamlFile()
         {
             // create settings example yaml
-            if (!File.Exists(paths.SettingsExampleFile))
+            var settings = Activator.CreateInstance<_Settings>();
+
+            if (settings != null)
             {
-                var settings = Activator.CreateInstance<_Settings>();
-
-                if (settings != null)
+                if (paths.SettingsCSharpFile == null)
                 {
-                    if (cSharpFile == null)
-                    {
-                        // generate yaml example with comments
-                        var serializer = new YamlDotNet.Serialization.Serializer();
-                        string yaml = serializer.Serialize(settings);
-                        File.WriteAllText(paths.SettingsExampleFile, yaml);
-                    }
-                    else
-                    {
-                        // generate yaml example without comments
-                        string yaml = SettingsExampleGenerator.GenerateYaml(settings,
-                            cSharpFile);
+                    // generate yaml example without comments
+                    var serializer = new YamlDotNet.Serialization.Serializer();
+                    string yaml = serializer.Serialize(settings);
+                    File.WriteAllText(paths.SettingsExampleFile, yaml);
+                }
+                else
+                {
+                    // generate yaml example with comments
+                    string yaml = SettingsExampleGenerator.GenerateYaml(settings,
+                        paths.SettingsCSharpFile);
 
-                        File.WriteAllText(paths.SettingsExampleFile, yaml);
-                    }
+                    File.WriteAllText(paths.SettingsExampleFile, yaml);
                 }
             }
         }

@@ -15,6 +15,7 @@ namespace BytingLib
         public string SettingsBaseFile { get; }
         public string SettingsDebugFile { get; }
         public string SettingsExampleFile { get; }
+        public string? SettingsCSharpFile { get; }
         public string CrashLogFile { get; }
         public string AccountStatsFile { get; }
         public string AnonymousKeyFile { get; }
@@ -61,6 +62,14 @@ namespace BytingLib
             SettingsDebugFile = Path.Combine(GameAppDataDir, "settings.debug.yaml");
             SettingsExampleFile = Path.Combine(GameAppDataDir, "settings.example.yaml");
             CrashLogFile = Path.Combine(GameAppDataDir, "crash.log");
+
+#if DEBUG
+            SettingsCSharpFile = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (SettingsCSharpFile != null)
+            {
+                SettingsCSharpFile = Path.Combine(SettingsCSharpFile, "Data", "Settings.cs");
+            }
+#endif
         }
 
         public static string GetAppDataDir(bool nextToExe)

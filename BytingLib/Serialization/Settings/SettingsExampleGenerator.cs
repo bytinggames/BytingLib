@@ -12,15 +12,11 @@ namespace BytingLib
                 .WithEmissionPhaseObjectGraphVisitor(f => new CommentsObjectGraphVisitor(comments, f.InnerVisitor))
                 .Build();
 
-
-            string yamlTotal = "\r\n# Regenerate this file by deleting it and restarting the game.\r\n\r\n";
-            
             string yaml = serializer.Serialize(settings);
             yaml = yaml.Replace("\r\n\r\n", "\r\n"); // remove empty lines
             yaml += "\r\n";
-            yamlTotal += yaml;
 
-            return yamlTotal;
+            return yaml;
         }
 
         private static Dictionary<string, string> LoadComments(string file)
