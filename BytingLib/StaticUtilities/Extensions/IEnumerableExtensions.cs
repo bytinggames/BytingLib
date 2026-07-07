@@ -1,4 +1,6 @@
-﻿namespace BytingLib
+﻿using System.Numerics;
+
+namespace BytingLib
 {
     public static class IEnumerableExtensions
     {
@@ -9,6 +11,24 @@
                 action(f);
             }
             return source;
+        }
+
+        public static bool IsSumAtLeast<T, TSum>(this IEnumerable<T> source, Func<T, TSum> getSum, TSum threshold) where TSum : INumber<TSum>
+        {
+            if (threshold <= TSum.Zero)
+            {
+                return true;
+            }
+
+            foreach (var item in source)
+            {
+                threshold -= getSum(item);
+                if (threshold <= TSum.Zero)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
