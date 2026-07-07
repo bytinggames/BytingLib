@@ -32,6 +32,10 @@
                 else
                 {
                     float maxY = GetMaxScrollY();
+                    if (maxY < 0f)
+                    {
+                        maxY = 0f;
+                    }
                     if (value > maxY)
                     {
                         value = maxY;
