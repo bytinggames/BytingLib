@@ -97,6 +97,13 @@ namespace BytingLib
             float dot = Vector3.Dot(vec1, vec2) / (vec1.Length() * vec2.Length());
             return MathF.Acos(Math.Clamp(dot, -1f, 1f));
         }
+        public static Vector3 PitchYawRollDistance(this Vector3 yawPitchRoll1, Vector3 yawPitchRoll2)
+        {
+            yawPitchRoll2.X = yawPitchRoll1.X.AngleDistance(yawPitchRoll2.X);
+            yawPitchRoll2.Y = yawPitchRoll1.Y.AngleDistance(yawPitchRoll2.Y);
+            yawPitchRoll2.Z = yawPitchRoll1.Z.AngleDistance(yawPitchRoll2.Z);
+            return yawPitchRoll2;
+        }
         public static Vector3 GetNonParallelVector(this Vector3 v)
         {
             if (v.X == 0 && v.Y == 0)
