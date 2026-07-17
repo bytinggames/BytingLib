@@ -486,5 +486,13 @@
                 NavigateElement = (Element)nearest;
             }
         }
+
+        protected override void DisposeSelf()
+        {
+            base.DisposeSelf();
+
+            rasterizerState.Dispose();
+            rasterizerStateScissor.Dispose();
+        }
     }
 }
