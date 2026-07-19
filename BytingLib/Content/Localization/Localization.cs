@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 
 namespace BytingLib
@@ -26,6 +25,9 @@ namespace BytingLib
         private Dictionary<string, string> dictionary = new Dictionary<string, string>();
         private int defaultLanguageIndex;
         private readonly bool cancelOnUnknownLanguage;
+        private readonly bool accumulateErrorsForUnitTest;
+        public readonly List<int> ErrorLines = new();
+
         public bool UnknownLanguage { get; private set; }
 
         public event Action? OnLocaReload;
@@ -36,11 +38,12 @@ namespace BytingLib
 
 
         public Localization(string csvFile, string languageKey, string defaultLanguage = "en", bool fallbackToFirstLanguage = true, bool resolveValues = true, 
-            bool skipPluses = false, Localization? locaOverride = null, char separator = ';', bool cancelOnUnknownLanguage = false)
+            bool skipPluses = false, Localization? locaOverride = null, char separator = ';', bool cancelOnUnknownLanguage = false, bool accumulateErrorsForUnitTest = false)
         {
             this.csvFile = csvFile;
             this.separator = separator;
             this.cancelOnUnknownLanguage = cancelOnUnknownLanguage;
+            this.accumulateErrorsForUnitTest = accumulateErrorsForUnitTest;
             LanguageKey = languageKey;
             this.defaultLanguage = defaultLanguage;
             this.fallbackToFirstLanguage = fallbackToFirstLanguage;
@@ -295,7 +298,15 @@ namespace BytingLib
                     else if (string.IsNullOrEmpty(value))
                     {
                         // no translation whatsoever. not even fallback english
-                        throw new Exception($"{keyDirectory}.{localKey} is missing {(fallbackToFirstLanguage ? "any" : "a")} translation at line {lineIndex + 1}.\nIf this key isn't intended to be translated, make sure the line ends with '<+/>'.");
+                        if (accumulateErrorsForUnitTest)
+                        {
+                            ErrorLines.Add(lineIndex + 1);
+                            value = "?";
+                        }
+                        else
+                        {
+                            throw new Exception($"{keyDirectory}.{localKey} is missing {(fallbackToFirstLanguage ? "any" : "a")} translation at line {lineIndex + 1}.\nIf this key isn't intended to be translated, make sure the line ends with '<+/>'.");
+                        }
                     }
                 }
 
