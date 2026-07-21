@@ -14,6 +14,8 @@
 
         public bool HideMouse { get; set; }
 
+        public bool Visible { get; set; } = true;
+
         public Scene(params Type[] extraTypes)
             : base(new Type[] { typeof(IDraw), typeof(IUpdate), typeof(IUpdateWhenBelowPopup), typeof(IDrawBatch) }.Concat(extraTypes).ToArray())
         { }
@@ -210,6 +212,11 @@
 
         private bool IsVisible()
         {
+            if (!Visible)
+            {
+                return false;
+            }
+
             if (PopupScene == null)
             {
                 return true;
