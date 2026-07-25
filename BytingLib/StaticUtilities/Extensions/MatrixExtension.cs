@@ -33,10 +33,22 @@
             }
         }
 
+        public static Vector3 ToPitchYawRoll(this Matrix rotationMatrix)
+        {
+            rotationMatrix.ToPitchYawRoll(out float y, out float p, out float r);
+            return new(p, y, r);
+        }
+
         public static void ToPitchYawRollFromScaled(this Matrix rotationMatrix, out float yaw, out float pitch, out float roll)
         {
             Vector3 scale = rotationMatrix.GetScale();
             (Matrix.CreateScale(Vector3.One / scale) * rotationMatrix).ToPitchYawRoll(out yaw, out pitch, out roll);
+        }
+
+        public static Vector3 ToPitchYawRollFromScaled(this Matrix rotationMatrix)
+        {
+            Vector3 scale = rotationMatrix.GetScale();
+            return (Matrix.CreateScale(Vector3.One / scale) * rotationMatrix).ToPitchYawRoll();
         }
 
         public static Matrix CreateMatrixRotationFromTo(Vector3 from, Vector3 to)
