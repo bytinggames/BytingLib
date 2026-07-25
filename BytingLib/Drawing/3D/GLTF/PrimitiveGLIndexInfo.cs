@@ -21,11 +21,11 @@ namespace BytingLib
             switch (IndexElementSize)
             {
                 case IndexElementSize.SixteenBits:
-                    short[] indicesShort = new short[IndexCount];
+                    ushort[] indicesShort = new ushort[IndexCount];
                     GetIndices(indicesShort);
                     return indicesShort;
                 case IndexElementSize.ThirtyTwoBits:
-                    int[] indicesInt = new int[IndexCount];
+                    uint[] indicesInt = new uint[IndexCount];
                     GetIndices(indicesInt);
                     return indicesInt;
                 default:
@@ -34,7 +34,7 @@ namespace BytingLib
         }
 
         /// <summary>indices array must be at minimum size of VertexCount. The index buffer must contain 16bit indices.</summary>
-        public void GetIndices(short[] indices)
+        public void GetIndices(ushort[] indices)
         {
             // Copy from the temporary buffer to the destination array
             var dataHandle = GCHandle.Alloc(IndexData, GCHandleType.Pinned);
@@ -50,7 +50,7 @@ namespace BytingLib
                 int stride = 2;
                 for (var i = 0; i < IndexCount; i++)
                 {
-                    indices[i] = Marshal.PtrToStructure<short>(tmpPtr);
+                    indices[i] = Marshal.PtrToStructure<ushort>(tmpPtr);
                     tmpPtr = (IntPtr)(tmpPtr.ToInt64() + stride);
                 }
             }
@@ -61,7 +61,7 @@ namespace BytingLib
         }
 
         /// <summary>indices array must be at minimum size of VertexCount.</summary>
-        public void GetIndices(int[] indices)
+        public void GetIndices(uint[] indices)
         {
             // Copy from the temporary buffer to the destination array
             var dataHandle = GCHandle.Alloc(IndexData, GCHandleType.Pinned);
@@ -76,14 +76,14 @@ namespace BytingLib
                     case IndexElementSize.SixteenBits:
                         for (var i = 0; i < IndexCount; i++)
                         {
-                            indices[i] = Marshal.PtrToStructure<short>(tmpPtr);
+                            indices[i] = Marshal.PtrToStructure<ushort>(tmpPtr);
                             tmpPtr = (IntPtr)(tmpPtr.ToInt64() + stride);
                         }
                         break;
                     case IndexElementSize.ThirtyTwoBits:
                         for (var i = 0; i < IndexCount; i++)
                         {
-                            indices[i] = Marshal.PtrToStructure<int>(tmpPtr);
+                            indices[i] = Marshal.PtrToStructure<uint>(tmpPtr);
                             tmpPtr = (IntPtr)(tmpPtr.ToInt64() + stride);
                         }
                         break;

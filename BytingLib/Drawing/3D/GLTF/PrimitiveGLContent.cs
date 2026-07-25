@@ -74,14 +74,14 @@ namespace BytingLib
 
             Vector3[] positions = GetElementData<Vector3>(VertexElementUsage.Position);
             object indicesObj = IndexInfo.GetIndices();
-            if (indicesObj is short[] ind16)
+            if (indicesObj is ushort[] ind16)
             {
                 for (int i = 0; i < ind16.Length; i += 3)
                 {
                     yield return new Triangle3(positions[ind16[i]], positions[ind16[i + 2]], positions[ind16[i + 1]]);
                 }
             }
-            else if (indicesObj is int[] ind32)
+            else if (indicesObj is uint[] ind32)
             {
                 for (int i = 0; i < ind32.Length; i += 3)
                 {
