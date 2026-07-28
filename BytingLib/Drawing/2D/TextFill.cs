@@ -1,4 +1,4 @@
-﻿using BytingLib.Markup;
+using BytingLib.Markup;
 
 namespace BytingLib
 {
@@ -13,12 +13,13 @@ namespace BytingLib
         List<Rect> segments = new();
 
         public TextFill(string text, Ref<SpriteFont> font, Rect containerRect, Vector2 anchor, bool globalAnchor, List<List<Vector2>> polygons, TextWrap splitMethod, bool relativeJumps,
-            bool borderLeft = true, bool borderRight = true, Creator? creator = null, bool iterative = true, float anchorInLineY = 0.5f, float minLineSpacing = 0f)
+            bool borderLeft = true, bool borderRight = true, Creator? creator = null, bool iterative = true, float anchorInLineY = 0.5f, float minLineSpacing = 0f,
+            Vector2? fontScaleLimit = null)
         {
             this.anchor = anchor;
             this.globalAnchor = globalAnchor;
             this.anchorInLineY = anchorInLineY;
-            FontScale = Vector2.One;
+            FontScale = fontScaleLimit ?? Vector2.One;
             textTop = 0f;
 
             Vector2? minFontScale = null;
@@ -144,6 +145,11 @@ namespace BytingLib
                         {
                             FontScale = (maxFontScale.Value + minFontScale.Value) / 2f;
                         }
+                    }
+
+                    if (fontScaleLimit != null && FontScale.X > fontScaleLimit.Value.X)
+                    {
+                        FontScale = fontScaleLimit.Value;
                     }
 
                     defaultLineHeight = MathF.Max(minLineSpacing, font.Value.LineSpacing) * FontScale.Y;

@@ -1,4 +1,4 @@
-﻿using BytingLib.Markup;
+using BytingLib.Markup;
 using BytingLib.UI;
 using System.Diagnostics.CodeAnalysis;
 
@@ -24,6 +24,24 @@ namespace BytingLib
         public Padding? PaddingNormalized { get; set; }
         public bool IterativeFitting { get; set; }
         public float MinLineHeight { get; set; } = 0f;
+
+        private Vector2? maxFontScale;
+        /// <summary>
+        /// The largest font scale <see cref="IterativeFitting"/> can scale to. Without one it starts at 1 and
+        /// grows the text until it fills the container, instead of only shrinking text that doesn't fit.
+        /// </summary>
+        public Vector2? MaxFontScale
+        {
+            get => maxFontScale;
+            set
+            {
+                if (maxFontScale != value)
+                {
+                    maxFontScale = value;
+                    TextFill = null; // trigger reloading
+                }
+            }
+        }
 
         public TextFillObject(string text, List<List<Vector2>> polygons, PolyType polyType, TextWrap splitMethod, bool relativeJumps, bool borderLeft = true, bool borderRight = true)
         {
@@ -129,8 +147,8 @@ namespace BytingLib
 
             ApplyPaddingToClone(ref rect);
 
-            TextFill = new TextFill(Text, font, rect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, relativeJumps, 
-                borderLeft, borderRight, creator, IterativeFitting, AnchorInLineY, MinLineHeight);
+            TextFill = new TextFill(Text, font, rect, Anchor, GlobalAnchor, polygonsTransformed, splitMethod, relativeJumps,
+                borderLeft, borderRight, creator, IterativeFitting, AnchorInLineY, MinLineHeight, MaxFontScale);
         }
 
         private void ApplyPaddingToClone(ref Rect rect)

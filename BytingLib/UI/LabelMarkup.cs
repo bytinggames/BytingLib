@@ -1,4 +1,4 @@
-﻿using BytingLib.Markup;
+using BytingLib.Markup;
 
 namespace BytingLib.UI
 {
@@ -13,6 +13,24 @@ namespace BytingLib.UI
         public bool CropSuperfluousHeightThatIsLargerThanLineHeight { get; set; } = false;
         /// <summary>Experimental</summary>
         public bool UseStyleFontSizeInsteadOfTextFill { get; set; }
+
+        /// <summary>
+        /// Whether text that doesn't fit the label's box is scaled down until it does. The style's FontScale
+        /// serves as the upper bound, so text that fits keeps the size it would have had without this.
+        /// Only does something for a label that was given a width, as that is what creates the text fill.
+        /// </summary>
+        public bool IterativeFitting
+        {
+            get => textFill?.IterativeFitting == true;
+            set
+            {
+                if (textFill != null && textFill.IterativeFitting != value)
+                {
+                    textFill.IterativeFitting = value;
+                    SetDirty();
+                }
+            }
+        }
 
         private TextFillObject? textFill;
         public TextFillObject? TextFill
@@ -177,6 +195,12 @@ namespace BytingLib.UI
         private void UpdateMarkupWrapped(StyleRoot style)
         {
             MarkupRoot? newMarkup = null;
+            if (textFill != null)
+            {
+                // the style scale is otherwise ignored while a text fill decides the scale - as an upper bound
+                // it gets a meaning again: the size the text has as long as it fits
+                textFill.MaxFontScale = textFill.IterativeFitting ? style.FontScale : null;
+            }
             creator.Use(style.StringEdit, () =>
             {
                 newMarkup = textFill?.GetMarkupIfUpdated(style.Font, creator);
