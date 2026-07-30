@@ -204,5 +204,10 @@ namespace BytingLib
             valueStack.Pop();
             dirty = true;
         }
+
+        public override string ToString()
+        {
+            return parameterName + " -> " + valueStack.FirstOrDefault();
+        }
     }
 }
