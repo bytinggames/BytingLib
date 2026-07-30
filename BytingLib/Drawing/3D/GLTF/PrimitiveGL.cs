@@ -9,6 +9,7 @@ namespace BytingLib
 
         public VertexBuffer VertexBuffer => vertexBufferPromise.Value;
         public IndexBuffer? IndexBuffer => indexBufferPromise?.Value;
+        private readonly DisposableContainer disposablesDraw = new();
 
         public PrimitiveGL(ModelGL model, JsonNode n)
             : base(model, n)
@@ -29,7 +30,11 @@ namespace BytingLib
 
         public void Draw(IShader shader, IShaderMaterial? shaderMaterial)
         {
-            using (Material == null ? null : shaderMaterial?.UseMaterial(Material))
+            if (Material != null)
+            {
+                shaderMaterial?.UseMaterial(disposablesDraw, Material);
+            }
+            using (disposablesDraw)
             {
                 if (IndexBuffer == null)
                 {

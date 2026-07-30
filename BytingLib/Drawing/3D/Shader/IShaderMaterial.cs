@@ -2,6 +2,6 @@
 {
     public interface IShaderMaterial : IShader, IShaderAlbedo
     {
-        abstract IDisposable UseMaterial(MaterialGL material);
+        abstract void UseMaterial(DisposableContainer disposables, MaterialGL material);
     }
 }

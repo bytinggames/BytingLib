@@ -2,13 +2,15 @@
 {
     public static class IShaderExtension
     {
+        private static readonly DisposableContainer disposables = new();
 
         public static void Draw(this IShader shader, VertexBuffer vertexBuffer)
         {
             var e = shader.Effect.Value;
             var gDevice = vertexBuffer.GraphicsDevice;
 
-            using (shader.Apply(vertexBuffer))
+            shader.Apply(disposables, vertexBuffer);
+            using (disposables)
             {
                 foreach (var pass in e.CurrentTechnique.Passes)
                 {
@@ -26,7 +28,8 @@
 
             gDevice.Indices = indexBuffer;
 
-            using (shader.Apply(vertexBuffer))
+            shader.Apply(disposables, vertexBuffer);
+            using (disposables)
             {
                 foreach (var pass in e.CurrentTechnique.Passes)
                 {
@@ -46,7 +49,8 @@
 
             var e = shader.Effect.Value;
 
-            using (shader.Apply(vertices[0].VertexDeclaration))
+            shader.Apply(disposables, vertices[0].VertexDeclaration);
+            using (disposables)
             {
                 foreach (var pass in e.CurrentTechnique.Passes)
                 {
@@ -78,7 +82,8 @@
                         }
                         using (textureUsage)
                         {
-                            using (shaderWorld.Apply(part.VertexBuffer))
+                            shaderWorld.Apply(disposables, part.VertexBuffer);
+                            using (disposables)
                             {
                                 foreach (var pass in shaderWorld.Effect.Value.CurrentTechnique.Passes)
                                 {

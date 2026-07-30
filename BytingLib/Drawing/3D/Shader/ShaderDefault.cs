@@ -3,6 +3,7 @@
     public abstract class ShaderDefault1 : Shader, IShaderWorld, IShaderAlbedo
     {
         protected Matrix view, projection;
+        private readonly DisposableContainer disposablesDraw = new();
 
         public ShaderDefault1(Ref<Effect> effect)
             : base(effect)
@@ -80,7 +81,8 @@
             var e = Effect.Value;
 
             gDevice.Indices = indexBuffer;
-            using (Apply(vertexBuffer))
+            Apply(disposablesDraw, vertexBuffer);
+            using (disposablesDraw)
             {
                 foreach (var pass in e.CurrentTechnique.Passes)
                 {

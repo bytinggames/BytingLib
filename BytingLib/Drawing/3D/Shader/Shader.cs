@@ -46,47 +46,34 @@
             }
         }
 
-        public IDisposable Apply(VertexBuffer vertexBuffer)
+        public void Apply(DisposableContainer disposables, VertexBuffer vertexBuffer)
         {
             gDevice.SetVertexBuffer(vertexBuffer);
 
-            DisposableContainer disposables = new();
-            disposables.UseCheckNull(UseVertexDeclaration(vertexBuffer.VertexDeclaration));
-            disposables.UseCheckNull(ApplyParameters(false));
-
-            return disposables;
+            UseVertexDeclaration(disposables, vertexBuffer.VertexDeclaration);
+            ApplyParameters(disposables, false);
         }
 
-        public IDisposable Apply(VertexBufferBinding[] vertexBufferBindings)
+        public void Apply(DisposableContainer disposables, VertexBufferBinding[] vertexBufferBindings)
         {
             gDevice.SetVertexBuffers(vertexBufferBindings);
 
-            DisposableContainer disposables = new();
-            disposables.UseCheckNull(UseVertexDeclaration(vertexBufferBindings[0].VertexBuffer.VertexDeclaration));
-            disposables.UseCheckNull(ApplyParameters(vertexBufferBindings.Length > 1));
-
-            return disposables;
+            UseVertexDeclaration(disposables, vertexBufferBindings[0].VertexBuffer.VertexDeclaration);
+            ApplyParameters(disposables, vertexBufferBindings.Length > 1);
         }
 
         /// <summary>Used, when not rendering from a VertexBuffer</summary>
-        public IDisposable Apply(VertexDeclaration vertexDeclaration)
+        public void Apply(DisposableContainer disposables, VertexDeclaration vertexDeclaration)
         {
-            DisposableContainer disposables = new();
-            disposables.UseCheckNull(UseVertexDeclaration(vertexDeclaration));
-            disposables.UseCheckNull(ApplyParameters(false));
-
-            return disposables;
+            UseVertexDeclaration(disposables, vertexDeclaration);
+            ApplyParameters(disposables, false);
         }
 
-        private IDisposable ApplyParameters(bool instanced)
+        private void ApplyParameters(DisposableContainer disposables, bool instanced)
         {
-            DisposableContainer disposables = new();
-
             ApplyParametersInner(instanced, disposables);
 
             ApplyParameters();
-
-            return disposables;
         }
 
         protected virtual void ApplyParametersInner(bool instanced, DisposableContainer disposables)
@@ -94,7 +81,7 @@
             if (instanced)
             {
                 disposables.UseCheckNull(UseTechnique(TechniqueInstanced));
-                disposables.UseCheckNull(UseInstancedRender());
+                UseInstancedRender(disposables);
             }
             else
             {
@@ -106,9 +93,9 @@
 
         #region Use
 
-        public virtual IDisposable? UseMaterial(MaterialGL material) => null;
-        protected virtual IDisposable? UseVertexDeclaration(VertexDeclaration vertexDeclaration) => null;
-        protected virtual IDisposable? UseInstancedRender() => null;
+        public virtual void UseMaterial(DisposableContainer disposables, MaterialGL material) { }
+        protected virtual void UseVertexDeclaration(DisposableContainer disposables, VertexDeclaration vertexDeclaration) { }
+        protected virtual void UseInstancedRender(DisposableContainer disposables) { }
 
         public IDisposable UseRasterizer(RasterizerState rasterizerState)
         {

@@ -4,9 +4,9 @@
     {
         Ref<Effect> Effect { get; }
 
-        IDisposable Apply(params VertexBufferBinding[] vertexBufferBindings);
-        IDisposable Apply(VertexBuffer vertexBuffer);
-        IDisposable Apply(VertexDeclaration vertexDeclaration);
+        void Apply(DisposableContainer disposables, params VertexBufferBinding[] vertexBufferBindings);
+        void Apply(DisposableContainer disposables, VertexBuffer vertexBuffer);
+        void Apply(DisposableContainer disposables, VertexDeclaration vertexDeclaration);
         void ApplyParameters();
         IDisposable UseTechnique(string technique);
         IDisposable UseRasterizer(RasterizerState rasterizerState);

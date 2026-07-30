@@ -87,7 +87,7 @@
                 }
             }
         }
-
+        private static readonly DisposableContainer disposablesDrawInstancesInner = new();
         private static void DrawInstancesInner(IShader shader, IInstances<InstanceVertex> instances, DynamicVertexBuffer instanceBuffer, 
             VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int vertexOffset, int indexOffset, int primitiveCount,
             PrimitiveType primitiveType)
@@ -95,9 +95,11 @@
             var gDevice = instanceBuffer.GraphicsDevice;
 
             gDevice.Indices = indexBuffer;
-            using (shader.Apply(
+            shader.Apply(
+                disposablesDrawInstancesInner,
                 new VertexBufferBinding(vertexBuffer, vertexOffset),
-                new VertexBufferBinding(instanceBuffer, 0, 1)))
+                new VertexBufferBinding(instanceBuffer, 0, 1));
+            using (disposablesDrawInstancesInner)
             {
                 foreach (var pass in shader.Effect.Value.CurrentTechnique.Passes)
                 {
