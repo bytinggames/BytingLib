@@ -26,7 +26,7 @@ namespace BytingLib
         private int defaultLanguageIndex;
         private readonly bool cancelOnUnknownLanguage;
         private readonly bool accumulateErrorsForUnitTest;
-        public readonly List<int> ErrorLines = new();
+        public readonly List<(int, string)> ErrorLines = new();
 
         public bool UnknownLanguage { get; private set; }
 
@@ -300,12 +300,12 @@ namespace BytingLib
                         // no translation whatsoever. not even fallback english
                         if (accumulateErrorsForUnitTest)
                         {
-                            ErrorLines.Add(lineIndex + 1);
+                            ErrorLines.Add((lineIndex + 1, keyDirectory + "_" + localKey));
                             value = "?";
                         }
                         else
                         {
-                            throw new Exception($"{keyDirectory}.{localKey} is missing {(fallbackToFirstLanguage ? "any" : "a")} translation at line {lineIndex + 1}.\nIf this key isn't intended to be translated, make sure the line ends with '<+/>'.");
+                            throw new Exception($"{keyDirectory}_{localKey} is missing {(fallbackToFirstLanguage ? "any" : "a")} translation at line {lineIndex + 1}.\nIf this key isn't intended to be translated, make sure the line ends with '<+/>'.");
                         }
                     }
                 }
