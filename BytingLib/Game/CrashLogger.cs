@@ -4,11 +4,11 @@ namespace BytingLib
 {
     public class CrashLogger
     {
-        public static void Catch(Exception exception, string crashLogFilePath, string fontAssetName)
+        public static void Catch(Exception exception, string crashLogFilePath, string fontAssetName, bool showMessageBox)
         {
-            Catch(exception.ToString(), crashLogFilePath, fontAssetName);
+            Catch(exception.ToString(), crashLogFilePath, fontAssetName, showMessageBox);
         }
-        public static void Catch(string message, string crashLogFilePath, string fontAssetName)
+        public static void Catch(string message, string crashLogFilePath, string fontAssetName, bool showMessageBox)
         {
             message = "Game crashed.\nPlease send this to @bytinggames on Discord.\n\n" + DateTime.UtcNow.ToString("dd.MM.yyyy HH:mm:ss") + " UTC\n\n" + message;
             AppendLog(crashLogFilePath, message);
@@ -17,8 +17,12 @@ namespace BytingLib
             {
                 string displayMessage = GetPopupMessage(message, crashLogFilePath);
                 Console.WriteLine(displayMessage); // this gets printed to linux terminal
-                using var messageBox = new MessageBox(displayMessage, fontAssetName);
-                messageBox.Run();
+
+                if (showMessageBox)
+                {
+                    using var messageBox = new MessageBox(displayMessage, fontAssetName);
+                    messageBox.Run();
+                }
             }
             catch (Exception e2)
             {
