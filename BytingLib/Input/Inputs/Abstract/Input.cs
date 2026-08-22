@@ -10,6 +10,15 @@
                 .SelectMany(child => child.GetAllChildren().Prepend(child));
         }
 
+        public IEnumerable<Input> GetAllChildrenAndSelf()
+        {
+            yield return this;
+            foreach (var child in GetAllChildren())
+            {
+                yield return child;
+            }
+        }
+
         public void Update(InputUpdater updater, FullInput input)
         {
             if (updater.HasAlreadyUpdated(this))
