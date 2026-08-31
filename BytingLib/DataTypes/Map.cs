@@ -14,15 +14,15 @@
 
         public class Indexer<T3, T4> where T3 : notnull
         {
-            private Dictionary<T3, T4> _dictionary;
+            public Dictionary<T3, T4> Dictionary { get; }
             public Indexer(Dictionary<T3, T4> dictionary)
             {
-                _dictionary = dictionary;
+                Dictionary = dictionary;
             }
             public T4 this[T3 index]
             {
-                get { return _dictionary[index]; }
-                set { _dictionary[index] = value; }
+                get { return Dictionary[index]; }
+                set { Dictionary[index] = value; }
             }
         }
 
