@@ -14,7 +14,7 @@ namespace BytingLib
         public float SensitivityX { get => multiply.Factor.X / SpeedFactor; set => multiply.Factor = new Vector2(value* SpeedFactor, multiply.Factor.Y); }
         public float SensitivityY { get => multiply.Factor.Y / SpeedFactor; set => multiply.Factor = new Vector2(multiply.Factor.X, value * SpeedFactor); }
 
-        const float SpeedFactor = 25f;
+        const float SpeedFactor = 30f;
 
 
         private readonly Vector2GamePadStick stick;
