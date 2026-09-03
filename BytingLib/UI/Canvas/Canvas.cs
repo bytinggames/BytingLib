@@ -32,20 +32,23 @@
             get => navigateElement;
             set
             {
-                if (navigateElement != null)
+                if (navigateElement != value)
                 {
-                    navigateElement.Hover = false;
-                }
+                    if (navigateElement != null)
+                    {
+                        navigateElement.Hover = false;
+                    }
 
-                if (navigateElement == null && value != null)
-                {
-                    OnNavigationStart?.Invoke();
-                }
-                navigateElement = value;
+                    if (navigateElement == null && value != null)
+                    {
+                        OnNavigationStart?.Invoke();
+                    }
+                    navigateElement = value;
 
-                if (navigateElement != null)
-                {
-                    navigateElement.Hover = true;
+                    if (navigateElement != null)
+                    {
+                        navigateElement.Hover = true;
+                    }
                 }
             }
         }

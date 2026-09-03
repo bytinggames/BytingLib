@@ -146,7 +146,8 @@
                 && AbsoluteRect != null)
             {
                 //bool alreadyHovering = input.HoverElementForTooltip == this;
-                Hover = input.CanHover(HoverDetectShape, this);
+                Hover = input.NavigateElement == this 
+                    || input.CanHover(HoverDetectShape, this);
                 TriggerOnHoverSustain(input);
             }
             else if (input.HoverElement != this)
