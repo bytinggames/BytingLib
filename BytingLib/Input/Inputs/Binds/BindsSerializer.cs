@@ -175,6 +175,10 @@ namespace BytingLib
             {
                 return false;
             }
+            if (obj1.GetType() != obj2.GetType()) // if the type differs, then they wouldn't be deserialized to the same object. This makes sure BoolAlt "{}" and BoolCtrl "{}" are differentiated
+            {
+                return false;
+            }
             return Serialize(obj1, false) == Serialize(obj2, false);
         }
     }

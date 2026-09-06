@@ -112,5 +112,10 @@
         {
             return new Padding(0f, 0f, 0f, paddingBottom);
         }
+
+        public Padding GetInvert()
+        {
+            return new Padding(-Left, -Top, -Right, -Bottom);
+        }
     }
 }

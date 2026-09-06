@@ -9,11 +9,67 @@
             return GetChildren()
                 .SelectMany(child => child.GetAllChildren().Prepend(child));
         }
-
         public IEnumerable<Input> GetAllChildrenAndSelf()
         {
             yield return this;
             foreach (var child in GetAllChildren())
+            {
+                yield return child;
+            }
+        }
+
+        public IEnumerable<Input> GetAllChildren(Predicate<Input> stopAt)
+        {
+            foreach (var item in GetChildren())
+            {
+                yield return item;
+                if (!stopAt(item))
+                {
+                    foreach (var item2 in item.GetAllChildren(stopAt))
+                    {
+                        yield return item2;
+                    }
+                }
+            }
+        }
+        public IEnumerable<Input> GetAllChildrenAndSelf(Predicate<Input> stopAt)
+        {
+            yield return this;
+            if (stopAt(this))
+            {
+                yield break;
+            }
+            foreach (var child in GetAllChildren(stopAt))
+            {
+                yield return child;
+            }
+        }
+
+        public IEnumerable<Input> GetAllChildrenOnlyReturnStop(Predicate<Input> stopAt)
+        {
+            foreach (var item in GetChildren())
+            {
+                if (!stopAt(item))
+                {
+                    foreach (var item2 in item.GetAllChildrenOnlyReturnStop(stopAt))
+                    {
+                        yield return item2;
+                    }
+                }
+                else
+                {
+                    yield return item;
+                }
+            }
+        }
+        public IEnumerable<Input> GetAllChildrenAndSelfOnlyReturnStop(Predicate<Input> stopAt)
+        {
+            if (stopAt(this))
+            {
+                yield return this;
+                yield break;
+            }
+            foreach (var child in GetAllChildrenOnlyReturnStop(stopAt))
             {
                 yield return child;
             }
