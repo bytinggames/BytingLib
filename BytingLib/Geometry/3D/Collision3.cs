@@ -1439,8 +1439,8 @@ namespace BytingLib
             // parallel?
             if (Vector3.Cross(line1.Dir, line2.Dir) == Vector3.Zero)
             {
+                return new CollisionResult3();
                 throw new NotImplementedException("ONUSE: make correct collision check");
-                //return new CollisionResult3();
             }
 
             Vector3 normal = Vector3.Cross(line1.Dir, dir);
