@@ -1440,6 +1440,7 @@ namespace BytingLib
             if (Vector3.Cross(line1.Dir, line2.Dir) == Vector3.Zero)
             {
                 return new CollisionResult3();
+                // TODO?
                 throw new NotImplementedException("ONUSE: make correct collision check");
             }
 
@@ -1449,8 +1450,9 @@ namespace BytingLib
             {
                 // line1 has same dir (or negative) as dir -> dart-like
                 // make ray check instead
+                return new CollisionResult3();
+                // TODO?
                 throw new NotImplementedException("ONUSE: make ray check here");
-                //return new CollisionResult3();
             }
             normal.Normalize();
             Plane3 plane1 = new Plane3(line1.Pos, normal);
