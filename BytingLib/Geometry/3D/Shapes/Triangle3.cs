@@ -91,6 +91,10 @@
             get => Vertices[2] - Vertices[0];
             set => Vertices[2] = Vertices[0] + value;
         }
+        public Vector3 DirAB
+        {
+            get => Vertices[2] - Vertices[1];
+        }
 
         public Vector3 N => Vector3.Normalize(Vector3.Cross(DirB, DirA));
 
